@@ -1,0 +1,3 @@
+module.exports=[62406,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"flex flex-col gap-6",children:[(0,b.jsxs)("div",{className:"flex flex-col gap-1.5",children:[(0,b.jsx)("div",{className:"h-6 w-48 animate-pulse rounded-md bg-muted"}),(0,b.jsx)("div",{className:"h-4 w-40 animate-pulse rounded-md bg-muted"})]}),(0,b.jsx)("div",{className:"h-40 animate-pulse rounded-lg bg-muted"}),(0,b.jsx)("div",{className:"h-24 animate-pulse rounded-lg bg-muted"})]})}])},46433,a=>{a.n(a.i(62406))}];
+
+//# sourceMappingURL=src_app_%28app%29_ventas_cuentas-por-cobrar_loading_tsx_0i7n2gv._.js.map

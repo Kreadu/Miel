@@ -1,0 +1,3 @@
+module.exports=[51425,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"flex flex-col gap-6",children:[(0,b.jsxs)("div",{className:"flex flex-col gap-1.5",children:[(0,b.jsx)("div",{className:"h-6 w-40 animate-pulse rounded-md bg-muted"}),(0,b.jsx)("div",{className:"h-4 w-60 animate-pulse rounded-md bg-muted"})]}),(0,b.jsx)("div",{className:"h-[600px] animate-pulse rounded-lg bg-muted"})]})}])},57633,a=>{a.n(a.i(51425))}];
+
+//# sourceMappingURL=src_app_%28app%29_ventas_pos_loading_tsx_1e82jp1._.js.map

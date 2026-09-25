@@ -1,0 +1,3 @@
+{
+  "/(app)/inventario/kardex/[productId]/page": "app/(app)/inventario/kardex/[productId]/page.js"
+}

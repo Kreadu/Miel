@@ -1,0 +1,1434 @@
+{
+  "node": {
+    "00d9d533bc4491a46839653fcb12f7614a0171006c": {
+      "workers": {
+        "app/(app)/compras/cuentas-por-pagar/page": {
+          "moduleId": 17476,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/page": {
+          "moduleId": 47623,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/cuenta/page": {
+          "moduleId": 95346,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/finanzas/page": {
+          "moduleId": 32629,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inicio/page": {
+          "moduleId": 1120,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/alertas/page": {
+          "moduleId": 18022,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/cuentas-por-cobrar/page": {
+          "moduleId": 50935,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/page": {
+          "moduleId": 76735,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/onboarding/page": {
+          "moduleId": 38690,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "filename": "src/actions/auth.ts",
+      "exportedName": "logout"
+    },
+    "60404aca9ca1b86ca6d36b2a8c30322d0afa57d2c8": {
+      "workers": {
+        "app/(app)/compras/cuentas-por-pagar/page": {
+          "moduleId": 17476,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/page": {
+          "moduleId": 47623,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/cuenta/page": {
+          "moduleId": 95346,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/finanzas/page": {
+          "moduleId": 32629,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inicio/page": {
+          "moduleId": 1120,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/alertas/page": {
+          "moduleId": 18022,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/cuentas-por-cobrar/page": {
+          "moduleId": 50935,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/page": {
+          "moduleId": 76735,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(auth)/reset-password/page": {
+          "moduleId": 9904,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/onboarding/page": {
+          "moduleId": 38690,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "filename": "src/actions/auth.ts",
+      "exportedName": "updatePassword"
+    },
+    "605c9668f4c9683c76afb775a3f5976d6bea7ca20a": {
+      "workers": {
+        "app/(app)/compras/cuentas-por-pagar/page": {
+          "moduleId": 17476,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/page": {
+          "moduleId": 47623,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/cuenta/page": {
+          "moduleId": 95346,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/finanzas/page": {
+          "moduleId": 32629,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inicio/page": {
+          "moduleId": 1120,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/alertas/page": {
+          "moduleId": 18022,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/cuentas-por-cobrar/page": {
+          "moduleId": 50935,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/page": {
+          "moduleId": 76735,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(auth)/signup/page": {
+          "moduleId": 37687,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/onboarding/page": {
+          "moduleId": 38690,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "filename": "src/actions/auth.ts",
+      "exportedName": "signup"
+    },
+    "608dda93c92efd7c6da37c3ef4ea5309c79d0954cd": {
+      "workers": {
+        "app/(app)/compras/cuentas-por-pagar/page": {
+          "moduleId": 17476,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/page": {
+          "moduleId": 47623,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/cuenta/page": {
+          "moduleId": 95346,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/finanzas/page": {
+          "moduleId": 32629,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inicio/page": {
+          "moduleId": 1120,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/alertas/page": {
+          "moduleId": 18022,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/cuentas-por-cobrar/page": {
+          "moduleId": 50935,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/page": {
+          "moduleId": 76735,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(auth)/forgot-password/page": {
+          "moduleId": 41790,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/onboarding/page": {
+          "moduleId": 38690,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "filename": "src/actions/auth.ts",
+      "exportedName": "requestPasswordReset"
+    },
+    "60b62ce8d228feb30f6c0a39dac7e8a44342677232": {
+      "workers": {
+        "app/(app)/compras/cuentas-por-pagar/page": {
+          "moduleId": 17476,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/page": {
+          "moduleId": 47623,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/cuenta/page": {
+          "moduleId": 95346,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/finanzas/page": {
+          "moduleId": 32629,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inicio/page": {
+          "moduleId": 1120,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/alertas/page": {
+          "moduleId": 18022,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/cuentas-por-cobrar/page": {
+          "moduleId": 50935,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/page": {
+          "moduleId": 76735,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/(auth)/login/page": {
+          "moduleId": 59620,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        },
+        "app/onboarding/page": {
+          "moduleId": 38690,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "filename": "src/actions/auth.ts",
+      "exportedName": "login"
+    },
+    "40be62ed6cc618413960c3b714148af7b6f83acb27": {
+      "workers": {
+        "app/(app)/compras/cuentas-por-pagar/page": {
+          "moduleId": 17476,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/compras/page": {
+          "moduleId": 47623,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/cuenta/page": {
+          "moduleId": 95346,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/finanzas/page": {
+          "moduleId": 32629,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inicio/page": {
+          "moduleId": 1120,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inventario/alertas/page": {
+          "moduleId": 18022,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/cuentas-por-cobrar/page": {
+          "moduleId": 50935,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/page": {
+          "moduleId": 76735,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        }
+      },
+      "filename": "src/actions/tenant.ts",
+      "exportedName": "setActiveTenant"
+    },
+    "603e7f11705f36cdc7ca87106e12ed187e1ef72e3f": {
+      "workers": {
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "createPurchase",
+          "filename": "src/actions/purchases.ts"
+        }
+      },
+      "filename": "src/actions/purchases.ts",
+      "exportedName": "createPurchase"
+    },
+    "60969460603a301f55db249372fa57ab9e0bf4c591": {
+      "workers": {
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "updatePurchase",
+          "filename": "src/actions/purchases.ts"
+        }
+      },
+      "filename": "src/actions/purchases.ts",
+      "exportedName": "updatePurchase"
+    },
+    "607409541fcec663e80b563c0d505f20fe7717dbe4": {
+      "workers": {
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "markPurchaseOrdered",
+          "filename": "src/actions/purchases.ts"
+        }
+      },
+      "filename": "src/actions/purchases.ts",
+      "exportedName": "markPurchaseOrdered"
+    },
+    "40024d8fc2a083e89e2e6282215c75f3df2fc74601": {
+      "workers": {
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "cancelPurchase",
+          "filename": "src/actions/purchases.ts"
+        }
+      },
+      "filename": "src/actions/purchases.ts",
+      "exportedName": "cancelPurchase"
+    },
+    "6000ee473fa3df9f8ed8490a9a84ae8c77a2f02382": {
+      "workers": {
+        "app/(app)/compras/ordenes/page": {
+          "moduleId": 53004,
+          "async": false,
+          "exportedName": "receivePurchase",
+          "filename": "src/actions/purchases.ts"
+        }
+      },
+      "filename": "src/actions/purchases.ts",
+      "exportedName": "receivePurchase"
+    },
+    "40a8c3d62ff07e1904e15cc9e3d5a3b9994435836f": {
+      "workers": {
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "toggleSupplierActive",
+          "filename": "src/actions/suppliers.ts"
+        }
+      },
+      "filename": "src/actions/suppliers.ts",
+      "exportedName": "toggleSupplierActive"
+    },
+    "600f09244713fbdc1116883fa946b960dd167efc0b": {
+      "workers": {
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "createSupplier",
+          "filename": "src/actions/suppliers.ts"
+        }
+      },
+      "filename": "src/actions/suppliers.ts",
+      "exportedName": "createSupplier"
+    },
+    "60761ca7f67768667e622a89672e19db1aae0e5a64": {
+      "workers": {
+        "app/(app)/compras/proveedores/page": {
+          "moduleId": 33466,
+          "async": false,
+          "exportedName": "updateSupplier",
+          "filename": "src/actions/suppliers.ts"
+        }
+      },
+      "filename": "src/actions/suppliers.ts",
+      "exportedName": "updateSupplier"
+    },
+    "60a5ae400d31b04159957bebbb11430490f1466d4d": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "linkSupplierProduct",
+          "filename": "src/actions/supplier-products.ts"
+        }
+      },
+      "filename": "src/actions/supplier-products.ts",
+      "exportedName": "linkSupplierProduct"
+    },
+    "4033cb6233a5dcc4bcd95dad8069b73cde5e76e189": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "unlinkSupplierProduct",
+          "filename": "src/actions/supplier-products.ts"
+        }
+      },
+      "filename": "src/actions/supplier-products.ts",
+      "exportedName": "unlinkSupplierProduct"
+    },
+    "4079c4ca178658de69bff9fe0e3e62b37b6466a40c": {
+      "workers": {
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "revokeInvitation",
+          "filename": "src/actions/invitations.ts"
+        }
+      },
+      "filename": "src/actions/invitations.ts",
+      "exportedName": "revokeInvitation"
+    },
+    "603410a8135f8251bae70e70b0aa04901a6ecfa808": {
+      "workers": {
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "acceptInvitation",
+          "filename": "src/actions/invitations.ts"
+        },
+        "app/invite/[token]/page": {
+          "moduleId": 85892,
+          "async": false,
+          "exportedName": "acceptInvitation",
+          "filename": "src/actions/invitations.ts"
+        }
+      },
+      "filename": "src/actions/invitations.ts",
+      "exportedName": "acceptInvitation"
+    },
+    "6043b1fd56ddf0821aab13724d3ea3c769aaa67520": {
+      "workers": {
+        "app/(app)/equipo/page": {
+          "moduleId": 43493,
+          "async": false,
+          "exportedName": "createInvitation",
+          "filename": "src/actions/invitations.ts"
+        }
+      },
+      "filename": "src/actions/invitations.ts",
+      "exportedName": "createInvitation"
+    },
+    "40223410af6118c80995d1feb25bb24bdb61a91f3b": {
+      "workers": {
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "deleteExpense",
+          "filename": "src/actions/expenses.ts"
+        }
+      },
+      "filename": "src/actions/expenses.ts",
+      "exportedName": "deleteExpense"
+    },
+    "6014bfeb1f348ce9ad400dd59813ac30d0df653704": {
+      "workers": {
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "createExpense",
+          "filename": "src/actions/expenses.ts"
+        }
+      },
+      "filename": "src/actions/expenses.ts",
+      "exportedName": "createExpense"
+    },
+    "6018eaca797663c8ee3f10897883ae8baf2d65f4fd": {
+      "workers": {
+        "app/(app)/gastos/page": {
+          "moduleId": 84798,
+          "async": false,
+          "exportedName": "updateExpense",
+          "filename": "src/actions/expenses.ts"
+        }
+      },
+      "filename": "src/actions/expenses.ts",
+      "exportedName": "updateExpense"
+    },
+    "60b4b7408e8cd34b5770c051d288a9ceecece8b1d2": {
+      "workers": {
+        "app/(app)/inventario/kardex/[productId]/page": {
+          "moduleId": 55819,
+          "async": false,
+          "exportedName": "registerManualMovement",
+          "filename": "src/actions/stock.ts"
+        },
+        "app/(app)/inventario/page": {
+          "moduleId": 58112,
+          "async": false,
+          "exportedName": "registerManualMovement",
+          "filename": "src/actions/stock.ts"
+        }
+      },
+      "filename": "src/actions/stock.ts",
+      "exportedName": "registerManualMovement"
+    },
+    "60d6c496365af6eaa274557846de95f89bcbc15f03": {
+      "workers": {
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "createWarehouse",
+          "filename": "src/actions/warehouses.ts"
+        }
+      },
+      "filename": "src/actions/warehouses.ts",
+      "exportedName": "createWarehouse"
+    },
+    "40d7f24c6bbd49891999711a63dd43792410a86aea": {
+      "workers": {
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "toggleWarehouseActive",
+          "filename": "src/actions/warehouses.ts"
+        }
+      },
+      "filename": "src/actions/warehouses.ts",
+      "exportedName": "toggleWarehouseActive"
+    },
+    "604d3eeebe151471cd44a62ece0e7794ee8982397b": {
+      "workers": {
+        "app/(app)/inventario/bodegas/page": {
+          "moduleId": 42289,
+          "async": false,
+          "exportedName": "updateWarehouse",
+          "filename": "src/actions/warehouses.ts"
+        }
+      },
+      "filename": "src/actions/warehouses.ts",
+      "exportedName": "updateWarehouse"
+    },
+    "608bda58628747088bb9c89149b232782624837157": {
+      "workers": {
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "createProduct",
+          "filename": "src/actions/products.ts"
+        }
+      },
+      "filename": "src/actions/products.ts",
+      "exportedName": "createProduct"
+    },
+    "6077994faa57ead335774832f0d214c5e6810b9c05": {
+      "workers": {
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "updateProduct",
+          "filename": "src/actions/products.ts"
+        }
+      },
+      "filename": "src/actions/products.ts",
+      "exportedName": "updateProduct"
+    },
+    "408df0c5d1019c187855afd4e4687df555d0c27377": {
+      "workers": {
+        "app/(app)/inventario/productos/page": {
+          "moduleId": 54323,
+          "async": false,
+          "exportedName": "toggleProductActive",
+          "filename": "src/actions/products.ts"
+        }
+      },
+      "filename": "src/actions/products.ts",
+      "exportedName": "toggleProductActive"
+    },
+    "600330119cf4ce990161c9dcbf38073dc1e47ddcc3": {
+      "workers": {
+        "app/(app)/inventario/productos/[id]/receta/page": {
+          "moduleId": 60072,
+          "async": false,
+          "exportedName": "saveRecipe",
+          "filename": "src/actions/recipes.ts"
+        }
+      },
+      "filename": "src/actions/recipes.ts",
+      "exportedName": "saveRecipe"
+    },
+    "40f78ab9abdfe23c5e37730e42c3924edb77ebcb7c": {
+      "workers": {
+        "app/(app)/produccion/page": {
+          "moduleId": 73620,
+          "async": false,
+          "exportedName": "registerProduction",
+          "filename": "src/actions/production.ts"
+        }
+      },
+      "filename": "src/actions/production.ts",
+      "exportedName": "registerProduction"
+    },
+    "60db0b11e6492657e0d54537478b9f05ea168fb086": {
+      "workers": {
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "closeCashSession",
+          "filename": "src/actions/cash-sessions.ts"
+        }
+      },
+      "filename": "src/actions/cash-sessions.ts",
+      "exportedName": "closeCashSession"
+    },
+    "60b2094cc3afb6edace329775af6c50a26464346cd": {
+      "workers": {
+        "app/(app)/ventas/caja/page": {
+          "moduleId": 12838,
+          "async": false,
+          "exportedName": "openCashSession",
+          "filename": "src/actions/cash-sessions.ts"
+        }
+      },
+      "filename": "src/actions/cash-sessions.ts",
+      "exportedName": "openCashSession"
+    },
+    "4037bcb77cbdf1c451f5a75fa721dae12726e652fd": {
+      "workers": {
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "toggleCustomerActive",
+          "filename": "src/actions/customers.ts"
+        }
+      },
+      "filename": "src/actions/customers.ts",
+      "exportedName": "toggleCustomerActive"
+    },
+    "60242173323c8f79330b9ec022a936f0a30a11f480": {
+      "workers": {
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "createCustomer",
+          "filename": "src/actions/customers.ts"
+        },
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "createCustomer",
+          "filename": "src/actions/customers.ts"
+        }
+      },
+      "filename": "src/actions/customers.ts",
+      "exportedName": "createCustomer"
+    },
+    "603cd910a504d8d6babdf4ce1b0a19eb4055365396": {
+      "workers": {
+        "app/(app)/ventas/clientes/page": {
+          "moduleId": 16180,
+          "async": false,
+          "exportedName": "updateCustomer",
+          "filename": "src/actions/customers.ts"
+        }
+      },
+      "filename": "src/actions/customers.ts",
+      "exportedName": "updateCustomer"
+    },
+    "6010805f9b1ff3b2f87eb3cbb75395ccb82cdba64a": {
+      "workers": {
+        "app/(app)/ventas/clientes/[id]/page": {
+          "moduleId": 47459,
+          "async": false,
+          "exportedName": "createInteraction",
+          "filename": "src/actions/interactions.ts"
+        }
+      },
+      "filename": "src/actions/interactions.ts",
+      "exportedName": "createInteraction"
+    },
+    "60fff35aaf1ddd12b19423bb6196a471c85e6852b2": {
+      "workers": {
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "createSale",
+          "filename": "src/actions/sales.ts"
+        }
+      },
+      "filename": "src/actions/sales.ts",
+      "exportedName": "createSale"
+    },
+    "60008fa10a21db7aee553e7811eb5b83405cdd792d": {
+      "workers": {
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "confirmSale",
+          "filename": "src/actions/sales.ts"
+        }
+      },
+      "filename": "src/actions/sales.ts",
+      "exportedName": "confirmSale"
+    },
+    "400daa04a5b3efbdc7be0c44a717b3b77a63fe2770": {
+      "workers": {
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "markSaleDelivered",
+          "filename": "src/actions/sales.ts"
+        }
+      },
+      "filename": "src/actions/sales.ts",
+      "exportedName": "markSaleDelivered"
+    },
+    "602d9ac942cb9ae9ee9624e68382c681e055618794": {
+      "workers": {
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "registerCustomerPayment",
+          "filename": "src/actions/customer-payments.ts"
+        }
+      },
+      "filename": "src/actions/customer-payments.ts",
+      "exportedName": "registerCustomerPayment"
+    },
+    "60d667b82b64dee8a4130d180246673e346d050018": {
+      "workers": {
+        "app/(app)/ventas/pedidos/page": {
+          "moduleId": 56404,
+          "async": false,
+          "exportedName": "markSaleShipped",
+          "filename": "src/actions/sales.ts"
+        }
+      },
+      "filename": "src/actions/sales.ts",
+      "exportedName": "markSaleShipped"
+    },
+    "60082f7ae28fe5aa65d4585b6156d8ee377a2f41ff": {
+      "workers": {
+        "app/(app)/ventas/pos/page": {
+          "moduleId": 68825,
+          "async": false,
+          "exportedName": "registerPosSale",
+          "filename": "src/actions/pos.ts"
+        }
+      },
+      "filename": "src/actions/pos.ts",
+      "exportedName": "registerPosSale"
+    },
+    "60951e11fcbffdff6fb944e431c9b7e2c51d176ba4": {
+      "workers": {
+        "app/onboarding/page": {
+          "moduleId": 38690,
+          "async": false,
+          "exportedName": "createTenant",
+          "filename": "src/actions/onboarding.ts"
+        }
+      },
+      "filename": "src/actions/onboarding.ts",
+      "exportedName": "createTenant"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "uEdpEY5apFKSFnvLIy3AjkxWxjseO6Oe7/gcJINv0xI="
+}

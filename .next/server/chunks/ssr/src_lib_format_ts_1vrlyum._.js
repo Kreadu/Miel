@@ -1,0 +1,3 @@
+module.exports=[90075,a=>{"use strict";let b="es-CO";a.s(["formatDate",0,function(a,c={}){let d="string"==typeof a?new Date(a):a;return new Intl.DateTimeFormat(b,{timeZone:"America/Bogota",day:"numeric",month:"numeric",year:"numeric",...c}).format(d)},"formatMoney",0,function(a,c={}){let d=null==a?0:Number(a);return new Intl.NumberFormat(b,{minimumFractionDigits:2,maximumFractionDigits:2,...c}).format(d)},"toDatetimeLocalValue",0,function(a){return a?new Date(new Date(a).getTime()-18e6).toISOString().slice(0,16):""}])}];
+
+//# sourceMappingURL=src_lib_format_ts_1vrlyum._.js.map

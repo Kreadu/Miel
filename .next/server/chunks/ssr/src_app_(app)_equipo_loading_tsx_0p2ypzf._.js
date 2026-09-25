@@ -1,0 +1,3 @@
+module.exports=[16082,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"flex flex-col gap-6",children:[(0,b.jsxs)("div",{className:"flex flex-col gap-1.5",children:[(0,b.jsx)("div",{className:"h-6 w-24 animate-pulse rounded-md bg-muted"}),(0,b.jsx)("div",{className:"h-4 w-40 animate-pulse rounded-md bg-muted"})]}),(0,b.jsx)("div",{className:"h-20 animate-pulse rounded-lg bg-muted"}),(0,b.jsxs)("div",{className:"flex flex-col gap-2",children:[(0,b.jsx)("div",{className:"h-4 w-20 animate-pulse rounded-md bg-muted"}),(0,b.jsx)("div",{className:"h-24 animate-pulse rounded-lg bg-muted"})]})]})}])},78654,a=>{a.n(a.i(16082))}];
+
+//# sourceMappingURL=src_app_%28app%29_equipo_loading_tsx_0p2ypzf._.js.map

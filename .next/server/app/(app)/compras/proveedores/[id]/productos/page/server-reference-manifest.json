@@ -1,0 +1,101 @@
+{
+  "node": {
+    "00d9d533bc4491a46839653fcb12f7614a0171006c": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "exportedName": "logout",
+      "filename": "src/actions/auth.ts"
+    },
+    "60404aca9ca1b86ca6d36b2a8c30322d0afa57d2c8": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "exportedName": "updatePassword",
+      "filename": "src/actions/auth.ts"
+    },
+    "605c9668f4c9683c76afb775a3f5976d6bea7ca20a": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "exportedName": "signup",
+      "filename": "src/actions/auth.ts"
+    },
+    "608dda93c92efd7c6da37c3ef4ea5309c79d0954cd": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "exportedName": "requestPasswordReset",
+      "filename": "src/actions/auth.ts"
+    },
+    "60b62ce8d228feb30f6c0a39dac7e8a44342677232": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/actions/auth.ts"
+        }
+      },
+      "exportedName": "login",
+      "filename": "src/actions/auth.ts"
+    },
+    "40be62ed6cc618413960c3b714148af7b6f83acb27": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "setActiveTenant",
+          "filename": "src/actions/tenant.ts"
+        }
+      },
+      "exportedName": "setActiveTenant",
+      "filename": "src/actions/tenant.ts"
+    },
+    "60a5ae400d31b04159957bebbb11430490f1466d4d": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "linkSupplierProduct",
+          "filename": "src/actions/supplier-products.ts"
+        }
+      },
+      "exportedName": "linkSupplierProduct",
+      "filename": "src/actions/supplier-products.ts"
+    },
+    "4033cb6233a5dcc4bcd95dad8069b73cde5e76e189": {
+      "workers": {
+        "app/(app)/compras/proveedores/[id]/productos/page": {
+          "moduleId": 92349,
+          "async": false,
+          "exportedName": "unlinkSupplierProduct",
+          "filename": "src/actions/supplier-products.ts"
+        }
+      },
+      "exportedName": "unlinkSupplierProduct",
+      "filename": "src/actions/supplier-products.ts"
+    }
+  },
+  "edge": {}
+}

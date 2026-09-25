@@ -1,0 +1,3 @@
+{
+  "/(app)/compras/proveedores/[id]/cuenta/page": "app/(app)/compras/proveedores/[id]/cuenta/page.js"
+}

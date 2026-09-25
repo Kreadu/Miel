@@ -1,0 +1,17 @@
+{
+  "node": {
+    "603410a8135f8251bae70e70b0aa04901a6ecfa808": {
+      "workers": {
+        "app/invite/[token]/page": {
+          "moduleId": 85892,
+          "async": false,
+          "exportedName": "acceptInvitation",
+          "filename": "src/actions/invitations.ts"
+        }
+      },
+      "exportedName": "acceptInvitation",
+      "filename": "src/actions/invitations.ts"
+    }
+  },
+  "edge": {}
+}

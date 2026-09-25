@@ -1,0 +1,3 @@
+module.exports=[876,a=>{"use strict";var b=a.i(7997);let c=(0,a.i(92277).default)("loader-circle",[["path",{d:"M21 12a9 9 0 1 1-6.219-8.56",key:"13zald"}]]);a.s(["default",0,function(){return(0,b.jsx)("div",{className:"flex h-64 items-center justify-center",children:(0,b.jsx)(c,{className:"size-8 animate-spin text-muted-foreground"})})}],876)},34568,a=>{a.n(a.i(876))}];
+
+//# sourceMappingURL=src_app_%28app%29_finanzas_loading_tsx_0dsx90a._.js.map

@@ -1,0 +1,3 @@
+module.exports=[59772,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"flex flex-col gap-6",children:[(0,b.jsxs)("div",{className:"flex flex-col gap-1.5",children:[(0,b.jsx)("div",{className:"h-6 w-28 animate-pulse rounded-md bg-muted"}),(0,b.jsx)("div",{className:"h-4 w-40 animate-pulse rounded-md bg-muted"})]}),(0,b.jsx)("div",{className:"h-56 animate-pulse rounded-lg bg-muted"}),(0,b.jsx)("div",{className:"h-32 animate-pulse rounded-lg bg-muted"})]})}])},81302,a=>{a.n(a.i(59772))}];
+
+//# sourceMappingURL=src_app_%28app%29_inventario_productos_loading_tsx_01xnd4s._.js.map

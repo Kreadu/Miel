@@ -1,0 +1,3 @@
+module.exports=[17511,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"flex flex-col gap-6",children:[(0,b.jsxs)("div",{className:"flex flex-col gap-1.5",children:[(0,b.jsx)("div",{className:"h-6 w-48 animate-pulse rounded-md bg-muted"}),(0,b.jsx)("div",{className:"h-4 w-40 animate-pulse rounded-md bg-muted"})]}),(0,b.jsx)("div",{className:"h-40 animate-pulse rounded-lg bg-muted"}),(0,b.jsx)("div",{className:"h-24 animate-pulse rounded-lg bg-muted"})]})}])},5259,a=>{a.n(a.i(17511))}];
+
+//# sourceMappingURL=src_app_%28app%29_compras_proveedores_%5Bid%5D_cuenta_loading_tsx_0tngb_8._.js.map
