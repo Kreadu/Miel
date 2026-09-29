@@ -28,8 +28,8 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/inicio", label: "Inicio", i18nKey: "inicio", icon: Home },
   { href: "/ventas", label: "Vender", i18nKey: "vender", icon: Receipt },
-  { href: "/compras", label: "Comprar", i18nKey: "comprar", icon: ShoppingCart },
   { href: "/inventario", label: "Inventario", i18nKey: "inventario", icon: Boxes },
+  { href: "/compras", label: "Comprar", i18nKey: "comprar", icon: ShoppingCart },
   { href: "/gastos", label: "Gastos", i18nKey: "gastos", icon: Wallet, ownerAdminOnly: true },
   {
     href: "/produccion",
@@ -45,7 +45,8 @@ export const NAV_ITEMS: NavItem[] = [
     icon: TrendingUp,
     ownerAdminOnly: true,
   },
-  { href: "/equipo", label: "Equipo", i18nKey: "equipo", icon: Users, ownerAdminOnly: true },
+  // S19-31: "RRHH" en el menú; la ruta sigue siendo /equipo (miembros, roles, invitaciones).
+  { href: "/equipo", label: "RRHH", i18nKey: "equipo", icon: Users, ownerAdminOnly: true },
 ];
 
 /**

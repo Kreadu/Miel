@@ -41,15 +41,23 @@ describe("visibleNavItems", () => {
     expect(visibleNavItems("member").map((item) => item.href)).not.toContain("/dashboard");
   });
 
-  it("owner ve el orden exacto: diario primero, gestión después (S14-01: sin Producción/Finanzas)", () => {
-    const hrefs = visibleNavItems("owner").map((item) => item.href);
-    expect(hrefs).toEqual([
+  it("owner ve el orden exacto: Inicio, Vender, Inventario, Comprar, Gastos, RRHH (S19-31)", () => {
+    const items = visibleNavItems("owner");
+    expect(items.map((item) => item.href)).toEqual([
       "/inicio",
       "/ventas",
-      "/compras",
       "/inventario",
+      "/compras",
       "/gastos",
       "/equipo",
+    ]);
+    expect(items.map((item) => item.label)).toEqual([
+      "Inicio",
+      "Vender",
+      "Inventario",
+      "Comprar",
+      "Gastos",
+      "RRHH",
     ]);
   });
 

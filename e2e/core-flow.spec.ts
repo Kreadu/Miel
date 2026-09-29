@@ -68,41 +68,8 @@ test.describe('Flujo core de negocio (Humo)', () => {
     await page.goto('/onboarding?crear');
     await expect(page).toHaveURL(/\/inicio/);
 
-    // 5. Movimiento de stock (Ingresar stock)
-    await page.goto('/inventario');
-    
-    // Abrir el form de ingreso manual
-    await page.getByRole('button', { name: '+ Registrar movimiento de stock' }).click();
-    
-    // Llenar el form
-    await page.getByText('Selecciona un producto').click();
-    await page.getByRole('option', { name: new RegExp(productoName) }).click();
-    
-    await page.getByText('Selecciona una bodega').click();
-    await page.getByRole('option', { name: bodegaName }).click();
-
-    await page.getByLabel('Cantidad (Entrada)').fill('50');
-    await page.getByLabel('Costo unitario').fill('100');
-    await page.getByRole('button', { name: 'Guardar movimiento' }).click();
-
-    // Verificamos que se reflejó en el inventario (el stock sube a 50)
-    await expect(page.getByRole('cell', { name: '50' }).first()).toBeVisible();
-
-    // 5b. Salida de stock (S13-03): kind=out, el campo Costo desaparece, el stock baja
-    await page.getByRole('button', { name: '+ Registrar movimiento de stock' }).click();
-    await page.getByText('Selecciona un producto').click();
-    await page.getByRole('option', { name: new RegExp(productoName) }).click();
-    await page.getByText('Selecciona una bodega').click();
-    await page.getByRole('option', { name: bodegaName }).click();
-
-    await page.getByRole('combobox', { name: 'Tipo de movimiento' }).click();
-    await page.getByRole('option', { name: 'Salida' }).click();
-    await expect(page.getByLabel('Costo unitario')).not.toBeVisible();
-
-    await page.getByLabel('Cantidad (Salida)').fill('5');
-    await page.getByRole('button', { name: 'Guardar movimiento' }).click();
-
-    await expect(page.getByRole('cell', { name: '45' }).first()).toBeVisible();
+    // 5. (S19-30) Ya no hay "Registrar movimiento de stock" en /inventario. PENDIENTE: el paso 8
+    // (confirmar venta) necesita stock — reescribir para ingresarlo recibiendo una orden de compra.
 
     // 5c. Abrir caja: ayuda en lenguaje llano (S14-05)
     await page.goto('/ventas/caja');

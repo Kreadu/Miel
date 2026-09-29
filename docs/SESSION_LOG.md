@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 7) · S19-30 — quitar "Registrar movimiento de stock" de Inventario
+
+**Hecho:** quitado `StockMovementForm` de `/inventario`; el kardex por producto lo conserva. e2e
+pasos 5/5b borrados (queda nota: reescribir el ingreso de stock vía orden de compra). S19-26/S19-28
+confirmadas aplicadas en el cloud (probado con anon key). Verificado: tsc ✓, lint ✓.
+
+S19-31: menú Inicio, Vender, Inventario, Comprar, Gastos, RRHH ("Equipo" → "RRHH", ruta
+`/equipo` igual); test de orden actualizado primero.
+
+**Pendiente:** humano decide si también se quita del kardex; commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 6) · S19-28 (categorías por inventario) + S19-29 (alertas por inventario)
 
 **Hecho:** categorías propias de cada inventario (migración `20260929171419`, reparto de las

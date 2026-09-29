@@ -206,6 +206,8 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-27 | Como dueño quiero ver en Alertas todo lo que llegó a su stock mínimo, con foto, y armar una orden de compra desde ahí | Tarjetas con foto + selección → `/compras/ordenes?desde=` precarga ítems con cantidad sugerida | S19-26 | done (sin migración propia; depende de S19-26 aplicada) | specs/done/S19-27-alertas-con-orden-de-compra.md |
 | S19-28 | Como dueño quiero que cada inventario tenga sus propias categorías, sin mezclarse | `product_categories.inventory`, único por inventario, reparto de lo existente, trigger de coherencia ítem↔categoría | S19-26 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-28-categorias-por-inventario.md |
 | S19-29 | Como dueño quiero en Alertas un botón por inventario y, dentro, lo que está bajo el mínimo para crear la orden de compra | `/inventario/alertas?inventario=<slug>` con conteo por inventario | S19-27 | done (sin migración) | specs/done/S19-29-alertas-por-inventario.md |
+| S19-30 | Como dueño quiero quitar el botón "Registrar movimiento de stock" de Inventario | Se quita `StockMovementForm` de `/inventario` (el kardex por producto conserva el suyo) | — | done (sin migración) | — (cambio de UI de una línea, sin spec) |
+| S19-31 | Como dueño quiero el menú en el orden Inicio, Vender, Inventario, Comprar, Gastos, RRHH | Reordena `NAV_ITEMS`; "Equipo" pasa a llamarse "RRHH" (ruta `/equipo` sin cambios) | — | done (sin migración) | — (cambio de menú, sin spec) |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -248,7 +250,9 @@ por código.
   (la app ya filtra por `product_categories.inventory`). Aplicar DESPUÉS de S19-26.
 - **S19-23**: migración `20260929154514_eliminar-pos.sql` sin aplicar al cloud (no bloquea: la
   app ya no llama la RPC). `create_product_with_stock` (S13-01) quedó sin uso tras S19-24.
-- e2e `core-flow` actualizado para S19-23/S19-24 pero sin correr en este sandbox.
+- e2e `core-flow` actualizado para S19-23/S19-24 pero sin correr en este sandbox. Tras S19-30 el
+  paso de ingreso de stock se quitó: hay que reescribirlo recibiendo una orden de compra, o el
+  paso 8 (confirmar venta) falla por falta de stock.
 - **S19-22, bloqueante hasta que se resuelva**: migración
   `20260929151859_boleta-requiere-caja.sql` sin aplicar al cloud — hasta entonces se siguen
   generando boletas sin caja abierta. pgTAP S19-22 (y S5-03/S5-08 con fixtures nuevas) sin correr.

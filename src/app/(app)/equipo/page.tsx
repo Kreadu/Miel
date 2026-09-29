@@ -7,7 +7,7 @@ import { revokeInvitation } from "@/actions/invitations";
 
 import { InviteForm } from "./invite-form";
 
-export const metadata = { title: "Equipo · Miel" };
+export const metadata = { title: "RRHH · Miel" };
 
 const ROLE_LABEL: Record<string, string> = { owner: "Dueño", admin: "Admin", member: "Operativo" };
 
@@ -36,7 +36,7 @@ export default async function EquipoPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Equipo</h1>
+        <h1 className="text-xl font-semibold tracking-tight">RRHH</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
 

@@ -16,7 +16,6 @@ import { INVENTORIES, type InventoryId, inventoryPath } from "@/lib/inventories"
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
-import { StockMovementForm } from "./stock-movement-form";
 
 export const metadata = { title: "Inventario · Miel" };
 
@@ -126,9 +125,6 @@ export default async function InventarioPage() {
         })}
       </section>
 
-      {!isMember && (
-        <StockMovementForm products={products} warehouses={warehouses} />
-      )}
 
       {stockList && stockList.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
