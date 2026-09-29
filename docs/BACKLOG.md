@@ -209,6 +209,7 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-30 | Como dueño quiero quitar el botón "Registrar movimiento de stock" de Inventario | Se quita `StockMovementForm` de `/inventario` (el kardex por producto conserva el suyo) | — | done (sin migración) | — (cambio de UI de una línea, sin spec) |
 | S19-31 | Como dueño quiero el menú en el orden Inicio, Vender, Inventario, Comprar, Gastos, RRHH | Reordena `NAV_ITEMS`; "Equipo" pasa a llamarse "RRHH" (ruta `/equipo` sin cambios) | — | done (sin migración) | — (cambio de menú, sin spec) |
 | S19-32 | Como dueño quiero ver el stock de cada bodega o sucursal en el producto, editable (junto con el stock mínimo) solo en Inventario y de solo lectura en Vender | RPC `set_product_stock` (ajustes en kardex, atómica); `ProductFields` con `mode` inventory/sales y grilla alineada | S19-24, S19-26 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-32-stock-por-bodega-en-producto.md |
+| S19-33 | Como dueño quiero que "Volver" suba a la sección de arriba, no a la última pantalla abierta | `parentPath` (salta ids y segmentos sin página; módulo → /inicio); `BackButton` con Link en vez de `router.back()` | S19-12 | done (sin migración) | — (fix de navegación con tests, sin spec) |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 

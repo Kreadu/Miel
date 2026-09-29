@@ -69,8 +69,7 @@
     "asset_color": "Couleur",
     "asset_serial_number": "N° de série",
     "asset_purchase_date": "Date d’achat",
-    "stockByWarehouse": "Stock par entrepôt ou succursale",
-    "stockEditHint": "modifier une quantité enregistre un ajustement",
-    "stockReadOnlyHint": "se modifie dans Inventaire"
+    "warehouse": "Entrepôt ou succursale",
+    "quantity": "Quantité"
   }
 }

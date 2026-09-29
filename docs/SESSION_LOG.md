@@ -11,6 +11,16 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 9) · ajustes de stock en el producto + "Volver"
+
+**Hecho:** recuadro de stock en filas (principal, bodegas agregadas con selector, stock total en
+vivo, stock mínimo) — `src/components/products/stock-box.tsx`. S19-33: "Volver" sube a la sección
+de arriba (`src/lib/navigation/parent-path.ts`, 11 tests). Verificado: lint ✓, tsc ✓, tests ✓.
+
+**Pendiente:** commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 8) · S19-32 — stock por bodega en el producto
 
 **Hecho:** RPC `set_product_stock` (migración `20260929173340`); formulario con recuadro de stock
