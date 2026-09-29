@@ -19,7 +19,7 @@ function mapPurchaseError(message: string | undefined): string {
   if (message?.includes("item_unit_cost_invalid")) return "El costo de un ítem no puede ser negativo.";
   if (message?.includes("purchase_not_found")) return "La orden no existe.";
   if (message?.includes("purchase_not_draft")) return "Solo se puede marcar como ordenada una orden en borrador.";
-  if (message?.includes("warehouse_invalid")) return "Selecciona una bodega válida.";
+  if (message?.includes("warehouse_invalid")) return "Selecciona una bodega o sucursal válida.";
   if (message?.includes("purchase_not_ordered")) return "Solo se puede recibir una orden que esté ordenada.";
   if (message?.includes("purchase_not_cancellable")) return "Esta orden ya no se puede cancelar.";
   if (message?.includes("purchase_not_updatable")) return "Esta orden ya no se puede editar.";
@@ -87,7 +87,7 @@ export async function markPurchaseOrdered(
 /** Cualquier miembro del tenant recibe una orden ordenada (receive_purchase valida pertenencia, no rol admin). */
 export async function receivePurchase(purchaseId: string, warehouseId: string): Promise<PurchaseState> {
   const parsed = z.object({ purchaseId: z.uuid(), warehouseId: z.uuid() }).safeParse({ purchaseId, warehouseId });
-  if (!parsed.success) return { ok: false, error: "Selecciona una bodega válida." };
+  if (!parsed.success) return { ok: false, error: "Selecciona una bodega o sucursal válida." };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("receive_purchase", {

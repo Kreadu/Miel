@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,10 @@ export default async function PedidosPage() {
   if (!active) notFound();
 
   const supabase = await createClient();
-  const [salesRes, customersRes, productsRes, warehousesRes] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const [salesRes, customersRes, productsRes, warehousesRes, mySessionRes] = await Promise.all([
     supabase
       .from("sales")
       .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, customers(name), customer_payments(amount)")
@@ -28,7 +32,16 @@ export default async function PedidosPage() {
       .in("sales_channel", ["in_store", "both"])
       .order("name"),
     supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
+    // S19-22: la boleta de productos de tienda exige la caja abierta de quien confirma.
+    supabase
+      .from("cash_sessions")
+      .select("id")
+      .eq("tenant_id", active.tenantId)
+      .eq("opened_by", user?.id ?? "")
+      .eq("status", "open")
+      .maybeSingle(),
   ]);
+  const cashOpen = mySessionRes.data != null;
 
   const sales = salesRes.data ?? [];
   const customers = customersRes.data ?? [];
@@ -47,6 +60,17 @@ export default async function PedidosPage() {
         <h1 className="text-xl font-semibold tracking-tight">Pedidos</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
+
+      {cashOpen ? null : (
+        <p className="rounded-lg border border-border bg-muted/50 p-3 text-sm text-muted-foreground">
+          Tu caja está cerrada: puedes crear pedidos, pero para generar la boleta de productos que
+          se venden en tienda{" "}
+          <Link href="/ventas/caja" className="font-medium text-foreground underline underline-offset-4">
+            abre la caja
+          </Link>
+          .
+        </p>
+      )}
 
       <CatalogPedidoCart tenantId={active.tenantId} customers={customers} />
 

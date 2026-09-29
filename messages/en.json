@@ -15,7 +15,6 @@
   "catalog": {
     "title": "Catalog",
     "generateProduct": "Generate product",
-    "generateCategory": "Generate category",
     "createCategory": "Create",
     "cancel": "Cancel",
     "categoryNamePlaceholder": "Category name",
@@ -26,6 +25,7 @@
     "noPhoto": "No photo",
     "noStockRegistered": "No stock recorded",
     "stock": "Stock",
+    "totalStock": "Total stock",
     "all": "All",
     "emptyManage": "You don't have any catalog products yet. Generate the first one above.",
     "emptyPublic": "No catalog products yet.",
@@ -39,8 +39,11 @@
     "price": "Price",
     "discountPercent": "Discount %",
     "category": "Category",
-    "newCategoryLabel": "Or type a new category",
+    "categories": "Categories",
+    "noCategoriesYet": "No categories yet.",
+    "deleteCategoryConfirm": "Delete “{name}”? Its products will have no category.",
     "noCategory": "No category",
+    "newCategory": "New category",
     "photo": "Photo (optional)",
     "replacePhoto": "Replace photo (optional)"
   }

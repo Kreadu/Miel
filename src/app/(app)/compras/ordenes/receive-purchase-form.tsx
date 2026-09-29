@@ -36,7 +36,7 @@ export function ReceivePurchaseForm({
       >
         <Select name="warehouse_id" required defaultValue={warehouses.length === 1 ? warehouses[0].id : undefined}>
           <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder="Bodega destino..." />
+            <SelectValue placeholder="Bodega o sucursal destino..." />
           </SelectTrigger>
           <SelectContent>
             {warehouses.map((w) => (

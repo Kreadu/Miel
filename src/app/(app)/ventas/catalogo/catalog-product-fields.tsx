@@ -12,11 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const SALES_CHANNELS = ["online", "in_store", "both"] as const;
+import { CategoryPicker } from "./category-picker";
 
-// El <Select> nativo no admite value="" (Radix la reserva para "sin selección") — mismo
-// sentinel que ya usa el resto de la app (NO_CUSTOMER en SaleForm/CatalogPedidoCart).
-const NO_CATEGORY = "__none__";
+const SALES_CHANNELS = ["online", "in_store", "both"] as const;
 
 export function CatalogProductFields({
   defaultName,
@@ -26,7 +24,7 @@ export function CatalogProductFields({
   defaultSalesChannel = "both",
   defaultCategoryId,
   isEditing = false,
-  warehouses = [],
+  stock,
   categories = [],
 }: {
   defaultName?: string;
@@ -36,9 +34,12 @@ export function CatalogProductFields({
   defaultSalesChannel?: (typeof SALES_CHANNELS)[number];
   defaultCategoryId?: string | null;
   isEditing?: boolean;
-  /** S19-14: bodegas/sucursales/tiendas activas del tenant, para cargar stock desde acá. */
-  warehouses?: { id: string; name: string }[];
-  /** S19-15: categorías existentes del tenant, para asignar o crear una nueva acá mismo. */
+  /**
+   * S19-17/S19-20: stock por bodega o sucursal, solo lectura al editar. La cantidad viene de los
+   * movimientos de cada bodega o sucursal; no se carga desde el catálogo.
+   */
+  stock?: { warehouseName: string; qty: number }[];
+  /** S19-15/S19-16: categorías del tenant; el "+" del selector crea una nueva acá mismo. */
   categories?: { id: string; name: string }[];
 }) {
   const t = useTranslations("catalog");
@@ -104,60 +105,17 @@ export function CatalogProductFields({
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="category_id">{t("category")}</Label>
-          <Select name="category_id" defaultValue={defaultCategoryId || NO_CATEGORY}>
-            <SelectTrigger id="category_id" className="w-full">
-              <SelectValue placeholder={t("noCategory")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_CATEGORY}>{t("noCategory")}</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="new_category_name">{t("newCategoryLabel")}</Label>
-          <Input id="new_category_name" name="new_category_name" maxLength={60} />
-        </div>
-      </div>
-      {warehouses.length > 0 ? (
-        <div className="flex flex-col gap-3 rounded-md border border-dashed border-border p-3">
-          <div>
-            <p className="text-sm font-medium">{t("stock")}</p>
-            <p className="text-xs text-muted-foreground">
-              {isEditing
-                ? "Elegí una bodega/sucursal/tienda para sumarle cantidad a lo que ya tiene."
-                : "Elegí en qué bodega/sucursal/tienda está y cuánta cantidad hay."}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="warehouse_id">Bodega / sucursal / tienda</Label>
-              <Select name="warehouse_id">
-                <SelectTrigger id="warehouse_id" className="w-full">
-                  <SelectValue placeholder="Selecciona una" />
-                </SelectTrigger>
-                <SelectContent>
-                  {warehouses.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>
-                      {w.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="stock_qty">Cantidad</Label>
-              <Input id="stock_qty" name="stock_qty" type="number" min={0} step="0.001" />
-            </div>
-          </div>
-        </div>
+      <CategoryPicker categories={categories} defaultCategoryId={defaultCategoryId} />
+      {stock ? (
+        <p className="text-sm text-muted-foreground">
+          {t("totalStock")}:{" "}
+          <span className="font-medium text-foreground tabular-nums">
+            {stock.reduce((sum, s) => sum + s.qty, 0).toLocaleString("es-CO")}
+          </span>
+          {stock.length > 0
+            ? ` (${stock.map((s) => `${s.warehouseName}: ${s.qty.toLocaleString("es-CO")}`).join(" · ")})`
+            : null}
+        </p>
       ) : null}
       <div className="flex flex-col gap-2">
         <Label htmlFor="photo">{isEditing ? t("replacePhoto") : t("photo")}</Label>

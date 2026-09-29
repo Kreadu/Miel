@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { totalStockByProduct } from "@/lib/stock";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -22,13 +23,16 @@ export default async function ProductosPage({
   // Siempre se consulta la vista `products_catalog`, nunca la tabla `products` directo: la
   // vista enmascara cost/price/tax_rate a null para member (spec S2-02).
   const supabase = await createClient();
-  const [{ data: products }, { data: warehouses }] = await Promise.all([
+  const [{ data: products }, { data: warehouses }, { data: stockRows }] = await Promise.all([
     supabase
       .from("products_catalog")
       .select("id, sku, name, description, unit, kind, cost, price, tax_rate, min_stock, active")
       .order("name", { ascending: true }),
     supabase.from("warehouses").select("id, name").order("name", { ascending: true }),
+    // S19-17: stock total (todas las bodegas o sucursales), solo lectura.
+    supabase.from("current_stock").select("product_id, total_qty"),
   ]);
+  const stockByProduct = totalStockByProduct(stockRows ?? []);
 
   const rows = (products ?? [])
     .filter((p): p is typeof p & { id: string } => p.id != null)
@@ -44,6 +48,7 @@ export default async function ProductosPage({
       tax_rate: p.tax_rate,
       min_stock: p.min_stock ?? 0,
       active: p.active ?? true,
+      stock: stockByProduct.get(p.id) ?? 0,
     }));
   const editingProduct = canManage ? rows.find((p) => p.id === editar) : undefined;
 
@@ -71,6 +76,7 @@ export default async function ProductosPage({
                 <th className="px-3 py-2 font-medium">Nombre</th>
                 <th className="px-3 py-2 font-medium">Tipo</th>
                 <th className="px-3 py-2 text-right font-medium">Precio</th>
+                <th className="px-3 py-2 text-right font-medium">Stock</th>
                 <th className="px-3 py-2 text-right font-medium">Stock mín.</th>
                 <th className="px-3 py-2" />
               </tr>

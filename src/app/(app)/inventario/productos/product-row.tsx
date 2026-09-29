@@ -30,6 +30,7 @@ export function ProductRow({
       </td>
       <td className="px-3 py-2.5 text-muted-foreground">{KIND_LABEL[product.kind]}</td>
       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(product.price)}</td>
+      <td className="px-3 py-2.5 text-right tabular-nums">{product.stock.toLocaleString("es-CO")}</td>
       <td className="px-3 py-2.5 text-right tabular-nums">{product.min_stock}</td>
       <td className="px-3 py-2.5">
         {canManage ? (

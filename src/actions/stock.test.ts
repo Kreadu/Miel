@@ -59,6 +59,6 @@ describe("registerManualMovement — out/adjust (S13-03)", () => {
 
     const result = await registerManualMovement(null, formData({ ...base, kind: "adjust", qty: "-3" }));
 
-    expect(result).toMatchObject({ ok: false, error: "No hay stock suficiente en esa bodega." });
+    expect(result).toMatchObject({ ok: false, error: "No hay stock suficiente en esa bodega o sucursal." });
   });
 });

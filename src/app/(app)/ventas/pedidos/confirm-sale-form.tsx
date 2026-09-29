@@ -36,7 +36,7 @@ export function ConfirmSaleForm({
       >
         <Select name="warehouse_id" required>
           <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder="Bodega origen..." />
+            <SelectValue placeholder="Bodega o sucursal origen..." />
           </SelectTrigger>
           <SelectContent>
             {warehouses.map((w) => (

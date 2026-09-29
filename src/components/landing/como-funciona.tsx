@@ -9,7 +9,7 @@ const pasos = [
   {
     icon: Building2,
     titulo: "Configura tu empresa",
-    descripcion: "Nombre, bodegas y productos. Guiado, sin manuales.",
+    descripcion: "Nombre, bodegas o sucursales y productos. Guiado, sin manuales.",
   },
   {
     icon: Rocket,

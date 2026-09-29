@@ -1446,30 +1446,54 @@ export type Database = {
       warehouses: {
         Row: {
           active: boolean
+          address: string | null
+          city: string | null
+          country: string | null
           created_at: string
           created_by: string
+          department: string | null
           id: string
+          is_default: boolean
           name: string
+          phone: string | null
+          postal_code: string | null
           tenant_id: string
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
           active?: boolean
+          address?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           created_by?: string
+          department?: string | null
           id?: string
+          is_default?: boolean
           name: string
+          phone?: string | null
+          postal_code?: string | null
           tenant_id: string
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
           active?: boolean
+          address?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           created_by?: string
+          department?: string | null
           id?: string
+          is_default?: boolean
           name?: string
+          phone?: string | null
+          postal_code?: string | null
           tenant_id?: string
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: [
           {

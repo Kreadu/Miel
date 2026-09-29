@@ -31,7 +31,6 @@ export function CatalogCard({
   displayCurrency,
   rate,
   onAddToCart,
-  warehouses,
   categories,
 }: {
   product: CatalogProduct;
@@ -40,7 +39,6 @@ export function CatalogCard({
   rate: number;
   /** S19-06: agrega este producto al carrito (moneda base, no la convertida) y navega al pedido. */
   onAddToCart: () => void;
-  warehouses: { id: string; name: string }[];
   categories: { id: string; name: string }[];
 }) {
   const t = useTranslations("catalog");
@@ -80,7 +78,7 @@ export function CatalogCard({
           defaultSalesChannel={product.salesChannel}
           defaultCategoryId={product.categoryId}
           isEditing
-          warehouses={warehouses}
+          stock={product.stock}
           categories={categories}
         />
         <div className="flex items-center gap-2">

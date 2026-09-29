@@ -90,7 +90,7 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
             <h1 className="text-xl font-semibold tracking-tight">Kardex Histórico</h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            {product.name} ({product.sku}) · {warehouse?.name ?? "Bodega desconocida"}
+            {product.name} ({product.sku}) · {warehouse?.name ?? "Bodega o sucursal desconocida"}
           </p>
         </div>
         {!isMember && (
@@ -160,7 +160,7 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
             ) : (
               <tr>
                 <td colSpan={isMember ? 5 : 9} className="px-3 py-8 text-center text-sm text-muted-foreground">
-                  No hay movimientos registrados para este producto en esta bodega.
+                  No hay movimientos registrados para este producto en esta bodega o sucursal.
                 </td>
               </tr>
             )}

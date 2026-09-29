@@ -3,7 +3,7 @@ import { z } from "zod";
 export const stockMovementSchema = z
   .object({
     product_id: z.string().uuid("Selecciona un producto válido."),
-    warehouse_id: z.string().uuid("Selecciona una bodega válida."),
+    warehouse_id: z.string().uuid("Selecciona una bodega o sucursal válida."),
     kind: z.enum(["in", "out", "adjust"], {
       error: "Tipo de movimiento inválido."
     }),

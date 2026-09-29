@@ -6,7 +6,7 @@ export const productionItemSchema = z.object({
 });
 
 export const registerProductionSchema = z.object({
-  warehouse_id: z.string().uuid("Bodega inválida"),
+  warehouse_id: z.string().uuid("Bodega o sucursal inválida"),
   product_id: z.string().uuid("Producto terminado inválido"),
   output_qty: z.number().positive("La cantidad a producir debe ser mayor a cero"),
   consumptions: z.array(productionItemSchema).min(1, "Debe incluir al menos un insumo"),

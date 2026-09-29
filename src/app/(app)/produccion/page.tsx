@@ -31,7 +31,7 @@ export default async function ProduccionPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Registro de Producción</h1>
         <p className="text-muted-foreground mt-2">
-          Registra la fabricación de productos terminados consumiendo insumos de tu bodega.
+          Registra la fabricación de productos terminados consumiendo insumos de tu bodega o sucursal.
         </p>
       </div>
 

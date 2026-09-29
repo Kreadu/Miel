@@ -84,9 +84,14 @@ export async function confirmSale(saleId: string, warehouseId: string): Promise<
     console.error("confirmSale:", error.code, error.message);
     if (error.message.includes("not_authenticated")) return { ok: false, error: "No estás autenticado." };
     if (error.message.includes("permission_denied")) return { ok: false, error: "No tienes permiso para confirmar esta venta." };
-    if (error.message.includes("warehouse_invalid")) return { ok: false, error: "La bodega seleccionada es inválida." };
+    if (error.message.includes("warehouse_invalid")) return { ok: false, error: "La bodega o sucursal seleccionada es inválida." };
     if (error.message.includes("sale_not_draft")) return { ok: false, error: "La venta ya no está en borrador." };
     if (error.message.includes("stock_insufficient")) return { ok: false, error: "No hay stock suficiente para confirmar esta venta." };
+    if (error.message.includes("cash_session_required"))
+      return {
+        ok: false,
+        error: "Abre tu caja para generar la boleta: el pedido tiene productos que se venden en tienda.",
+      };
     return { ok: false, error: "No se pudo confirmar la venta. Intenta de nuevo." };
   }
 

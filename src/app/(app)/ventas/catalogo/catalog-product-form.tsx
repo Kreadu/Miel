@@ -9,10 +9,8 @@ import { Button } from "@/components/ui/button";
 import { CatalogProductFields } from "./catalog-product-fields";
 
 export function CatalogProductForm({
-  warehouses = [],
   categories = [],
 }: {
-  warehouses?: { id: string; name: string }[];
   categories?: { id: string; name: string }[];
 }) {
   const t = useTranslations("catalog");
@@ -37,7 +35,7 @@ export function CatalogProductForm({
       action={formAction}
       className="flex w-full flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs sm:w-96"
     >
-      <CatalogProductFields warehouses={warehouses} categories={categories} />
+      <CatalogProductFields categories={categories} />
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
           {t("generateProduct")}

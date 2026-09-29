@@ -117,10 +117,10 @@ export function PosTerminal({
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="warehouse_id">Bodega Origen</Label>
+          <Label htmlFor="warehouse_id">Bodega o sucursal de origen</Label>
           <Select name="warehouse_id" defaultValue={warehouses[0]?.id}>
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una bodega" />
+              <SelectValue placeholder="Selecciona una bodega o sucursal" />
             </SelectTrigger>
             <SelectContent>
               {warehouses.map((w) => (

@@ -192,6 +192,13 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-13 | Como dueño quiero ver en qué bodega/sucursal está un producto del catálogo y su stock total en todas | Reusa `current_stock` (vista existente de `stock_movements`, S2-03) — sin esquema nuevo; `catalogo/page.tsx` la consulta junto con `warehouses` y arma el desglose por tarjeta | S19-02, S2-01, S2-03 | done (sin migración, no bloqueado) | specs/done/S19-13-stock-por-bodega-en-catalogo.md |
 | S19-14 | Como dueño quiero poder cargar/agregar stock y elegir bodega/sucursal/tienda desde el alta y edición del catálogo (S19-13 era de solo lectura) | Reusa `register_movement` (RPC de S2-03/S13-01) — sin RPC nueva; bloque "Stock" opcional en `CatalogProductFields`, bodega+cantidad; alta y edición del catálogo pueden sumar stock | S19-13 | done (sin migración, no bloqueado) | specs/done/S19-14-stock-y-bodega-en-formulario-catalogo.md |
 | S19-15 | Como dueño quiero asignar un producto a una categoría (creable desde el producto o aparte) y filtrar el catálogo por categoría | Tabla `product_categories` + `products.category_id`; botón "Generar categoría" arriba de "Generar producto"; selector de categoría + "o creá una nueva" en el alta/edición; filtro "Todos" + un botón por categoría en `/ventas/catalogo` (`?categoria=<id>`) | S19-02 | implemented (código); **migración sin aplicar al cloud, ver Deuda técnica** | specs/done/S19-15-categorias-de-producto.md |
+| S19-16 | Como dueño quiero crear una categoría con un "+" junto al selector (modal), sin botón suelto ni campo "o creá una nueva" | Se borran `CatalogCategoryForm`, `new_category_name` y `getOrCreateCategoryId`; `CategoryPicker` con `Dialog` sin `<form>` anidado; `createCategory(name)` devuelve la categoría y queda seleccionada | S19-15 | done (sin migración) | specs/done/S19-16-categoria-desde-modal.md |
+| S19-17 | Como dueño quiero ver el stock total del producto (solo lectura) en el listado y al editar | `totalStockByProduct` (`src/lib/stock.ts`) sobre `current_stock`; columna "Stock" en `/inventario/productos`; "Stock total" en la edición de Inventario y del Catálogo | S19-13 | done (sin migración) | specs/done/S19-17-stock-total-producto.md |
+| S19-18 | Como dueño quiero una bodega o sucursal "Principal" siempre presente, con dirección/departamento/ciudad/país/código postal/teléfono/WhatsApp | `warehouses.is_default` + 7 columnas; única por empresa, no archivable, `is_default` no escribible (grants por columna); `create_tenant_with_owner` la crea y backfill para existentes; restaura invariante S14-04 perdida en S19-01 | S2-01, S19-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-18-bodega-principal.md |
+| S19-19 | Como dueño quiero que donde diga "Bodega" diga "Bodega o sucursal" | Solo texto visible (labels, placeholders, títulos, mensajes de error); rutas/tablas sin cambios | S2-01 | done (sin migración) | specs/done/S19-19-etiqueta-bodega-o-sucursal.md |
+| S19-20 | Como dueño quiero que el stock del producto en el catálogo venga solo de las bodegas o sucursales, sin poder modificarlo ahí | Se quita la carga de stock de S19-14 del formulario del catálogo; la edición muestra total + desglose por bodega o sucursal | S19-14, S19-17 | done (sin migración) | specs/done/S19-20-stock-solo-lectura-catalogo.md |
+| S19-21 | Como dueño quiero un botón "Categorías" junto a "Generar producto" para crear, renombrar y eliminar categorías, unido al "+" del producto | Políticas RLS update/delete en `product_categories`; `renameCategory`/`deleteCategory`; `CategoryManager` compartido por el botón y el "+" | S19-15, S19-16 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-21-gestionar-categorias.md |
+| S19-22 | Como dueño quiero que los productos que se venden en tienda solo generen boleta con la caja abierta (el pedido sí se puede crear) | `confirm_sale` exige caja abierta de quien confirma si hay productos `in_store`/`both` (`cash_session_required`) y liga la venta a la caja; aviso en Pedidos | S5-03, S5-09, S19-05 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-22-boleta-requiere-caja.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -224,6 +231,15 @@ partida):**
 por código.
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
+- **S19-22, bloqueante hasta que se resuelva**: migración
+  `20260929151859_boleta-requiere-caja.sql` sin aplicar al cloud — hasta entonces se siguen
+  generando boletas sin caja abierta. pgTAP S19-22 (y S5-03/S5-08 con fixtures nuevas) sin correr.
+- **S19-21, bloqueante hasta que se resuelva**: la migración
+  `20260929151018_editar-eliminar-categorias.sql` no está aplicada al cloud — renombrar/eliminar
+  categorías falla hasta aplicarla. S19-18 ya aplicada (confirmado por el humano 2026-09-29).
+  `supabase test db` (S19-18, S19-21) sin correr.
+- S19-18: la "Principal" no se preselecciona en los formularios de stock/venta/compra — posible
+  historia aparte si el humano la pide.
 - **S19-15, bloqueante hasta que se resuelva**: la migración
   `20260928231228_categorias-de-producto.sql` (tabla `product_categories` +
   `products.category_id`) está escrita pero **no aplicada** al Supabase cloud — mismo patrón de

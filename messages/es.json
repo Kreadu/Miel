@@ -15,7 +15,6 @@
   "catalog": {
     "title": "Catálogo",
     "generateProduct": "Generar producto",
-    "generateCategory": "Generar categoría",
     "createCategory": "Crear",
     "cancel": "Cancelar",
     "categoryNamePlaceholder": "Nombre de la categoría",
@@ -26,6 +25,7 @@
     "noPhoto": "Sin foto",
     "noStockRegistered": "Sin stock registrado",
     "stock": "Stock",
+    "totalStock": "Stock total",
     "all": "Todos",
     "emptyManage": "Aún no tienes productos en el catálogo. Generá el primero arriba.",
     "emptyPublic": "Aún no hay productos en el catálogo.",
@@ -39,8 +39,11 @@
     "price": "Precio",
     "discountPercent": "Descuento %",
     "category": "Categoría",
-    "newCategoryLabel": "O creá una categoría nueva",
+    "categories": "Categorías",
+    "noCategoriesYet": "Aún no hay categorías.",
+    "deleteCategoryConfirm": "¿Eliminar «{name}»? Sus productos quedan sin categoría.",
     "noCategory": "Sin categoría",
+    "newCategory": "Nueva categoría",
     "photo": "Foto (opcional)",
     "replacePhoto": "Reemplazar foto (opcional)"
   }

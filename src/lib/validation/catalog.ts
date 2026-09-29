@@ -13,7 +13,6 @@ export const catalogProductSchema = z.object({
     .default(0),
   sales_channel: z.enum(SALES_CHANNELS).default("both"),
   category_id: z.uuid().optional().or(z.literal("")),
-  new_category_name: z.string().trim().max(60, "Nombre de categoría muy largo").optional(),
 });
 
 export const categorySchema = z.object({

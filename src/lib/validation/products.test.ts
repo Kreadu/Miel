@@ -135,7 +135,7 @@ describe("productWithStockSchema (S13-01)", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        "Selecciona una bodega para registrar el stock inicial.",
+        "Selecciona una bodega o sucursal para registrar el stock inicial.",
       );
     }
   });

@@ -64,7 +64,7 @@ export default async function InventarioPage() {
             className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
           >
             <Warehouse className="mr-2 h-4 w-4" />
-            Bodegas
+            Bodegas o sucursales
           </Link>
           <Link
             href="/inventario/productos"
@@ -93,7 +93,7 @@ export default async function InventarioPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Bodega</th>
+                <th className="px-3 py-2 font-medium">Bodega o sucursal</th>
                 <th className="px-3 py-2 font-medium">SKU</th>
                 <th className="px-3 py-2 font-medium">Producto</th>
                 <th className="px-3 py-2 text-right font-medium">Stock</th>

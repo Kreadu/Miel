@@ -81,6 +81,11 @@ insert into public.sale_items (id, tenant_id, sale_id, product_id, qty, unit_pri
   ('60000000-0000-0000-0000-00000000b001', '10000000-0000-0000-0000-00000000b001',
    '50000000-0000-0000-0000-00000000b001', '40000000-0000-0000-0000-00000000b001', 1, 400);
 
+-- S19-22: la boleta de productos de tienda exige caja abierta de quien confirma.
+insert into public.cash_sessions (tenant_id, opened_by, opening_amount, created_by) values
+  ('10000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002', 0,
+   '00000000-0000-0000-0000-00000000a002');
+
 -- === Simular al member del tenant A ===
 set local role authenticated;
 set local "request.jwt.claims" to

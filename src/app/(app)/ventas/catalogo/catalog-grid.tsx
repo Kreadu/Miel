@@ -14,14 +14,12 @@ export function CatalogGrid({
   canManage,
   baseCurrency,
   tenantId,
-  warehouses,
   categories,
 }: {
   products: CatalogProduct[];
   canManage: boolean;
   baseCurrency: string;
   tenantId: string;
-  warehouses: { id: string; name: string }[];
   categories: { id: string; name: string }[];
 }) {
   const [displayCurrency, setDisplayCurrency] = useState(baseCurrency);
@@ -67,7 +65,6 @@ export function CatalogGrid({
             displayCurrency={displayCurrency}
             rate={rate}
             onAddToCart={() => handleAddToCart(product)}
-            warehouses={warehouses}
             categories={categories}
           />
         ))}

@@ -138,10 +138,10 @@ export function ProductionForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-4xl">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <div className="flex flex-col gap-2">
-          <Label>Bodega destino / origen</Label>
+          <Label>Bodega o sucursal (destino / origen)</Label>
           <Select value={warehouseId} onValueChange={setWarehouseId} required>
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una bodega" />
+              <SelectValue placeholder="Selecciona una bodega o sucursal" />
             </SelectTrigger>
             <SelectContent>
               {warehouses.map((w) => (

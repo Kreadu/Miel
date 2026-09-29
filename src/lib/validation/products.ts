@@ -20,14 +20,14 @@ export const productSchema = z.object({
 /** Alta unificada (S13-01): ficha del producto + stock inicial opcional en una sola operación. */
 export const productWithStockSchema = productSchema
   .extend({
-    warehouse_id: z.string().trim().uuid("Selecciona una bodega válida.").optional().or(z.literal("")),
+    warehouse_id: z.string().trim().uuid("Selecciona una bodega o sucursal válida.").optional().or(z.literal("")),
     initial_qty: z.coerce.number().nonnegative("La cantidad no puede ser negativa").optional(),
   })
   .superRefine((data, ctx) => {
     if (data.initial_qty && data.initial_qty > 0 && !data.warehouse_id) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Selecciona una bodega para registrar el stock inicial.",
+        message: "Selecciona una bodega o sucursal para registrar el stock inicial.",
         path: ["warehouse_id"],
       });
     }

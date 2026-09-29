@@ -31,10 +31,10 @@ export async function registerManualMovement(
   if (error) {
     console.error("registerManualMovement:", error.code, error.message);
     if (error.code === "P0001" && error.message.includes("stock_insufficient")) {
-      return { ok: false, error: "No hay stock suficiente en esa bodega." };
+      return { ok: false, error: "No hay stock suficiente en esa bodega o sucursal." };
     }
     if (error.code === "P0001" && error.message.includes("Permission denied")) {
-        return { ok: false, error: "No tienes permiso sobre este producto o bodega." };
+        return { ok: false, error: "No tienes permiso sobre este producto o esta bodega o sucursal." };
     }
     return { ok: false, error: "Error al registrar el movimiento. Intenta de nuevo." };
   }

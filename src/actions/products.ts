@@ -15,7 +15,7 @@ const INVENTARIO_PATH = "/inventario";
 function mapProductError(code: string | undefined, message: string | undefined): string {
   if (code === "23505") return "Ya existe un producto con ese SKU.";
   if (code === "P0001" && message?.includes("warehouse_required")) {
-    return "Selecciona una bodega para registrar el stock inicial.";
+    return "Selecciona una bodega o sucursal para registrar el stock inicial.";
   }
   if (code === "P0001" && message?.includes("stock_insufficient")) {
     return "Cantidad de stock inicial inválida.";

@@ -2,12 +2,13 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-import { CatalogCategoryForm } from "./catalog-category-form";
 import { CatalogGrid } from "./catalog-grid";
 import { CatalogProductForm } from "./catalog-product-form";
+import { CategoryManager } from "./category-manager";
 
 export const metadata = { title: "Catálogo · Miel" };
 
@@ -44,7 +45,7 @@ export default async function CatalogoPage({
         .from("current_stock")
         .select("product_id, warehouse_id, total_qty")
         .eq("tenant_id", active.tenantId),
-      supabase.from("warehouses").select("id, name, active").eq("tenant_id", active.tenantId),
+      supabase.from("warehouses").select("id, name").eq("tenant_id", active.tenantId),
       // S19-15: categorías del tenant, para el selector del formulario y los botones de filtro.
       supabase
         .from("product_categories")
@@ -55,10 +56,6 @@ export default async function CatalogoPage({
   if (error) throw error;
 
   const warehouseNameById = new Map((warehouses ?? []).map((w) => [w.id, w.name]));
-  // Para cargar stock nuevo (S19-14) solo tiene sentido elegir una bodega activa — para MOSTRAR
-  // stock existente (S19-13) sí importa el nombre de una archivada, por eso el map de arriba
-  // usa todas.
-  const activeWarehouses = (warehouses ?? []).filter((w) => w.active);
   const stockByProduct = new Map<string, { warehouseName: string; qty: number }[]>();
   for (const row of stockRows ?? []) {
     if (!row.product_id || !row.warehouse_id) continue;
@@ -99,9 +96,12 @@ export default async function CatalogoPage({
           <p className="text-sm text-muted-foreground">{active.tenantName}</p>
         </div>
         {canManage ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <CatalogCategoryForm />
-            <CatalogProductForm warehouses={activeWarehouses} categories={categoryList} />
+          <div className="flex flex-wrap items-start gap-2">
+            <CategoryManager
+              categories={categoryList}
+              trigger={<Button variant="outline">{t("categories")}</Button>}
+            />
+            <CatalogProductForm categories={categoryList} />
           </div>
         ) : null}
       </div>
@@ -140,7 +140,6 @@ export default async function CatalogoPage({
           canManage={canManage}
           baseCurrency={active.currency}
           tenantId={active.tenantId}
-          warehouses={activeWarehouses}
           categories={categoryList}
         />
       ) : (

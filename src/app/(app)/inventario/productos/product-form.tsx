@@ -30,6 +30,8 @@ export type ProductFormValues = {
   tax_rate: number | null;
   min_stock: number;
   active: boolean;
+  /** S19-17: stock total en todas las bodegas o sucursales — solo lectura. */
+  stock: number;
 };
 
 type Warehouse = { id: string; name: string };
@@ -155,6 +157,15 @@ export function ProductForm({
         </div>
       </div>
 
+      {isEditing ? (
+        <p className="text-sm text-muted-foreground">
+          Stock total:{" "}
+          <span className="font-medium text-foreground tabular-nums">
+            {(values?.stock ?? 0).toLocaleString("es-CO")}
+          </span>
+        </p>
+      ) : null}
+
       {!values?.id && warehouses && warehouses.length > 0 ? (
         <div className="flex flex-col gap-3 rounded-md border border-dashed border-border p-3">
           <div>
@@ -166,10 +177,10 @@ export function ProductForm({
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="warehouse_id">Bodega</Label>
+              <Label htmlFor="warehouse_id">Bodega o sucursal</Label>
               <Select name="warehouse_id">
                 <SelectTrigger id="warehouse_id" className="w-full">
-                  <SelectValue placeholder="Selecciona una bodega" />
+                  <SelectValue placeholder="Selecciona una bodega o sucursal" />
                 </SelectTrigger>
                 <SelectContent>
                   {warehouses.map((w) => (

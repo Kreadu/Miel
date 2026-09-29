@@ -6,7 +6,7 @@ const beneficios = [
   {
     icon: Boxes,
     titulo: "Inventario en tiempo real",
-    descripcion: "Stock, kardex y alertas de mínimos siempre al día, por bodega.",
+    descripcion: "Stock, kardex y alertas de mínimos siempre al día, por bodega o sucursal.",
   },
   {
     icon: ShoppingCart,

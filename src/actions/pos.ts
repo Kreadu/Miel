@@ -87,7 +87,7 @@ function mapPosError(message?: string): string {
   if (message.includes("pos_no_open_session")) return "No tienes un turno de caja abierto.";
   if (message.includes("pos_payment_mismatch")) return "El total de los pagos no coincide con el total de la venta.";
   if (message.includes("stock_insufficient")) return "No hay stock suficiente para uno o más productos.";
-  if (message.includes("warehouse_invalid")) return "La bodega seleccionada no es válida.";
+  if (message.includes("warehouse_invalid")) return "La bodega o sucursal seleccionada no es válida.";
   if (message.includes("item_discount_invalid")) return "El descuento de un ítem no puede superar el precio de la línea.";
   if (message.includes("product_invalid")) return "Uno o más productos no son válidos o están inactivos.";
   if (message.includes("permission_denied")) return "No tienes permisos para realizar esta operación.";

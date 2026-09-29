@@ -131,10 +131,10 @@ export function StockMovementForm({
           <input type="hidden" name="warehouse_id" value={warehouseId} />
         ) : (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="warehouse_id">Bodega</Label>
+            <Label htmlFor="warehouse_id">Bodega o sucursal</Label>
             <Select value={selectedWarehouseId} onValueChange={setSelectedWarehouseId}>
               <SelectTrigger id="warehouse_id">
-                <SelectValue placeholder="Selecciona una bodega" />
+                <SelectValue placeholder="Selecciona una bodega o sucursal" />
               </SelectTrigger>
               <SelectContent>
                 {warehouses?.map((w) => (

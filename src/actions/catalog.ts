@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { getOrCreateCategoryId } from "@/lib/categories/generic";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import {
@@ -14,52 +13,89 @@ import {
   categorySchema,
 } from "@/lib/validation/catalog";
 
-export type CategoryState = { ok: false; error: string } | { ok: true } | null;
+export type CategoryResult =
+  | { ok: false; error: string }
+  | { ok: true; category: { id: string; name: string } };
 
 const CATEGORIES_PATH = "/ventas/catalogo";
 
 // Mismo sentinel que CatalogProductFields (Radix no admite value="" en un <Select>).
 const NO_CATEGORY_SENTINEL = "__none__";
 
-/** S19-15: alta mínima de categoría (solo nombre) — botón "Generar categoría" en el catálogo. */
-export async function createCategory(
-  _prev: CategoryState,
-  formData: FormData,
-): Promise<CategoryState> {
-  const parsed = categorySchema.safeParse({ name: formData.get("name") });
+/**
+ * S19-16: alta de categoría desde el modal "+" del formulario de producto. Devuelve la
+ * categoría creada para que el selector la deje elegida sin recargar el formulario.
+ */
+export async function createCategory(name: string): Promise<CategoryResult> {
+  const parsed = categorySchema.safeParse({ name });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
   if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("product_categories")
-    .insert({ tenant_id: active.tenantId, name: parsed.data.name });
-  if (error) {
-    if (error.code === "23505") return { ok: false, error: "Ya existe una categoría con ese nombre." };
-    console.error("createCategory:", error.code);
+    .insert({ tenant_id: active.tenantId, name: parsed.data.name })
+    .select("id, name")
+    .single();
+  if (error || !data) {
+    if (error?.code === "23505") return { ok: false, error: "Ya existe una categoría con ese nombre." };
+    console.error("createCategory:", error?.code);
     return { ok: false, error: "No se pudo crear la categoría. Intenta de nuevo." };
   }
+
+  revalidatePath(CATEGORIES_PATH);
+  return { ok: true, category: data };
+}
+
+export type CategoryMutationResult = { ok: false; error: string } | { ok: true };
+
+const categoryIdSchema = z.uuid();
+
+/** S19-21: renombrar categoría (solo owner/admin por RLS; 0 filas = sin permiso o ajena). */
+export async function renameCategory(id: string, name: string): Promise<CategoryMutationResult> {
+  const parsedId = categoryIdSchema.safeParse(id);
+  const parsed = categorySchema.safeParse({ name });
+  if (!parsedId.success) return { ok: false, error: "Categoría inválida." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("product_categories")
+    .update({ name: parsed.data.name })
+    .eq("id", parsedId.data)
+    .select("id");
+  if (error) {
+    if (error.code === "23505") return { ok: false, error: "Ya existe una categoría con ese nombre." };
+    console.error("renameCategory:", error.code);
+    return { ok: false, error: "No se pudo renombrar la categoría. Intenta de nuevo." };
+  }
+  if (!data?.length) return { ok: false, error: "No se pudo renombrar la categoría." };
 
   revalidatePath(CATEGORIES_PATH);
   return { ok: true };
 }
 
-/**
- * S19-15: resuelve la categoría del form — un nombre nuevo (`new_category_name`) tiene
- * prioridad sobre la categoría elegida del selector (`category_id`); sin ninguno, `null`
- * (sin categoría, campo opcional).
- */
-async function resolveCategoryId(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  tenantId: string,
-  parsed: { category_id?: string; new_category_name?: string },
-): Promise<string | null> {
-  if (parsed.new_category_name?.trim()) {
-    return getOrCreateCategoryId(supabase, tenantId, parsed.new_category_name);
+/** S19-21: eliminar categoría — sus productos quedan sin categoría (`on delete set null`). */
+export async function deleteCategory(id: string): Promise<CategoryMutationResult> {
+  const parsedId = categoryIdSchema.safeParse(id);
+  if (!parsedId.success) return { ok: false, error: "Categoría inválida." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("product_categories")
+    .delete()
+    .eq("id", parsedId.data)
+    .select("id");
+  if (error) {
+    console.error("deleteCategory:", error.code);
+    return { ok: false, error: "No se pudo eliminar la categoría. Intenta de nuevo." };
   }
-  return parsed.category_id || null;
+  if (!data?.length) return { ok: false, error: "No se pudo eliminar la categoría." };
+
+  revalidatePath(CATEGORIES_PATH);
+  return { ok: true };
 }
 
 export type CatalogProductState = { ok: false; error: string } | { ok: true } | null;
@@ -107,38 +143,6 @@ async function uploadPhotoIfPresent(
 }
 
 /**
- * S19-14: si se eligió bodega+cantidad en el form, registra una entrada de stock (reusa
- * `register_movement`, S2-03/S13-01 — misma RPC que ya usa el alta de inventario, sin costo
- * porque el catálogo no lo pide). `null` = no se pidió stock (campo opcional, no es un error).
- */
-async function registerStockIfPresent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  productId: string,
-  formData: FormData,
-): Promise<{ ok: true } | { ok: false; error: string } | null> {
-  const warehouseId = formData.get("warehouse_id")?.toString();
-  const qtyRaw = formData.get("stock_qty")?.toString();
-  if (!warehouseId || !qtyRaw) return null;
-
-  const qty = Number(qtyRaw);
-  if (!(qty > 0)) return null;
-
-  const { error } = await supabase.rpc("register_movement", {
-    p_product_id: productId,
-    p_warehouse_id: warehouseId,
-    p_kind: "in",
-    p_qty: qty,
-    p_unit_cost: 0,
-    p_ref_type: "catalog",
-  });
-  if (error) {
-    console.error("registerStockIfPresent:", error.code, error.message);
-    return { ok: false, error: "No se pudo registrar el stock. Intenta de nuevo desde Editar." };
-  }
-  return { ok: true };
-}
-
-/**
  * Alta simplificada de producto desde el catálogo (S19-02): solo nombre/descripción/precio/
  * descuento/foto — la ficha completa (SKU, costo, IVA, tipo, bodega) sigue viviendo en
  * /inventario/productos, misma tabla `products`. RLS (`products_admin_write`) ya restringe el
@@ -158,7 +162,6 @@ export async function createCatalogProduct(
       formData.get("category_id") === NO_CATEGORY_SENTINEL
         ? undefined
         : formData.get("category_id") || undefined,
-    new_category_name: formData.get("new_category_name") || undefined,
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
@@ -169,8 +172,6 @@ export async function createCatalogProduct(
 
   const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
   if (!upload.ok) return { ok: false, error: upload.error };
-
-  const categoryId = await resolveCategoryId(supabase, active.tenantId, parsed.data);
 
   const { data: inserted, error } = await supabase
     .from("products")
@@ -188,7 +189,7 @@ export async function createCatalogProduct(
       photo_url: upload.url,
       discount_percent: parsed.data.discount_percent,
       sales_channel: parsed.data.sales_channel,
-      category_id: categoryId,
+      category_id: parsed.data.category_id || null,
     })
     .select("id")
     .single();
@@ -196,11 +197,6 @@ export async function createCatalogProduct(
     console.error("createCatalogProduct insert:", error?.code);
     return { ok: false, error: "No se pudo generar el producto. Intenta de nuevo." };
   }
-
-  // El producto ya quedó creado (insert exitoso) — un fallo de stock acá no debe volver a abrir
-  // el formulario (reintentar el submit duplicaría el producto). Se registra en el server log;
-  // el humano puede reintentar el stock puntual editando el producto ya creado.
-  await registerStockIfPresent(supabase, inserted.id, formData);
 
   revalidatePath(CATALOGO_PATH);
   return { ok: true };
@@ -228,7 +224,6 @@ export async function updateCatalogProduct(
       formData.get("category_id") === NO_CATEGORY_SENTINEL
         ? undefined
         : formData.get("category_id") || undefined,
-    new_category_name: formData.get("new_category_name") || undefined,
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
@@ -239,8 +234,6 @@ export async function updateCatalogProduct(
 
   const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
   if (!upload.ok) return { ok: false, error: upload.error };
-
-  const categoryId = await resolveCategoryId(supabase, active.tenantId, parsed.data);
 
   const updates: {
     name: string;
@@ -256,7 +249,7 @@ export async function updateCatalogProduct(
     price: parsed.data.price,
     discount_percent: parsed.data.discount_percent,
     sales_channel: parsed.data.sales_channel,
-    category_id: categoryId,
+    category_id: parsed.data.category_id || null,
   };
   if (upload.url) updates.photo_url = upload.url;
 
@@ -266,10 +259,7 @@ export async function updateCatalogProduct(
     return { ok: false, error: "No se pudo actualizar el producto. Intenta de nuevo." };
   }
 
-  const stockResult = await registerStockIfPresent(supabase, parsed.data.id, formData);
-
   revalidatePath(CATALOGO_PATH);
-  if (stockResult && !stockResult.ok) return stockResult;
   return { ok: true };
 }
 

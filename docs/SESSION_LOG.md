@@ -11,6 +11,74 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 2) · S19-22 — boleta solo con caja abierta
+
+**Hecho:** `confirm_sale` exige caja abierta del usuario que confirma si el pedido tiene
+productos "Solo tienda"/"Ambas" (decisiones confirmadas por el humano); liga la venta a la caja.
+El pedido (draft) se sigue creando sin caja. Aviso en `/ventas/pedidos` con caja cerrada.
+Migración `20260929151859_boleta-requiere-caja.sql`, pgTAP nuevo, fixtures de S5-03/S5-08 con caja
+abierta. Verificado: lint ✓, tsc ✓, `npm test` 249/249 ✓. Sin correr: `supabase test db`, navegador.
+
+**Pendiente:** humano aplica la migración (y la de S19-21 si aún no); commit + push.
+
+---
+
+## Sesión 2026-09-29 (cont.) · S19-20 (stock solo lectura en catálogo) + S19-21 (gestionar categorías)
+
+**Hecho:**
+- El humano aplicó la migración de S19-18. `localhost:3000` no cargaba porque el dev server murió
+  al mover el repo a `~/Escritorio/Miel`; se relanzó (no era un bug).
+- S19-20: sin carga de stock en el formulario del catálogo (supersede S19-14); al editar se ve
+  total + desglose por bodega o sucursal. Borrado `registerStockIfPresent` y el prop `warehouses`
+  de la cadena del catálogo.
+- S19-21: migración `20260929151018_editar-eliminar-categorias.sql` (RLS update/delete admin),
+  `renameCategory`/`deleteCategory`, `CategoryManager` compartido por el botón "Categorías" y el
+  "+" del producto. pgTAP `S19-21-gestionar-categorias.sql`.
+- Verificado: lint ✓, tsc ✓, `npm test` 248/248 ✓. No: `supabase test db`, navegador, build
+  (no se corrió para no pisar el dev server en uso).
+
+**Pendiente:** humano aplica la migración de S19-21; confirma en vivo; commit + push. Preguntar si
+también se quita "Stock inicial" de `/inventario/productos`.
+
+---
+
+## Sesión 2026-09-29 · S19-16 a S19-19 — categoría con "+", stock total, bodega Principal, "Bodega o sucursal"
+
+**Alcance:** 4 pedidos del humano sobre el trabajo de S19-13/14/15. El repo se movió de
+`~/Proyectos/Miel` a `~/Escritorio/Miel` durante la sesión (mismo repo, commit `9b8f80c`).
+
+**Hecho:**
+- S19-16: `CategoryPicker` (selector + "+" → `Dialog`) reemplaza "Generar categoría" y el campo
+  "o creá una nueva". El modal no tiene `<form>` propio (evita anidar forms); `createCategory`
+  devuelve la categoría y queda elegida sin perder lo escrito. Se borraron `CatalogCategoryForm`,
+  `src/lib/categories/generic.ts`, `new_category_name` y las keys i18n sin uso.
+- S19-17: `src/lib/stock.ts` `totalStockByProduct`; columna "Stock" en `/inventario/productos` y
+  "Stock total" (solo lectura) al editar en Inventario y Catálogo.
+- S19-18: migración `20260929145554_bodega-principal.sql` (detalle en la spec). **Hallazgo**: la
+  versión de `create_tenant_with_owner` de S19-01 había perdido la invariante de S14-04 (sin
+  membership previa para fundar empresa); esta migración la restaura. UI de bodegas con los 7
+  campos, "Principal" primero con etiqueta, sin botón Archivar.
+- S19-19: "Bodega" → "Bodega o sucursal" en todo texto visible (labels, placeholders, títulos,
+  mensajes de error de actions/Zod, landing); tests de mensajes exactos actualizados.
+- `database.types.ts` parcheado a mano (`warehouses`), sin CLI de Supabase.
+- Verificado: `npm run lint` ✓, `npx tsc --noEmit` ✓, `npm test` 243/243 ✓, `npm run build` ✓.
+- **No verificado**: `supabase test db` (sin Docker/CLI) ni la UI en navegador.
+
+**Supuestos (el pedido llegó con texto cortado):** la Principal no se archiva; no se preselecciona
+en formularios; el stock total se muestra en Inventario y Catálogo.
+
+**Pendiente:**
+- Humano: aplicar la migración de S19-18 en el SQL Editor del cloud.
+- Humano: correr `supabase test db` localmente si tiene Docker.
+- Humano: confirmar en vivo los 4 cambios; commitear.
+
+**Bloqueos:** migración S19-18 sin aplicar (bodegas no listan hasta aplicarla).
+
+**Siguiente paso:** aplicar SQL, confirmar en vivo; decidir si la Principal se preselecciona en
+formularios.
+
+---
+
 ## Sesión 2026-09-28 (cont. 18) · S19-15 — Categorías de producto en el catálogo
 
 **Alcance:** decimonovena parte de la misma sesión. El humano pidió asignar productos a una

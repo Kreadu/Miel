@@ -60,16 +60,13 @@ describe("catalogProductSchema", () => {
     );
   });
 
-  it("acepta category_id o new_category_name opcionales, o ninguno", () => {
+  it("acepta category_id opcional, o ninguno", () => {
     expect(catalogProductSchema.safeParse(base).success).toBe(true);
     expect(
       catalogProductSchema.safeParse({
         ...base,
         category_id: "11111111-1111-4111-8111-111111111111",
       }).success,
-    ).toBe(true);
-    expect(
-      catalogProductSchema.safeParse({ ...base, new_category_name: "Endulzantes" }).success,
     ).toBe(true);
   });
 });

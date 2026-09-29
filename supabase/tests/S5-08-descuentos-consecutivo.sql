@@ -41,6 +41,13 @@ insert into public.stock_movements (tenant_id, product_id, warehouse_id, kind, q
   ('10000000-0000-0000-0000-00000000c002', '40000000-0000-0000-0000-00000000c002',
    '30000000-0000-0000-0000-00000000c002', 'in', 100, 100, '00000000-0000-0000-0000-00000000c003');
 
+-- S19-22: la boleta de productos de tienda exige caja abierta de quien confirma.
+insert into public.cash_sessions (tenant_id, opened_by, opening_amount, created_by) values
+  ('10000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-00000000c001', 0,
+   '00000000-0000-0000-0000-00000000c001'),
+  ('10000000-0000-0000-0000-00000000c002', '00000000-0000-0000-0000-00000000c003', 0,
+   '00000000-0000-0000-0000-00000000c003');
+
 -- === Simular al owner del tenant A ===
 set local role authenticated;
 set local "request.jwt.claims" to
