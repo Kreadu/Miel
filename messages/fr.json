@@ -15,6 +15,7 @@
   "catalog": {
     "title": "Catalogue",
     "generateProduct": "Générer un produit",
+    "generateCategories": "Générer des catégories",
     "createCategory": "Créer",
     "cancel": "Annuler",
     "categoryNamePlaceholder": "Nom de la catégorie",
@@ -36,7 +37,7 @@
     "whereSold": "Où est-il vendu ?",
     "name": "Nom",
     "description": "Description",
-    "price": "Prix",
+    "price": "Prix de vente",
     "discountPercent": "Remise %",
     "category": "Catégorie",
     "categories": "Catégories",
@@ -45,6 +46,21 @@
     "noCategory": "Sans catégorie",
     "newCategory": "Nouvelle catégorie",
     "photo": "Photo (optionnel)",
-    "replacePhoto": "Remplacer la photo (optionnel)"
+    "replacePhoto": "Remplacer la photo (optionnel)",
+    "products": "Produits",
+    "newProduct": "+ Nouveau produit",
+    "createProduct": "Créer le produit",
+    "saving": "Enregistrement…",
+    "sku": "Code (SKU)",
+    "skuPlaceholder": "Vide = généré automatiquement",
+    "kind": "Type",
+    "kindRaw": "Matière première",
+    "kindFinished": "Fini",
+    "kindResale": "Revente",
+    "unit": "Unité",
+    "minStock": "Stock minimum",
+    "cost": "Coût",
+    "taxRate": "TVA % ({country})",
+    "recipe": "Recette"
   }
 }

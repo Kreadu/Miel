@@ -5,100 +5,170 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
-import { productSchema, productWithStockSchema } from "@/lib/validation/products";
+import { ALLOWED_PHOTO_TYPES, MAX_PHOTO_BYTES } from "@/lib/validation/catalog";
+import { productSchema } from "@/lib/validation/products";
 
 export type ProductState = { ok: false; error: string } | { ok: true } | null;
 
-const PRODUCTS_PATH = "/inventario/productos";
-const INVENTARIO_PATH = "/inventario";
+// Mismo sentinel que CategoryPicker (Radix no admite value="" en un <Select>).
+const NO_CATEGORY = "__none__";
 
-function mapProductError(code: string | undefined, message: string | undefined): string {
+type Supabase = Awaited<ReturnType<typeof createClient>>;
+
+/** S19-24: Inventario y Catálogo muestran el mismo producto — toda mutación revalida ambos. */
+function revalidateProductPaths() {
+  revalidatePath("/inventario/productos");
+  revalidatePath("/inventario");
+  revalidatePath("/ventas/catalogo");
+}
+
+function mapProductError(code: string | undefined): string {
   if (code === "23505") return "Ya existe un producto con ese SKU.";
-  if (code === "P0001" && message?.includes("warehouse_required")) {
-    return "Selecciona una bodega o sucursal para registrar el stock inicial.";
-  }
-  if (code === "P0001" && message?.includes("stock_insufficient")) {
-    return "Cantidad de stock inicial inválida.";
-  }
   return "No se pudo guardar el producto. Intenta de nuevo.";
 }
 
+/** SKU vacío en el formulario → se genera solo (el humano puede escribir el suyo). */
+function generateSku(): string {
+  return `PRD-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+}
+
+function readFields(formData: FormData) {
+  const get = (k: string) => formData.get(k)?.toString();
+  const category = get("category_id");
+  return {
+    sku: get("sku"),
+    name: get("name"),
+    description: get("description") || undefined,
+    unit: get("unit"),
+    kind: get("kind"),
+    cost: get("cost"),
+    price: get("price"),
+    tax_rate: get("tax_rate"),
+    min_stock: get("min_stock"),
+    discount_percent: get("discount_percent") || undefined,
+    sales_channel: get("sales_channel") || undefined,
+    category_id: category === NO_CATEGORY ? undefined : category || undefined,
+  };
+}
+
+/** Columnas explícitas (nunca spread del input) a partir del resultado validado. */
+function toColumns(data: z.infer<typeof productSchema>) {
+  return {
+    sku: data.sku || generateSku(),
+    name: data.name,
+    description: data.description || null,
+    unit: data.unit,
+    kind: data.kind,
+    cost: data.cost,
+    price: data.price,
+    tax_rate: data.tax_rate,
+    min_stock: data.min_stock,
+    discount_percent: data.discount_percent,
+    sales_channel: data.sales_channel,
+    category_id: data.category_id || null,
+  };
+}
+
+function extensionFor(type: string): string {
+  if (type === "image/png") return "png";
+  if (type === "image/webp") return "webp";
+  return "jpg";
+}
+
+type UploadResult = { ok: true; url: string | null } | { ok: false; error: string };
+
+/** Sube la foto si vino una en el form; sin foto, `url: null` (alta) o "no reemplazar" (edición). */
+async function uploadPhotoIfPresent(
+  supabase: Supabase,
+  tenantId: string,
+  formData: FormData,
+): Promise<UploadResult> {
+  const photo = formData.get("photo");
+  if (!(photo instanceof File) || photo.size === 0) return { ok: true, url: null };
+
+  if (!ALLOWED_PHOTO_TYPES.includes(photo.type as (typeof ALLOWED_PHOTO_TYPES)[number])) {
+    return { ok: false, error: "La foto debe ser JPG, PNG o WEBP." };
+  }
+  if (photo.size > MAX_PHOTO_BYTES) {
+    return { ok: false, error: "La foto no puede pesar más de 5 MB." };
+  }
+
+  const path = `${tenantId}/${crypto.randomUUID()}.${extensionFor(photo.type)}`;
+  const { error } = await supabase.storage
+    .from("product-photos")
+    .upload(path, photo, { contentType: photo.type });
+  if (error) {
+    console.error("uploadPhotoIfPresent:", error.message);
+    return { ok: false, error: "No se pudo subir la foto. Intenta de nuevo." };
+  }
+
+  return { ok: true, url: supabase.storage.from("product-photos").getPublicUrl(path).data.publicUrl };
+}
+
 /**
- * Solo owner/admin del tenant activo gestionan productos (RLS de products lo garantiza igual).
- * S13-01: crea el producto y, si se indica bodega+cantidad, su movimiento de stock inicial en
- * una sola operación atómica vía RPC (docs/arch/patron-rpc.md, ADR-030).
+ * S19-24: alta desde Inventario o Catálogo (mismo formulario). Solo owner/admin (RLS de
+ * products). El stock no se carga acá: viene de los movimientos de cada bodega o sucursal.
  */
 export async function createProduct(
   _prev: ProductState,
   formData: FormData,
 ): Promise<ProductState> {
-  const parsed = productWithStockSchema.safeParse(Object.fromEntries(formData));
+  const parsed = productSchema.safeParse(readFields(formData));
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
   if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("create_product_with_stock", {
-    p_tenant_id: active.tenantId,
-    p_sku: parsed.data.sku,
-    p_name: parsed.data.name,
-    p_description: parsed.data.description || undefined,
-    p_unit: parsed.data.unit,
-    p_kind: parsed.data.kind,
-    p_cost: parsed.data.cost,
-    p_price: parsed.data.price,
-    p_tax_rate: parsed.data.tax_rate,
-    p_min_stock: parsed.data.min_stock,
-    p_warehouse_id: parsed.data.warehouse_id || undefined,
-    p_qty: parsed.data.initial_qty || undefined,
-  });
+  const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
+  if (!upload.ok) return { ok: false, error: upload.error };
+
+  const { error } = await supabase
+    .from("products")
+    .insert({ tenant_id: active.tenantId, ...toColumns(parsed.data), photo_url: upload.url });
   if (error) {
-    console.error("createProduct:", error.code, error.message);
-    return { ok: false, error: mapProductError(error.code, error.message) };
+    console.error("createProduct:", error.code);
+    return { ok: false, error: mapProductError(error.code) };
   }
 
-  revalidatePath(PRODUCTS_PATH);
-  revalidatePath(INVENTARIO_PATH);
+  revalidateProductPaths();
   return { ok: true };
 }
 
 const updateSchema = productSchema.extend({ id: z.uuid() });
 
+/** S19-24: edición desde Inventario o Catálogo. La foto solo se reemplaza si se sube una nueva. */
 export async function updateProduct(
   _prev: ProductState,
   formData: FormData,
 ): Promise<ProductState> {
-  const parsed = updateSchema.safeParse(Object.fromEntries(formData));
+  const parsed = updateSchema.safeParse({ ...readFields(formData), id: formData.get("id") });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
+  const { active } = await getActiveTenant();
+  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+
   const supabase = await createClient();
+  const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
+  if (!upload.ok) return { ok: false, error: upload.error };
+
+  const columns = toColumns(parsed.data);
   const { error } = await supabase
     .from("products")
-    .update({
-      sku: parsed.data.sku,
-      name: parsed.data.name,
-      description: parsed.data.description || null,
-      unit: parsed.data.unit,
-      kind: parsed.data.kind,
-      cost: parsed.data.cost,
-      price: parsed.data.price,
-      tax_rate: parsed.data.tax_rate,
-      min_stock: parsed.data.min_stock,
-    })
+    .update(upload.url ? { ...columns, photo_url: upload.url } : columns)
     .eq("id", parsed.data.id);
   if (error) {
     console.error("updateProduct:", error.code);
-    return { ok: false, error: mapProductError(error.code, error.message) };
+    return { ok: false, error: mapProductError(error.code) };
   }
 
-  revalidatePath(PRODUCTS_PATH);
+  revalidateProductPaths();
   return { ok: true };
 }
 
 const toggleSchema = z.object({ id: z.uuid(), active: z.enum(["true", "false"]) });
 
-/** Archivar/reactivar (soft-delete): nunca DELETE físico — stock_movements (S2-03) referenciará product_id. */
+/** Archivar/reactivar (soft-delete): nunca DELETE físico — stock_movements referencia product_id. */
 export async function toggleProductActive(formData: FormData): Promise<void> {
   const parsed = toggleSchema.safeParse({
     id: formData.get("id"),
@@ -111,8 +181,5 @@ export async function toggleProductActive(formData: FormData): Promise<void> {
     .from("products")
     .update({ active: parsed.data.active === "true" })
     .eq("id", parsed.data.id);
-  revalidatePath(PRODUCTS_PATH);
-  // S19-03: "Eliminar" en /ventas/catalogo reusa esta misma acción (soft-delete, active=false)
-  // — necesita revalidar también esa ruta para que el producto desaparezca sin recarga manual.
-  revalidatePath("/ventas/catalogo");
+  revalidateProductPaths();
 }

@@ -2056,17 +2056,6 @@ export type Database = {
         }
         Returns: string
       }
-      register_pos_sale: {
-        Args: {
-          p_customer_id?: string
-          p_items: Json
-          p_note?: string
-          p_payments: Json
-          p_tenant_id: string
-          p_warehouse_id: string
-        }
-        Returns: string
-      }
       register_production: {
         Args: {
           p_consumptions: Json

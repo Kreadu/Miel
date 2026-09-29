@@ -199,6 +199,9 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-20 | Como dueño quiero que el stock del producto en el catálogo venga solo de las bodegas o sucursales, sin poder modificarlo ahí | Se quita la carga de stock de S19-14 del formulario del catálogo; la edición muestra total + desglose por bodega o sucursal | S19-14, S19-17 | done (sin migración) | specs/done/S19-20-stock-solo-lectura-catalogo.md |
 | S19-21 | Como dueño quiero un botón "Categorías" junto a "Generar producto" para crear, renombrar y eliminar categorías, unido al "+" del producto | Políticas RLS update/delete en `product_categories`; `renameCategory`/`deleteCategory`; `CategoryManager` compartido por el botón y el "+" | S19-15, S19-16 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-21-gestionar-categorias.md |
 | S19-22 | Como dueño quiero que los productos que se venden en tienda solo generen boleta con la caja abierta (el pedido sí se puede crear) | `confirm_sale` exige caja abierta de quien confirma si hay productos `in_store`/`both` (`cash_session_required`) y liga la venta a la caja; aviso en Pedidos | S5-03, S5-09, S19-05 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-22-boleta-requiere-caja.md |
+| S19-23 | Como dueño quiero eliminar por completo el Punto de Venta | Se borran `/ventas/pos`, sus actions/validación/tests y la RPC `register_pos_sale` (migración); ventas en tienda por Pedidos + boleta con caja | S19-22 | implemented (código); **migración sin aplicar al cloud** | specs/done/S19-23-eliminar-punto-de-venta.md |
+| S19-24 | Como dueño quiero un solo producto y un solo formulario en Productos (inventario) y Catálogo, con unidad/tipo/stock mínimo/costo/precio, SKU automático o manual, IVA editable y categorías en ambos | `productSchema`/`createProduct`/`updateProduct` únicos; componentes en `src/components/products/`; `/inventario/productos` con la misma grilla del Catálogo; Catálogo sin materia prima | S19-20, S19-21 | done (sin migración) | specs/done/S19-24-formulario-unico-producto.md |
+| S19-25 | Como dueño quiero ver la bodega principal con todos sus datos, crear otras aparte, editarlas/eliminarlas, y reactivar productos eliminados | `PrincipalForm` relleno + `WarehouseForm` toggle + filas con Editar/Eliminar/Reactivar; "Productos eliminados" con Reactivar en `/inventario/productos` | S19-18, S19-24 | done (sin migración) | specs/done/S19-25-bodega-principal-visible-y-reactivar.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -231,6 +234,9 @@ partida):**
 por código.
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
+- **S19-23**: migración `20260929154514_eliminar-pos.sql` sin aplicar al cloud (no bloquea: la
+  app ya no llama la RPC). `create_product_with_stock` (S13-01) quedó sin uso tras S19-24.
+- e2e `core-flow` actualizado para S19-23/S19-24 pero sin correr en este sandbox.
 - **S19-22, bloqueante hasta que se resuelva**: migración
   `20260929151859_boleta-requiere-caja.sql` sin aplicar al cloud — hasta entonces se siguen
   generando boletas sin caja abierta. pgTAP S19-22 (y S5-03/S5-08 con fixtures nuevas) sin correr.

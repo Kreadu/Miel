@@ -1,102 +1,55 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
 import { toggleProductActive } from "@/actions/products";
-import { updateCatalogProduct } from "@/actions/catalog";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/currency";
 
-import { CatalogProductFields } from "./catalog-product-fields";
+import { ProductEditor } from "./product-editor";
+import type { Category, ProductView } from "./types";
 
-export type CatalogProduct = {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  discountPercent: number;
-  photoUrl: string | null;
-  salesChannel: "online" | "in_store" | "both";
-  taxRate: number;
-  stock: { warehouseName: string; qty: number }[];
-  categoryId: string | null;
-  categoryName: string | null;
-};
-
-export function CatalogCard({
+/**
+ * S19-24: tarjeta de producto compartida por Catálogo y Productos (inventario). Editar abre el
+ * mismo formulario único. `onAddToCart` solo en el Catálogo (armar pedido).
+ */
+export function ProductCard({
   product,
   canManage,
-  displayCurrency,
-  rate,
-  onAddToCart,
   categories,
+  displayCurrency,
+  rate = 1,
+  onAddToCart,
 }: {
-  product: CatalogProduct;
+  product: ProductView;
   canManage: boolean;
+  categories: Category[];
   displayCurrency: string;
-  rate: number;
-  /** S19-06: agrega este producto al carrito (moneda base, no la convertida) y navega al pedido. */
-  onAddToCart: () => void;
-  categories: { id: string; name: string }[];
+  rate?: number;
+  onAddToCart?: () => void;
 }) {
   const t = useTranslations("catalog");
-  const channelBadge: Record<CatalogProduct["salesChannel"], string | null> = {
-    online: t("onlineOnly"),
-    in_store: t("inStoreOnly"),
-    both: null,
-  };
   const [editing, setEditing] = useState(false);
-  const [state, formAction, pending] = useActionState(updateCatalogProduct, null);
-
-  // Ajuste de estado durante el render (mismo patrón que WarehouseRow/CatalogProductForm).
-  const [seenState, setSeenState] = useState(state);
-  if (state !== seenState) {
-    setSeenState(state);
-    if (state?.ok) setEditing(false);
-  }
-
-  const finalPrice =
-    (product.discountPercent > 0 ? product.price * (1 - product.discountPercent / 100) : product.price) *
-    rate;
-  const basePriceConverted = product.price * rate;
-  const totalStock = product.stock.reduce((sum, s) => sum + s.qty, 0);
 
   if (editing) {
     return (
-      <form
-        action={formAction}
-        className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
-      >
-        <input type="hidden" name="id" value={product.id} />
-        <CatalogProductFields
-          defaultName={product.name}
-          defaultDescription={product.description}
-          defaultPrice={product.price}
-          defaultDiscountPercent={product.discountPercent}
-          defaultSalesChannel={product.salesChannel}
-          defaultCategoryId={product.categoryId}
-          isEditing
-          stock={product.stock}
-          categories={categories}
-        />
-        <div className="flex items-center gap-2">
-          <Button type="submit" size="sm" disabled={pending}>
-            {t("save")}
-          </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
-            {t("cancel")}
-          </Button>
-        </div>
-        {state && !state.ok ? (
-          <p role="alert" className="text-xs text-destructive">
-            {state.error}
-          </p>
-        ) : null}
-      </form>
+      <ProductEditor product={product} categories={categories} onDone={() => setEditing(false)} />
     );
   }
+
+  const channelBadge = { online: t("onlineOnly"), in_store: t("inStoreOnly"), both: null }[
+    product.salesChannel
+  ];
+  const kindLabel = { raw: t("kindRaw"), finished: t("kindFinished"), resale: t("kindResale") }[
+    product.kind
+  ];
+  const finalPrice =
+    (product.discountPercent > 0 ? product.price * (1 - product.discountPercent / 100) : product.price) *
+    rate;
+  const totalStock = product.stock.reduce((sum, s) => sum + s.qty, 0);
 
   return (
     <div className="flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xs">
@@ -112,12 +65,15 @@ export function CatalogCard({
       <div className="flex flex-col gap-1 p-3">
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-medium">{product.name}</p>
-          {channelBadge[product.salesChannel] ? (
+          {channelBadge ? (
             <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-              {channelBadge[product.salesChannel]}
+              {channelBadge}
             </span>
           ) : null}
         </div>
+        <p className="text-xs text-muted-foreground">
+          {product.sku} · {kindLabel}
+        </p>
         {product.categoryName ? (
           <span className="w-fit rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
             {product.categoryName}
@@ -130,7 +86,7 @@ export function CatalogCard({
           {product.discountPercent > 0 ? (
             <>
               <span className="text-xs text-muted-foreground line-through">
-                {formatMoney(basePriceConverted, displayCurrency)}
+                {formatMoney(product.price * rate, displayCurrency)}
               </span>
               <span className="text-sm font-semibold text-primary">
                 {formatMoney(finalPrice, displayCurrency)}
@@ -152,15 +108,28 @@ export function CatalogCard({
           )}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-1">
-          <Button type="button" size="sm" onClick={onAddToCart}>
-            {t("addToOrder")}
-          </Button>
+          {onAddToCart ? (
+            <Button type="button" size="sm" onClick={onAddToCart}>
+              {t("addToOrder")}
+            </Button>
+          ) : null}
           {canManage ? (
             <>
               <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
                 {t("edit")}
               </Button>
-              <form action={toggleProductActive}>
+              {product.kind === "finished" ? (
+                <Button asChild variant="ghost" size="sm">
+                  <Link href={`/inventario/productos/${product.id}/receta`}>{t("recipe")}</Link>
+                </Button>
+              ) : null}
+              {/* Borrado lógico: se puede reactivar desde Productos → "Productos eliminados". */}
+              <form
+                action={toggleProductActive}
+                onSubmit={(e) => {
+                  if (!confirm(`¿Eliminar "${product.name}"?`)) e.preventDefault();
+                }}
+              >
                 <input type="hidden" name="id" value={product.id} />
                 <input type="hidden" name="active" value="false" />
                 <Button type="submit" variant="ghost" size="sm">

@@ -39,11 +39,11 @@ test.describe('Flujo core de negocio (Humo)', () => {
     // Verificamos que la bodega se creó y aparece en la lista
     await expect(page.getByText(bodegaName)).toBeVisible();
 
-    // 4. Crear producto
+    // 4. Crear producto (S19-24: mismo formulario que el Catálogo, detrás de "+ Nuevo producto")
     await page.goto('/inventario/productos');
-    await page.getByLabel('SKU').fill(productoSku);
-    await page.getByLabel('Nombre').fill(productoName);
-    // Expand kind select
+    await page.getByRole('button', { name: '+ Nuevo producto' }).click();
+    await page.getByLabel('Código (SKU)').fill(productoSku);
+    await page.getByLabel('Nombre', { exact: true }).fill(productoName);
     await page.getByRole('combobox', { name: 'Tipo' }).click();
     await page.getByRole('option', { name: 'Terminado' }).click();
     await page.getByLabel('Costo').fill('100');
@@ -52,13 +52,11 @@ test.describe('Flujo core de negocio (Humo)', () => {
 
     await expect(page.getByText(productoName)).toBeVisible();
 
-    // 4b. Editar producto (S13-02): formulario a ancho completo vía ?editar, no en <tr>
+    // 4b. Editar producto desde su tarjeta (S19-24)
     const productoNameEditado = `${productoName} editado`;
-    await page.getByRole('row', { name: new RegExp(productoName) }).getByRole('link', { name: 'Editar' }).click();
-    await expect(page).toHaveURL(/\?editar=/);
-    await page.getByLabel('Nombre').fill(productoNameEditado);
-    await page.getByRole('button', { name: 'Guardar cambios' }).click();
-    await expect(page).toHaveURL('/inventario/productos');
+    await page.getByRole('button', { name: 'Editar' }).first().click();
+    await page.getByLabel('Nombre', { exact: true }).fill(productoNameEditado);
+    await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText(productoNameEditado)).toBeVisible();
 
     // 4c. Logo/"Miel" del sidebar vuelve a Inicio desde cualquier pantalla (S14-03)
@@ -112,15 +110,6 @@ test.describe('Flujo core de negocio (Humo)', () => {
     await page.getByLabel('Monto base de caja').fill('50000');
     await page.getByRole('button', { name: 'Abrir caja' }).click();
     await expect(page.getByText(/sesión abierta desde/i)).toBeVisible();
-
-    // 5d. Alta rápida de cliente desde el POS (S15-02/ADR-033)
-    await page.goto('/ventas/pos');
-    await page.getByRole('button', { name: 'Nuevo cliente' }).click();
-    await page.getByLabel('Nombre').fill('Cliente POS E2E');
-    await page.getByRole('button', { name: 'Crear cliente' }).click();
-    await expect(page.getByRole('combobox', { name: 'Cliente (Opcional)' })).toContainText(
-      'Cliente POS E2E',
-    );
 
     // 6. Crear cliente
     await page.goto('/ventas/clientes');

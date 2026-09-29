@@ -15,6 +15,7 @@
   "catalog": {
     "title": "Catálogo",
     "generateProduct": "Generar producto",
+    "generateCategories": "Generar categorías",
     "createCategory": "Crear",
     "cancel": "Cancelar",
     "categoryNamePlaceholder": "Nombre de la categoría",
@@ -36,7 +37,7 @@
     "whereSold": "¿Dónde se vende?",
     "name": "Nombre",
     "description": "Descripción",
-    "price": "Precio",
+    "price": "Precio de venta",
     "discountPercent": "Descuento %",
     "category": "Categoría",
     "categories": "Categorías",
@@ -45,6 +46,21 @@
     "noCategory": "Sin categoría",
     "newCategory": "Nueva categoría",
     "photo": "Foto (opcional)",
-    "replacePhoto": "Reemplazar foto (opcional)"
+    "replacePhoto": "Reemplazar foto (opcional)",
+    "products": "Productos",
+    "newProduct": "+ Nuevo producto",
+    "createProduct": "Crear producto",
+    "saving": "Guardando…",
+    "sku": "Código (SKU)",
+    "skuPlaceholder": "Vacío = se genera solo",
+    "kind": "Tipo",
+    "kindRaw": "Materia prima",
+    "kindFinished": "Terminado",
+    "kindResale": "Reventa",
+    "unit": "Unidad",
+    "minStock": "Stock mínimo",
+    "cost": "Costo",
+    "taxRate": "IVA % ({country})",
+    "recipe": "Receta"
   }
 }

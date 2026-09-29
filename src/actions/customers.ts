@@ -57,10 +57,6 @@ export async function createCustomer(
     return { ok: false, error: mapCustomerError(error.code) };
   }
 
-  // No se revalida /ventas/pos: el refetch de RSC remonta PosTerminal (la ruta tiene
-  // loading.tsx) y borra el estado local del carrito y del cliente recién seleccionado
-  // (hallazgo real en Playwright). La selección se resuelve por estado local
-  // (QuickCustomerDialog → onCreated); /ventas/clientes sí necesita el dato fresco.
   revalidatePath(CUSTOMERS_PATH);
   return { ok: true, customer: data };
 }

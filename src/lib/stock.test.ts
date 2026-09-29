@@ -1,24 +1,38 @@
 import { describe, expect, it } from "vitest";
 
-import { totalStockByProduct } from "./stock";
+import { stockByProduct } from "./stock";
 
-describe("totalStockByProduct (S19-17)", () => {
-  it("suma las cantidades de todas las bodegas por producto", () => {
-    const totals = totalStockByProduct([
-      { product_id: "p1", total_qty: 5 },
-      { product_id: "p1", total_qty: 7 },
-      { product_id: "p2", total_qty: 3 },
+const names = new Map([
+  ["w1", "Principal"],
+  ["w2", "Centro"],
+]);
+
+describe("stockByProduct (S19-17/S19-24)", () => {
+  it("agrupa la cantidad por producto con el nombre de cada bodega o sucursal", () => {
+    const result = stockByProduct(
+      [
+        { product_id: "p1", warehouse_id: "w1", total_qty: 5 },
+        { product_id: "p1", warehouse_id: "w2", total_qty: 7 },
+        { product_id: "p2", warehouse_id: "w1", total_qty: 3 },
+      ],
+      names,
+    );
+    expect(result.get("p1")).toEqual([
+      { warehouseName: "Principal", qty: 5 },
+      { warehouseName: "Centro", qty: 7 },
     ]);
-    expect(totals.get("p1")).toBe(12);
-    expect(totals.get("p2")).toBe(3);
+    expect(result.get("p2")).toEqual([{ warehouseName: "Principal", qty: 3 }]);
   });
 
-  it("ignora filas sin producto y trata total_qty null como 0", () => {
-    const totals = totalStockByProduct([
-      { product_id: null, total_qty: 9 },
-      { product_id: "p1", total_qty: null },
-    ]);
-    expect(totals.size).toBe(1);
-    expect(totals.get("p1")).toBe(0);
+  it("ignora filas incompletas, null → 0 y bodega desconocida → —", () => {
+    const result = stockByProduct(
+      [
+        { product_id: null, warehouse_id: "w1", total_qty: 9 },
+        { product_id: "p1", warehouse_id: "wx", total_qty: null },
+      ],
+      names,
+    );
+    expect(result.size).toBe(1);
+    expect(result.get("p1")).toEqual([{ warehouseName: "—", qty: 0 }]);
   });
 });

@@ -11,6 +11,34 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 4) · S19-25 — bodega principal visible, eliminar/reactivar
+
+**Hecho:** `/inventario/bodegas` con la principal en formulario relleno, "+ Crear bodega o
+sucursal" aparte, Editar/Eliminar(lógico)/Reactivar en las demás; "Productos eliminados" con
+Reactivar en `/inventario/productos`; confirmación al eliminar producto. El humano no encontraba
+los SQL: se generó `~/Escritorio/Miel-SQL-pendiente.sql` (S19-21 + S19-22 + S19-23, idempotente,
+fuera del repo). Verificado: lint ✓, tsc ✓, `npm test` 227/227 ✓.
+
+**Pendiente:** humano pega `~/Escritorio/Miel-SQL-pendiente.sql` en Supabase; commit + push.
+
+---
+
+## Sesión 2026-09-29 (cont. 3) · S19-23 (eliminar POS) + S19-24 (formulario único de producto)
+
+**Hecho:**
+- S19-23: POS eliminado por completo (app + RPC `register_pos_sale` + test S5-10).
+- S19-24: un solo formulario/acciones de producto para Productos y Catálogo, componentes en
+  `src/components/products/`, `/inventario/productos` con la grilla del Catálogo, categorías en
+  ambos, SKU automático o manual, IVA editable, Catálogo sin materia prima. Borrada la estructura
+  vieja de productos de inventario (tabla, `ProductForm`, `?editar=`).
+- Verificado: lint ✓, tsc ✓, `npm test` 227/227 ✓ (bajó por tests borrados de POS y del alta con
+  stock inicial), `npm run build` ✓. Sin correr: `supabase test db`, e2e, navegador.
+
+**Pendiente:** humano aplica migración S19-23 (y S19-21/S19-22 si faltan); confirma en vivo;
+commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 2) · S19-22 — boleta solo con caja abierta
 
 **Hecho:** `confirm_sale` exige caja abierta del usuario que confirma si el pedido tiene

@@ -15,6 +15,7 @@
   "catalog": {
     "title": "Catalog",
     "generateProduct": "Generate product",
+    "generateCategories": "Generate categories",
     "createCategory": "Create",
     "cancel": "Cancel",
     "categoryNamePlaceholder": "Category name",
@@ -36,7 +37,7 @@
     "whereSold": "Where is it sold?",
     "name": "Name",
     "description": "Description",
-    "price": "Price",
+    "price": "Sale price",
     "discountPercent": "Discount %",
     "category": "Category",
     "categories": "Categories",
@@ -45,6 +46,21 @@
     "noCategory": "No category",
     "newCategory": "New category",
     "photo": "Photo (optional)",
-    "replacePhoto": "Replace photo (optional)"
+    "replacePhoto": "Replace photo (optional)",
+    "products": "Products",
+    "newProduct": "+ New product",
+    "createProduct": "Create product",
+    "saving": "Saving…",
+    "sku": "Code (SKU)",
+    "skuPlaceholder": "Empty = generated automatically",
+    "kind": "Type",
+    "kindRaw": "Raw material",
+    "kindFinished": "Finished",
+    "kindResale": "Resale",
+    "unit": "Unit",
+    "minStock": "Minimum stock",
+    "cost": "Cost",
+    "taxRate": "VAT % ({country})",
+    "recipe": "Recipe"
   }
 }

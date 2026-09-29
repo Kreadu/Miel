@@ -1,11 +1,22 @@
-/** S19-17: stock total por producto (todas las bodegas) a partir de filas de `current_stock`. */
-export function totalStockByProduct(
-  rows: { product_id: string | null; total_qty: number | null }[],
-): Map<string, number> {
-  const totals = new Map<string, number>();
+export type WarehouseStock = { warehouseName: string; qty: number };
+
+/**
+ * S19-17/S19-24: stock por producto, desglosado por bodega o sucursal, a partir de filas de
+ * `current_stock`. El total es la suma del desglose.
+ */
+export function stockByProduct(
+  rows: { product_id: string | null; warehouse_id: string | null; total_qty: number | null }[],
+  warehouseNameById: Map<string, string>,
+): Map<string, WarehouseStock[]> {
+  const result = new Map<string, WarehouseStock[]>();
   for (const row of rows) {
-    if (!row.product_id) continue;
-    totals.set(row.product_id, (totals.get(row.product_id) ?? 0) + (row.total_qty ?? 0));
+    if (!row.product_id || !row.warehouse_id) continue;
+    const list = result.get(row.product_id) ?? [];
+    list.push({
+      warehouseName: warehouseNameById.get(row.warehouse_id) ?? "—",
+      qty: row.total_qty ?? 0,
+    });
+    result.set(row.product_id, list);
   }
-  return totals;
+  return result;
 }

@@ -10,14 +10,11 @@ import { type WarehouseDetails, WarehouseFields, warehouseSummary } from "./ware
 export function WarehouseRow({
   id,
   active,
-  isDefault,
   canManage,
   details,
 }: {
   id: string;
   active: boolean;
-  /** S19-18: la principal se renombra y edita, pero no se archiva. */
-  isDefault: boolean;
   canManage: boolean;
   details: WarehouseDetails;
 }) {
@@ -60,16 +57,9 @@ export function WarehouseRow({
   return (
     <li className="flex flex-col gap-2 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 flex-col gap-0.5">
-        <div className="flex items-center gap-2">
-          <span className={active ? "font-medium" : "text-muted-foreground line-through"}>
-            {details.name}
-          </span>
-          {isDefault ? (
-            <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-              Principal
-            </span>
-          ) : null}
-        </div>
+        <span className={active ? "font-medium" : "text-muted-foreground line-through"}>
+          {details.name}
+        </span>
         {summary ? <span className="text-xs text-muted-foreground">{summary}</span> : null}
       </div>
       {canManage ? (
@@ -77,18 +67,22 @@ export function WarehouseRow({
           <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
             Editar
           </Button>
-          {isDefault ? null : (
-            <form action={toggleWarehouseActive}>
-              <input type="hidden" name="id" value={id} />
-              <input type="hidden" name="active" value={(!active).toString()} />
-              <Button type="submit" variant="ghost" size="sm">
-                {active ? "Archivar" : "Reactivar"}
-              </Button>
-            </form>
-          )}
+          {/* S19-25: "Eliminar" es borrado lógico (active=false): el kardex referencia la bodega. */}
+          <form
+            action={toggleWarehouseActive}
+            onSubmit={(e) => {
+              if (active && !confirm(`¿Eliminar "${details.name}"?`)) e.preventDefault();
+            }}
+          >
+            <input type="hidden" name="id" value={id} />
+            <input type="hidden" name="active" value={(!active).toString()} />
+            <Button type="submit" variant="ghost" size="sm">
+              {active ? "Eliminar" : "Reactivar"}
+            </Button>
+          </form>
         </div>
       ) : (
-        !active && <span className="text-xs text-muted-foreground">Archivada</span>
+        !active && <span className="text-xs text-muted-foreground">Eliminada</span>
       )}
     </li>
   );

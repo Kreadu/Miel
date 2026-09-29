@@ -1,100 +1,92 @@
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { totalStockByProduct } from "@/lib/stock";
+import { CategoryFilter } from "@/components/products/category-filter";
+import { CategoryManager } from "@/components/products/category-manager";
+import { NewProductButton } from "@/components/products/new-product-button";
+import { Button } from "@/components/ui/button";
+import { loadProducts } from "@/lib/products/load";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-import { ProductForm } from "./product-form";
-import { ProductRow } from "./product-row";
+import { ArchivedProducts } from "./archived-products";
+import { ProductGrid } from "./product-grid";
 
 export const metadata = { title: "Productos · Miel" };
 
+/**
+ * S19-24: Productos de inventario = misma vista y mismo formulario que el Catálogo de vender,
+ * con todos los productos (también materia prima). Los precios salen de `products_catalog`,
+ * que enmascara el costo para member.
+ */
 export default async function ProductosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ editar?: string }>;
+  searchParams: Promise<{ categoria?: string }>;
 }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
-  const { editar } = await searchParams;
+  const { categoria } = await searchParams;
+  const t = await getTranslations("catalog");
 
   const canManage = active.role !== "member";
 
-  // Siempre se consulta la vista `products_catalog`, nunca la tabla `products` directo: la
-  // vista enmascara cost/price/tax_rate a null para member (spec S2-02).
   const supabase = await createClient();
-  const [{ data: products }, { data: warehouses }, { data: stockRows }] = await Promise.all([
-    supabase
-      .from("products_catalog")
-      .select("id, sku, name, description, unit, kind, cost, price, tax_rate, min_stock, active")
-      .order("name", { ascending: true }),
-    supabase.from("warehouses").select("id, name").order("name", { ascending: true }),
-    // S19-17: stock total (todas las bodegas o sucursales), solo lectura.
-    supabase.from("current_stock").select("product_id, total_qty"),
+  const [{ products, categories }, { data: archived }] = await Promise.all([
+    loadProducts(supabase, active.tenantId, { sellableOnly: false }),
+    // S19-25: eliminados (borrado lógico), para poder reactivarlos.
+    canManage
+      ? supabase
+          .from("products_catalog")
+          .select("id, sku, name")
+          .eq("tenant_id", active.tenantId)
+          .eq("active", false)
+          .order("name", { ascending: true })
+      : Promise.resolve({ data: [] }),
   ]);
-  const stockByProduct = totalStockByProduct(stockRows ?? []);
-
-  const rows = (products ?? [])
-    .filter((p): p is typeof p & { id: string } => p.id != null)
-    .map((p) => ({
-      id: p.id,
-      sku: p.sku ?? "",
-      name: p.name ?? "",
-      description: p.description,
-      unit: p.unit ?? "unidad",
-      kind: (p.kind ?? "raw") as "raw" | "finished" | "resale",
-      cost: p.cost,
-      price: p.price,
-      tax_rate: p.tax_rate,
-      min_stock: p.min_stock ?? 0,
-      active: p.active ?? true,
-      stock: stockByProduct.get(p.id) ?? 0,
-    }));
-  const editingProduct = canManage ? rows.find((p) => p.id === editar) : undefined;
+  const rows = categoria ? products.filter((p) => p.categoryId === categoria) : products;
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Productos</h1>
-        <p className="text-sm text-muted-foreground">{active.tenantName}</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">{t("products")}</h1>
+          <p className="text-sm text-muted-foreground">{active.tenantName}</p>
+        </div>
+        {canManage ? (
+          <div className="flex flex-wrap items-start gap-2">
+            <CategoryManager
+              categories={categories}
+              trigger={<Button variant="outline">{t("generateCategories")}</Button>}
+            />
+            <NewProductButton label={t("newProduct")} categories={categories} />
+          </div>
+        ) : null}
       </div>
 
-      {canManage ? (
-        editingProduct ? (
-          <ProductForm key={editingProduct.id} values={editingProduct} />
-        ) : (
-          <ProductForm warehouses={warehouses ?? []} />
-        )
-      ) : null}
+      <CategoryFilter
+        categories={categories}
+        current={categoria}
+        basePath="/inventario/productos"
+        allLabel={t("all")}
+      />
 
       {rows.length > 0 ? (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">SKU</th>
-                <th className="px-3 py-2 font-medium">Nombre</th>
-                <th className="px-3 py-2 font-medium">Tipo</th>
-                <th className="px-3 py-2 text-right font-medium">Precio</th>
-                <th className="px-3 py-2 text-right font-medium">Stock</th>
-                <th className="px-3 py-2 text-right font-medium">Stock mín.</th>
-                <th className="px-3 py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((product) => (
-                <ProductRow key={product.id} canManage={canManage} product={product} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ProductGrid
+          products={rows}
+          canManage={canManage}
+          categories={categories}
+          currency={active.currency}
+        />
       ) : (
-        <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          {canManage
-            ? "Aún no tienes productos. Crea el primero arriba."
-            : "Aún no hay productos registrados."}
+        <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+          {categoria ? t("emptyCategory") : canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
+
+      <ArchivedProducts
+        products={(archived ?? []).filter((p): p is typeof p & { id: string } => p.id != null)}
+      />
     </div>
   );
 }

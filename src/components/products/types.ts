@@ -1,0 +1,26 @@
+import type { WarehouseStock } from "@/lib/stock";
+
+export type ProductKind = "raw" | "finished" | "resale";
+export type SalesChannel = "online" | "in_store" | "both";
+export type Category = { id: string; name: string };
+
+/** S19-24: un producto tal como lo muestran Inventario y Catálogo (misma tarjeta y formulario). */
+export type ProductView = {
+  id: string;
+  sku: string;
+  name: string;
+  description: string | null;
+  unit: string;
+  kind: ProductKind;
+  /** null para member (products_catalog enmascara el costo). */
+  cost: number | null;
+  price: number;
+  taxRate: number;
+  minStock: number;
+  discountPercent: number;
+  salesChannel: SalesChannel;
+  categoryId: string | null;
+  categoryName: string | null;
+  photoUrl: string | null;
+  stock: WarehouseStock[];
+};

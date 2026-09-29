@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { ProductCard } from "@/components/products/product-card";
+import type { Category, ProductView } from "@/components/products/types";
 import { Button } from "@/components/ui/button";
 
 import { useCatalogCart } from "../use-catalog-cart";
-import { CatalogCard, type CatalogProduct } from "./catalog-card";
 import { CurrencySelector } from "./currency-selector";
 
 export function CatalogGrid({
@@ -16,11 +17,11 @@ export function CatalogGrid({
   tenantId,
   categories,
 }: {
-  products: CatalogProduct[];
+  products: ProductView[];
   canManage: boolean;
   baseCurrency: string;
   tenantId: string;
-  categories: { id: string; name: string }[];
+  categories: Category[];
 }) {
   const [displayCurrency, setDisplayCurrency] = useState(baseCurrency);
   const [rate, setRate] = useState(1);
@@ -28,7 +29,7 @@ export function CatalogGrid({
 
   // Solo agrega al carrito — el humano pidió explícitamente quedarse viendo el catálogo y
   // navegar a Pedidos cuando él elija, con el botón "Ver pedido" (no automático por producto).
-  function handleAddToCart(product: CatalogProduct) {
+  function handleAddToCart(product: ProductView) {
     addItem({
       productId: product.id,
       name: product.name,
@@ -58,14 +59,14 @@ export function CatalogGrid({
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
-          <CatalogCard
+          <ProductCard
             key={product.id}
             product={product}
             canManage={canManage}
+            categories={categories}
             displayCurrency={displayCurrency}
             rate={rate}
             onAddToCart={() => handleAddToCart(product)}
-            categories={categories}
           />
         ))}
       </div>

@@ -2,19 +2,6 @@ import { z } from "zod";
 
 export const SALES_CHANNELS = ["online", "in_store", "both"] as const;
 
-export const catalogProductSchema = z.object({
-  name: z.string().trim().min(1, "El nombre es obligatorio").max(120, "Nombre muy largo"),
-  description: z.string().trim().max(500, "Descripción muy larga").optional(),
-  price: z.coerce.number().nonnegative("El precio no puede ser negativo"),
-  discount_percent: z.coerce
-    .number()
-    .min(0, "El descuento debe estar entre 0 y 100")
-    .max(100, "El descuento debe estar entre 0 y 100")
-    .default(0),
-  sales_channel: z.enum(SALES_CHANNELS).default("both"),
-  category_id: z.uuid().optional().or(z.literal("")),
-});
-
 export const categorySchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio").max(60, "Nombre muy largo"),
 });
