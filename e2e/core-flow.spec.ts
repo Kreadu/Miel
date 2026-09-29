@@ -21,18 +21,14 @@ test.describe('Flujo core de negocio (Humo)', () => {
     await page.getByLabel('Nombre de la empresa').fill(tenantName);
     await page.getByRole('button', { name: 'Crear empresa' }).click();
 
-    // 3. Inicio: accesos directos y módulos primero, resumen gerencial abajo (S14-02)
+    // 3. Inicio: solo Módulos y Resumen gerencial, sin accesos directos (S14-07, supersede S14-02/S14-06)
     await expect(page).toHaveURL(/\/inicio/);
-    const vender = page.locator('a[href="/ventas/pos"]');
     const modulos = page.getByRole('heading', { name: 'Módulos' });
     const resumen = page.getByRole('heading', { name: 'Resumen gerencial' });
-    await expect(vender).toBeVisible();
     await expect(modulos).toBeVisible();
     await expect(resumen).toBeVisible();
-    const venderY = (await vender.boundingBox())!.y;
     const modulosY = (await modulos.boundingBox())!.y;
     const resumenY = (await resumen.boundingBox())!.y;
-    expect(venderY).toBeLessThan(modulosY);
     expect(modulosY).toBeLessThan(resumenY);
     await expect(page.locator('a[href="/finanzas"]')).toHaveCount(0);
 

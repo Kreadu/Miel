@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "inicio": "Accueil",
+    "vender": "Vendre",
+    "comprar": "Acheter",
+    "inventario": "Inventaire",
+    "gastos": "Dépenses",
+    "produccion": "Production",
+    "finanzas": "Finances",
+    "equipo": "Équipe"
+  },
+  "backButton": {
+    "label": "Retour"
+  },
+  "catalog": {
+    "title": "Catalogue",
+    "generateProduct": "Générer un produit",
+    "generateCategory": "Générer une catégorie",
+    "createCategory": "Créer",
+    "cancel": "Annuler",
+    "categoryNamePlaceholder": "Nom de la catégorie",
+    "addToOrder": "Ajouter à la commande",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "noPhoto": "Pas de photo",
+    "noStockRegistered": "Aucun stock enregistré",
+    "stock": "Stock",
+    "all": "Tous",
+    "emptyManage": "Vous n'avez pas encore de produits au catalogue. Générez le premier ci-dessus.",
+    "emptyPublic": "Pas encore de produits au catalogue.",
+    "emptyCategory": "Aucun produit dans cette catégorie.",
+    "onlineOnly": "En ligne uniquement",
+    "inStoreOnly": "En magasin uniquement",
+    "both": "Les deux",
+    "whereSold": "Où est-il vendu ?",
+    "name": "Nom",
+    "description": "Description",
+    "price": "Prix",
+    "discountPercent": "Remise %",
+    "category": "Catégorie",
+    "newCategoryLabel": "Ou saisissez une nouvelle catégorie",
+    "noCategory": "Sans catégorie",
+    "photo": "Photo (optionnel)",
+    "replacePhoto": "Remplacer la photo (optionnel)"
+  }
+}

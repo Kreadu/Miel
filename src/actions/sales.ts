@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getOrCreateGenericCustomerId } from "@/lib/customers/generic";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { saleSchema } from "@/lib/validation/sales";
@@ -23,6 +24,7 @@ function mapSaleError(message: string | undefined): string {
   if (message?.includes("item_qty_invalid")) return "La cantidad de un ítem debe ser mayor a cero.";
   if (message?.includes("item_unit_price_invalid")) return "El precio de un ítem no puede ser negativo.";
   if (message?.includes("item_discount_invalid")) return "El descuento de un ítem no puede superar el precio de la línea.";
+  if (message?.includes("payment_method_invalid")) return "Selecciona una forma de pago válida.";
   return "No se pudo guardar la venta. Intenta de nuevo.";
 }
 
@@ -45,11 +47,18 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
   if (!active) return { ok: false, error: "No tienes una empresa activa." };
 
   const supabase = await createClient();
+
+  // S19-09: sin cliente elegido, se asocia al cliente genérico del tenant (no customer_id
+  // null) — así "Registrar cobro" también funciona para ventas de mostrador.
+  const customerId =
+    parsed.data.customer_id || (await getOrCreateGenericCustomerId(supabase, active.tenantId));
+
   const { error } = await supabase.rpc("create_sale", {
     p_tenant_id: active.tenantId,
     p_items: parsed.data.items,
-    p_customer_id: parsed.data.customer_id || undefined,
+    p_customer_id: customerId || undefined,
     p_note: parsed.data.note || undefined,
+    p_payment_method: parsed.data.payment_method || undefined,
   });
 
   if (error) {

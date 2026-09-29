@@ -15,6 +15,9 @@ import type { Role } from "./active-tenant";
 export type NavItem = {
   href: string;
   label: string;
+  /** E20 (piloto i18n): clave en messages/*.json → nav.<i18nKey>. `label` (español) sigue
+   * usándose donde todavía no se tradujo (p. ej. la grilla de Módulos de /inicio). */
+  i18nKey: string;
   icon: LucideIcon;
   /** Módulos que la matriz de permisos-roles.md reserva a owner/admin (docs/arch/permisos-roles.md). */
   ownerAdminOnly?: boolean;
@@ -23,14 +26,26 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/inicio", label: "Inicio", icon: Home },
-  { href: "/ventas", label: "Vender", icon: Receipt },
-  { href: "/compras", label: "Comprar", icon: ShoppingCart },
-  { href: "/inventario", label: "Inventario", icon: Boxes },
-  { href: "/gastos", label: "Gastos", icon: Wallet, ownerAdminOnly: true },
-  { href: "/produccion", label: "Producción", icon: Factory, separatorBefore: true },
-  { href: "/finanzas", label: "Finanzas", icon: TrendingUp, ownerAdminOnly: true },
-  { href: "/equipo", label: "Equipo", icon: Users, ownerAdminOnly: true },
+  { href: "/inicio", label: "Inicio", i18nKey: "inicio", icon: Home },
+  { href: "/ventas", label: "Vender", i18nKey: "vender", icon: Receipt },
+  { href: "/compras", label: "Comprar", i18nKey: "comprar", icon: ShoppingCart },
+  { href: "/inventario", label: "Inventario", i18nKey: "inventario", icon: Boxes },
+  { href: "/gastos", label: "Gastos", i18nKey: "gastos", icon: Wallet, ownerAdminOnly: true },
+  {
+    href: "/produccion",
+    label: "Producción",
+    i18nKey: "produccion",
+    icon: Factory,
+    separatorBefore: true,
+  },
+  {
+    href: "/finanzas",
+    label: "Finanzas",
+    i18nKey: "finanzas",
+    icon: TrendingUp,
+    ownerAdminOnly: true,
+  },
+  { href: "/equipo", label: "Equipo", i18nKey: "equipo", icon: Users, ownerAdminOnly: true },
 ];
 
 /**

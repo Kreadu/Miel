@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getOrCreateGenericCustomerId } from "@/lib/customers/generic";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { posSchema } from "@/lib/validation/pos";
@@ -56,12 +57,17 @@ export async function registerPosSale(
 
   const supabase = await createClient();
 
+  // S19-09: sin cliente elegido, se asocia al cliente genérico del tenant (no customer_id
+  // null) — mismo criterio que Pedidos (createSale).
+  const resolvedCustomerId =
+    data.customer_id || (await getOrCreateGenericCustomerId(supabase, active.tenantId));
+
   const { data: saleId, error } = await supabase.rpc("register_pos_sale", {
     p_tenant_id: active.tenantId,
     p_warehouse_id: data.warehouse_id,
     p_items: data.items,
     p_payments: payments,
-    p_customer_id: data.customer_id || undefined,
+    p_customer_id: resolvedCustomerId || undefined,
     p_note: data.note || undefined,
   });
 

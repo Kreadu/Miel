@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Landmark, ShoppingCart, Users, Wallet, ScanLine } from "lucide-react";
+import { Landmark, ScanLine, ShoppingBag, ShoppingCart, Users, Wallet } from "lucide-react";
 
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -25,27 +25,40 @@ export default async function VentasPage() {
             <Users className="mr-2 h-4 w-4" />
             Clientes
           </Link>
-          <Link
-            href="/ventas/pedidos"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-          >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Pedidos
-          </Link>
-          <Link
-            href="/ventas/caja"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-          >
-            <Wallet className="mr-2 h-4 w-4" />
-            Caja
-          </Link>
-          <Link
-            href="/ventas/pos"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-          >
-            <ScanLine className="mr-2 h-4 w-4" />
-            Punto de Venta
-          </Link>
+          {active.sellsPhysical && (
+            <>
+              <Link
+                href="/ventas/pedidos"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Pedidos
+              </Link>
+              <Link
+                href="/ventas/caja"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                Caja
+              </Link>
+              <Link
+                href="/ventas/pos"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
+              >
+                <ScanLine className="mr-2 h-4 w-4" />
+                Punto de Venta
+              </Link>
+            </>
+          )}
+          {active.sellsVirtual && (
+            <Link
+              href="/ventas/catalogo"
+              className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
+            >
+              <ShoppingBag className="mr-2 h-4 w-4" />
+              Catálogo
+            </Link>
+          )}
           {active.role !== "member" && (
             <Link
               href="/ventas/cuentas-por-cobrar"
@@ -59,7 +72,7 @@ export default async function VentasPage() {
       </div>
       <div className="rounded-lg border border-dashed border-border p-8 text-center">
         <p className="text-sm text-muted-foreground">
-          Gestiona tus clientes y pedidos desde los accesos de arriba.
+          Gestiona tus clientes y tu sucursal desde los accesos de arriba.
         </p>
       </div>
     </div>

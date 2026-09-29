@@ -6,7 +6,6 @@ import { visibleNavItems } from "@/lib/tenant/nav-visibility";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { DashboardMetricsCards } from "./dashboard-metrics-cards";
 import { DashboardInsights } from "./dashboard-insights";
-import { QuickActions } from "./quick-actions";
 
 export const metadata = { title: "Inicio · Miel" };
 
@@ -22,8 +21,6 @@ export default async function InicioPage() {
         <h1 className="text-xl font-semibold tracking-tight">Hola de nuevo</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
-
-      <QuickActions role={active.role} />
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-medium tracking-tight">Módulos</h2>

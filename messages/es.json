@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "inicio": "Inicio",
+    "vender": "Vender",
+    "comprar": "Comprar",
+    "inventario": "Inventario",
+    "gastos": "Gastos",
+    "produccion": "Producción",
+    "finanzas": "Finanzas",
+    "equipo": "Equipo"
+  },
+  "backButton": {
+    "label": "Volver"
+  },
+  "catalog": {
+    "title": "Catálogo",
+    "generateProduct": "Generar producto",
+    "generateCategory": "Generar categoría",
+    "createCategory": "Crear",
+    "cancel": "Cancelar",
+    "categoryNamePlaceholder": "Nombre de la categoría",
+    "addToOrder": "Agregar al pedido",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "noPhoto": "Sin foto",
+    "noStockRegistered": "Sin stock registrado",
+    "stock": "Stock",
+    "all": "Todos",
+    "emptyManage": "Aún no tienes productos en el catálogo. Generá el primero arriba.",
+    "emptyPublic": "Aún no hay productos en el catálogo.",
+    "emptyCategory": "No hay productos en esta categoría.",
+    "onlineOnly": "Solo internet",
+    "inStoreOnly": "Solo tienda",
+    "both": "Ambas",
+    "whereSold": "¿Dónde se vende?",
+    "name": "Nombre",
+    "description": "Descripción",
+    "price": "Precio",
+    "discountPercent": "Descuento %",
+    "category": "Categoría",
+    "newCategoryLabel": "O creá una categoría nueva",
+    "noCategory": "Sin categoría",
+    "photo": "Foto (opcional)",
+    "replacePhoto": "Reemplazar foto (opcional)"
+  }
+}

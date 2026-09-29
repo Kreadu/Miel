@@ -77,4 +77,20 @@ describe("saleSchema", () => {
   it("rechaza una venta sin ítems", () => {
     expect(saleSchema.safeParse({ ...validSale, items: [] }).success).toBe(false);
   });
+
+  it("acepta payment_method válido", () => {
+    expect(saleSchema.safeParse({ ...validSale, payment_method: "cash" }).success).toBe(true);
+    expect(saleSchema.safeParse({ ...validSale, payment_method: "card" }).success).toBe(true);
+    expect(saleSchema.safeParse({ ...validSale, payment_method: "transfer" }).success).toBe(true);
+    expect(saleSchema.safeParse({ ...validSale, payment_method: "other" }).success).toBe(true);
+  });
+
+  it("acepta ausencia o vacío de payment_method (opcional)", () => {
+    expect(saleSchema.safeParse(validSale).success).toBe(true);
+    expect(saleSchema.safeParse({ ...validSale, payment_method: "" }).success).toBe(true);
+  });
+
+  it("rechaza payment_method inválido", () => {
+    expect(saleSchema.safeParse({ ...validSale, payment_method: "bitcoin" }).success).toBe(false);
+  });
 });

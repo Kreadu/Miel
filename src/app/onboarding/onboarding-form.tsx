@@ -20,6 +20,23 @@ export function OnboardingForm() {
         <Label htmlFor="nit">NIT (opcional)</Label>
         <Input id="nit" name="nit" />
       </div>
+      <div className="flex flex-col gap-2">
+        <Label>¿Cómo vende tu empresa?</Label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            name="sellsPhysical"
+            defaultChecked
+            className="h-4 w-4 accent-primary"
+          />
+          Local físico (caja, sucursal)
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="sellsVirtual" className="h-4 w-4 accent-primary" />
+          Catálogo online
+        </label>
+        <p className="text-xs text-muted-foreground">Elige al menos una opción.</p>
+      </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
           {state.error}

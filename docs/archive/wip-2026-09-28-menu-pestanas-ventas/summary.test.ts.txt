@@ -1,0 +1,45 @@
+import { describe, expect, it } from "vitest";
+
+import { summarizeSales } from "./summary";
+
+describe("summarizeSales", () => {
+  it("suma solo ventas confirmed/shipped/delivered con issued_at", () => {
+    const result = summarizeSales([
+      { status: "confirmed", total: 100, issued_at: "2026-08-16T10:00:00.000Z" },
+      { status: "shipped", total: 50.5, issued_at: "2026-08-16T11:00:00.000Z" },
+      { status: "delivered", total: 20, issued_at: "2026-08-16T12:00:00.000Z" },
+      { status: "draft", total: 999, issued_at: null },
+      { status: "cancelled", total: 999, issued_at: "2026-08-16T09:00:00.000Z" },
+    ]);
+    expect(result.total).toBe(170.5);
+    expect(result.count).toBe(3);
+  });
+
+  it("excluye filas sin issued_at aunque el estado cuente", () => {
+    const result = summarizeSales([
+      { status: "confirmed", total: 100, issued_at: null },
+    ]);
+    expect(result).toEqual({ total: 0, count: 0, average: 0 });
+  });
+
+  it("promedio en 0 sin ventas, sin NaN ni división por cero", () => {
+    const result = summarizeSales([]);
+    expect(result).toEqual({ total: 0, count: 0, average: 0 });
+  });
+
+  it("redondea a centavos sin arrastrar error de punto flotante", () => {
+    const result = summarizeSales([
+      { status: "confirmed", total: 0.1, issued_at: "2026-08-16T10:00:00.000Z" },
+      { status: "confirmed", total: 0.2, issued_at: "2026-08-16T10:00:00.000Z" },
+    ]);
+    expect(result.total).toBe(0.3);
+  });
+
+  it("calcula el ticket promedio", () => {
+    const result = summarizeSales([
+      { status: "confirmed", total: 100, issued_at: "2026-08-16T10:00:00.000Z" },
+      { status: "confirmed", total: 50, issued_at: "2026-08-16T11:00:00.000Z" },
+    ]);
+    expect(result.average).toBe(75);
+  });
+});

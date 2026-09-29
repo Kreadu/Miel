@@ -1,0 +1,37 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+
+const { usePathname } = vi.hoisted(() => ({ usePathname: vi.fn() }));
+vi.mock("next/navigation", () => ({ usePathname }));
+
+import { SectionTabs } from "./section-tabs";
+
+afterEach(cleanup);
+
+const items = [
+  { href: "/ventas", label: "Resumen" },
+  { href: "/ventas/pos", label: "Punto de venta" },
+  { href: "/ventas/pedidos", label: "Pedidos" },
+];
+
+describe("SectionTabs", () => {
+  it("marca activa la pestaña índice solo en la ruta exacta, no en sus hijas", () => {
+    usePathname.mockReturnValue("/ventas");
+    render(<SectionTabs items={items} />);
+    expect(screen.getByRole("link", { name: "Resumen" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("link", { name: "Punto de venta" }).getAttribute("aria-current")).toBeNull();
+  });
+
+  it("marca activa la pestaña más específica en una subruta, no el índice", () => {
+    usePathname.mockReturnValue("/ventas/pos");
+    render(<SectionTabs items={items} />);
+    expect(screen.getByRole("link", { name: "Punto de venta" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("link", { name: "Resumen" }).getAttribute("aria-current")).toBeNull();
+  });
+
+  it("funciona igual dentro de una ruta anidada más profunda", () => {
+    usePathname.mockReturnValue("/ventas/pedidos/algo-mas");
+    render(<SectionTabs items={items} />);
+    expect(screen.getByRole("link", { name: "Pedidos" }).getAttribute("aria-current")).toBe("page");
+  });
+});

@@ -4,6 +4,9 @@ export type ActiveMembership = {
   tenantId: string;
   role: Role;
   tenantName: string;
+  sellsPhysical: boolean;
+  sellsVirtual: boolean;
+  currency: string;
 };
 
 /**

@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { AlertCircle } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
+import { OpenSessionForm } from "../caja/open-session-form";
 import { PosTerminal } from "./pos-terminal";
 
 export const metadata = { title: "Punto de Venta · Miel" };
@@ -19,11 +18,13 @@ export default async function PosPage() {
   const [productsRes, warehousesRes, customersRes, sessionRes] = await Promise.all([
     // products_catalog, nunca la tabla base products: price/cost/tax_rate solo se leen por la
     // vista (grant columnar de la tabla base los excluye a propósito, S2-02/ADR-029).
+    // S19-05: POS es canal físico — solo productos marcados "in_store" o "both".
     supabase
       .from("products_catalog")
       .select("id, name, price, tax_rate, sku")
       .eq("tenant_id", active.tenantId)
       .eq("active", true)
+      .in("sales_channel", ["in_store", "both"])
       .order("name"),
     supabase
       .from("warehouses")
@@ -74,20 +75,11 @@ export default async function PosPage() {
       </div>
 
       {!hasOpenSession ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-12 text-center">
-          <AlertCircle className="h-10 w-10 text-muted-foreground" />
-          <div>
-            <h3 className="text-lg font-medium">Turno de caja cerrado</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-              Para realizar cobros en el punto de venta, necesitas abrir tu turno de caja primero.
-            </p>
-          </div>
-          <Link
-            href="/ventas/caja"
-            className="mt-4 inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          >
-            Ir a Caja
-          </Link>
+        <div className="flex flex-col gap-4">
+          <p className="text-sm text-muted-foreground max-w-sm">
+            Para vender primero abrí tu turno de caja: poné con cuánto efectivo arrancás.
+          </p>
+          <OpenSessionForm />
         </div>
       ) : (
         <PosTerminal

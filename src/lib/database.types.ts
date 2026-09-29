@@ -278,6 +278,7 @@ export type Database = {
           doc_type: string | null
           email: string | null
           id: string
+          is_generic: boolean
           name: string
           note: string | null
           phone: string | null
@@ -293,6 +294,7 @@ export type Database = {
           doc_type?: string | null
           email?: string | null
           id?: string
+          is_generic?: boolean
           name: string
           note?: string | null
           phone?: string | null
@@ -308,6 +310,7 @@ export type Database = {
           doc_type?: string | null
           email?: string | null
           id?: string
+          is_generic?: boolean
           name?: string
           note?: string | null
           phone?: string | null
@@ -495,18 +498,46 @@ export type Database = {
           },
         ]
       }
+      product_categories: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean
+          category_id: string | null
           cost: number
           created_at: string
           created_by: string
           description: string | null
+          discount_percent: number
           id: string
           kind: string
           min_stock: number
           name: string
+          photo_url: string | null
           price: number
+          sales_channel: string
           sku: string
           tax_rate: number
           tenant_id: string
@@ -515,15 +546,19 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          category_id?: string | null
           cost?: number
           created_at?: string
           created_by?: string
           description?: string | null
+          discount_percent?: number
           id?: string
           kind?: string
           min_stock?: number
           name: string
+          photo_url?: string | null
           price?: number
+          sales_channel?: string
           sku: string
           tax_rate?: number
           tenant_id: string
@@ -532,15 +567,19 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          category_id?: string | null
           cost?: number
           created_at?: string
           created_by?: string
           description?: string | null
+          discount_percent?: number
           id?: string
           kind?: string
           min_stock?: number
           name?: string
+          photo_url?: string | null
           price?: number
+          sales_channel?: string
           sku?: string
           tax_rate?: number
           tenant_id?: string
@@ -957,6 +996,7 @@ export type Database = {
           id: string
           issued_at: string | null
           note: string | null
+          payment_method: string | null
           receipt_number: number | null
           shipped_at: string | null
           shipping_address: string | null
@@ -976,6 +1016,7 @@ export type Database = {
           id?: string
           issued_at?: string | null
           note?: string | null
+          payment_method?: string | null
           receipt_number?: number | null
           shipped_at?: string | null
           shipping_address?: string | null
@@ -995,6 +1036,7 @@ export type Database = {
           id?: string
           issued_at?: string | null
           note?: string | null
+          payment_method?: string | null
           receipt_number?: number | null
           shipped_at?: string | null
           shipping_address?: string | null
@@ -1378,6 +1420,8 @@ export type Database = {
           id: string
           name: string
           nit: string | null
+          sells_physical: boolean
+          sells_virtual: boolean
         }
         Insert: {
           created_at?: string
@@ -1385,6 +1429,8 @@ export type Database = {
           id?: string
           name: string
           nit?: string | null
+          sells_physical?: boolean
+          sells_virtual?: boolean
         }
         Update: {
           created_at?: string
@@ -1392,6 +1438,8 @@ export type Database = {
           id?: string
           name?: string
           nit?: string | null
+          sells_physical?: boolean
+          sells_virtual?: boolean
         }
         Relationships: []
       }
@@ -1777,15 +1825,19 @@ export type Database = {
       products_catalog: {
         Row: {
           active: boolean | null
+          category_id: string | null
           cost: number | null
           created_at: string | null
           created_by: string | null
           description: string | null
+          discount_percent: number | null
           id: string | null
           kind: string | null
           min_stock: number | null
           name: string | null
+          photo_url: string | null
           price: number | null
+          sales_channel: string | null
           sku: string | null
           tax_rate: number | null
           tenant_id: string | null
@@ -1794,15 +1846,19 @@ export type Database = {
         }
         Insert: {
           active?: boolean | null
+          category_id?: string | null
           cost?: never
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          discount_percent?: number | null
           id?: string | null
           kind?: string | null
           min_stock?: number | null
           name?: string | null
+          photo_url?: string | null
           price?: never
+          sales_channel?: string | null
           sku?: string | null
           tax_rate?: never
           tenant_id?: string | null
@@ -1811,15 +1867,19 @@ export type Database = {
         }
         Update: {
           active?: boolean | null
+          category_id?: string | null
           cost?: never
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          discount_percent?: number | null
           id?: string | null
           kind?: string | null
           min_stock?: number | null
           name?: string | null
+          photo_url?: string | null
           price?: never
+          sales_channel?: string | null
           sku?: string | null
           tax_rate?: never
           tenant_id?: string | null
@@ -1917,12 +1977,18 @@ export type Database = {
           p_customer_id?: string
           p_items: Json
           p_note?: string
+          p_payment_method?: string
           p_tenant_id: string
         }
         Returns: string
       }
       create_tenant_with_owner: {
-        Args: { p_name: string; p_nit?: string }
+        Args: {
+          p_name: string
+          p_nit?: string
+          p_sells_physical?: boolean
+          p_sells_virtual?: boolean
+        }
         Returns: string
       }
       mark_purchase_ordered: {

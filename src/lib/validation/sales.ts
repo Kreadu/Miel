@@ -10,8 +10,12 @@ export const saleItemSchema = z.object({
   discount: z.coerce.number().min(0, "El descuento no puede ser negativo.").default(0),
 });
 
+export const PAYMENT_METHODS = ["cash", "card", "transfer", "other"] as const;
+
 export const saleSchema = z.object({
   customer_id: z.uuid("Selecciona un cliente válido.").optional().or(z.literal("")),
   items: z.array(saleItemSchema).min(1, "Agrega al menos un ítem."),
   note: z.string().trim().max(500, "Nota muy larga").optional().or(z.literal("")),
+  // Descriptivo (S19-08): no registra un cobro real, solo anota cómo se espera pagar.
+  payment_method: z.enum(PAYMENT_METHODS).optional().or(z.literal("")),
 });

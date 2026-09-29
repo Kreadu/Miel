@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
+import { CatalogPedidoCart } from "./catalog-pedido-cart";
 import { SaleForm } from "./sale-form";
 import { SaleRow } from "./sale-row";
 
@@ -16,13 +17,15 @@ export default async function PedidosPage() {
   const [salesRes, customersRes, productsRes, warehousesRes] = await Promise.all([
     supabase
       .from("sales")
-      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, customers(name), customer_payments(amount)")
+      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, customers(name), customer_payments(amount)")
       .order("created_at", { ascending: false }),
     supabase.from("customers").select("id, name").eq("active", true).order("name"),
+    // S19-05: Pedidos es canal físico — solo productos marcados "in_store" o "both".
     supabase
       .from("products_catalog")
       .select("id, sku, name, price, tax_rate")
       .eq("active", true)
+      .in("sales_channel", ["in_store", "both"])
       .order("name"),
     supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
   ]);
@@ -44,6 +47,8 @@ export default async function PedidosPage() {
         <h1 className="text-xl font-semibold tracking-tight">Pedidos</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
+
+      <CatalogPedidoCart tenantId={active.tenantId} customers={customers} />
 
       <SaleForm customers={customers} products={products} />
 
@@ -74,6 +79,7 @@ export default async function PedidosPage() {
                     issuedAt: s.issued_at,
                     createdAt: s.created_at,
                     shippingAddress: s.shipping_address,
+                    paymentMethod: s.payment_method,
                   }}
                   warehouses={warehouses}
                 />

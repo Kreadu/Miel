@@ -2,8 +2,22 @@ import { describe, expect, it } from "vitest";
 
 import { resolveActiveTenant, type ActiveMembership } from "./active-tenant";
 
-const tenantA: ActiveMembership = { tenantId: "a", role: "owner", tenantName: "Empresa A" };
-const tenantB: ActiveMembership = { tenantId: "b", role: "member", tenantName: "Empresa B" };
+const tenantA: ActiveMembership = {
+  tenantId: "a",
+  role: "owner",
+  tenantName: "Empresa A",
+  sellsPhysical: true,
+  sellsVirtual: false,
+  currency: "COP",
+};
+const tenantB: ActiveMembership = {
+  tenantId: "b",
+  role: "member",
+  tenantName: "Empresa B",
+  sellsPhysical: true,
+  sellsVirtual: false,
+  currency: "COP",
+};
 
 describe("resolveActiveTenant", () => {
   it("usa el tenant de la cookie cuando corresponde a un membership del usuario", () => {

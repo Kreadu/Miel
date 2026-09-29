@@ -9,6 +9,9 @@ const membership = (tenantId: string, tenantName: string) => ({
   tenantId,
   tenantName,
   role: "owner" as const,
+  sellsPhysical: true,
+  sellsVirtual: false,
+  currency: "COP",
 });
 
 describe("TenantSwitcher", () => {

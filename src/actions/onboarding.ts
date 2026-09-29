@@ -15,6 +15,8 @@ export async function createTenant(
   const parsed = onboardingSchema.safeParse({
     name: formData.get("name"),
     nit: formData.get("nit") || undefined,
+    sellsPhysical: formData.get("sellsPhysical") === "on",
+    sellsVirtual: formData.get("sellsVirtual") === "on",
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
@@ -22,6 +24,8 @@ export async function createTenant(
   const { error } = await supabase.rpc("create_tenant_with_owner", {
     p_name: parsed.data.name,
     p_nit: parsed.data.nit,
+    p_sells_physical: parsed.data.sellsPhysical,
+    p_sells_virtual: parsed.data.sellsVirtual,
   });
   if (error) {
     console.error("createTenant:", error.code);

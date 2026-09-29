@@ -1,0 +1,49 @@
+# Gobernanza ejecutable del proyecto (ver docs/GOVERNANCE.md).
+# Ambos jobs son bloqueantes: no se mergea con el pipeline en rojo.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  app:
+    name: Lint + Typecheck + Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Gate de dependencias vulnerables (ADR-020): bloquea solo high/critical de producción.
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  db:
+    name: Migraciones + pgTAP (RLS guard e invariantes)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Levantar Postgres local y aplicar migraciones
+        run: supabase db start
+      - name: Correr tests pgTAP
+        run: supabase test db
+
+  secrets:
+    name: Escaneo de secretos (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # historial completo: gitleaks escanea todos los commits (ADR-020)
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

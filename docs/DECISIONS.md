@@ -511,3 +511,51 @@ mismo criterio que ADR-032 usó para separar la vía automática de la manual en
 fila propia. pgTAP de S5-01 (`S5-01-clientes.sql`) invierte su aserción "member no puede crear
 cliente" a "member sí crea" (supersesión documentada, mismo patrón que ADR-031 aplicó a S11-01).
 Historia: S15-02.
+
+## ADR-034 · 2026-09-28 · `tenants` gana canal de venta (física/virtual, combinables, no excluyentes)
+**Contexto:** S19-01 responde al planteo del dueño de que Miel asumía implícitamente que toda
+empresa es física (con caja y sucursal). Una empresa puede ser solo física, solo virtual (catálogo
+online, sin caja) o **ambas cosas a la vez** — combinación explícitamente pedida por el dueño, no
+una elección excluyente. El catálogo con carrito real y el cobro online quedan pospuestos
+(épica separada; pagos, pospuestos explícitamente por el dueño) — esta decisión solo cubre el
+modelo de datos y el gating de navegación de `/ventas`.
+**Decisión:** dos columnas booleanas independientes en `tenants` (`sells_physical` default
+`true`, `sells_virtual` default `false`) en vez de un enum/tipo único — porque son combinables, un
+enum de un solo valor no podría representar "ambos". `CHECK (sells_physical or sells_virtual)`
+como invariante de base (una empresa no puede no vender de ninguna forma), reforzado también en
+`create_tenant_with_owner` (mismo patrón de error `P0001` que ya usa para nombre vacío) y en el
+schema Zod del onboarding (`refine`) — tres capas, la de base es la que de verdad no se puede
+saltar. `create_tenant_with_owner` se recrea con `drop function` + `create or replace` (no un
+simple `create or replace`, que en Postgres crea un overload nuevo en vez de reemplazar cuando
+cambia la lista de argumentos) para no dejar una versión vieja sin el invariante de canal servible
+en paralelo.
+**Consecuencias:** `ActiveMembership` (`src/lib/tenant/active-tenant.ts`) gana `sellsPhysical` /
+`sellsVirtual`; `getActiveTenant()` los trae del join con `tenants`. `/ventas` oculta "Sucursal"
+(caja/POS/pedidos) a un tenant sin `sells_physical`, y muestra una tarjeta "Catálogo online -
+Próximamente" (sin funcionalidad aún) si tiene `sells_virtual`. Bodegas (S2-01) no se tocan: ya
+eran independientes de sucursal/caja y sirven igual para cualquier combinación de canal. No hay
+todavía forma de editar el canal de un tenant ya creado — deuda anotada en `docs/BACKLOG.md`.
+**Bloqueo operativo real:** esta migración no pudo aplicarse al proyecto Supabase cloud desde este
+entorno (sin `supabase link`, sin credenciales — por diseño, no se piden secretos nuevos por chat
+tras el incidente de la sesión anterior). Queda escrita en
+`supabase/migrations/20260928195027_canal-de-venta-tenant.sql`, pendiente de que el humano la
+aplique (SQL Editor del dashboard o `supabase db push` en su propia máquina) antes de que
+`/onboarding` y `/ventas` funcionen contra su base real. Historia: S19-01.
+
+## ADR-035 · 2026-09-28 · Catálogo reusa `products`; fotos en un bucket de Storage público en lectura
+**Contexto:** S19-02 pide un catálogo real (no el placeholder de S19-01) con alta de producto por
+foto/descripción/precio/descuento, disparado por un botón "Generar producto" desde `/ventas`.
+**Decisión:** en vez de una entidad `catalog_products` paralela, el catálogo reusa `products`
+(S2-02) — dos columnas nuevas (`photo_url`, `discount_percent numeric(5,2) check 0-100`) y una
+vía de alta simplificada (`createCatalogProduct`) que solo pide lo que el dueño pidió (nombre,
+descripción, precio, descuento, foto), autogenerando SKU y dejando costo/IVA/tipo/bodega en sus
+defaults — editables después desde la ficha completa en `/inventario/productos`, misma fila. Las
+fotos van a un bucket nuevo de Supabase Storage (`product-photos`), **público en lectura**
+(el catálogo es de cara al cliente final, aunque el carrito/checkout todavía no existan) y con
+escritura restringida por RLS a owner/admin del tenant dueño del prefijo de carpeta
+(`{tenant_id}/...`), mismo criterio de aislamiento que el resto del esquema.
+**Consecuencias:** `products_catalog` (la vista de S12-05/ADR-029 que ya enmascara `cost` para
+`member`) expone las dos columnas nuevas sin enmascarar — no son sensibles. `/inventario/productos`
+y su formulario completo no cambian; un producto creado desde el catálogo es editable ahí sin
+distinción (misma tabla). El límite de 5MB y los tipos permitidos (jpg/png/webp) se validan en el
+servidor antes de subir, no se confía en la extensión del archivo. Historia: S19-02.

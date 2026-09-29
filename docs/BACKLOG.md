@@ -139,6 +139,8 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S14-03 | Como usuario quiero que el logo/nombre "Miel" sea un link a Inicio para volver rápido desde cualquier pantalla | `Logo`/texto "Miel" en `(app)/layout.tsx` envuelto en `<Link href="/inicio">` | S1-04 | done | specs/done/S14-03-logo-link-inicio.md |
 | S14-04 | Como usuario quiero que la empresa se funde solo al registrarme para no confundirme con una opción de creación que no debería tener estando ya invitado a otra | `TenantSwitcher` ya se ocultaba con 1 membership (sin cambios); se retira el link "+ Crear mi empresa"/`?onboarding=crear` y `create_tenant_with_owner` rechaza a cualquier usuario con membership previa, no solo a un owner (ADR-031, supersede ese punto de ADR-026) | ADR-026 | done | specs/done/S14-04-empresa-solo-en-registro.md |
 | S14-05 | Como usuario quiero entender qué hace "Abrir caja" para operarla con confianza | texto de ayuda en `/ventas/caja` explicando qué es el monto de apertura y qué pasa al cerrar | S5-08 | done | specs/done/S14-05-ayuda-abrir-caja.md |
+| S14-06 | Como dueño quiero que los accesos directos de Inicio lleven a la raíz del módulo en vez de saltar directo a una acción | "Vender" → `/ventas` (antes `/ventas/pos`), "Agregar al inventario" → `/inventario` (antes `/inventario/productos`) en `inicio/quick-actions.tsx` — **superada por S14-07** (el componente se elimina) | S14-02 | done | specs/done/S14-06-accesos-directos-a-modulo.md |
+| S14-07 | Como dueño quiero que Inicio muestre solo Módulos y Resumen gerencial, sin accesos directos duplicados | se elimina `inicio/quick-actions.tsx` (y su test) y su uso en `inicio/page.tsx`; las acciones equivalentes ya viven dentro de cada módulo ("Punto de Venta" en `/ventas`, "+ Nuevo producto" en `/inventario`, ambos preexistentes) | S14-02, S14-06 | done | specs/done/S14-07-quitar-accesos-directos-inicio.md |
 
 ## Épica E15 — Compras y clientes completos
 
@@ -161,12 +163,98 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 |---|---|---|---|---|---|
 | S17-01 | Como owner quiero asignar roles de Dueño/Vendedor/Comprador/Observador para que cada persona del equipo solo vea y haga lo que le corresponde | ADR que supersede ADR-018/019; migración de los 2 CHECK de rol; reemplaza el patrón `role !== "member"` (15 archivos, incluido `nav-visibility.ts`) por capabilities en `src/lib/tenant/`; actualiza los 30 tests pgTAP que mencionan roles | S1-05 | todo | — |
 
+## Épica E18 — Simplificar Ventas (vender rápido, para alguien con poca capacitación)
+
+| ID | Historia | Criterios clave | Depende de | Estado | Spec |
+|---|---|---|---|---|---|
+| S18-01 | Como empleado quiero abrir la caja sin salir de la pantalla de Vender para no perder tiempo saltando de página | `ventas/pos/page.tsx` muestra el formulario real de apertura (`OpenSessionForm` reusado) en vez de un link a `/ventas/caja`; `openCashSession` revalida también `/ventas/pos` | S5-08 | done | specs/done/S18-01-abrir-caja-inline-en-vender.md |
+| S18-02 | Como dueño quiero registrar quién era el encargado al abrir/cerrar caja (desplegable con los miembros de la empresa), sin exigir una aprobación aparte por ahora | pendiente de definir — campo informativo, no un flujo de aprobación; el humano dijo "luego trabajaremos en eso" | S18-01 | todo | — |
+| S18-03 | Como dueño quiero que Ventas tenga solo 4 accesos (Clientes, Sucursal, Cuentas por cobrar, Inicio) y que Pedidos/Caja/Punto de Venta queden agrupados dentro de "Sucursal" | `ventas/page.tsx` reducido a 4 links; nueva `ventas/sucursal/page.tsx` con los 3 accesos que salieron de la raíz (mismas URLs, sin cambios internos) | S18-01 | done | specs/done/S18-03-agrupar-sucursal-en-ventas.md |
+| S18-04 | Como dueño quiero que Ventas no tenga botón "Inicio" (ya se vuelve por el logo del sidebar) | `ventas/page.tsx` queda con 3 accesos: Clientes, Sucursal, Cuentas por cobrar | S18-03 | done | specs/done/S18-04-quitar-inicio-de-ventas.md |
+| S18-05 | Como dueño quiero deshacer la agrupación "Sucursal": Pedidos/Caja/POS vuelven a ser accesos directos en Ventas | `ventas/page.tsx` con Pedidos/Caja/POS de vuelta en la raíz (gateados por `sellsPhysical`); se borra `ventas/sucursal/page.tsx` | S18-04, S19-01 | done | specs/done/S18-05-revertir-agrupacion-sucursal.md |
+
+## Épica E19 — Canal de venta física y/o virtual (combinables)
+
+| ID | Historia | Criterios clave | Depende de | Estado | Spec |
+|---|---|---|---|---|---|
+| S19-01 | Como dueño quiero que Miel me pregunte si vendo de forma física, virtual o ambas, y que Ventas oculte Sucursal cuando no vendo físico | `tenants.sells_physical`/`sells_virtual` (booleanos combinables, `CHECK` al menos uno true); onboarding pregunta con 2 checkboxes; `/ventas` oculta Sucursal sin canal físico y muestra "Catálogo" con canal virtual | S1-03 | done | specs/done/S19-01-canal-de-venta-fisica-virtual.md |
+| S19-02 | Como dueño quiero generar productos de catálogo (foto, descripción, precio, descuento) desde un botón "Generar producto" en `/ventas/catalogo` | `products` gana `photo_url`/`discount_percent`; bucket Storage `product-photos` (público en lectura, escritura admin-only por tenant); alta simplificada sin SKU/costo/IVA manual (autogenerado); grid de tarjetas con precio tachado si hay descuento | S19-01 | done (migración aplicada y confirmada 2026-09-28) | specs/done/S19-02-catalogo-productos.md |
+| S19-03 | Como dueño quiero editar y eliminar un producto directamente desde `/ventas/catalogo` | Botones "Editar"/"Eliminar" por tarjeta (solo owner/admin); edición reusa los mismos campos del alta; "Eliminar" reusa `toggleProductActive` (soft-delete, active=false), no DELETE físico | S19-02 | done | specs/done/S19-03-editar-eliminar-catalogo.md |
+| S19-04 | Como dueño quiero que el catálogo permita ver los precios convertidos a otra moneda (p. ej. COP→EUR para un comprador europeo) | Selector de moneda en `/ventas/catalogo`; `getExchangeRate` (Server Action, API pública `open.er-api.com`, cacheada 1h) hace la conversión de VISTA, sin persistir ni afectar `products.price`; `tenants.currency` (existía sin usar desde S1-01) ahora se expone como moneda base | S19-02 | implemented (código, depende de una API externa real — no verificable en este sandbox) | specs/done/S19-04-conversion-moneda-catalogo.md |
+| S19-05 | Como dueño quiero marcar, al generar un producto, si se vende solo por internet, solo en tienda, o por ambas | `products.sales_channel` (`online`/`in_store`/`both`, default `both`); selector en el alta/edición del catálogo; badge de canal en la tarjeta; **corregido en la misma sesión**: `/ventas/catalogo` ya NO filtra por canal (es la vista de gestión, nunca esconde productos), solo `/ventas/pos`/`/ventas/pedidos` filtran a `in_store`/`both` | S19-02 | implemented (código); **migración sin aplicar al cloud, ver Deuda técnica** | specs/done/S19-05-canal-de-venta-por-producto.md |
+| S19-06 | Como dueño quiero apretar un producto del catálogo y armar un Pedido (carrito) con cantidad y cliente asignado | Reusa `createSale`/`create_sale` (S5-02) tal cual, sin tabla ni RPC nueva; carrito en localStorage por tenant; arma el mismo payload de ítems que `SaleForm` y confirma con la misma acción | S19-02, S5-02 | done (sin migración, no bloqueado) | specs/done/S19-06-carrito-catalogo-a-pedido.md |
+| S19-07 | Como dueño quiero que "Ver pedido" lleve a la página de Pedidos que ya existe, no a una ruta nueva | Se borra `/ventas/catalogo/pedido`; el carrito (`CatalogPedidoCart`) se muda dentro de `/ventas/pedidos`, arriba de `SaleForm`; sin carrito activo la página se ve igual que siempre; "Agregar al pedido" ya no navega (corrección de UX en la misma historia) | S19-06 | done (sin migración, no bloqueado) | specs/done/S19-07-unificar-pedido-en-ventas-pedidos.md |
+| S19-08 | Como dueño quiero ver Subtotal/IVA/Total a pagar por separado en el pedido, y elegir forma de pago (efectivo/tarjeta/transferencia) | Verificado que no había bug de cálculo — se agregó el desglose visible; `sales.payment_method` nuevo (descriptivo, no transaccional, sin exigir caja ni cliente); `create_sale` lo acepta opcional; visible en el listado de Pedidos | S19-07 | implemented (código); **migración sin aplicar al cloud, ver Deuda técnica** | specs/done/S19-08-desglose-y-forma-de-pago-pedido.md |
+| S19-09 | Como dueño quiero un cliente genérico real (no `customer_id = null`) cuando no se elige cliente en una venta | `customers.is_generic` (uno por tenant, índice único parcial); `getOrCreateGenericCustomerId` compartido entre `createSale` (Pedidos) y `registerPosSale` (POS); desbloquea "Registrar cobro" para ventas de mostrador (antes exigía `customer_id` no nulo) | S5-02 | implemented (código); **migración sin aplicar al cloud, ver Deuda técnica** | specs/done/S19-09-cliente-generico.md |
+| S19-10 | Como dueño quiero que el IVA del catálogo salga en 19% (estándar del país), no en 0 | `createCatalogProduct` usaba `tax_rate: 0` por un supuesto incorrecto de S19-02; corregido a `DEFAULT_TAX_RATE_PERCENT = 19` (mismo default que ya usa `products.tax_rate` y el formulario de inventario); backfill de los productos `CAT-%` ya creados con 0 | S19-02 | implemented (código); **migración sin aplicar al cloud, ver Deuda técnica** | specs/done/S19-10-iva-default-catalogo.md |
+| S19-11 | Como dueño quiero que el Pedido refresque precio/descuento/IVA del carrito contra la BD al abrirse, no una foto vieja | `refreshCartProductData` (Server Action) + `updateLineData` en `useCatalogCart`; `CatalogPedidoCart` reconcilia una vez al entrar (sin pisar cantidades elegidas ni loopear con `lines` como dependencia) | S19-06 | done (sin migración, no bloqueado) | specs/done/S19-11-refrescar-carrito-al-abrir-pedido.md |
+| S19-12 | Como dueño quiero un botón "Volver" en todas las páginas | `BackButton` (`router.back()`) agregado una sola vez en el layout compartido de `(app)`, arriba de `{children}` — no en cada página; oculto en `/inicio` | — | done (sin migración, no bloqueado) | specs/done/S19-12-boton-volver.md |
+| S19-13 | Como dueño quiero ver en qué bodega/sucursal está un producto del catálogo y su stock total en todas | Reusa `current_stock` (vista existente de `stock_movements`, S2-03) — sin esquema nuevo; `catalogo/page.tsx` la consulta junto con `warehouses` y arma el desglose por tarjeta | S19-02, S2-01, S2-03 | done (sin migración, no bloqueado) | specs/done/S19-13-stock-por-bodega-en-catalogo.md |
+| S19-14 | Como dueño quiero poder cargar/agregar stock y elegir bodega/sucursal/tienda desde el alta y edición del catálogo (S19-13 era de solo lectura) | Reusa `register_movement` (RPC de S2-03/S13-01) — sin RPC nueva; bloque "Stock" opcional en `CatalogProductFields`, bodega+cantidad; alta y edición del catálogo pueden sumar stock | S19-13 | done (sin migración, no bloqueado) | specs/done/S19-14-stock-y-bodega-en-formulario-catalogo.md |
+| S19-15 | Como dueño quiero asignar un producto a una categoría (creable desde el producto o aparte) y filtrar el catálogo por categoría | Tabla `product_categories` + `products.category_id`; botón "Generar categoría" arriba de "Generar producto"; selector de categoría + "o creá una nueva" en el alta/edición; filtro "Todos" + un botón por categoría en `/ventas/catalogo` (`?categoria=<id>`) | S19-02 | implemented (código); **migración sin aplicar al cloud, ver Deuda técnica** | specs/done/S19-15-categorias-de-producto.md |
+
+## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
+
+**Pedido por el humano 2026-09-28, confirmado alcance completo** (no solo el catálogo — también
+Inventario, Compras, Finanzas, todo módulo existente). **Sin empezar todavía** — es un cambio de
+magnitud distinta al resto del backlog: no es una historia, es un proyecto propio que necesita su
+propia sesión de planificación (spec + ADR de arquitectura) antes de tocar código, según el propio
+protocolo SDD+TDD de este repo.
+
+**Por qué no se arrancó en la sesión donde se pidió:** decenas de páginas y componentes con texto
+en español hardcodeado, mensajes de error de cada Server Action/RPC, validaciones Zod, formateo de
+fecha/moneda (`src/lib/format.ts` fija `es-CO`/`America/Bogota`), y ninguna infraestructura de
+i18n todavía (`next-intl` u otra no está instalada). Intentarlo de apuro al final de una sesión ya
+larguísima habría producido algo a medio hacer.
+
+**Plan sugerido para la próxima sesión que la tome (no decidido/aprobado todavía, punto de
+partida):**
+1. ADR de arquitectura: librería (`next-intl` es el estándar para App Router), esquema de rutas
+   (`/[locale]/...` con prefijo o negociación por header/cookie sin prefijo — decisión con
+   impacto real en cada link/redirect existente), y si el selector de idioma es por
+   usuario/tenant o por sesión de navegador.
+2. Extraer strings a archivos de traducción módulo por módulo (no todo de una vez) — probablemente
+   empezando por Ventas/Catálogo (el módulo más nuevo y más chico) como piloto antes de encarar
+   Inventario/Compras/Finanzas.
+3. `src/lib/format.ts` deja de fijar `es-CO`/`America/Bogota` — pasa a tomar el locale activo.
+4. Mensajes de error de Server Actions/RPC (los `mapXError` de cada `actions/*.ts`) también
+   necesitan traducirse — hoy son strings en español hardcodeados en el código, no datos.
+
+**Siguiente paso:** el humano decide cuándo dedicarle una sesión a esto; empieza por el ADR, no
+por código.
+
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
+- **S19-15, bloqueante hasta que se resuelva**: la migración
+  `20260928231228_categorias-de-producto.sql` (tabla `product_categories` +
+  `products.category_id`) está escrita pero **no aplicada** al Supabase cloud — mismo patrón de
+  siempre. Hasta que se aplique, el selector de categoría del catálogo y "Generar categoría" van
+  a fallar. Nota: S19-01/S19-02/S19-05/S19-08/S19-09/S19-10 sí quedaron aplicadas — confirmado
+  indirectamente por el uso real sin errores de columna faltante.
+- S19-02 a S19-15: `supabase test db` sigue sin correr (sin Docker en este sandbox) — pendiente de
+  que el humano lo corra localmente si tiene Docker.
+- S19-05: `/inventario/productos` (ficha completa) no tiene todavía el selector de canal — un
+  producto creado ahí queda en `'both'` por default. Agregarlo ahí también (y a la RPC
+  `create_product_with_stock`) queda para otra historia si hace falta.
+- S19-04: la conversión de moneda depende de una API pública externa (`open.er-api.com`, sin
+  key) — sin SLA garantizado. Si falla o cambia de forma, el selector muestra error y los precios
+  quedan en la moneda base (no rompe la página), pero no hay fallback a un segundo proveedor.
+- S19-03: al reemplazar la foto de un producto en edición, la foto vieja no se borra de Storage
+  (queda huérfana). Bajo impacto (bucket chico, MVP), limpiar si el volumen crece.
+- S19-01 (aplicada y confirmada 2026-09-28): no hay UI para cambiar el canal de un tenant ya
+  creado (solo se define una vez, al onboarding, o a mano por SQL como se hizo para el tenant de
+  prueba). Si un tenant físico luego quiere sumar catálogo virtual, hoy no puede sin editar la
+  fila a mano.
 - Signup (S1-02, detectada en el deploy S9-03): no avisa "revisá tu correo para confirmar" tras
   registrarse — un usuario nuevo puede quedar bloqueado en el primer login sin saber la causa.
   Para el período de beta se desactivó "Confirm email" en Supabase Auth (config de
   infraestructura); al reactivarla de cara a producción real, agregar el aviso en la UI del
   formulario de signup.
+- Correos nativos de Supabase Auth (reset de contraseña, y confirmación si se reactiva) usan el
+  mailer por defecto de Supabase, con un límite de envío muy bajo pensado para pruebas — no
+  Resend, que solo cubre invitaciones de equipo (ADR-028). Causó bloqueo real a un usuario beta el
+  2026-09-28 (ver `docs/deploy.md` → Casos borde para el detalle). Fix: configurar SMTP propio
+  (reusar Resend) en el dashboard de Supabase — Authentication → Emails → SMTP Settings; no
+  requiere cambios en el repo.
 - `kardex/[productId]/page.tsx`: `params` con el patrón síncrono viejo (preexistente de S2-04;
   el resto del repo ya usa `params: Promise<{...}>` + `await`).
 - `kardex/[productId]/page.tsx`: usa `text-emerald-600`/`text-rose-600` en vez de tokens

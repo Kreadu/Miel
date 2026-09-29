@@ -42,6 +42,7 @@ export async function openCashSession(
   }
 
   revalidatePath(CASH_PATH);
+  revalidatePath("/ventas/pos");
   return { ok: true };
 }
 

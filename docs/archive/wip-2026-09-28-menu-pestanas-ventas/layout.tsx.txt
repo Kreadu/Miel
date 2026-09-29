@@ -1,0 +1,29 @@
+import { notFound } from "next/navigation";
+
+import { SectionTabs } from "@/components/section-tabs";
+import { getActiveTenant } from "@/lib/tenant/server";
+
+const BASE_TABS = [
+  { href: "/ventas", label: "Resumen" },
+  { href: "/ventas/pos", label: "Punto de venta" },
+  { href: "/ventas/pedidos", label: "Pedidos" },
+  { href: "/ventas/clientes", label: "Clientes" },
+  { href: "/ventas/caja", label: "Caja" },
+];
+
+export default async function VentasLayout({ children }: { children: React.ReactNode }) {
+  const { active } = await getActiveTenant();
+  if (!active) notFound();
+
+  const tabs =
+    active.role === "member"
+      ? BASE_TABS
+      : [...BASE_TABS, { href: "/ventas/cuentas-por-cobrar", label: "Por cobrar" }];
+
+  return (
+    <div className="flex flex-col gap-6">
+      <SectionTabs items={tabs} />
+      {children}
+    </div>
+  );
+}

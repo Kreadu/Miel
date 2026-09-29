@@ -102,6 +102,21 @@ Criterio 3 (login real): crear/usar un usuario en el dominio de Vercel, confirma
 - **Seed de demo en cloud (opcional)**: para poblar el tenant "Miel Demo" en el proyecto cloud,
   apuntar `.env.local` a la URL/anon key/service_role del proyecto cloud y correr `npm run seed`
   localmente. No es parte de los criterios de aceptación de S9-03.
+- **Límite de envío de correo del mailer por defecto de Supabase Auth (detectado 2026-09-28)**:
+  los correos nativos de Auth (confirmación de signup si se reactiva, "olvidé mi contraseña")
+  siguen usando el enviador por defecto de Supabase, no Resend (Resend solo cubre invitaciones de
+  equipo, ver ADR-028) — y ese enviador por defecto tiene un límite muy bajo pensado para pruebas,
+  no producción. Síntoma real reportado por un usuario beta: tras crear cuenta+empresa desde un
+  `npm run dev` local que se cortó a mitad de sesión (compu sin batería), intentó reingresar desde
+  `https://miel-eight.vercel.app/` y encadenó tres fallos que en realidad eran el mismo límite:
+  login con "Correo o contraseña incorrectos" (mensaje genérico a propósito, no distingue causa),
+  luego "olvidé mi contraseña" con "No se pudo enviar el correo", y hasta un intento de registro
+  con el mismo correo devolvió el mismo error genérico de signup (esperable: Supabase rechaza
+  re-registrar un correo ya existente, confirmando que la cuenta sí sigue en la base real). Mitigó
+  esperando ~1h entre intentos. **Fix real pendiente (no accionado, requiere acceso al dashboard
+  de Supabase, fuera del repo)**: configurar SMTP propio en Authentication → Emails → SMTP
+  Settings — puede reusar la cuenta de Resend ya existente (ADR-028) — para que estos correos
+  dejen de depender del límite compartido por defecto.
 
 ## Referencias
 - `docs/arch/stack.md` — límites del free tier y costo proyectado post-validación.

@@ -1,13 +1,17 @@
 import { redirect } from "next/navigation";
 import { Menu } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { logout } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import type { Locale } from "@/i18n/locales";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
+import { BackButton } from "./back-button";
+import { LanguageSwitcher } from "./language-switcher";
 import { SidebarNav } from "./sidebar-nav";
 import { TenantSwitcher } from "./tenant-switcher";
 import { BrandLink } from "./brand-link";
@@ -17,6 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const locale = (await getLocale()) as Locale;
 
   // El anónimo ya lo corta el proxy; esto cubre membership perdida en caliente (caso borde).
   const { active, memberships } = await getActiveTenant();
@@ -67,7 +72,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {sidebarContent}
       </aside>
 
-      <main className="flex flex-1 flex-col min-w-0 p-4 md:p-6">{children}</main>
+      <main className="flex flex-1 flex-col min-w-0 p-4 md:p-6">
+        <div className="mb-2 flex items-center justify-between">
+          <BackButton />
+          {/* ml-auto en vez de depender de justify-between: BackButton devuelve null en
+              /inicio, y con un solo hijo real justify-between no lo empuja a la derecha. */}
+          <LanguageSwitcher currentLocale={locale} />
+        </div>
+        {children}
+      </main>
     </div>
   );
 }

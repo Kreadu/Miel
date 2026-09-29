@@ -1,0 +1,17 @@
+export type SaleSummaryRow = { status: string; total: number; issued_at: string | null };
+export type SalesSummary = { total: number; count: number; average: number };
+
+const COUNTED_STATUSES = new Set(["confirmed", "shipped", "delivered"]);
+
+export function summarizeSales(rows: SaleSummaryRow[]): SalesSummary {
+  const counted = rows.filter((r) => COUNTED_STATUSES.has(r.status) && r.issued_at != null);
+
+  const totalCents = counted.reduce((acc, r) => acc + Math.round(r.total * 100), 0);
+  const count = counted.length;
+
+  return {
+    total: totalCents / 100,
+    count,
+    average: count === 0 ? 0 : Math.round(totalCents / count) / 100,
+  };
+}

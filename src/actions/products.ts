@@ -112,4 +112,7 @@ export async function toggleProductActive(formData: FormData): Promise<void> {
     .update({ active: parsed.data.active === "true" })
     .eq("id", parsed.data.id);
   revalidatePath(PRODUCTS_PATH);
+  // S19-03: "Eliminar" en /ventas/catalogo reusa esta misma acción (soft-delete, active=false)
+  // — necesita revalidar también esa ruta para que el producto desaparezca sin recarga manual.
+  revalidatePath("/ventas/catalogo");
 }

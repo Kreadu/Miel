@@ -15,6 +15,14 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: "Cancelada",
 };
 
+// S19-08: descriptivo (cómo se espera pagar), no un cobro real — ver "Registrar cobro" para eso.
+const PAYMENT_METHOD_LABEL: Record<string, string> = {
+  cash: "Efectivo",
+  card: "Tarjeta",
+  transfer: "Transferencia",
+  other: "Otro",
+};
+
 export function SaleRow({
   sale,
   warehouses,
@@ -30,6 +38,7 @@ export function SaleRow({
     issuedAt: string | null;
     createdAt: string;
     shippingAddress: string | null;
+    paymentMethod: string | null;
   };
   warehouses: { id: string; name: string }[];
 }) {
@@ -47,6 +56,11 @@ export function SaleRow({
         {sale.shippingAddress && (
           <div className="text-[10px] mt-0.5 truncate max-w-[150px]" title={sale.shippingAddress}>
             📍 {sale.shippingAddress}
+          </div>
+        )}
+        {sale.paymentMethod && (
+          <div className="text-[10px] mt-0.5">
+            Pago: {PAYMENT_METHOD_LABEL[sale.paymentMethod] ?? sale.paymentMethod}
           </div>
         )}
       </td>

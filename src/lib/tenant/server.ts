@@ -27,7 +27,7 @@ export async function getActiveTenant(): Promise<{
   // `created_at` (casi siempre el owner) pisa el rol real del usuario actual.
   const { data, error } = await supabase
     .from("memberships")
-    .select("tenant_id, role, tenants(name)")
+    .select("tenant_id, role, tenants(name, sells_physical, sells_virtual, currency)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: true });
   if (error) throw new Error("No se pudieron cargar las empresas del usuario.");
@@ -36,6 +36,9 @@ export async function getActiveTenant(): Promise<{
     tenantId: m.tenant_id,
     role: m.role as ActiveMembership["role"],
     tenantName: m.tenants?.name ?? "",
+    sellsPhysical: m.tenants?.sells_physical ?? true,
+    sellsVirtual: m.tenants?.sells_virtual ?? false,
+    currency: m.tenants?.currency ?? "COP",
   }));
 
   const cookieTenantId = (await cookies()).get(ACTIVE_TENANT_COOKIE)?.value;

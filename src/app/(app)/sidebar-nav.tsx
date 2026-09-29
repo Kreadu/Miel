@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -12,11 +13,12 @@ import type { Role } from "@/lib/tenant/active-tenant";
 // de ícono no es serializable como prop desde un Server Component (RSC boundary).
 export function SidebarNav({ role }: { role: Role }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   const items = visibleNavItems(role);
 
   return (
     <nav className="flex flex-col gap-0.5">
-      {items.map(({ href, label, icon: Icon, separatorBefore }) => {
+      {items.map(({ href, i18nKey, icon: Icon, separatorBefore }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`);
         return (
           <Fragment key={href}>
@@ -32,7 +34,7 @@ export function SidebarNav({ role }: { role: Role }) {
               )}
             >
               <Icon className="size-4" aria-hidden />
-              {label}
+              {t(i18nKey)}
             </Link>
           </Fragment>
         );
