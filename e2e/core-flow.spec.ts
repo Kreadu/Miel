@@ -39,9 +39,9 @@ test.describe('Flujo core de negocio (Humo)', () => {
     // Verificamos que la bodega se creó y aparece en la lista
     await expect(page.getByText(bodegaName)).toBeVisible();
 
-    // 4. Crear producto (S19-24: mismo formulario que el Catálogo, detrás de "+ Nuevo producto")
+    // 4. Crear producto (S19-24: mismo formulario que el Catálogo, detrás de "Generar producto")
     await page.goto('/inventario/productos');
-    await page.getByRole('button', { name: '+ Nuevo producto' }).click();
+    await page.getByRole('button', { name: 'Generar producto' }).click();
     await page.getByLabel('Código (SKU)').fill(productoSku);
     await page.getByLabel('Nombre', { exact: true }).fill(productoName);
     await page.getByRole('combobox', { name: 'Tipo' }).click();

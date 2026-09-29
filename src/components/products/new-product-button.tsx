@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ProductEditor } from "./product-editor";
 import type { Category } from "./types";
 
-/** S19-24: "Generar producto" (Catálogo) y "+ Nuevo producto" (Inventario) abren el mismo formulario. */
+/** S19-24: "Generar producto" en Catálogo y en Productos (inventario) abre el mismo formulario. */
 export function NewProductButton({ label, categories }: { label: string; categories: Category[] }) {
   const [open, setOpen] = useState(false);
 

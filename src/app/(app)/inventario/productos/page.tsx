@@ -59,7 +59,7 @@ export default async function ProductosPage({
               categories={categories}
               trigger={<Button variant="outline">{t("generateCategories")}</Button>}
             />
-            <NewProductButton label={t("newProduct")} categories={categories} />
+            <NewProductButton label={t("generateProduct")} categories={categories} />
           </div>
         ) : null}
       </div>

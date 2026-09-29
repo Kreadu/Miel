@@ -48,7 +48,7 @@ export default async function InventarioPage() {
               className="inline-flex h-9 items-center justify-center rounded-md bg-destructive/10 px-4 text-sm font-medium text-destructive shadow-sm hover:bg-destructive/20"
             >
               <AlertTriangle className="mr-2 h-4 w-4" />
-              Alertas ({alertProductIds.size})
+              Alertas stock mínimo ({alertProductIds.size})
             </Link>
           ) : (
             <Link
@@ -56,7 +56,7 @@ export default async function InventarioPage() {
               className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
             >
               <AlertTriangle className="mr-2 h-4 w-4" />
-              Alertas
+              Alertas stock mínimo
             </Link>
           )}
           <Link
@@ -73,14 +73,6 @@ export default async function InventarioPage() {
             <PackageOpen className="mr-2 h-4 w-4" />
             Productos
           </Link>
-          {!isMember && (
-            <Link
-              href="/inventario/productos"
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-            >
-              + Nuevo producto
-            </Link>
-          )}
         </div>
       </div>
 

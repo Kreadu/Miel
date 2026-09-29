@@ -107,7 +107,7 @@ export async function DashboardInsights() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
             <AlertTriangle className="size-4" aria-hidden="true" />
-            <h3 className="text-sm font-medium text-foreground">Alertas de stock</h3>
+            <h3 className="text-sm font-medium text-foreground">Alertas stock mínimo</h3>
           </div>
           {lowStock.length > 0 && (
             <Link href="/inventario/alertas" className="text-xs text-primary hover:underline">

@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-export const metadata = { title: "Alertas de Stock · Miel" };
+export const metadata = { title: "Alertas stock mínimo · Miel" };
 
 export default async function AlertasStockPage() {
   const { active } = await getActiveTenant();
@@ -28,7 +28,7 @@ export default async function AlertasStockPage() {
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-destructive flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Alertas de Stock
+            Alertas stock mínimo
           </h1>
           <p className="text-sm text-muted-foreground">{active.tenantName}</p>
         </div>
