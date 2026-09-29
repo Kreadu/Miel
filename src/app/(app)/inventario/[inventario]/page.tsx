@@ -10,13 +10,19 @@ export default async function InventarioTipoPage({
   searchParams,
 }: {
   params: Promise<{ inventario: string }>;
-  searchParams: Promise<{ categoria?: string }>;
+  searchParams: Promise<{
+    categoria?: string;
+    historial?: string;
+    desde?: string;
+    hasta?: string;
+    bodega?: string;
+  }>;
 }) {
   const { inventario } = await params;
-  const { categoria } = await searchParams;
+  const { categoria, ...history } = await searchParams;
   const inventory = inventoryBySlug(inventario);
   if (!inventory || inventory.id === "productos") notFound();
-  return <InventoryView inventory={inventory} categoria={categoria} />;
+  return <InventoryView inventory={inventory} categoria={categoria} history={history} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ inventario: string }> }) {

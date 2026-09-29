@@ -210,6 +210,7 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-31 | Como dueño quiero el menú en el orden Inicio, Vender, Inventario, Comprar, Gastos, RRHH | Reordena `NAV_ITEMS`; "Equipo" pasa a llamarse "RRHH" (ruta `/equipo` sin cambios) | — | done (sin migración) | — (cambio de menú, sin spec) |
 | S19-32 | Como dueño quiero ver el stock de cada bodega o sucursal en el producto, editable (junto con el stock mínimo) solo en Inventario y de solo lectura en Vender | RPC `set_product_stock` (ajustes en kardex, atómica); `ProductFields` con `mode` inventory/sales y grilla alineada | S19-24, S19-26 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-32-stock-por-bodega-en-producto.md |
 | S19-33 | Como dueño quiero que "Volver" suba a la sección de arriba, no a la última pantalla abierta | `parentPath` (salta ids y segmentos sin página; módulo → /inicio); `BackButton` con Link en vez de `router.back()` | S19-12 | done (sin migración) | — (fix de navegación con tests, sin spec) |
+| S19-34 | Como dueño quiero el historial de stock dentro de cada inventario, por bodega y rango de fechas, y un % de venta sobre el costo que calcule el precio | RPC `inventory_history`; `InventoryHistory` (botón Historial, GET); `PriceFields` costo/%/precio; formulario ordenado en pares | S19-26, S19-32 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-34-historial-y-porcentaje-de-venta.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -247,7 +248,9 @@ por código.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S19-32**: migración `20260929173340_stock-por-bodega-editable.sql` sin aplicar — hasta
+- **S19-34**: migración `20260929181537_historial-de-inventario.sql` sin aplicar — hasta
+  entonces el Historial de cada inventario muestra "No hubo movimientos".
+- **S19-32 (aplicada 2026-09-29)**: migración `20260929173340_stock-por-bodega-editable.sql` sin aplicar — hasta
   entonces editar stock en Inventario falla ("Se guardó el producto, pero no se pudo actualizar
   el stock").
 - **S19-28 (aplicada 2026-09-29)**: migración

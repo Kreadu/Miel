@@ -8,8 +8,14 @@ export const metadata = { title: "Inventario de productos · Miel" };
 export default async function ProductosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string }>;
+  searchParams: Promise<{
+    categoria?: string;
+    historial?: string;
+    desde?: string;
+    hasta?: string;
+    bodega?: string;
+  }>;
 }) {
-  const { categoria } = await searchParams;
-  return <InventoryView inventory={INVENTORIES[0]} categoria={categoria} />;
+  const { categoria, ...history } = await searchParams;
+  return <InventoryView inventory={INVENTORIES[0]} categoria={categoria} history={history} />;
 }

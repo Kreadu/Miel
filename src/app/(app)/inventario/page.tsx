@@ -5,7 +5,6 @@ import {
   Armchair,
   Boxes,
   Car,
-  History,
   PackageOpen,
   Paperclip,
   SprayCan,
@@ -14,7 +13,6 @@ import {
 } from "lucide-react";
 import { INVENTORIES, type InventoryId, inventoryPath } from "@/lib/inventories";
 import { createClient } from "@/lib/supabase/server";
-import { formatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 export const metadata = { title: "Inventario · Miel" };
@@ -34,18 +32,12 @@ export default async function InventarioPage() {
   if (!active) notFound();
 
   const supabase = await createClient();
-  const [stockRes, prodRes, whRes, alertsRes] = await Promise.all([
-    supabase.from("current_stock").select("product_id, warehouse_id, total_qty, total_value").order("product_id"),
-    supabase.from("products_catalog").select("id, name, sku, unit, inventory, active"),
-    supabase.from("warehouses").select("id, name"),
-    supabase.from("low_stock_alerts").select("product_id")
+  // S19-34: la tabla de stock se mudó al "Historial" de cada inventario.
+  const [prodRes, alertsRes] = await Promise.all([
+    supabase.from("products_catalog").select("inventory, active"),
+    supabase.from("low_stock_alerts").select("product_id"),
   ]);
 
-  const stockList = stockRes.data || [];
-  const products = (prodRes.data || [])
-    .filter((p): p is typeof p & { id: string } => p.id !== null)
-    .map((p) => ({ id: p.id, name: p.name ?? "—", sku: p.sku ?? "—", unit: p.unit ?? "" }));
-  const warehouses = whRes.data || [];
   // S19-26: cantidad de ítems activos por inventario, para los botones de cada uno.
   const countByInventory = new Map<string, number>();
   for (const p of prodRes.data ?? []) {
@@ -55,12 +47,6 @@ export default async function InventarioPage() {
   }
   const alertsList = alertsRes.data || [];
   const alertProductIds = new Set(alertsList.map(a => a.product_id));
-
-  if (stockRes.error) {
-    console.error("Error fetching current stock", stockRes.error);
-  }
-
-  const isMember = active.role === "member";
 
   return (
     <div className="flex flex-col gap-6">
@@ -124,75 +110,6 @@ export default async function InventarioPage() {
           );
         })}
       </section>
-
-
-      {stockList && stockList.length > 0 ? (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Bodega o sucursal</th>
-                <th className="px-3 py-2 font-medium">SKU</th>
-                <th className="px-3 py-2 font-medium">Producto</th>
-                <th className="px-3 py-2 text-right font-medium">Stock</th>
-                {!isMember && <th className="px-3 py-2 text-right font-medium">Valor Total</th>}
-                <th className="px-3 py-2 text-center font-medium">Kardex</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stockList.map((item, idx) => {
-                const product = products.find(p => p.id === item.product_id);
-                const warehouse = warehouses.find(w => w.id === item.warehouse_id);
-                
-                const productName = product?.name ?? "—";
-                const productSku = product?.sku ?? "—";
-                const productUnit = product?.unit ?? "";
-                const warehouseName = warehouse?.name ?? "—";
-
-                return (
-                  <tr key={`${item.product_id}-${item.warehouse_id}-${idx}`} className="border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
-                    <td className="px-3 py-3 text-sm">{warehouseName}</td>
-                    <td className="px-3 py-3 text-sm">{productSku}</td>
-                    <td className="px-3 py-3 text-sm font-medium">
-                      <div className="flex items-center gap-2">
-                        {productName}
-                        {alertProductIds.has(item.product_id) && (
-                          <span title="Stock bajo el nivel mínimo" className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                            <AlertTriangle className="h-3 w-3" />
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-3 text-sm text-right">
-                      {Number(item.total_qty).toLocaleString()} <span className="text-muted-foreground text-xs">{productUnit}</span>
-                    </td>
-                    {!isMember && (
-                      <td className="px-3 py-3 text-sm text-right">
-                        {item.total_value !== null ? `$${formatMoney(item.total_value)}` : "—"}
-                      </td>
-                    )}
-                    <td className="px-3 py-3 text-center">
-                      <Link
-                        href={`/inventario/kardex/${item.product_id}?warehouse_id=${item.warehouse_id}`}
-                        className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <History className="mr-1.5 h-3.5 w-3.5" />
-                        Historial
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            Aún no hay stock registrado en el sistema. Los movimientos de inventario actualizarán esta vista.
-          </p>
-        </div>
-      )}
     </div>
   );
 }

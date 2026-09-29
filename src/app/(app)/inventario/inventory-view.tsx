@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { ArchivedProducts } from "./archived-products";
+import { type HistoryParams, InventoryHistory } from "./inventory-history";
 import { ProductGrid } from "./product-grid";
 
 /**
@@ -21,9 +22,12 @@ import { ProductGrid } from "./product-grid";
 export async function InventoryView({
   inventory,
   categoria,
+  history,
 }: {
   inventory: InventoryConfig;
   categoria?: string;
+  /** S19-34: filtros del Historial (`?historial=1&desde&hasta&bodega`). */
+  history: HistoryParams;
 }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
@@ -70,6 +74,14 @@ export async function InventoryView({
           </div>
         ) : null}
       </div>
+
+      <InventoryHistory
+        inventory={inventory}
+        basePath={inventoryPath(inventory)}
+        warehouses={warehouses}
+        currency={active.currency}
+        params={history}
+      />
 
       <CategoryFilter
         categories={categories}

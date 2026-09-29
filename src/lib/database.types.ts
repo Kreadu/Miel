@@ -2050,6 +2050,25 @@ export type Database = {
         }
         Returns: string
       }
+      inventory_history: {
+        Args: {
+          p_from: string
+          p_inventory: string
+          p_to: string
+          p_warehouse_id?: string
+        }
+        Returns: {
+          cost: number
+          price: number
+          product_id: string
+          product_name: string
+          sku: string
+          stock: number
+          unit: string
+          warehouse_id: string
+          warehouse_name: string
+        }[]
+      }
       mark_purchase_ordered: {
         Args: { p_purchase_id: string }
         Returns: undefined

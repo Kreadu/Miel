@@ -22,6 +22,7 @@ import {
 } from "@/lib/validation/catalog";
 
 import { CategoryPicker } from "./category-picker";
+import { PriceFields } from "./price-fields";
 import { StockBox } from "./stock-box";
 import type {
   Category,
@@ -97,17 +98,16 @@ export function ProductFields({
   };
   const editable = mode === "inventory";
 
+  // S19-34: orden fijo en pares para que ningún campo quede suelto en su fila.
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <input type="hidden" name="inventory" value={inventory} />
+      {config.sellable ? null : (
+        <input type="hidden" name="kind" value={config.fixedKind ?? "other"} />
+      )}
       <div className="flex flex-col gap-2 sm:col-span-2">
         <Label htmlFor="name">{t("name")}</Label>
-        <Input
-          id="name"
-          name="name"
-          required
-          maxLength={120}
-          defaultValue={product?.name}
-        />
+        <Input id="name" name="name" required maxLength={120} defaultValue={product?.name} />
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="sku">{t("sku")}</Label>
@@ -119,51 +119,6 @@ export function ProductFields({
           defaultValue={product?.sku}
         />
       </div>
-      <input type="hidden" name="inventory" value={inventory} />
-      {config.sellable ? (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="kind">{t("kind")}</Label>
-          <Select
-            name="kind"
-            defaultValue={product?.kind === "finished" ? "finished" : "resale"}
-          >
-            <SelectTrigger id="kind" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {SALE_KINDS.map((k) => (
-                <SelectItem key={k} value={k}>
-                  {kindLabel[k]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      ) : (
-        <input type="hidden" name="kind" value={config.fixedKind ?? "other"} />
-      )}
-      <div className="flex flex-col gap-2 sm:col-span-2">
-        <Label htmlFor="description">{t("description")}</Label>
-        <Input
-          id="description"
-          name="description"
-          maxLength={500}
-          defaultValue={product?.description ?? ""}
-        />
-      </div>
-      {config.assetFields.map((f) => (
-        <div key={f} className="flex flex-col gap-2">
-          <Label htmlFor={f}>{t(`asset_${f}`)}</Label>
-          <Input
-            id={f}
-            name={f}
-            type={ASSET_INPUT[f].type}
-            maxLength={ASSET_INPUT[f].max}
-            {...(f === "vehicle_year" ? { min: 1900, max: 2100, step: 1 } : {})}
-            defaultValue={assetValue(product, f)}
-          />
-        </div>
-      ))}
       <div className="flex flex-col gap-2">
         <Label htmlFor="unit">{t("unit")}</Label>
         <Input
@@ -174,65 +129,26 @@ export function ProductFields({
           defaultValue={product?.unit ?? "unidad"}
         />
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="cost">{t("cost")}</Label>
-        <Input
-          id="cost"
-          name="cost"
-          type="number"
-          min={0}
-          step="0.01"
-          required
-          defaultValue={product?.cost ?? 0}
-        />
-      </div>
       {config.sellable ? (
         <>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="price">{t("price")}</Label>
-            <Input
-              id="price"
-              name="price"
-              type="number"
-              min={0}
-              step="0.01"
-              required
-              defaultValue={product?.price}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="discount_percent">{t("discountPercent")}</Label>
-            <Input
-              id="discount_percent"
-              name="discount_percent"
-              type="number"
-              min={0}
-              max={100}
-              step="0.01"
-              defaultValue={product?.discountPercent ?? 0}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="tax_rate">
-              {t("taxRate", { country: DEFAULT_TAX_COUNTRY_LABEL })}
-            </Label>
-            <Input
-              id="tax_rate"
-              name="tax_rate"
-              type="number"
-              min={0}
-              max={100}
-              step="0.01"
-              required
-              defaultValue={product?.taxRate ?? DEFAULT_TAX_RATE_PERCENT}
-            />
+            <Label htmlFor="kind">{t("kind")}</Label>
+            <Select name="kind" defaultValue={product?.kind === "finished" ? "finished" : "resale"}>
+              <SelectTrigger id="kind" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SALE_KINDS.map((k) => (
+                  <SelectItem key={k} value={k}>
+                    {kindLabel[k]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="sales_channel">{t("whereSold")}</Label>
-            <Select
-              name="sales_channel"
-              defaultValue={product?.salesChannel ?? "both"}
-            >
+            <Select name="sales_channel" defaultValue={product?.salesChannel ?? "both"}>
               <SelectTrigger id="sales_channel" className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -247,11 +163,86 @@ export function ProductFields({
           </div>
         </>
       ) : null}
-      <CategoryPicker
-        inventory={inventory}
-        categories={categories}
-        defaultCategoryId={product?.categoryId}
-      />
+      <div className="flex flex-col gap-2 sm:col-span-2">
+        <Label htmlFor="description">{t("description")}</Label>
+        <Input
+          id="description"
+          name="description"
+          maxLength={500}
+          defaultValue={product?.description ?? ""}
+        />
+      </div>
+      {config.assetFields.map((f, i) => (
+        <div
+          key={f}
+          className={`flex flex-col gap-2 ${
+            // Cantidad impar de datos (vehículos): el último ocupa la fila entera.
+            i === config.assetFields.length - 1 && config.assetFields.length % 2 === 1
+              ? "sm:col-span-2"
+              : ""
+          }`}
+        >
+          <Label htmlFor={f}>{t(`asset_${f}`)}</Label>
+          <Input
+            id={f}
+            name={f}
+            type={ASSET_INPUT[f].type}
+            maxLength={ASSET_INPUT[f].max}
+            {...(f === "vehicle_year" ? { min: 1900, max: 2100, step: 1 } : {})}
+            defaultValue={assetValue(product, f)}
+          />
+        </div>
+      ))}
+      {config.sellable ? (
+        <>
+          <PriceFields cost={product?.cost ?? 0} price={product?.price} />
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="discount_percent">{t("discountPercent")}</Label>
+            <Input
+              id="discount_percent"
+              name="discount_percent"
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              defaultValue={product?.discountPercent ?? 0}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="tax_rate">{t("taxRate", { country: DEFAULT_TAX_COUNTRY_LABEL })}</Label>
+            <Input
+              id="tax_rate"
+              name="tax_rate"
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              required
+              defaultValue={product?.taxRate ?? DEFAULT_TAX_RATE_PERCENT}
+            />
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="cost">{t("cost")}</Label>
+          <Input
+            id="cost"
+            name="cost"
+            type="number"
+            min={0}
+            step="0.01"
+            required
+            defaultValue={product?.cost ?? 0}
+          />
+        </div>
+      )}
+      <div className={config.sellable ? "sm:col-span-2" : undefined}>
+        <CategoryPicker
+          inventory={inventory}
+          categories={categories}
+          defaultCategoryId={product?.categoryId}
+        />
+      </div>
       <StockBox
         editable={editable}
         warehouses={warehouses}
@@ -259,9 +250,7 @@ export function ProductFields({
         minStock={product?.minStock ?? 0}
       />
       <div className="flex flex-col gap-2 sm:col-span-2">
-        <Label htmlFor="photo">
-          {product ? t("replacePhoto") : t("photo")}
-        </Label>
+        <Label htmlFor="photo">{product ? t("replacePhoto") : t("photo")}</Label>
         <input
           id="photo"
           name="photo"

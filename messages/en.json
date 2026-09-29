@@ -70,6 +70,7 @@
     "asset_serial_number": "Serial number",
     "asset_purchase_date": "Purchase date",
     "warehouse": "Warehouse or branch",
-    "quantity": "Quantity"
+    "quantity": "Quantity",
+    "markupPercent": "Markup %"
   }
 }

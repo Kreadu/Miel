@@ -70,6 +70,7 @@
     "asset_serial_number": "N° de série",
     "asset_purchase_date": "Date d’achat",
     "warehouse": "Entrepôt ou succursale",
-    "quantity": "Quantité"
+    "quantity": "Quantité",
+    "markupPercent": "% de marge"
   }
 }

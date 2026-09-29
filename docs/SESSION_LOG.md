@@ -11,6 +11,18 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 10) · S19-34 — historial por inventario + % de venta
+
+**Hecho:** `inventory_history` (migración `20260929181537`); tabla de stock sacada de
+`/inventario` y puesta como "Historial" en cada inventario (fechas + bodega); `PriceFields`
+(costo · % de venta · precio); formulario reordenado en pares. Verificado: lint ✓, tsc ✓,
+`npm test` 264/264 ✓, build ✓. Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega `supabase/migrations/20260929181537_historial-de-inventario.sql`;
+commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 9) · ajustes de stock en el producto + "Volver"
 
 **Hecho:** recuadro de stock en filas (principal, bodegas agregadas con selector, stock total en
