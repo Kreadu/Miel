@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Landmark, ShoppingBag, ShoppingCart, Users, Wallet } from "lucide-react";
+import { Landmark, ShoppingBag, ShoppingCart, Truck, Users, Wallet } from "lucide-react";
 
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -43,15 +43,22 @@ export default async function VentasPage() {
               </Link>
             </>
           )}
-          {active.sellsVirtual && (
-            <Link
-              href="/ventas/catalogo"
-              className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-            >
-              <ShoppingBag className="mr-2 h-4 w-4" />
-              Catálogo
-            </Link>
-          )}
+          {/* S19-35: transportes y tarifas para "Envío por transporte" en el pedido. */}
+          <Link
+            href="/ventas/envios"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
+          >
+            <Truck className="mr-2 h-4 w-4" />
+            Envíos
+          </Link>
+          {/* S19-36: la venta se arma desde el Catálogo, así que se muestra siempre. */}
+          <Link
+            href="/ventas/catalogo"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
+          >
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Catálogo
+          </Link>
           {active.role !== "member" && (
             <Link
               href="/ventas/cuentas-por-cobrar"

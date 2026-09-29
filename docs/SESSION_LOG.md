@@ -11,6 +11,29 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 12) · S19-36 — Pedidos como hoja de venta
+
+**Hecho:** decisiones del humano: dividir la tabla (pendientes en Pedidos, terminados en el
+cliente) y quitar el pedido manual con Catálogo siempre visible. Borrado `SaleForm`; botones
+"Ir al catálogo" y "Crear cliente"; "Pedidos por completar" (`src/lib/sales/pending.ts`);
+"Historial de compras" en la ficha del cliente. Verificado: lint ✓, tsc ✓, tests ✓, build ✓.
+
+**Pendiente:** commit + push (y la migración de S19-35 si aún no se pegó).
+
+---
+
+## Sesión 2026-09-29 (cont. 11) · S19-35 — formas de entrega en el pedido
+
+**Hecho:** migración `20260929183359` (peso, `shipping_rates`, entrega en `sales`, `create_sale`
+calcula el envío); `/ventas/envios`; peso en el producto; sección de entrega en el carrito de
+Pedidos con total con envío, luego forma de pago y cliente. Verificado: lint ✓, tsc ✓,
+`npm test` 273/273 ✓, build ✓. Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega `supabase/migrations/20260929183359_formas-de-entrega.sql`; configura
+sus transportes; commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 10) · S19-34 — historial por inventario + % de venta
 
 **Hecho:** `inventory_history` (migración `20260929181537`); tabla de stock sacada de

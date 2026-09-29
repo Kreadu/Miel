@@ -36,4 +36,6 @@ export type ProductView = {
   serialNumber: string | null;
   vehicleYear: number | null;
   purchaseDate: string | null;
+  /** S19-35: peso en kg (envío por transporte). */
+  weightKg: number;
 };

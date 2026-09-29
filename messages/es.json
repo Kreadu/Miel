@@ -71,6 +71,7 @@
     "asset_purchase_date": "Fecha de compra",
     "warehouse": "Bodega o sucursal",
     "quantity": "Cantidad",
-    "markupPercent": "% de venta"
+    "markupPercent": "% de venta",
+    "weightKg": "Peso (kg)"
   }
 }

@@ -105,6 +105,7 @@ export type CartProductData = {
   price: number;
   discount_percent: number;
   tax_rate: number;
+  weight_kg: number;
 };
 
 /**
@@ -121,7 +122,7 @@ export async function refreshCartProductData(productIds: string[]): Promise<Cart
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products_catalog")
-    .select("id, name, price, discount_percent, tax_rate")
+    .select("id, name, price, discount_percent, tax_rate, weight_kg")
     .eq("tenant_id", active.tenantId)
     .in("id", productIds);
   if (error || !data) return [];
@@ -134,5 +135,6 @@ export async function refreshCartProductData(productIds: string[]): Promise<Cart
       price: p.price ?? 0,
       discount_percent: p.discount_percent ?? 0,
       tax_rate: p.tax_rate ?? 0,
+      weight_kg: p.weight_kg ?? 0,
     }));
 }

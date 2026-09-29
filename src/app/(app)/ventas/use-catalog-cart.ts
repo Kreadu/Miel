@@ -8,6 +8,8 @@ export type CartLine = {
   price: number;
   discountPercent: number;
   taxRate: number;
+  /** S19-35: peso unitario en kg (cotizar envío). Opcional: carritos viejos no lo traen. */
+  weightKg?: number;
   qty: number;
 };
 

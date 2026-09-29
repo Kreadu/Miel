@@ -19,6 +19,7 @@ import {
 import { formatMoney } from "@/lib/format";
 
 import { useCatalogCart } from "../use-catalog-cart";
+import { DeliverySection, type Rate } from "./delivery-section";
 
 const NO_CUSTOMER = "__counter__";
 
@@ -32,14 +33,17 @@ const PAYMENT_METHOD_LABEL = {
 /**
  * S19-06/S19-07: el carrito armado desde /ventas/catalogo se confirma acá, en la misma página
  * de Pedidos — no en una ruta aparte. Si no hay carrito (nadie vino del catálogo), no renderiza
- * nada y la página se ve exactamente como antes (SaleForm + listado).
+ * nada (S19-36: la venta se arma solo desde el catálogo).
  */
 export function CatalogPedidoCart({
   tenantId,
   customers,
+  rates,
 }: {
   tenantId: string;
   customers: { id: string; name: string }[];
+  /** S19-35: transportes de Vender → Envíos. */
+  rates: Rate[];
 }) {
   const { lines, updateQty, updateLineData, removeItem, clear } = useCatalogCart(tenantId);
   const [state, formAction, pending] = useActionState(createSale, null);
@@ -57,6 +61,7 @@ export function CatalogPedidoCart({
           price: p.price,
           discountPercent: p.discount_percent,
           taxRate: p.tax_rate,
+          weightKg: p.weight_kg,
         });
       }
     });
@@ -64,11 +69,19 @@ export function CatalogPedidoCart({
 
   // Ajuste de estado durante el render (mismo patrón usado en toda la sesión): al confirmar,
   // vacía el carrito — la lista de pedidos de abajo se refresca sola (revalidatePath de createSale).
+  // S19-35: entrega elegida y su costo (vista previa; create_sale lo recalcula).
+  const [delivery, setDelivery] = useState<{ method: string | null; cost: number }>({
+    method: null,
+    cost: 0,
+  });
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
     if (state?.ok) clear();
   }
+  // Carrito vacío (confirmado, vaciado o sin ítems): la sección de entrega se desmonta, así que
+  // su resumen también se limpia (ajuste de estado en render, sin efecto).
+  if (lines.length === 0 && delivery.method !== null) setDelivery({ method: null, cost: 0 });
 
   // Mismo cálculo que create_sale en la BD (S5-08/S19-08): línea = qty·precio − descuento;
   // subtotal = Σ línea; iva = Σ (línea · IVA%); total = subtotal + iva. Verificado que coincide
@@ -87,6 +100,8 @@ export function CatalogPedidoCart({
       { subtotal: 0, tax: 0, total: 0 },
     );
   }, [lines]);
+
+  const weightKg = lines.reduce((sum, l) => sum + l.qty * (l.weightKg ?? 0), 0);
 
   // Solo se muestra el % si todas las líneas comparten la misma tasa — evita un "(19%)" engañoso
   // cuando un producto puntual tiene otra tasa de IVA.
@@ -115,7 +130,7 @@ export function CatalogPedidoCart({
       <div className="flex flex-col gap-1">
         <p className="text-sm font-medium">Pedido armado desde el catálogo</p>
         <p className="text-xs text-muted-foreground">
-          Ajustá cantidades, asigná un cliente y confirmá.
+          Ajustá cantidades, elegí la forma de entrega, la forma de pago y el cliente, y confirmá.
         </p>
       </div>
 
@@ -165,7 +180,31 @@ export function CatalogPedidoCart({
         </div>
       </div>
 
+      <DeliverySection rates={rates} weightKg={weightKg} onChange={setDelivery} />
+
+      {delivery.method ? (
+        <div className="flex flex-col items-end gap-0.5 border-t border-border pt-3 text-sm">
+          <p className="text-muted-foreground">Envío: {formatMoney(delivery.cost)}</p>
+          <p className="text-base font-semibold">Total con envío: {formatMoney(total + delivery.cost)}</p>
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="payment_method">Forma de pago (opcional)</Label>
+          <Select name="payment_method">
+            <SelectTrigger id="payment_method" className="w-full">
+              <SelectValue placeholder="Sin elegir" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(PAYMENT_METHOD_LABEL).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="customer_id">Cliente</Label>
           <Select name="customer_id" defaultValue={NO_CUSTOMER}>
@@ -182,21 +221,6 @@ export function CatalogPedidoCart({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="payment_method">Forma de pago (opcional)</Label>
-          <Select name="payment_method">
-            <SelectTrigger id="payment_method" className="w-full">
-              <SelectValue placeholder="Sin elegir" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(PAYMENT_METHOD_LABEL).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
           <Label htmlFor="note">Nota (opcional)</Label>
           <Input id="note" name="note" maxLength={500} />
@@ -204,7 +228,7 @@ export function CatalogPedidoCart({
       </div>
 
       <div className="flex items-center gap-2">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending || !delivery.method}>
           {pending ? "Creando…" : "Confirmar pedido"}
         </Button>
         <Button type="button" variant="ghost" onClick={clear}>

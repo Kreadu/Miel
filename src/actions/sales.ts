@@ -25,13 +25,19 @@ function mapSaleError(message: string | undefined): string {
   if (message?.includes("item_unit_price_invalid")) return "El precio de un ítem no puede ser negativo.";
   if (message?.includes("item_discount_invalid")) return "El descuento de un ítem no puede superar el precio de la línea.";
   if (message?.includes("payment_method_invalid")) return "Selecciona una forma de pago válida.";
+  if (message?.includes("delivery_method_invalid")) return "Selecciona una forma de entrega válida.";
+  if (message?.includes("shipping_rate_invalid")) return "El transporte elegido no es válido.";
+  if (message?.includes("shipping_km_invalid")) return "Escribe los km del envío.";
+  if (message?.includes("shipping_cost_invalid")) return "El valor del envío no es válido.";
   return "No se pudo guardar la venta. Intenta de nuevo.";
 }
 
 /** Cualquier miembro del tenant activo crea ventas (create_sale lo valida igual: pertenencia, no rol admin). */
 export async function createSale(_prev: SaleState, formData: FormData): Promise<SaleState> {
-  const raw = Object.fromEntries(formData);
+  const raw: Record<string, FormDataEntryValue | undefined> = Object.fromEntries(formData);
   if (raw.customer_id === NO_CUSTOMER_SENTINEL) raw.customer_id = "";
+  // S19-35: un número vacío del form es "no vino" (z.coerce convertiría "" en 0).
+  for (const key of ["shipping_km", "shipping_cost"]) if (raw[key] === "") raw[key] = undefined;
   const itemsRaw = typeof raw.items === "string" ? raw.items : "[]";
   let items: unknown;
   try {
@@ -59,6 +65,10 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
     p_customer_id: customerId || undefined,
     p_note: parsed.data.note || undefined,
     p_payment_method: parsed.data.payment_method || undefined,
+    p_delivery_method: parsed.data.delivery_method || undefined,
+    p_shipping_rate_id: parsed.data.shipping_rate_id || undefined,
+    p_shipping_km: parsed.data.shipping_km,
+    p_shipping_cost: parsed.data.delivery_method === "agreed" ? parsed.data.shipping_cost : undefined,
   });
 
   if (error) {

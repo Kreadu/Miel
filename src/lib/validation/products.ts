@@ -40,6 +40,8 @@ export const productSchema = z.object({
     .default(0),
   sales_channel: z.enum(SALES_CHANNELS).default("both"),
   category_id: z.uuid("Categoría inválida").optional().or(z.literal("")),
+  // S19-35: peso en kg, para cotizar el envío por transporte.
+  weight_kg: z.coerce.number().nonnegative("El peso no puede ser negativo").optional(),
   // S19-26: inventario al que pertenece + datos de vehículos/mobiliario/herramientas.
   inventory: z.enum(INVENTORY_IDS).default("productos"),
   plate: optionalText(20),

@@ -84,16 +84,15 @@ test.describe('Flujo core de negocio (Humo)', () => {
     await page.getByRole('button', { name: 'Crear cliente' }).click();
     await expect(page.getByText('Cliente E2E')).toBeVisible();
 
-    // 7. Venta
-    await page.goto('/ventas/pedidos');
+    // 7. Venta (S19-36: se arma desde el Catálogo; S19-35: forma de entrega obligatoria)
+    await page.goto('/ventas/catalogo');
+    await page.getByRole('button', { name: 'Agregar al pedido' }).first().click();
+    await page.getByRole('link', { name: /Ver pedido/ }).click();
+    await page.getByRole('button', { name: 'Retiro en tienda' }).click();
     await page.getByRole('combobox', { name: 'Cliente' }).click();
     await page.getByRole('option', { name: 'Cliente E2E' }).click();
+    await page.getByRole('button', { name: 'Confirmar pedido' }).click();
 
-    await page.getByText('Selecciona un producto').click();
-    await page.getByRole('option', { name: new RegExp(productoName) }).click();
-    
-    await page.getByRole('button', { name: 'Crear borrador' }).click();
-    
     // Verificamos que la venta aparece en estado borrador
     await expect(page.getByRole('cell', { name: 'Borrador' })).toBeVisible();
 

@@ -38,6 +38,7 @@ export function CatalogGrid({
       price: product.price,
       discountPercent: product.discountPercent,
       taxRate: product.taxRate,
+      weightKg: product.weightKg,
     });
   }
 

@@ -554,6 +554,7 @@ export type Database = {
           unit: string
           updated_at: string
           vehicle_year: number | null
+          weight_kg: number
         }
         Insert: {
           active?: boolean
@@ -583,6 +584,7 @@ export type Database = {
           unit?: string
           updated_at?: string
           vehicle_year?: number | null
+          weight_kg?: number
         }
         Update: {
           active?: boolean
@@ -612,6 +614,7 @@ export type Database = {
           unit?: string
           updated_at?: string
           vehicle_year?: number | null
+          weight_kg?: number
         }
         Relationships: [
           {
@@ -1020,6 +1023,7 @@ export type Database = {
           created_by: string
           customer_id: string | null
           delivered_at: string | null
+          delivery_method: string | null
           id: string
           issued_at: string | null
           note: string | null
@@ -1027,6 +1031,9 @@ export type Database = {
           receipt_number: number | null
           shipped_at: string | null
           shipping_address: string | null
+          shipping_cost: number
+          shipping_km: number | null
+          shipping_rate_id: string | null
           status: string
           subtotal: number
           tax: number
@@ -1040,6 +1047,7 @@ export type Database = {
           created_by?: string
           customer_id?: string | null
           delivered_at?: string | null
+          delivery_method?: string | null
           id?: string
           issued_at?: string | null
           note?: string | null
@@ -1047,6 +1055,9 @@ export type Database = {
           receipt_number?: number | null
           shipped_at?: string | null
           shipping_address?: string | null
+          shipping_cost?: number
+          shipping_km?: number | null
+          shipping_rate_id?: string | null
           status?: string
           subtotal?: number
           tax?: number
@@ -1060,6 +1071,7 @@ export type Database = {
           created_by?: string
           customer_id?: string | null
           delivered_at?: string | null
+          delivery_method?: string | null
           id?: string
           issued_at?: string | null
           note?: string | null
@@ -1067,6 +1079,9 @@ export type Database = {
           receipt_number?: number | null
           shipped_at?: string | null
           shipping_address?: string | null
+          shipping_cost?: number
+          shipping_km?: number | null
+          shipping_rate_id?: string | null
           status?: string
           subtotal?: number
           tax?: number
@@ -1125,6 +1140,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shipping_rates: {
+        Row: {
+          base_price: number
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          price_per_kg: number
+          price_per_km: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          name: string
+          price_per_kg?: number
+          price_per_km?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          price_per_kg?: number
+          price_per_km?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       stock_movements: {
         Row: {
@@ -1902,6 +1953,7 @@ export type Database = {
           unit: string | null
           updated_at: string | null
           vehicle_year: number | null
+          weight_kg: number | null
         }
         Insert: {
           active?: boolean | null
@@ -2034,9 +2086,13 @@ export type Database = {
       create_sale: {
         Args: {
           p_customer_id?: string
+          p_delivery_method?: string
           p_items: Json
           p_note?: string
           p_payment_method?: string
+          p_shipping_cost?: number
+          p_shipping_km?: number
+          p_shipping_rate_id?: string
           p_tenant_id: string
         }
         Returns: string

@@ -21,7 +21,7 @@ export async function loadProducts(
   const productsQuery = supabase
     .from("products_catalog")
     .select(
-      "id, sku, name, description, unit, kind, cost, price, tax_rate, min_stock, discount_percent, sales_channel, category_id, photo_url, inventory, plate, brand, model, color, serial_number, vehicle_year, purchase_date",
+      "id, sku, name, description, unit, kind, cost, price, tax_rate, min_stock, discount_percent, sales_channel, category_id, photo_url, inventory, plate, brand, model, color, serial_number, vehicle_year, purchase_date, weight_kg",
     )
     .eq("tenant_id", tenantId)
     .eq("inventory", inventory)
@@ -86,6 +86,7 @@ export async function loadProducts(
         serialNumber: p.serial_number,
         vehicleYear: p.vehicle_year,
         purchaseDate: p.purchase_date,
+        weightKg: p.weight_kg ?? 0,
       })),
   };
 }

@@ -4,9 +4,19 @@ import { ArrowLeft, Calendar, FileText, TrendingUp, ShoppingCart, MessageSquare 
 
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney as baseFormatMoney } from "@/lib/format";
+import { DELIVERY_LABEL, type DeliveryMethod } from "@/lib/shipping";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { InteractionForm } from "./interaction-form";
+
+// S19-36: estados legibles para el historial de compras.
+const SALE_STATUS_LABELS: Record<string, string> = {
+  draft: "Borrador",
+  confirmed: "Confirmado",
+  shipped: "Despachado",
+  delivered: "Entregado",
+  cancelled: "Cancelado",
+};
 
 const INTERACTION_KIND_LABELS: Record<string, string> = {
   note: "Nota",
@@ -45,6 +55,13 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
     .select("id, status, total, issued_at, receipt_number")
     .eq("customer_id", id)
     .in("status", ["confirmed", "shipped", "delivered"]);
+
+  // S19-36: historial de compras (todas sus ventas, con saldo), movido desde Pedidos.
+  const { data: purchases } = await supabase
+    .from("sales")
+    .select("id, status, total, shipping_cost, delivery_method, receipt_number, created_at, customer_payments(amount)")
+    .eq("customer_id", id)
+    .order("created_at", { ascending: false });
 
   // 3. Fetch payments for the timeline
   const { data: payments, error: paymentsErr } = await supabase
@@ -156,6 +173,49 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
             {history.last_sale_at ? formatDate(history.last_sale_at) : "—"}
           </div>
         </div>
+      </div>
+
+      {/* S19-36: Historial de compras */}
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold">Historial de compras</h2>
+        {purchases && purchases.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-border text-xs text-muted-foreground">
+                  <th className="px-3 py-2 font-medium">Fecha</th>
+                  <th className="px-3 py-2 font-medium">Recibo</th>
+                  <th className="px-3 py-2 font-medium">Estado</th>
+                  <th className="px-3 py-2 font-medium">Entrega</th>
+                  <th className="px-3 py-2 text-right font-medium">Envío</th>
+                  <th className="px-3 py-2 text-right font-medium">Total</th>
+                  <th className="px-3 py-2 text-right font-medium">Saldo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {purchases.map((p) => {
+                  const paid = p.customer_payments.reduce((sum, pay) => sum + Number(pay.amount), 0);
+                  const balance = p.status === "cancelled" ? 0 : Number(p.total) - paid;
+                  return (
+                    <tr key={p.id} className="border-b border-border last:border-0">
+                      <td className="px-3 py-2.5">{formatDate(p.created_at)}</td>
+                      <td className="px-3 py-2.5 tabular-nums">{p.receipt_number ? `#${p.receipt_number}` : "—"}</td>
+                      <td className="px-3 py-2.5">{SALE_STATUS_LABELS[p.status] ?? p.status}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground">
+                        {p.delivery_method ? DELIVERY_LABEL[p.delivery_method as DeliveryMethod] : "—"}
+                      </td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(p.shipping_cost))}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(p.total))}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(balance)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Este cliente aún no tiene compras.</p>
+        )}
       </div>
 
       {/* Timeline */}

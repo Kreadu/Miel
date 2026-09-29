@@ -71,6 +71,7 @@
     "asset_purchase_date": "Purchase date",
     "warehouse": "Warehouse or branch",
     "quantity": "Quantity",
-    "markupPercent": "Markup %"
+    "markupPercent": "Markup %",
+    "weightKg": "Weight (kg)"
   }
 }

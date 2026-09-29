@@ -236,7 +236,20 @@ export function ProductFields({
           />
         </div>
       )}
-      <div className={config.sellable ? "sm:col-span-2" : undefined}>
+      {config.sellable ? (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="weight_kg">{t("weightKg")}</Label>
+          <Input
+            id="weight_kg"
+            name="weight_kg"
+            type="number"
+            min={0}
+            step="0.001"
+            defaultValue={product?.weightKg ?? 0}
+          />
+        </div>
+      ) : null}
+      <div>
         <CategoryPicker
           inventory={inventory}
           categories={categories}
