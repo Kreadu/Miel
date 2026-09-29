@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { InventoryId } from "@/lib/inventories";
 
 type Category = { id: string; name: string };
 
@@ -25,10 +26,13 @@ type Category = { id: string; name: string };
  * La lista se refresca sola: cada action hace `revalidatePath` y llegan `categories` nuevas.
  */
 export function CategoryManager({
+  inventory,
   categories,
   trigger,
   onCreated,
 }: {
+  /** S19-28: cada inventario tiene sus propias categorías. */
+  inventory: InventoryId;
   categories: Category[];
   trigger: ReactNode;
   onCreated?: (category: Category) => void;
@@ -41,7 +45,7 @@ export function CategoryManager({
 
   function handleCreate() {
     startTransition(async () => {
-      const result = await createCategory(name);
+      const result = await createCategory(name, inventory);
       if (!result.ok) {
         setError(result.error);
         return;

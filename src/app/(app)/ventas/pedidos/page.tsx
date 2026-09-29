@@ -25,10 +25,12 @@ export default async function PedidosPage() {
       .order("created_at", { ascending: false }),
     supabase.from("customers").select("id, name").eq("active", true).order("name"),
     // S19-05: Pedidos es canal físico — solo productos marcados "in_store" o "both".
+    // S19-26: y solo del Inventario de productos (lo que se vende).
     supabase
       .from("products_catalog")
       .select("id, sku, name, price, tax_rate")
       .eq("active", true)
+      .eq("inventory", "productos")
       .in("sales_channel", ["in_store", "both"])
       .order("name"),
     supabase.from("warehouses").select("id, name").eq("active", true).order("name"),

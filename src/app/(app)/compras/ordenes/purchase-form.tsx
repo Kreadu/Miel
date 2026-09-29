@@ -49,12 +49,15 @@ export function PurchaseForm({
   products,
   suggestedBySupplier,
   purchase,
+  initialItems,
   onSuccess,
 }: {
   suppliers: Supplier[];
   products: Product[];
   suggestedBySupplier: Record<string, string[]>;
   purchase?: EditingPurchase;
+  /** S19-27: alta con ítems ya cargados (desde Alertas stock mínimo). */
+  initialItems?: Omit<ItemDraft, "key">[];
   onSuccess?: () => void;
 }) {
   const isEditing = purchase != null;
@@ -69,9 +72,12 @@ export function PurchaseForm({
     }
   }
 
-  const [items, setItems] = useState<ItemDraft[]>(
-    purchase ? purchase.items.map((it) => ({ ...it, key: crypto.randomUUID() })) : [emptyItem()],
-  );
+  const [items, setItems] = useState<ItemDraft[]>(() => {
+    const start = purchase?.items ?? initialItems ?? [];
+    return start.length > 0
+      ? start.map((it) => ({ ...it, key: crypto.randomUUID() }))
+      : [emptyItem()];
+  });
   const [supplierId, setSupplierId] = useState(purchase?.supplier_id ?? "");
   const [showAll, setShowAll] = useState(false);
 

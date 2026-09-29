@@ -60,6 +60,14 @@
     "minStock": "Minimum stock",
     "cost": "Cost",
     "taxRate": "VAT % ({country})",
-    "recipe": "Recipe"
+    "recipe": "Recipe",
+    "kindOther": "Other",
+    "asset_plate": "Plate",
+    "asset_brand": "Brand",
+    "asset_model": "Model",
+    "asset_vehicle_year": "Year",
+    "asset_color": "Color",
+    "asset_serial_number": "Serial number",
+    "asset_purchase_date": "Purchase date"
   }
 }

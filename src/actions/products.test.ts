@@ -66,6 +66,14 @@ const expectedColumns = {
   discount_percent: 10,
   sales_channel: "in_store",
   category_id: null,
+  inventory: "productos",
+  plate: null,
+  brand: null,
+  model: null,
+  color: null,
+  serial_number: null,
+  vehicle_year: null,
+  purchase_date: null,
 };
 
 describe("createProduct — formulario único (S19-24)", () => {
@@ -104,6 +112,39 @@ describe("createProduct — formulario único (S19-24)", () => {
     await createProduct(null, formData({ ...baseFields, category_id: categoryId }));
 
     expect(mock._insert).toHaveBeenCalledWith(expect.objectContaining({ category_id: categoryId }));
+  });
+
+  it("S19-26: vehículo sin precio → kind other, precio 0 y datos del vehículo", async () => {
+    const mock = mockInsertSupabase(null);
+    clientState.current = mock;
+    const { createProduct } = await import("./products");
+
+    await createProduct(
+      null,
+      formData({
+        name: "Camioneta",
+        unit: "unidad",
+        kind: "resale",
+        cost: "50000000",
+        min_stock: "0",
+        inventory: "vehiculos",
+        plate: "ABC123",
+        brand: "Toyota",
+        vehicle_year: "2022",
+      }),
+    );
+
+    expect(mock._insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        inventory: "vehiculos",
+        kind: "other",
+        price: 0,
+        discount_percent: 0,
+        plate: "ABC123",
+        brand: "Toyota",
+        vehicle_year: 2022,
+      }),
+    );
   });
 
   it("SKU duplicado (23505) → mensaje legible", async () => {

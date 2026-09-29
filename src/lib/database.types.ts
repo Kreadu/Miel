@@ -503,6 +503,7 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          inventory: string
           name: string
           tenant_id: string
         }
@@ -510,6 +511,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          inventory?: string
           name: string
           tenant_id: string
         }
@@ -517,6 +519,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          inventory?: string
           name?: string
           tenant_id?: string
         }
@@ -525,66 +528,90 @@ export type Database = {
       products: {
         Row: {
           active: boolean
+          brand: string | null
           category_id: string | null
+          color: string | null
           cost: number
           created_at: string
           created_by: string
           description: string | null
           discount_percent: number
           id: string
+          inventory: string
           kind: string
           min_stock: number
+          model: string | null
           name: string
           photo_url: string | null
+          plate: string | null
           price: number
+          purchase_date: string | null
           sales_channel: string
+          serial_number: string | null
           sku: string
           tax_rate: number
           tenant_id: string
           unit: string
           updated_at: string
+          vehicle_year: number | null
         }
         Insert: {
           active?: boolean
+          brand?: string | null
           category_id?: string | null
+          color?: string | null
           cost?: number
           created_at?: string
           created_by?: string
           description?: string | null
           discount_percent?: number
           id?: string
+          inventory?: string
           kind?: string
           min_stock?: number
+          model?: string | null
           name: string
           photo_url?: string | null
+          plate?: string | null
           price?: number
+          purchase_date?: string | null
           sales_channel?: string
+          serial_number?: string | null
           sku: string
           tax_rate?: number
           tenant_id: string
           unit?: string
           updated_at?: string
+          vehicle_year?: number | null
         }
         Update: {
           active?: boolean
+          brand?: string | null
           category_id?: string | null
+          color?: string | null
           cost?: number
           created_at?: string
           created_by?: string
           description?: string | null
           discount_percent?: number
           id?: string
+          inventory?: string
           kind?: string
           min_stock?: number
+          model?: string | null
           name?: string
           photo_url?: string | null
+          plate?: string | null
           price?: number
+          purchase_date?: string | null
           sales_channel?: string
+          serial_number?: string | null
           sku?: string
           tax_rate?: number
           tenant_id?: string
           unit?: string
           updated_at?: string
+          vehicle_year?: number | null
         }
         Relationships: [
           {
@@ -1849,24 +1876,32 @@ export type Database = {
       products_catalog: {
         Row: {
           active: boolean | null
+          brand: string | null
           category_id: string | null
+          color: string | null
           cost: number | null
           created_at: string | null
           created_by: string | null
           description: string | null
           discount_percent: number | null
           id: string | null
+          inventory: string | null
           kind: string | null
           min_stock: number | null
+          model: string | null
           name: string | null
           photo_url: string | null
+          plate: string | null
           price: number | null
+          purchase_date: string | null
           sales_channel: string | null
+          serial_number: string | null
           sku: string | null
           tax_rate: number | null
           tenant_id: string | null
           unit: string | null
           updated_at: string | null
+          vehicle_year: number | null
         }
         Insert: {
           active?: boolean | null

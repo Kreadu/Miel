@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toggleProductActive } from "@/actions/products";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/currency";
+import { inventoryById } from "@/lib/inventories";
 
 import { ProductEditor } from "./product-editor";
 import type { Category, ProductView } from "./types";
@@ -36,16 +37,34 @@ export function ProductCard({
 
   if (editing) {
     return (
-      <ProductEditor product={product} categories={categories} onDone={() => setEditing(false)} />
+      <ProductEditor
+        inventory={product.inventory}
+        product={product}
+        categories={categories}
+        onDone={() => setEditing(false)}
+      />
     );
   }
 
-  const channelBadge = { online: t("onlineOnly"), in_store: t("inStoreOnly"), both: null }[
-    product.salesChannel
-  ];
-  const kindLabel = { raw: t("kindRaw"), finished: t("kindFinished"), resale: t("kindResale") }[
-    product.kind
-  ];
+  const sellable = inventoryById(product.inventory).sellable;
+  const channelBadge = sellable
+    ? { online: t("onlineOnly"), in_store: t("inStoreOnly"), both: null }[product.salesChannel]
+    : null;
+  const kindLabel = sellable
+    ? { raw: t("kindRaw"), finished: t("kindFinished"), resale: t("kindResale"), other: null }[
+        product.kind
+      ]
+    : null;
+  // S19-26: vehículos/mobiliario/herramientas muestran sus datos en vez del precio.
+  const assetSummary = [
+    product.plate,
+    [product.brand, product.model].filter(Boolean).join(" "),
+    product.vehicleYear,
+    product.color,
+    product.serialNumber && `${t("asset_serial_number")}: ${product.serialNumber}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const finalPrice =
     (product.discountPercent > 0 ? product.price * (1 - product.discountPercent / 100) : product.price) *
     rate;
@@ -72,8 +91,9 @@ export function ProductCard({
           ) : null}
         </div>
         <p className="text-xs text-muted-foreground">
-          {product.sku} · {kindLabel}
+          {kindLabel ? `${product.sku} · ${kindLabel}` : product.sku}
         </p>
+        {assetSummary ? <p className="text-xs text-muted-foreground">{assetSummary}</p> : null}
         {product.categoryName ? (
           <span className="w-fit rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
             {product.categoryName}
@@ -82,6 +102,7 @@ export function ProductCard({
         {product.description ? (
           <p className="line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
         ) : null}
+        {sellable ? (
         <div className="mt-1 flex items-center gap-2">
           {product.discountPercent > 0 ? (
             <>
@@ -96,6 +117,7 @@ export function ProductCard({
             <span className="text-sm font-semibold">{formatMoney(finalPrice, displayCurrency)}</span>
           )}
         </div>
+        ) : null}
         <p className="text-xs text-muted-foreground">
           {product.stock.length > 0 ? (
             <>
@@ -118,7 +140,7 @@ export function ProductCard({
               <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
                 {t("edit")}
               </Button>
-              {product.kind === "finished" ? (
+              {sellable && product.kind === "finished" ? (
                 <Button asChild variant="ghost" size="sm">
                   <Link href={`/inventario/productos/${product.id}/receta`}>{t("recipe")}</Link>
                 </Button>

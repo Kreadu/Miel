@@ -5,25 +5,31 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
+import { INVENTORY_IDS } from "@/lib/inventories";
 import { categorySchema } from "@/lib/validation/catalog";
 
 export type CategoryResult =
   | { ok: false; error: string }
   | { ok: true; category: { id: string; name: string } };
 
-/** S19-24: las categorías se gestionan y se ven en Catálogo y en Productos de inventario. */
+/** S19-24/S19-26: las categorías se gestionan y se ven en Catálogo y en todos los inventarios. */
 function revalidateCategoryPaths() {
   revalidatePath("/ventas/catalogo");
-  revalidatePath("/inventario/productos");
+  revalidatePath("/inventario", "layout");
 }
 
+const DUPLICATE_CATEGORY = "Ya existe una categoría con ese nombre en este inventario.";
+const inventorySchema = z.enum(INVENTORY_IDS);
+
 /**
- * S19-16: alta de categoría desde el modal "+" del formulario de producto. Devuelve la
- * categoría creada para que el selector la deje elegida sin recargar el formulario.
+ * S19-16/S19-28: alta de categoría en un inventario (cada inventario tiene las suyas). Devuelve
+ * la categoría creada para que el selector la deje elegida sin recargar el formulario.
  */
-export async function createCategory(name: string): Promise<CategoryResult> {
+export async function createCategory(name: string, inventory: string): Promise<CategoryResult> {
   const parsed = categorySchema.safeParse({ name });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+  const parsedInventory = inventorySchema.safeParse(inventory);
+  if (!parsedInventory.success) return { ok: false, error: "Inventario inválido." };
 
   const { active } = await getActiveTenant();
   if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
@@ -31,11 +37,11 @@ export async function createCategory(name: string): Promise<CategoryResult> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("product_categories")
-    .insert({ tenant_id: active.tenantId, name: parsed.data.name })
+    .insert({ tenant_id: active.tenantId, inventory: parsedInventory.data, name: parsed.data.name })
     .select("id, name")
     .single();
   if (error || !data) {
-    if (error?.code === "23505") return { ok: false, error: "Ya existe una categoría con ese nombre." };
+    if (error?.code === "23505") return { ok: false, error: DUPLICATE_CATEGORY };
     console.error("createCategory:", error?.code);
     return { ok: false, error: "No se pudo crear la categoría. Intenta de nuevo." };
   }
@@ -62,7 +68,7 @@ export async function renameCategory(id: string, name: string): Promise<Category
     .eq("id", parsedId.data)
     .select("id");
   if (error) {
-    if (error.code === "23505") return { ok: false, error: "Ya existe una categoría con ese nombre." };
+    if (error.code === "23505") return { ok: false, error: DUPLICATE_CATEGORY };
     console.error("renameCategory:", error.code);
     return { ok: false, error: "No se pudo renombrar la categoría. Intenta de nuevo." };
   }

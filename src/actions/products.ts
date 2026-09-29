@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { ASSET_FIELDS, inventoryById, resolveKind } from "@/lib/inventories";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { ALLOWED_PHOTO_TYPES, MAX_PHOTO_BYTES } from "@/lib/validation/catalog";
@@ -17,13 +18,16 @@ type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 /** S19-24: Inventario y Catálogo muestran el mismo producto — toda mutación revalida ambos. */
 function revalidateProductPaths() {
-  revalidatePath("/inventario/productos");
-  revalidatePath("/inventario");
+  // "layout" cubre /inventario y todos sus inventarios (/inventario/<tipo>).
+  revalidatePath("/inventario", "layout");
   revalidatePath("/ventas/catalogo");
 }
 
-function mapProductError(code: string | undefined): string {
+function mapProductError(code: string | undefined, message?: string): string {
   if (code === "23505") return "Ya existe un producto con ese SKU.";
+  if (message?.includes("category_inventory_mismatch")) {
+    return "Esa categoría es de otro inventario. Elige una de este inventario.";
+  }
   return "No se pudo guardar el producto. Intenta de nuevo.";
 }
 
@@ -42,30 +46,43 @@ function readFields(formData: FormData) {
     unit: get("unit"),
     kind: get("kind"),
     cost: get("cost"),
-    price: get("price"),
-    tax_rate: get("tax_rate"),
+    // S19-26: los inventarios que no se venden no muestran precio ni IVA.
+    price: get("price") ?? "0",
+    tax_rate: get("tax_rate") ?? "0",
     min_stock: get("min_stock"),
     discount_percent: get("discount_percent") || undefined,
     sales_channel: get("sales_channel") || undefined,
     category_id: category === NO_CATEGORY ? undefined : category || undefined,
+    inventory: get("inventory") || undefined,
+    ...Object.fromEntries(ASSET_FIELDS.map((f) => [f, get(f)])),
   };
 }
 
 /** Columnas explícitas (nunca spread del input) a partir del resultado validado. */
 function toColumns(data: z.infer<typeof productSchema>) {
+  const sellable = inventoryById(data.inventory).sellable;
   return {
     sku: data.sku || generateSku(),
     name: data.name,
     description: data.description || null,
     unit: data.unit,
-    kind: data.kind,
+    // S19-26: el inventario fija el tipo; lo que no se vende no lleva precio ni descuento.
+    kind: resolveKind(data.inventory, data.kind),
     cost: data.cost,
-    price: data.price,
+    price: sellable ? data.price : 0,
     tax_rate: data.tax_rate,
     min_stock: data.min_stock,
-    discount_percent: data.discount_percent,
+    discount_percent: sellable ? data.discount_percent : 0,
     sales_channel: data.sales_channel,
     category_id: data.category_id || null,
+    inventory: data.inventory,
+    plate: data.plate,
+    brand: data.brand,
+    model: data.model,
+    color: data.color,
+    serial_number: data.serial_number,
+    vehicle_year: data.vehicle_year,
+    purchase_date: data.purchase_date,
   };
 }
 
@@ -128,7 +145,7 @@ export async function createProduct(
     .insert({ tenant_id: active.tenantId, ...toColumns(parsed.data), photo_url: upload.url });
   if (error) {
     console.error("createProduct:", error.code);
-    return { ok: false, error: mapProductError(error.code) };
+    return { ok: false, error: mapProductError(error.code, error.message) };
   }
 
   revalidateProductPaths();
@@ -159,7 +176,7 @@ export async function updateProduct(
     .eq("id", parsed.data.id);
   if (error) {
     console.error("updateProduct:", error.code);
-    return { ok: false, error: mapProductError(error.code) };
+    return { ok: false, error: mapProductError(error.code, error.message) };
   }
 
   revalidateProductPaths();

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { parseProductIds, suggestedReorderQty } from "@/lib/purchases/reorder";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -11,16 +12,18 @@ export const metadata = { title: "Órdenes de compra · Miel" };
 export default async function OrdenesCompraPage({
   searchParams,
 }: {
-  searchParams: Promise<{ editar?: string }>;
+  searchParams: Promise<{ editar?: string; desde?: string }>;
 }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
 
   const canManage = active.role !== "member";
-  const { editar } = await searchParams;
+  const { editar, desde } = await searchParams;
+  // S19-27: ítems elegidos en Alertas stock mínimo (`?desde=<id>,<id>`).
+  const fromAlerts = parseProductIds(desde);
 
   const supabase = await createClient();
-  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes] =
+  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes, alertsRes] =
     await Promise.all([
       supabase
         .from("purchases")
@@ -36,6 +39,12 @@ export default async function OrdenesCompraPage({
         .order("name"),
       supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
       supabase.from("supplier_products").select("supplier_id, product_id"),
+      fromAlerts.length
+        ? supabase
+            .from("low_stock_alerts")
+            .select("product_id, min_stock, total_qty")
+            .in("product_id", fromAlerts)
+        : Promise.resolve({ data: [] }),
     ]);
 
   const purchases = purchasesRes.data ?? [];
@@ -57,6 +66,20 @@ export default async function OrdenesCompraPage({
   }
 
   const editingPurchase = canManage ? purchases.find((p) => p.id === editar) : undefined;
+
+  const alertById = new Map((alertsRes.data ?? []).map((a) => [a.product_id, a]));
+  const initialItems = fromAlerts
+    .map((id) => products.find((p) => p.id === id))
+    .filter((p): p is (typeof products)[number] => p != null)
+    .map((p) => {
+      const alert = alertById.get(p.id);
+      return {
+        product_id: p.id,
+        qty: String(suggestedReorderQty(Number(alert?.min_stock ?? 0), Number(alert?.total_qty ?? 0))),
+        unit_cost: String(p.cost ?? 0),
+        tax_rate: String(p.tax_rate ?? 0),
+      };
+    });
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,6 +111,7 @@ export default async function OrdenesCompraPage({
             suppliers={suppliers}
             products={products}
             suggestedBySupplier={suggestedBySupplier}
+            initialItems={initialItems}
           />
         )
       ) : null}

@@ -11,6 +11,37 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 6) · S19-28 (categorías por inventario) + S19-29 (alertas por inventario)
+
+**Hecho:** categorías propias de cada inventario (migración `20260929171419`, reparto de las
+existentes, trigger de coherencia); Alertas con un botón por inventario y conteo. El humano pidió
+no crear archivos fuera del repo: el SQL se pega desde `supabase/migrations/` (guardado en
+memoria). Verificado: lint ✓, tsc ✓, `npm test` 242/242 ✓, build ✓. Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega en Supabase, en orden, `20260929165506_tipos-de-inventario.sql` y
+`20260929171419_categorias-por-inventario.sql`; confirma en vivo; commit + push.
+
+---
+
+## Sesión 2026-09-29 (cont. 5) · S19-26 (tipos de inventario) + S19-27 (alertas → orden de compra)
+
+**Hecho:**
+- S19-26: 7 inventarios sobre `products.inventory` (migración `20260929165506`), config en
+  `src/lib/inventories.ts`, `InventoryView` compartida (`/inventario/productos` y
+  `/inventario/[inventario]`), campos de vehículos/mobiliario/herramientas, grilla de botones en
+  `/inventario`. Materias primas separadas (backfill `kind='raw'`). Catálogo y Pedidos solo
+  inventario `productos`; receta solo insumos raw/resale.
+- S19-27: Alertas con foto y selección → orden de compra precargada (`?desde=`).
+- El humano confirmó (y se verificó con la anon key) que S19-18/S19-15/S19-23 están aplicadas;
+  S19-21/S19-22 inferidas aplicadas (mismo script).
+- Verificado: lint ✓, tsc ✓, `npm test` 240/240 ✓, `npm run build` ✓. Sin correr: pgTAP, e2e,
+  navegador.
+
+**Pendiente:** humano pega `supabase/migrations/20260929165506_tipos-de-inventario.sql` en Supabase — sin eso
+la app falla en inventarios/Catálogo/Alertas; confirma en vivo; commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 4) · S19-25 — bodega principal visible, eliminar/reactivar
 
 **Hecho:** `/inventario/bodegas` con la principal en formulario relleno, "+ Crear bodega o

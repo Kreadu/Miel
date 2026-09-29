@@ -60,6 +60,14 @@
     "minStock": "Stock mínimo",
     "cost": "Costo",
     "taxRate": "IVA % ({country})",
-    "recipe": "Receta"
+    "recipe": "Receta",
+    "kindOther": "Otro",
+    "asset_plate": "Placa",
+    "asset_brand": "Marca",
+    "asset_model": "Modelo",
+    "asset_vehicle_year": "Año",
+    "asset_color": "Color",
+    "asset_serial_number": "N° de serie",
+    "asset_purchase_date": "Fecha de compra"
   }
 }

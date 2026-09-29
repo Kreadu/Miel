@@ -40,7 +40,8 @@ export default async function RecetaPage({ params }: RecetaPageProps) {
   const { data: availableComponents } = await supabase
     .from("products_catalog")
     .select("id, name, sku, unit, kind")
-    .neq("kind", "finished")
+    // S19-26: insumos = materias primas y reventa; nunca oficina, mobiliario, vehículos, etc.
+    .in("kind", ["raw", "resale"])
     .order("name", { ascending: true });
 
   return (

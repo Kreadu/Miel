@@ -60,6 +60,14 @@
     "minStock": "Stock minimum",
     "cost": "Coût",
     "taxRate": "TVA % ({country})",
-    "recipe": "Recette"
+    "recipe": "Recette",
+    "kindOther": "Autre",
+    "asset_plate": "Immatriculation",
+    "asset_brand": "Marque",
+    "asset_model": "Modèle",
+    "asset_vehicle_year": "Année",
+    "asset_color": "Couleur",
+    "asset_serial_number": "N° de série",
+    "asset_purchase_date": "Date d’achat"
   }
 }

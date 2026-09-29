@@ -1,8 +1,19 @@
 import { z } from "zod";
 
+import { INVENTORY_IDS } from "@/lib/inventories";
+
 import { SALES_CHANNELS } from "./catalog";
 
-export const PRODUCT_KINDS = ["raw", "finished", "resale"] as const;
+export const PRODUCT_KINDS = ["raw", "finished", "resale", "other"] as const;
+
+/** Texto opcional de formulario: recortado, y vacío → null (columna nullable). */
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, "Texto muy largo")
+    .optional()
+    .transform((v) => v || null);
 
 /**
  * S19-24: formulario único de producto (Inventario y Catálogo). SKU opcional: vacío = se
@@ -28,4 +39,19 @@ export const productSchema = z.object({
     .default(0),
   sales_channel: z.enum(SALES_CHANNELS).default("both"),
   category_id: z.uuid("Categoría inválida").optional().or(z.literal("")),
+  // S19-26: inventario al que pertenece + datos de vehículos/mobiliario/herramientas.
+  inventory: z.enum(INVENTORY_IDS).default("productos"),
+  plate: optionalText(20),
+  brand: optionalText(80),
+  model: optionalText(80),
+  color: optionalText(40),
+  serial_number: optionalText(80),
+  vehicle_year: z
+    .union([z.literal(""), z.coerce.number().int("Año inválido").min(1900, "Año inválido").max(2100, "Año inválido")])
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? null : v)),
+  purchase_date: z
+    .union([z.literal(""), z.iso.date("Fecha de compra inválida")])
+    .optional()
+    .transform((v) => v || null),
 });

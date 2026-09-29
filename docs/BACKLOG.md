@@ -202,6 +202,10 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-23 | Como dueño quiero eliminar por completo el Punto de Venta | Se borran `/ventas/pos`, sus actions/validación/tests y la RPC `register_pos_sale` (migración); ventas en tienda por Pedidos + boleta con caja | S19-22 | implemented (código); **migración sin aplicar al cloud** | specs/done/S19-23-eliminar-punto-de-venta.md |
 | S19-24 | Como dueño quiero un solo producto y un solo formulario en Productos (inventario) y Catálogo, con unidad/tipo/stock mínimo/costo/precio, SKU automático o manual, IVA editable y categorías en ambos | `productSchema`/`createProduct`/`updateProduct` únicos; componentes en `src/components/products/`; `/inventario/productos` con la misma grilla del Catálogo; Catálogo sin materia prima | S19-20, S19-21 | done (sin migración) | specs/done/S19-24-formulario-unico-producto.md |
 | S19-25 | Como dueño quiero ver la bodega principal con todos sus datos, crear otras aparte, editarlas/eliminarlas, y reactivar productos eliminados | `PrincipalForm` relleno + `WarehouseForm` toggle + filas con Editar/Eliminar/Reactivar; "Productos eliminados" con Reactivar en `/inventario/productos` | S19-18, S19-24 | done (sin migración) | specs/done/S19-25-bodega-principal-visible-y-reactivar.md |
+| S19-26 | Como dueño quiero un inventario por tipo (productos, materias primas, artículos de oficina, mobiliario, vehículos, herramientas, aseo), cada uno con su botón y su CRUD, y datos propios de vehículos/mobiliario | `products.inventory` + campos de activo; `src/lib/inventories.ts`; `InventoryView` compartida; grilla de inventarios en `/inventario` | S19-24 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-26-tipos-de-inventario.md |
+| S19-27 | Como dueño quiero ver en Alertas todo lo que llegó a su stock mínimo, con foto, y armar una orden de compra desde ahí | Tarjetas con foto + selección → `/compras/ordenes?desde=` precarga ítems con cantidad sugerida | S19-26 | done (sin migración propia; depende de S19-26 aplicada) | specs/done/S19-27-alertas-con-orden-de-compra.md |
+| S19-28 | Como dueño quiero que cada inventario tenga sus propias categorías, sin mezclarse | `product_categories.inventory`, único por inventario, reparto de lo existente, trigger de coherencia ítem↔categoría | S19-26 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-28-categorias-por-inventario.md |
+| S19-29 | Como dueño quiero en Alertas un botón por inventario y, dentro, lo que está bajo el mínimo para crear la orden de compra | `/inventario/alertas?inventario=<slug>` con conteo por inventario | S19-27 | done (sin migración) | specs/done/S19-29-alertas-por-inventario.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -234,6 +238,14 @@ partida):**
 por código.
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
+- **S19-26, bloqueante hasta que se resuelva**: migración
+  `20260929165506_tipos-de-inventario.sql` sin aplicar al cloud — sin ella fallan los
+  inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
+  `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
+- S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
+- **S19-28, bloqueante hasta que se resuelva**: migración
+  `20260929171419_categorias-por-inventario.sql` sin aplicar — sin ella fallan las categorías
+  (la app ya filtra por `product_categories.inventory`). Aplicar DESPUÉS de S19-26.
 - **S19-23**: migración `20260929154514_eliminar-pos.sql` sin aplicar al cloud (no bloquea: la
   app ya no llama la RPC). `create_product_with_stock` (S13-01) quedó sin uso tras S19-24.
 - e2e `core-flow` actualizado para S19-23/S19-24 pero sin correr en este sandbox.

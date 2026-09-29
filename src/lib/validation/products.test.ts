@@ -102,4 +102,39 @@ describe("productSchema (formulario único, S19-24)", () => {
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.cost).toBe(10000);
   });
+
+  it("S19-26: inventario por defecto productos; acepta los de la lista y kind other", () => {
+    const def = productSchema.safeParse(valid);
+    expect(def.success && def.data.inventory).toBe("productos");
+    expect(productSchema.safeParse({ ...valid, inventory: "vehiculos", kind: "other" }).success).toBe(
+      true,
+    );
+    expect(productSchema.safeParse({ ...valid, inventory: "juguetes" }).success).toBe(false);
+  });
+
+  it("S19-26: datos de vehículo/activo opcionales; vacíos → null", () => {
+    const result = productSchema.safeParse({
+      ...valid,
+      inventory: "vehiculos",
+      kind: "other",
+      plate: " ABC123 ",
+      brand: "Toyota",
+      model: "",
+      vehicle_year: "2022",
+      purchase_date: "2024-05-10",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.plate).toBe("ABC123");
+      expect(result.data.model).toBeNull();
+      expect(result.data.vehicle_year).toBe(2022);
+      expect(result.data.purchase_date).toBe("2024-05-10");
+    }
+  });
+
+  it("S19-26: rechaza año de vehículo o fecha inválidos", () => {
+    expect(productSchema.safeParse({ ...valid, vehicle_year: "1800" }).success).toBe(false);
+    expect(productSchema.safeParse({ ...valid, purchase_date: "ayer" }).success).toBe(false);
+  });
 });
+

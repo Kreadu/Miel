@@ -1,6 +1,7 @@
+import type { InventoryId } from "@/lib/inventories";
 import type { WarehouseStock } from "@/lib/stock";
 
-export type ProductKind = "raw" | "finished" | "resale";
+export type ProductKind = "raw" | "finished" | "resale" | "other";
 export type SalesChannel = "online" | "in_store" | "both";
 export type Category = { id: string; name: string };
 
@@ -23,4 +24,13 @@ export type ProductView = {
   categoryName: string | null;
   photoUrl: string | null;
   stock: WarehouseStock[];
+  /** S19-26: inventario + datos de vehículos/mobiliario/herramientas. */
+  inventory: InventoryId;
+  plate: string | null;
+  brand: string | null;
+  model: string | null;
+  color: string | null;
+  serialNumber: string | null;
+  vehicleYear: number | null;
+  purchaseDate: string | null;
 };

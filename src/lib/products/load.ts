@@ -1,26 +1,26 @@
 import type { Category, ProductKind, ProductView, SalesChannel } from "@/components/products/types";
+import type { InventoryId } from "@/lib/inventories";
 import { stockByProduct } from "@/lib/stock";
 import type { createClient } from "@/lib/supabase/server";
 
 /**
- * S19-24: carga compartida de Productos (inventario) y Catálogo (vender): mismos productos,
- * stock por bodega o sucursal y categorías. `sellableOnly` deja afuera la materia prima
- * (el catálogo solo muestra lo que se vende: terminado y reventa).
+ * S19-24/S19-26: carga compartida de cada inventario y del Catálogo (que usa el inventario
+ * "productos"): ítems activos, stock por bodega o sucursal y categorías.
  */
 export async function loadProducts(
   supabase: Awaited<ReturnType<typeof createClient>>,
   tenantId: string,
-  { sellableOnly }: { sellableOnly: boolean },
+  inventory: InventoryId,
 ): Promise<{ products: ProductView[]; categories: Category[] }> {
-  let productsQuery = supabase
+  const productsQuery = supabase
     .from("products_catalog")
     .select(
-      "id, sku, name, description, unit, kind, cost, price, tax_rate, min_stock, discount_percent, sales_channel, category_id, photo_url",
+      "id, sku, name, description, unit, kind, cost, price, tax_rate, min_stock, discount_percent, sales_channel, category_id, photo_url, inventory, plate, brand, model, color, serial_number, vehicle_year, purchase_date",
     )
     .eq("tenant_id", tenantId)
+    .eq("inventory", inventory)
     .eq("active", true)
     .order("name", { ascending: true });
-  if (sellableOnly) productsQuery = productsQuery.in("kind", ["finished", "resale"]);
 
   const [{ data: products, error }, { data: stockRows }, { data: warehouses }, { data: categories }] =
     await Promise.all([
@@ -34,6 +34,8 @@ export async function loadProducts(
         .from("product_categories")
         .select("id, name")
         .eq("tenant_id", tenantId)
+        // S19-28: cada inventario solo ve sus propias categorías.
+        .eq("inventory", inventory)
         .order("name", { ascending: true }),
     ]);
   if (error) throw error;
@@ -63,6 +65,14 @@ export async function loadProducts(
         categoryName: p.category_id ? (categoryNameById.get(p.category_id) ?? null) : null,
         photoUrl: p.photo_url,
         stock: stock.get(p.id) ?? [],
+        inventory,
+        plate: p.plate,
+        brand: p.brand,
+        model: p.model,
+        color: p.color,
+        serialNumber: p.serial_number,
+        vehicleYear: p.vehicle_year,
+        purchaseDate: p.purchase_date,
       })),
   };
 }

@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import type { InventoryId } from "@/lib/inventories";
 import {
   Select,
   SelectContent,
@@ -27,9 +28,11 @@ type Category = { id: string; name: string };
  * tocar el resto del formulario del producto.
  */
 export function CategoryPicker({
+  inventory,
   categories,
   defaultCategoryId,
 }: {
+  inventory: InventoryId;
   categories: Category[];
   defaultCategoryId?: string | null;
 }) {
@@ -56,6 +59,7 @@ export function CategoryPicker({
           </SelectContent>
         </Select>
         <CategoryManager
+          inventory={inventory}
           categories={categories}
           onCreated={(c) => setValue(c.id)}
           trigger={

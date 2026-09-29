@@ -28,27 +28,52 @@ describe("createCategory (S19-16)", () => {
     clientState.current = mockSupabase({ data: { id: "c-1", name: "Endulzantes" }, error: null });
     const { createCategory } = await import("./catalog");
 
-    const result = await createCategory("  Endulzantes ");
+    const result = await createCategory("  Endulzantes ", "productos");
 
     expect(result).toEqual({ ok: true, category: { id: "c-1", name: "Endulzantes" } });
-    expect(clientState.current.insert).toHaveBeenCalledWith({ tenant_id: "t-1", name: "Endulzantes" });
+    expect(clientState.current.insert).toHaveBeenCalledWith({
+      tenant_id: "t-1",
+      inventory: "productos",
+      name: "Endulzantes",
+    });
   });
 
   it("nombre duplicado (23505) → mensaje claro", async () => {
     clientState.current = mockSupabase({ data: null, error: { code: "23505" } });
     const { createCategory } = await import("./catalog");
 
-    expect(await createCategory("Endulzantes")).toEqual({
+    expect(await createCategory("Endulzantes", "productos")).toEqual({
       ok: false,
-      error: "Ya existe una categoría con ese nombre.",
+      error: "Ya existe una categoría con ese nombre en este inventario.",
     });
+  });
+
+  it("S19-28: la categoría se crea en el inventario indicado", async () => {
+    clientState.current = mockSupabase({ data: { id: "c-2", name: "Camionetas" }, error: null });
+    const { createCategory } = await import("./catalog");
+
+    await createCategory("Camionetas", "vehiculos");
+
+    expect(clientState.current.insert).toHaveBeenCalledWith({
+      tenant_id: "t-1",
+      inventory: "vehiculos",
+      name: "Camionetas",
+    });
+  });
+
+  it("S19-28: inventario desconocido → error sin tocar la BD", async () => {
+    clientState.current = mockSupabase({ data: null, error: null });
+    const { createCategory } = await import("./catalog");
+
+    expect((await createCategory("X", "juguetes")).ok).toBe(false);
+    expect(clientState.current.from).not.toHaveBeenCalled();
   });
 
   it("nombre vacío → error de validación sin tocar la BD", async () => {
     clientState.current = mockSupabase({ data: null, error: null });
     const { createCategory } = await import("./catalog");
 
-    const result = await createCategory("   ");
+    const result = await createCategory("   ", "productos");
 
     expect(result.ok).toBe(false);
     expect(clientState.current.from).not.toHaveBeenCalled();
@@ -81,7 +106,7 @@ describe("renameCategory / deleteCategory (S19-21)", () => {
 
     expect(await renameCategory(id, "Dulces")).toEqual({
       ok: false,
-      error: "Ya existe una categoría con ese nombre.",
+      error: "Ya existe una categoría con ese nombre en este inventario.",
     });
   });
 

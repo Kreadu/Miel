@@ -11,31 +11,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DEFAULT_TAX_COUNTRY_LABEL, DEFAULT_TAX_RATE_PERCENT } from "@/lib/validation/catalog";
+import {
+  type AssetField,
+  type InventoryId,
+  inventoryById,
+} from "@/lib/inventories";
+import {
+  DEFAULT_TAX_COUNTRY_LABEL,
+  DEFAULT_TAX_RATE_PERCENT,
+} from "@/lib/validation/catalog";
 
 import { CategoryPicker } from "./category-picker";
 import type { Category, ProductKind, ProductView, SalesChannel } from "./types";
 
-const KINDS: ProductKind[] = ["raw", "finished", "resale"];
+const SALE_KINDS: ProductKind[] = ["finished", "resale"];
 const CHANNELS: SalesChannel[] = ["online", "in_store", "both"];
 
+const ASSET_INPUT: Record<AssetField, { type: string; max?: number }> = {
+  plate: { type: "text", max: 20 },
+  brand: { type: "text", max: 80 },
+  model: { type: "text", max: 80 },
+  vehicle_year: { type: "number" },
+  color: { type: "text", max: 40 },
+  serial_number: { type: "text", max: 80 },
+  purchase_date: { type: "date" },
+};
+
+function assetValue(
+  product: ProductView | undefined,
+  field: AssetField,
+): string {
+  if (!product) return "";
+  const byField: Record<AssetField, string | number | null> = {
+    plate: product.plate,
+    brand: product.brand,
+    model: product.model,
+    vehicle_year: product.vehicleYear,
+    color: product.color,
+    serial_number: product.serialNumber,
+    purchase_date: product.purchaseDate,
+  };
+  return byField[field]?.toString() ?? "";
+}
+
 /**
- * S19-24: campos del formulario único de producto (Inventario y Catálogo). El stock se muestra
- * solo para leer: viene de los movimientos de cada bodega o sucursal.
+ * S19-24/S19-26: campos del formulario único (todos los inventarios y el Catálogo). Precio,
+ * descuento, IVA, canal y tipo solo en el inventario que se vende; vehículos/mobiliario/
+ * herramientas suman sus datos propios. El stock se muestra solo para leer.
  */
 export function ProductFields({
+  inventory,
   product,
   categories,
 }: {
+  inventory: InventoryId;
   /** Al editar; sin producto es un alta. */
   product?: ProductView;
   categories: Category[];
 }) {
   const t = useTranslations("catalog");
+  const config = inventoryById(inventory);
   const kindLabel: Record<ProductKind, string> = {
     raw: t("kindRaw"),
     finished: t("kindFinished"),
     resale: t("kindResale"),
+    other: t("kindOther"),
   };
   const channelLabel: Record<SalesChannel, string> = {
     online: t("onlineOnly"),
@@ -48,7 +88,13 @@ export function ProductFields({
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="flex flex-col gap-2 sm:col-span-2">
         <Label htmlFor="name">{t("name")}</Label>
-        <Input id="name" name="name" required maxLength={120} defaultValue={product?.name} />
+        <Input
+          id="name"
+          name="name"
+          required
+          maxLength={120}
+          defaultValue={product?.name}
+        />
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="sku">{t("sku")}</Label>
@@ -60,21 +106,29 @@ export function ProductFields({
           defaultValue={product?.sku}
         />
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="kind">{t("kind")}</Label>
-        <Select name="kind" defaultValue={product?.kind ?? "resale"}>
-          <SelectTrigger id="kind" className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {KINDS.map((k) => (
-              <SelectItem key={k} value={k}>
-                {kindLabel[k]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <input type="hidden" name="inventory" value={inventory} />
+      {config.sellable ? (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="kind">{t("kind")}</Label>
+          <Select
+            name="kind"
+            defaultValue={product?.kind === "finished" ? "finished" : "resale"}
+          >
+            <SelectTrigger id="kind" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SALE_KINDS.map((k) => (
+                <SelectItem key={k} value={k}>
+                  {kindLabel[k]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : (
+        <input type="hidden" name="kind" value={config.fixedKind ?? "other"} />
+      )}
       <div className="flex flex-col gap-2 sm:col-span-2">
         <Label htmlFor="description">{t("description")}</Label>
         <Input
@@ -84,6 +138,19 @@ export function ProductFields({
           defaultValue={product?.description ?? ""}
         />
       </div>
+      {config.assetFields.map((f) => (
+        <div key={f} className="flex flex-col gap-2">
+          <Label htmlFor={f}>{t(`asset_${f}`)}</Label>
+          <Input
+            id={f}
+            name={f}
+            type={ASSET_INPUT[f].type}
+            maxLength={ASSET_INPUT[f].max}
+            {...(f === "vehicle_year" ? { min: 1900, max: 2100, step: 1 } : {})}
+            defaultValue={assetValue(product, f)}
+          />
+        </div>
+      ))}
       <div className="flex flex-col gap-2">
         <Label htmlFor="unit">{t("unit")}</Label>
         <Input
@@ -118,59 +185,72 @@ export function ProductFields({
           defaultValue={product?.cost ?? 0}
         />
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="price">{t("price")}</Label>
-        <Input
-          id="price"
-          name="price"
-          type="number"
-          min={0}
-          step="0.01"
-          required
-          defaultValue={product?.price}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="discount_percent">{t("discountPercent")}</Label>
-        <Input
-          id="discount_percent"
-          name="discount_percent"
-          type="number"
-          min={0}
-          max={100}
-          step="0.01"
-          defaultValue={product?.discountPercent ?? 0}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="tax_rate">{t("taxRate", { country: DEFAULT_TAX_COUNTRY_LABEL })}</Label>
-        <Input
-          id="tax_rate"
-          name="tax_rate"
-          type="number"
-          min={0}
-          max={100}
-          step="0.01"
-          required
-          defaultValue={product?.taxRate ?? DEFAULT_TAX_RATE_PERCENT}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="sales_channel">{t("whereSold")}</Label>
-        <Select name="sales_channel" defaultValue={product?.salesChannel ?? "both"}>
-          <SelectTrigger id="sales_channel" className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {CHANNELS.map((c) => (
-              <SelectItem key={c} value={c}>
-                {channelLabel[c]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <CategoryPicker categories={categories} defaultCategoryId={product?.categoryId} />
+      {config.sellable ? (
+        <>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="price">{t("price")}</Label>
+            <Input
+              id="price"
+              name="price"
+              type="number"
+              min={0}
+              step="0.01"
+              required
+              defaultValue={product?.price}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="discount_percent">{t("discountPercent")}</Label>
+            <Input
+              id="discount_percent"
+              name="discount_percent"
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              defaultValue={product?.discountPercent ?? 0}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="tax_rate">
+              {t("taxRate", { country: DEFAULT_TAX_COUNTRY_LABEL })}
+            </Label>
+            <Input
+              id="tax_rate"
+              name="tax_rate"
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              required
+              defaultValue={product?.taxRate ?? DEFAULT_TAX_RATE_PERCENT}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="sales_channel">{t("whereSold")}</Label>
+            <Select
+              name="sales_channel"
+              defaultValue={product?.salesChannel ?? "both"}
+            >
+              <SelectTrigger id="sales_channel" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CHANNELS.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {channelLabel[c]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </>
+      ) : null}
+      <CategoryPicker
+        inventory={inventory}
+        categories={categories}
+        defaultCategoryId={product?.categoryId}
+      />
       {product ? (
         <p className="text-sm text-muted-foreground sm:col-span-2">
           {t("totalStock")}:{" "}
@@ -183,7 +263,9 @@ export function ProductFields({
         </p>
       ) : null}
       <div className="flex flex-col gap-2 sm:col-span-2">
-        <Label htmlFor="photo">{product ? t("replacePhoto") : t("photo")}</Label>
+        <Label htmlFor="photo">
+          {product ? t("replacePhoto") : t("photo")}
+        </Label>
         <input
           id="photo"
           name="photo"
