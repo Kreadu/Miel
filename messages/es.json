@@ -68,6 +68,9 @@
     "asset_vehicle_year": "Año",
     "asset_color": "Color",
     "asset_serial_number": "N° de serie",
-    "asset_purchase_date": "Fecha de compra"
+    "asset_purchase_date": "Fecha de compra",
+    "stockByWarehouse": "Stock por bodega o sucursal",
+    "stockEditHint": "si cambias una cantidad, queda como ajuste en el kardex",
+    "stockReadOnlyHint": "se edita en Inventario"
   }
 }

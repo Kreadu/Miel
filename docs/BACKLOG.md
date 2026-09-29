@@ -208,6 +208,7 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-29 | Como dueño quiero en Alertas un botón por inventario y, dentro, lo que está bajo el mínimo para crear la orden de compra | `/inventario/alertas?inventario=<slug>` con conteo por inventario | S19-27 | done (sin migración) | specs/done/S19-29-alertas-por-inventario.md |
 | S19-30 | Como dueño quiero quitar el botón "Registrar movimiento de stock" de Inventario | Se quita `StockMovementForm` de `/inventario` (el kardex por producto conserva el suyo) | — | done (sin migración) | — (cambio de UI de una línea, sin spec) |
 | S19-31 | Como dueño quiero el menú en el orden Inicio, Vender, Inventario, Comprar, Gastos, RRHH | Reordena `NAV_ITEMS`; "Equipo" pasa a llamarse "RRHH" (ruta `/equipo` sin cambios) | — | done (sin migración) | — (cambio de menú, sin spec) |
+| S19-32 | Como dueño quiero ver el stock de cada bodega o sucursal en el producto, editable (junto con el stock mínimo) solo en Inventario y de solo lectura en Vender | RPC `set_product_stock` (ajustes en kardex, atómica); `ProductFields` con `mode` inventory/sales y grilla alineada | S19-24, S19-26 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-32-stock-por-bodega-en-producto.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -245,7 +246,10 @@ por código.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S19-28, bloqueante hasta que se resuelva**: migración
+- **S19-32**: migración `20260929173340_stock-por-bodega-editable.sql` sin aplicar — hasta
+  entonces editar stock en Inventario falla ("Se guardó el producto, pero no se pudo actualizar
+  el stock").
+- **S19-28 (aplicada 2026-09-29)**: migración
   `20260929171419_categorias-por-inventario.sql` sin aplicar — sin ella fallan las categorías
   (la app ya filtra por `product_categories.inventory`). Aplicar DESPUÉS de S19-26.
 - **S19-23**: migración `20260929154514_eliminar-pos.sql` sin aplicar al cloud (no bloquea: la

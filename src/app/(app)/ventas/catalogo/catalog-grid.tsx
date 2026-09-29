@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { ProductCard } from "@/components/products/product-card";
-import type { Category, ProductView } from "@/components/products/types";
+import type { Category, ProductView, Warehouse } from "@/components/products/types";
 import { Button } from "@/components/ui/button";
 
 import { useCatalogCart } from "../use-catalog-cart";
@@ -16,8 +16,10 @@ export function CatalogGrid({
   baseCurrency,
   tenantId,
   categories,
+  warehouses,
 }: {
   products: ProductView[];
+  warehouses: Warehouse[];
   canManage: boolean;
   baseCurrency: string;
   tenantId: string;
@@ -61,6 +63,8 @@ export function CatalogGrid({
         {products.map((product) => (
           <ProductCard
             key={product.id}
+            mode="sales"
+            warehouses={warehouses}
             product={product}
             canManage={canManage}
             categories={categories}

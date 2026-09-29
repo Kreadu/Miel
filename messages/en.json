@@ -68,6 +68,9 @@
     "asset_vehicle_year": "Year",
     "asset_color": "Color",
     "asset_serial_number": "Serial number",
-    "asset_purchase_date": "Purchase date"
+    "asset_purchase_date": "Purchase date",
+    "stockByWarehouse": "Stock by warehouse or branch",
+    "stockEditHint": "changing a quantity records an adjustment in the stock ledger",
+    "stockReadOnlyHint": "edited in Inventory"
   }
 }

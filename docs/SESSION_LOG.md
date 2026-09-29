@@ -11,6 +11,18 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 8) · S19-32 — stock por bodega en el producto
+
+**Hecho:** RPC `set_product_stock` (migración `20260929173340`); formulario con recuadro de stock
+(mínimo + cada bodega) alineado en grilla, editable en Inventario y solo lectura en Vender;
+`min_stock` no se pisa desde Vender. Verificado: lint ✓, tsc ✓, `npm test` 247/247 ✓, build ✓.
+Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega `supabase/migrations/20260929173340_stock-por-bodega-editable.sql`;
+commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 7) · S19-30 — quitar "Registrar movimiento de stock" de Inventario
 
 **Hecho:** quitado `StockMovementForm` de `/inventario`; el kardex por producto lo conserva. e2e

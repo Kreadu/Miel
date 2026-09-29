@@ -11,23 +11,27 @@ import { formatMoney } from "@/lib/currency";
 import { inventoryById } from "@/lib/inventories";
 
 import { ProductEditor } from "./product-editor";
-import type { Category, ProductView } from "./types";
+import type { Category, ProductFormMode, ProductView, Warehouse } from "./types";
 
 /**
  * S19-24: tarjeta de producto compartida por Catálogo y Productos (inventario). Editar abre el
  * mismo formulario único. `onAddToCart` solo en el Catálogo (armar pedido).
  */
 export function ProductCard({
+  mode,
   product,
   canManage,
   categories,
+  warehouses,
   displayCurrency,
   rate = 1,
   onAddToCart,
 }: {
+  mode: ProductFormMode;
   product: ProductView;
   canManage: boolean;
   categories: Category[];
+  warehouses: Warehouse[];
   displayCurrency: string;
   rate?: number;
   onAddToCart?: () => void;
@@ -38,9 +42,11 @@ export function ProductCard({
   if (editing) {
     return (
       <ProductEditor
+        mode={mode}
         inventory={product.inventory}
         product={product}
         categories={categories}
+        warehouses={warehouses}
         onDone={() => setEditing(false)}
       />
     );

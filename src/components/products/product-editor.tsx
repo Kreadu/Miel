@@ -9,19 +9,23 @@ import { Button } from "@/components/ui/button";
 import type { InventoryId } from "@/lib/inventories";
 
 import { ProductFields } from "./product-fields";
-import type { Category, ProductView } from "./types";
+import type { Category, ProductFormMode, ProductView, Warehouse } from "./types";
 
 /**
  * S19-24: formulario único de producto — alta (sin `product`) o edición. Lo usan Inventario y
  * Catálogo. `onDone` se avisa en un efecto: cierra/navega en el padre, no en el render de acá.
  */
 export function ProductEditor({
+  mode,
   inventory,
   product,
   categories,
+  warehouses,
   onDone,
 }: {
+  mode: ProductFormMode;
   inventory: InventoryId;
+  warehouses: Warehouse[];
   product?: ProductView;
   categories: Category[];
   onDone: () => void;
@@ -39,7 +43,13 @@ export function ProductEditor({
       className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
     >
       {product ? <input type="hidden" name="id" value={product.id} /> : null}
-      <ProductFields inventory={inventory} product={product} categories={categories} />
+      <ProductFields
+        mode={mode}
+        inventory={inventory}
+        product={product}
+        categories={categories}
+        warehouses={warehouses}
+      />
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
           {pending ? t("saving") : product ? t("save") : t("createProduct")}

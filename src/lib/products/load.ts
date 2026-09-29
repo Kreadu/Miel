@@ -1,4 +1,10 @@
-import type { Category, ProductKind, ProductView, SalesChannel } from "@/components/products/types";
+import type {
+  Category,
+  ProductKind,
+  ProductView,
+  SalesChannel,
+  Warehouse,
+} from "@/components/products/types";
 import type { InventoryId } from "@/lib/inventories";
 import { stockByProduct } from "@/lib/stock";
 import type { createClient } from "@/lib/supabase/server";
@@ -11,7 +17,7 @@ export async function loadProducts(
   supabase: Awaited<ReturnType<typeof createClient>>,
   tenantId: string,
   inventory: InventoryId,
-): Promise<{ products: ProductView[]; categories: Category[] }> {
+): Promise<{ products: ProductView[]; categories: Category[]; warehouses: Warehouse[] }> {
   const productsQuery = supabase
     .from("products_catalog")
     .select(
@@ -29,7 +35,12 @@ export async function loadProducts(
         .from("current_stock")
         .select("product_id, warehouse_id, total_qty")
         .eq("tenant_id", tenantId),
-      supabase.from("warehouses").select("id, name").eq("tenant_id", tenantId),
+      supabase
+        .from("warehouses")
+        .select("id, name, active")
+        .eq("tenant_id", tenantId)
+        .order("is_default", { ascending: false })
+        .order("name", { ascending: true }),
       supabase
         .from("product_categories")
         .select("id, name")
@@ -46,6 +57,8 @@ export async function loadProducts(
 
   return {
     categories: categoryList,
+    // S19-32: bodegas o sucursales activas, para mostrar/editar el stock de cada una.
+    warehouses: (warehouses ?? []).filter((w) => w.active).map((w) => ({ id: w.id, name: w.name })),
     products: (products ?? [])
       .filter((p): p is typeof p & { id: string; name: string } => p.id != null && p.name != null)
       .map((p) => ({

@@ -32,7 +32,7 @@ export async function InventoryView({
   const canManage = active.role !== "member";
 
   const supabase = await createClient();
-  const [{ products, categories }, { data: archived }] = await Promise.all([
+  const [{ products, categories, warehouses }, { data: archived }] = await Promise.all([
     loadProducts(supabase, active.tenantId, inventory.id),
     canManage
       ? supabase
@@ -61,6 +61,8 @@ export async function InventoryView({
               trigger={<Button variant="outline">{t("generateCategories")}</Button>}
             />
             <NewProductButton
+              mode="inventory"
+              warehouses={warehouses}
               inventory={inventory.id}
               label={inventory.addLabel}
               categories={categories}
@@ -81,6 +83,7 @@ export async function InventoryView({
           products={rows}
           canManage={canManage}
           categories={categories}
+          warehouses={warehouses}
           currency={active.currency}
         />
       ) : (

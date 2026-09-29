@@ -7,7 +7,7 @@ import { ASSET_FIELDS, inventoryById, resolveKind } from "@/lib/inventories";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { ALLOWED_PHOTO_TYPES, MAX_PHOTO_BYTES } from "@/lib/validation/catalog";
-import { productSchema } from "@/lib/validation/products";
+import { productSchema, stockLevelsSchema } from "@/lib/validation/products";
 
 export type ProductState = { ok: false; error: string } | { ok: true } | null;
 
@@ -49,7 +49,7 @@ function readFields(formData: FormData) {
     // S19-26: los inventarios que no se venden no muestran precio ni IVA.
     price: get("price") ?? "0",
     tax_rate: get("tax_rate") ?? "0",
-    min_stock: get("min_stock"),
+    min_stock: get("min_stock") || undefined,
     discount_percent: get("discount_percent") || undefined,
     sales_channel: get("sales_channel") || undefined,
     category_id: category === NO_CATEGORY ? undefined : category || undefined,
@@ -71,7 +71,7 @@ function toColumns(data: z.infer<typeof productSchema>) {
     cost: data.cost,
     price: sellable ? data.price : 0,
     tax_rate: data.tax_rate,
-    min_stock: data.min_stock,
+    ...(data.min_stock === undefined ? {} : { min_stock: data.min_stock }),
     discount_percent: sellable ? data.discount_percent : 0,
     sales_channel: data.sales_channel,
     category_id: data.category_id || null,
@@ -84,6 +84,34 @@ function toColumns(data: z.infer<typeof productSchema>) {
     vehicle_year: data.vehicle_year,
     purchase_date: data.purchase_date,
   };
+}
+
+const STOCK_FIELD_PREFIX = "stock__";
+
+/** S19-32: stock por bodega o sucursal editado en el producto (solo viene desde Inventario). */
+function readStockLevels(formData: FormData) {
+  const levels = [...formData.entries()]
+    .filter(([key]) => key.startsWith(STOCK_FIELD_PREFIX))
+    .map(([key, value]) => ({
+      warehouse_id: key.slice(STOCK_FIELD_PREFIX.length),
+      qty: value.toString() || "0",
+    }));
+  return stockLevelsSchema.safeParse(levels);
+}
+
+/** Fija el stock por bodega en una sola RPC atómica (ajustes en el kardex). */
+async function saveStockLevels(
+  supabase: Supabase,
+  productId: string,
+  levels: { warehouse_id: string; qty: number }[],
+): Promise<boolean> {
+  if (levels.length === 0) return true;
+  const { error } = await supabase.rpc("set_product_stock", {
+    p_product_id: productId,
+    p_levels: levels,
+  });
+  if (error) console.error("saveStockLevels:", error.code, error.message);
+  return !error;
 }
 
 function extensionFor(type: string): string {
@@ -132,6 +160,8 @@ export async function createProduct(
 ): Promise<ProductState> {
   const parsed = productSchema.safeParse(readFields(formData));
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+  const levels = readStockLevels(formData);
+  if (!levels.success) return { ok: false, error: levels.error.issues[0].message };
 
   const { active } = await getActiveTenant();
   if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
@@ -140,13 +170,19 @@ export async function createProduct(
   const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
   if (!upload.ok) return { ok: false, error: upload.error };
 
-  const { error } = await supabase
+  const { data: created, error } = await supabase
     .from("products")
-    .insert({ tenant_id: active.tenantId, ...toColumns(parsed.data), photo_url: upload.url });
-  if (error) {
-    console.error("createProduct:", error.code);
-    return { ok: false, error: mapProductError(error.code, error.message) };
+    .insert({ tenant_id: active.tenantId, ...toColumns(parsed.data), photo_url: upload.url })
+    .select("id")
+    .single();
+  if (error || !created) {
+    console.error("createProduct:", error?.code);
+    return { ok: false, error: mapProductError(error?.code, error?.message) };
   }
+
+  // El producto ya quedó creado: un fallo de stock no reabre el form (reintentar duplicaría el
+  // producto). Queda en el log; el stock se corrige editando el producto.
+  await saveStockLevels(supabase, created.id, levels.data);
 
   revalidateProductPaths();
   return { ok: true };
@@ -161,6 +197,8 @@ export async function updateProduct(
 ): Promise<ProductState> {
   const parsed = updateSchema.safeParse({ ...readFields(formData), id: formData.get("id") });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+  const levels = readStockLevels(formData);
+  if (!levels.success) return { ok: false, error: levels.error.issues[0].message };
 
   const { active } = await getActiveTenant();
   if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
@@ -179,7 +217,14 @@ export async function updateProduct(
     return { ok: false, error: mapProductError(error.code, error.message) };
   }
 
+  const stockSaved = await saveStockLevels(supabase, parsed.data.id, levels.data);
   revalidateProductPaths();
+  if (!stockSaved) {
+    return {
+      ok: false,
+      error: "Se guardó el producto, pero no se pudo actualizar el stock. Intenta de nuevo.",
+    };
+  }
   return { ok: true };
 }
 

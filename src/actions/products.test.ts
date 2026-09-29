@@ -16,16 +16,22 @@ vi.mock("@/lib/tenant/server", () => ({
 
 type DbError = { code?: string; message: string } | null;
 
-function mockInsertSupabase(error: DbError) {
-  const insert = vi.fn(async () => ({ error }));
-  return { from: vi.fn(() => ({ insert })), _insert: insert };
+function mockInsertSupabase(error: DbError, rpcError: DbError = null) {
+  const single = vi.fn(async () => ({ data: error ? null : { id: "p-new" }, error }));
+  const select = vi.fn(() => ({ single }));
+  const insert = vi.fn(() => ({ select }));
+  const rpc = vi.fn(async () => ({ error: rpcError }));
+  return { from: vi.fn(() => ({ insert })), rpc, _insert: insert };
 }
 
-function mockUpdateSupabase(error: DbError) {
+function mockUpdateSupabase(error: DbError, rpcError: DbError = null) {
   const eq = vi.fn(async () => ({ error }));
   const update = vi.fn(() => ({ eq }));
-  return { from: vi.fn(() => ({ update })), _update: update, _eq: eq };
+  const rpc = vi.fn(async () => ({ error: rpcError }));
+  return { from: vi.fn(() => ({ update })), rpc, _update: update, _eq: eq };
 }
+
+const WAREHOUSE = "123e4567-e89b-12d3-a456-426614174099";
 
 const clientState: { current: unknown } = { current: mockInsertSupabase(null) };
 
@@ -166,6 +172,75 @@ describe("createProduct — formulario único (S19-24)", () => {
 
     expect(mock._insert).not.toHaveBeenCalled();
     expect(result).toMatchObject({ ok: false });
+  });
+});
+
+describe("stock por bodega y stock mínimo (S19-32)", () => {
+  const productId = "123e4567-e89b-12d3-a456-426614174002";
+
+  it("alta con stock por bodega → set_product_stock con las cantidades", async () => {
+    const mock = mockInsertSupabase(null);
+    clientState.current = mock;
+    const { createProduct } = await import("./products");
+
+    await createProduct(null, formData({ ...baseFields, [`stock__${WAREHOUSE}`]: "5" }));
+
+    expect(mock.rpc).toHaveBeenCalledWith("set_product_stock", {
+      p_product_id: "p-new",
+      p_levels: [{ warehouse_id: WAREHOUSE, qty: 5 }],
+    });
+  });
+
+  it("sin campos de stock (Vender) no toca el stock", async () => {
+    const mock = mockInsertSupabase(null);
+    clientState.current = mock;
+    const { createProduct } = await import("./products");
+
+    await createProduct(null, formData(baseFields));
+
+    expect(mock.rpc).not.toHaveBeenCalled();
+  });
+
+  it("stock negativo → error sin tocar la BD", async () => {
+    const mock = mockInsertSupabase(null);
+    clientState.current = mock;
+    const { createProduct } = await import("./products");
+
+    const result = await createProduct(
+      null,
+      formData({ ...baseFields, [`stock__${WAREHOUSE}`]: "-1" }),
+    );
+
+    expect(result).toMatchObject({ ok: false });
+    expect(mock._insert).not.toHaveBeenCalled();
+  });
+
+  it("editar desde Vender (sin stock mínimo en el form) no pisa el stock mínimo", async () => {
+    const mock = mockUpdateSupabase(null);
+    clientState.current = mock;
+    const { updateProduct } = await import("./products");
+    const withoutMin: Record<string, string> = { ...baseFields, id: productId };
+    delete withoutMin.min_stock;
+
+    await updateProduct(null, formData(withoutMin));
+
+    expect(mock._update).toHaveBeenCalledWith(expect.not.objectContaining({ min_stock: expect.anything() }));
+  });
+
+  it("editar stock que falla en la BD → mensaje claro", async () => {
+    const mock = mockUpdateSupabase(null, { code: "P0001", message: "permission_denied" });
+    clientState.current = mock;
+    const { updateProduct } = await import("./products");
+
+    const result = await updateProduct(
+      null,
+      formData({ ...baseFields, id: productId, [`stock__${WAREHOUSE}`]: "3" }),
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      error: "Se guardó el producto, pero no se pudo actualizar el stock. Intenta de nuevo.",
+    });
   });
 });
 

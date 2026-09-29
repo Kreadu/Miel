@@ -31,7 +31,8 @@ export const productSchema = z.object({
     .number()
     .min(0, "El IVA debe estar entre 0 y 100")
     .max(100, "El IVA debe estar entre 0 y 100"),
-  min_stock: z.coerce.number().nonnegative("El stock mínimo no puede ser negativo"),
+  // S19-32: se edita solo en Inventario; en Vender no viene en el form y no se toca.
+  min_stock: z.coerce.number().nonnegative("El stock mínimo no puede ser negativo").optional(),
   discount_percent: z.coerce
     .number()
     .min(0, "El descuento debe estar entre 0 y 100")
@@ -55,3 +56,11 @@ export const productSchema = z.object({
     .optional()
     .transform((v) => v || null),
 });
+
+/** S19-32: cantidad objetivo por bodega o sucursal (campos `stock__<warehouseId>` del form). */
+export const stockLevelsSchema = z.array(
+  z.object({
+    warehouse_id: z.uuid("Bodega o sucursal inválida"),
+    qty: z.coerce.number().nonnegative("El stock no puede ser negativo"),
+  }),
+);

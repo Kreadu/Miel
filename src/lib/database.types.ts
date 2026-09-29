@@ -2116,6 +2116,10 @@ export type Database = {
         Args: { p_items: Json; p_product_id: string }
         Returns: undefined
       }
+      set_product_stock: {
+        Args: { p_levels: Json; p_product_id: string }
+        Returns: number
+      }
       update_purchase: {
         Args: {
           p_items: Json

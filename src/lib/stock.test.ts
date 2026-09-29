@@ -18,10 +18,10 @@ describe("stockByProduct (S19-17/S19-24)", () => {
       names,
     );
     expect(result.get("p1")).toEqual([
-      { warehouseName: "Principal", qty: 5 },
-      { warehouseName: "Centro", qty: 7 },
+      { warehouseId: "w1", warehouseName: "Principal", qty: 5 },
+      { warehouseId: "w2", warehouseName: "Centro", qty: 7 },
     ]);
-    expect(result.get("p2")).toEqual([{ warehouseName: "Principal", qty: 3 }]);
+    expect(result.get("p2")).toEqual([{ warehouseId: "w1", warehouseName: "Principal", qty: 3 }]);
   });
 
   it("ignora filas incompletas, null → 0 y bodega desconocida → —", () => {
@@ -33,6 +33,6 @@ describe("stockByProduct (S19-17/S19-24)", () => {
       names,
     );
     expect(result.size).toBe(1);
-    expect(result.get("p1")).toEqual([{ warehouseName: "—", qty: 0 }]);
+    expect(result.get("p1")).toEqual([{ warehouseId: "wx", warehouseName: "—", qty: 0 }]);
   });
 });

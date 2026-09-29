@@ -28,7 +28,7 @@ export default async function CatalogoPage({
   // S19-24/S19-26: el Catálogo muestra el Inventario de productos (lo que se vende). Vista de
   // gestión: no filtra por canal (eso aplica en Pedidos).
   const supabase = await createClient();
-  const { products, categories } = await loadProducts(supabase, active.tenantId, "productos");
+  const { products, categories, warehouses } = await loadProducts(supabase, active.tenantId, "productos");
   const rows = categoria ? products.filter((p) => p.categoryId === categoria) : products;
 
   return (
@@ -46,6 +46,8 @@ export default async function CatalogoPage({
               trigger={<Button variant="outline">{t("generateCategories")}</Button>}
             />
             <NewProductButton
+              mode="sales"
+              warehouses={warehouses}
               inventory="productos"
               label={t("generateProduct")}
               categories={categories}
@@ -68,6 +70,7 @@ export default async function CatalogoPage({
           baseCurrency={active.currency}
           tenantId={active.tenantId}
           categories={categories}
+          warehouses={warehouses}
         />
       ) : (
         <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">

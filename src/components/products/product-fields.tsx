@@ -22,7 +22,14 @@ import {
 } from "@/lib/validation/catalog";
 
 import { CategoryPicker } from "./category-picker";
-import type { Category, ProductKind, ProductView, SalesChannel } from "./types";
+import type {
+  Category,
+  ProductFormMode,
+  ProductKind,
+  ProductView,
+  SalesChannel,
+  Warehouse,
+} from "./types";
 
 const SALE_KINDS: ProductKind[] = ["finished", "resale"];
 const CHANNELS: SalesChannel[] = ["online", "in_store", "both"];
@@ -57,14 +64,19 @@ function assetValue(
 /**
  * S19-24/S19-26: campos del formulario único (todos los inventarios y el Catálogo). Precio,
  * descuento, IVA, canal y tipo solo en el inventario que se vende; vehículos/mobiliario/
- * herramientas suman sus datos propios. El stock se muestra solo para leer.
+ * herramientas suman sus datos propios. S19-32: el stock de cada bodega o sucursal y el stock
+ * mínimo se editan en Inventario (`mode="inventory"`); en Vender solo se muestran.
  */
 export function ProductFields({
+  mode,
   inventory,
   product,
   categories,
+  warehouses,
 }: {
+  mode: ProductFormMode;
   inventory: InventoryId;
+  warehouses: Warehouse[];
   /** Al editar; sin producto es un alta. */
   product?: ProductView;
   categories: Category[];
@@ -82,7 +94,13 @@ export function ProductFields({
     in_store: t("inStoreOnly"),
     both: t("both"),
   };
-  const totalStock = product?.stock.reduce((sum, s) => sum + s.qty, 0) ?? 0;
+  const editable = mode === "inventory";
+  const stock = product?.stock ?? [];
+  const totalStock = stock.reduce((sum, s) => sum + s.qty, 0);
+  const qtyAt = (warehouseId: string) =>
+    stock.filter((s) => s.warehouseId === warehouseId).reduce((sum, s) => sum + s.qty, 0);
+  // Bodegas archivadas que todavía tienen stock: se muestran, pero no se editan.
+  const archivedWithStock = stock.filter((s) => !warehouses.some((w) => w.id === s.warehouseId));
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -159,18 +177,6 @@ export function ProductFields({
           required
           maxLength={30}
           defaultValue={product?.unit ?? "unidad"}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="min_stock">{t("minStock")}</Label>
-        <Input
-          id="min_stock"
-          name="min_stock"
-          type="number"
-          min={0}
-          step="0.001"
-          required
-          defaultValue={product?.minStock ?? 0}
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -251,17 +257,44 @@ export function ProductFields({
         categories={categories}
         defaultCategoryId={product?.categoryId}
       />
-      {product ? (
-        <p className="text-sm text-muted-foreground sm:col-span-2">
+      {/* S19-32: stock mínimo y stock de cada bodega o sucursal en una misma grilla alineada
+          (items-end: los campos quedan al mismo nivel aunque un nombre ocupe dos líneas). */}
+      <fieldset className="flex flex-col gap-3 rounded-md border border-dashed border-border p-3 sm:col-span-2">
+        <legend className="px-1 text-sm font-medium">{t("stockByWarehouse")}</legend>
+        <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <StockCell
+            id="min_stock"
+            label={t("minStock")}
+            value={product?.minStock ?? 0}
+            editable={editable}
+          />
+          {warehouses.map((w) => (
+            <StockCell
+              key={w.id}
+              id={`stock__${w.id}`}
+              label={w.name}
+              value={qtyAt(w.id)}
+              editable={editable}
+            />
+          ))}
+          {archivedWithStock.map((s) => (
+            <StockCell
+              key={s.warehouseId}
+              id={`archived__${s.warehouseId}`}
+              label={s.warehouseName}
+              value={s.qty}
+              editable={false}
+            />
+          ))}
+        </div>
+        <p className="text-sm text-muted-foreground">
           {t("totalStock")}:{" "}
           <span className="font-medium text-foreground tabular-nums">
             {totalStock.toLocaleString("es-CO")}
           </span>
-          {product.stock.length > 0
-            ? ` (${product.stock.map((s) => `${s.warehouseName}: ${s.qty.toLocaleString("es-CO")}`).join(" · ")})`
-            : null}
+          {editable ? ` · ${t("stockEditHint")}` : ` · ${t("stockReadOnlyHint")}`}
         </p>
-      ) : null}
+      </fieldset>
       <div className="flex flex-col gap-2 sm:col-span-2">
         <Label htmlFor="photo">
           {product ? t("replacePhoto") : t("photo")}
@@ -274,6 +307,36 @@ export function ProductFields({
           className="text-sm"
         />
       </div>
+    </div>
+  );
+}
+
+/** Un campo de stock: input en Inventario, caja de solo lectura del mismo tamaño en Vender. */
+function StockCell({
+  id,
+  label,
+  value,
+  editable,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  editable: boolean;
+}) {
+  if (editable) {
+    return (
+      <div className="flex flex-col gap-2">
+        <Label htmlFor={id}>{label}</Label>
+        <Input id={id} name={id} type="number" min={0} step="0.001" defaultValue={value} />
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-sm font-medium">{label}</span>
+      <p className="flex h-9 items-center justify-end rounded-md border border-input bg-muted px-3 text-sm tabular-nums">
+        {value.toLocaleString("es-CO")}
+      </p>
     </div>
   );
 }

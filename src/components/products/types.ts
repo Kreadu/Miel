@@ -4,6 +4,9 @@ import type { WarehouseStock } from "@/lib/stock";
 export type ProductKind = "raw" | "finished" | "resale" | "other";
 export type SalesChannel = "online" | "in_store" | "both";
 export type Category = { id: string; name: string };
+export type Warehouse = { id: string; name: string };
+/** S19-32: en Inventario se editan stock por bodega y stock mínimo; en Vender solo se ven. */
+export type ProductFormMode = "inventory" | "sales";
 
 /** S19-24: un producto tal como lo muestran Inventario y Catálogo (misma tarjeta y formulario). */
 export type ProductView = {

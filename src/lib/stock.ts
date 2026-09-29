@@ -1,4 +1,4 @@
-export type WarehouseStock = { warehouseName: string; qty: number };
+export type WarehouseStock = { warehouseId: string; warehouseName: string; qty: number };
 
 /**
  * S19-17/S19-24: stock por producto, desglosado por bodega o sucursal, a partir de filas de
@@ -13,6 +13,7 @@ export function stockByProduct(
     if (!row.product_id || !row.warehouse_id) continue;
     const list = result.get(row.product_id) ?? [];
     list.push({
+      warehouseId: row.warehouse_id,
       warehouseName: warehouseNameById.get(row.warehouse_id) ?? "—",
       qty: row.total_qty ?? 0,
     });
