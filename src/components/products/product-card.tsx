@@ -40,15 +40,19 @@ export function ProductCard({
   const [editing, setEditing] = useState(false);
 
   if (editing) {
+    // Al editar ocupa todo el ancho de la grilla: dentro de una tarjeta angosta el formulario
+    // se salía del borde.
     return (
-      <ProductEditor
-        mode={mode}
-        inventory={product.inventory}
-        product={product}
-        categories={categories}
-        warehouses={warehouses}
-        onDone={() => setEditing(false)}
-      />
+      <div className="col-span-full">
+        <ProductEditor
+          mode={mode}
+          inventory={product.inventory}
+          product={product}
+          categories={categories}
+          warehouses={warehouses}
+          onDone={() => setEditing(false)}
+        />
+      </div>
     );
   }
 

@@ -16,7 +16,8 @@ import type { WarehouseStock } from "@/lib/stock";
 
 import type { Warehouse } from "./types";
 
-const ROW = "grid grid-cols-[1fr_8rem] items-center gap-3";
+// minmax(0,1fr): la columna de la bodega puede achicarse sin empujar la casilla fuera del borde.
+const ROW = "grid grid-cols-[minmax(0,1fr)_8rem] items-center gap-3";
 const READONLY_BOX =
   "flex h-9 items-center justify-end rounded-md border border-input bg-muted px-3 text-sm tabular-nums";
 
@@ -59,7 +60,7 @@ export function StockBox({
       {warehouses.length > 0 ? (
         <div className={ROW}>
           <Select value={selectedId} onValueChange={setSelectedId}>
-            <SelectTrigger className="w-full" aria-label={t("warehouse")}>
+            <SelectTrigger className="w-full min-w-0" aria-label={t("warehouse")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
