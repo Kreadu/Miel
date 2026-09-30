@@ -11,6 +11,21 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 12) · S18-10 — completar una venta desde otra bodega
+
+**Hecho:** S18-08 commiteado y subido (`a8ca562`). S18-10 aprobada (se pregunta cada vez; vale
+también al confirmar pedidos; solo bodegas marcadas "Presta stock para completar ventas").
+Migración `20260930220000_completar-desde-otra-bodega.sql`, pgTAP de 14 pruebas, acciones con
+reparto, `allocation-picker.tsx` en carrito y en "Confirmar", casilla en la ficha de la bodega.
+Verificado: lint ✓, tsc ✓, `npm test` 466/466 ✓. **Sin correr:** pgTAP, navegador.
+
+**Pendiente del humano:** aplicar en el SQL editor, en orden: `20260930180000_cobrar-y-entregar`,
+`20260930200000_caja-cobros-y-devoluciones`, `20260930220000_completar-desde-otra-bodega`
+(hasta aplicar la última, guardar una bodega da error). Correr los pgTAP S18-06, S18-08, S18-10,
+S5-04. Marcar en Inventario → Bodegas cuáles prestan stock.
+
+---
+
 ## Sesión 2026-09-30 (cont. 11) · S18-07 y S18-08 — cobro simple y caja (cobros y devoluciones)
 
 **Hecho:** S18-07 (forma de pago una sola vez, "Cobrar $X en <forma>" con un clic, "Volver",

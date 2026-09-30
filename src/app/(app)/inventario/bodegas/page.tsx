@@ -24,7 +24,7 @@ export default async function BodegasPage() {
   const { data: warehouses } = await supabase
     .from("warehouses")
     .select(
-      "id, name, active, is_default, address, department, city, country, postal_code, phone, whatsapp",
+      "id, name, active, is_default, lends_stock, address, department, city, country, postal_code, phone, whatsapp",
     )
     .order("name", { ascending: true });
 

@@ -7,7 +7,7 @@ import { logActivity } from "@/lib/activity/log";
 import { getOrCreateGenericCustomerId } from "@/lib/customers/generic";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
-import { checkoutSchema, saleSchema } from "@/lib/validation/sales";
+import { allocationsSchema, checkoutSchema, saleSchema } from "@/lib/validation/sales";
 
 export type SaleState = { ok: false; error: string } | { ok: true } | null;
 
@@ -35,6 +35,8 @@ function mapSaleError(message: string | undefined): string {
   if (message?.includes("cash_session_required")) return "sales.errors.cashSessionRequired";
   if (message?.includes("stock_insufficient")) return "sales.errors.stockInsufficient";
   if (message?.includes("warehouse_invalid")) return "sales.errors.warehouseInvalid";
+  if (message?.includes("warehouse_not_lending")) return "sales.errors.warehouseNotLending";
+  if (message?.includes("allocation_mismatch")) return "sales.errors.allocationMismatch";
   return "sales.errors.saveFailed";
 }
 
@@ -46,6 +48,8 @@ function readCartForm(formData: FormData): Record<string, unknown> | null {
   for (const key of ["shipping_km", "shipping_cost"]) if (raw[key] === "") raw[key] = undefined;
   try {
     raw.items = JSON.parse(typeof raw.items === "string" ? raw.items : "[]");
+    // S18-10: reparto entre bodegas (solo si se completó desde otra).
+    raw.allocations = typeof raw.allocations === "string" && raw.allocations ? JSON.parse(raw.allocations) : undefined;
   } catch {
     return null;
   }
@@ -92,21 +96,35 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
   return { ok: true };
 }
 
-export async function confirmSale(saleId: string, warehouseId: string): Promise<SaleState> {
+/** S18-10: con `allocations` (reparto entre bodegas) usa `confirm_sale_allocated`. */
+export async function confirmSale(saleId: string, warehouseId: string, allocations?: unknown): Promise<SaleState> {
   const { active } = await getActiveTenant();
   if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
+  const parsedAllocations = allocations === undefined ? null : allocationsSchema.safeParse(allocations);
+  if (parsedAllocations && !parsedAllocations.success) {
+    return { ok: false, error: parsedAllocations.error.issues[0].message };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.rpc("confirm_sale", {
-    p_sale_id: saleId,
-    p_warehouse_id: warehouseId,
-  });
+  const { error } = parsedAllocations
+    ? await supabase.rpc("confirm_sale_allocated", {
+        p_sale_id: saleId,
+        p_warehouse_id: warehouseId,
+        p_allocations: parsedAllocations.data,
+      })
+    : await supabase.rpc("confirm_sale", {
+        p_sale_id: saleId,
+        p_warehouse_id: warehouseId,
+      });
 
   if (error) {
     console.error("confirmSale:", error.code, error.message);
     if (error.message.includes("not_authenticated")) return { ok: false, error: "common.errors.signInAgain" };
     if (error.message.includes("permission_denied")) return { ok: false, error: "common.errors.permissionDenied" };
     if (error.message.includes("warehouse_invalid")) return { ok: false, error: "sales.errors.warehouseInvalid" };
+    if (error.message.includes("warehouse_not_lending")) return { ok: false, error: "sales.errors.warehouseNotLending" };
+    if (error.message.includes("allocation_mismatch")) return { ok: false, error: "sales.errors.allocationMismatch" };
     if (error.message.includes("sale_not_draft")) return { ok: false, error: "sales.errors.notDraft" };
     if (error.message.includes("stock_insufficient")) return { ok: false, error: "sales.errors.stockInsufficient" };
     if (error.message.includes("cash_session_required"))
@@ -221,6 +239,7 @@ export async function checkoutCounterSale(_prev: SaleState, formData: FormData):
     p_warehouse_id: data.warehouse_id,
     p_document_type: data.document_type,
     p_note: data.note || undefined,
+    p_allocations: data.allocations,
   });
   if (error) {
     console.error("checkoutCounterSale:", error.code, error.message);

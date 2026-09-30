@@ -466,7 +466,17 @@
       "invoiceCustomerRequired": "Para factura elige un cliente con tipo y número de documento.",
       "documentTypeInvalid": "Elige boleta o factura.",
       "invoiceMarkFailed": "No se pudo marcar la factura. Intenta de nuevo.",
-      "saleHasPayments": "Esta venta ya fue cobrada: haz la devolución desde Caja."
+      "saleHasPayments": "Esta venta ya fue cobrada: haz la devolución desde Caja.",
+      "warehouseNotLending": "Esa bodega no presta stock para completar ventas.",
+      "allocationMismatch": "Las cantidades por bodega no coinciden con lo vendido. Revisa y vuelve a intentar."
+    },
+    "allocation": {
+      "available": "Hay {qty} en {warehouse}",
+      "missing": "Faltan {qty}",
+      "complete": "Completar {qty} de {warehouse} (hay {available})",
+      "fromOther": "{qty} de {warehouse}",
+      "remove": "quitar",
+      "notEnough": "No hay suficiente en las bodegas que prestan stock."
     }
   },
   "customers": {
@@ -837,7 +847,10 @@
     "errors": {
       "createFailed": "No se pudo crear la bodega o sucursal. Intenta de nuevo.",
       "updateFailed": "No se pudo actualizar la bodega o sucursal. Intenta de nuevo."
-    }
+    },
+    "lendsStock": "Presta stock para completar ventas",
+    "lendsStockHelp": "Si otra bodega no tiene suficiente, se podrá completar la venta con productos de esta.",
+    "lendsStockTag": "Presta stock para completar ventas"
   },
   "recipes": {
     "title": "Receta: {name}",

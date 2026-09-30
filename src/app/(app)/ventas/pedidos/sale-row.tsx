@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { formatDate, formatMoney } from "@/lib/format";
 
 import { CancelSaleButton } from "./cancel-sale-button";
+import type { AllocationItem, AllocationWarehouse, StockMap } from "./allocation-picker";
 import { ConfirmSaleForm } from "./confirm-sale-form";
 import { DeliverSaleAction } from "./deliver-sale-action";
 import { PaymentForm } from "./payment-form";
@@ -13,6 +14,8 @@ const RECEIVABLE_STATUSES = new Set(["confirmed", "shipped", "delivered"]);
 export async function SaleRow({
   sale,
   warehouses,
+  stock,
+  defaultWarehouseId,
   canCancel,
 }: {
   sale: {
@@ -27,8 +30,11 @@ export async function SaleRow({
     createdAt: string;
     shippingAddress: string | null;
     paymentMethod: string | null;
+    items: AllocationItem[];
   };
-  warehouses: { id: string; name: string }[];
+  warehouses: AllocationWarehouse[];
+  stock: StockMap;
+  defaultWarehouseId: string | null;
   /** S23-01: owner/admin pueden anular. */
   canCancel: boolean;
 }) {
@@ -56,7 +62,15 @@ export async function SaleRow({
       </td>
       <td className="px-3 py-2.5">
         <div className="flex flex-col gap-1 items-end">
-          {sale.status === "draft" && <ConfirmSaleForm saleId={sale.id} warehouses={warehouses} />}
+          {sale.status === "draft" && (
+            <ConfirmSaleForm
+              saleId={sale.id}
+              items={sale.items}
+              warehouses={warehouses}
+              stock={stock}
+              defaultWarehouseId={defaultWarehouseId}
+            />
+          )}
           
           {sale.status === "confirmed" && (
             <>

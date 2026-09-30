@@ -10,6 +10,7 @@ import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CatalogPedidoCart } from "./catalog-pedido-cart";
 import { MarkInvoiceIssuedButton } from "./mark-invoice-issued-button";
+import type { StockMap } from "./allocation-picker";
 import { SaleRow } from "./sale-row";
 
 export async function generateMetadata() {
@@ -30,10 +31,16 @@ export default async function PedidosPage() {
   const [salesRes, customersRes, warehousesRes, mySessionRes, ratesRes, defaultWarehouseRes, invoicesRes] = await Promise.all([
     supabase
       .from("sales")
-      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, customers(name), customer_payments(amount)")
+      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, customers(name), customer_payments(amount), sale_items(product_id, qty, products(name))")
+      .eq("tenant_id", active.tenantId)
       .order("created_at", { ascending: false }),
-    supabase.from("customers").select("id, name").eq("active", true).order("name"),
-    supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
+    supabase.from("customers").select("id, name").eq("tenant_id", active.tenantId).eq("active", true).order("name"),
+    supabase
+      .from("warehouses")
+      .select("id, name, lends_stock")
+      .eq("tenant_id", active.tenantId)
+      .eq("active", true)
+      .order("name"),
     // S19-22: la boleta de productos de tienda exige la caja abierta de quien confirma.
     supabase
       .from("cash_sessions")
@@ -72,7 +79,18 @@ export default async function PedidosPage() {
     .map((s) => ({ ...s, balance: s.total - s.customer_payments.reduce((sum, p) => sum + p.amount, 0) }))
     .filter((s) => isPendingSale(s.status, s.balance));
   const customers = customersRes.data ?? [];
-  const warehouses = warehousesRes.data ?? [];
+  const warehouses = (warehousesRes.data ?? []).map((w) => ({ id: w.id, name: w.name, lendsStock: w.lends_stock }));
+
+  // S18-10: stock por producto y bodega (ver cuánto hay y completar desde otra bodega).
+  const { data: stockRows } = await supabase
+    .from("current_stock")
+    .select("product_id, warehouse_id, total_qty")
+    .eq("tenant_id", active.tenantId);
+  const stock: StockMap = {};
+  for (const r of stockRows ?? []) {
+    if (!r.product_id || !r.warehouse_id) continue;
+    (stock[r.product_id] ??= {})[r.warehouse_id] = Number(r.total_qty ?? 0);
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -109,6 +127,7 @@ export default async function PedidosPage() {
         rates={ratesRes.data ?? []}
         warehouses={warehouses}
         defaultWarehouseId={defaultWarehouseRes.data ?? null}
+        stock={stock}
       />
 
       {invoices.length > 0 ? (
@@ -169,8 +188,15 @@ export default async function PedidosPage() {
                     createdAt: s.created_at,
                     shippingAddress: s.shipping_address,
                     paymentMethod: s.payment_method,
+                    items: s.sale_items.map((it) => ({
+                      productId: it.product_id,
+                      name: it.products?.name ?? "—",
+                      qty: Number(it.qty),
+                    })),
                   }}
                   warehouses={warehouses}
+                  stock={stock}
+                  defaultWarehouseId={defaultWarehouseRes.data ?? null}
                   canCancel={canManage}
                 />
               ))}

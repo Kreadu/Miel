@@ -22,6 +22,7 @@ import { saleLine } from "@/lib/sales/line";
 import { DOCUMENT_TYPES, PAYMENT_METHODS } from "@/lib/validation/sales";
 
 import { useCatalogCart } from "../use-catalog-cart";
+import { AllocationPicker, type AllocationWarehouse, type Extras, resolveAllocations, type StockMap } from "./allocation-picker";
 import { DeliverySection, type Rate } from "./delivery-section";
 
 const NO_CUSTOMER = "__counter__";
@@ -37,20 +38,25 @@ export function CatalogPedidoCart({
   rates,
   warehouses,
   defaultWarehouseId,
+  stock,
 }: {
   tenantId: string;
   customers: { id: string; name: string }[];
   /** S19-35: transportes de Vender → Envíos. */
   rates: Rate[];
   /** S18-06: bodegas para "Cobrar y entregar"; viene marcada la del trabajador o la principal. */
-  warehouses: { id: string; name: string }[];
+  warehouses: AllocationWarehouse[];
   defaultWarehouseId: string | null;
+  /** S18-10: stock por producto y bodega, para ver cuánto hay y completar desde otra. */
+  stock: StockMap;
 }) {
   const { lines, updateQty, updateLineData, removeItem, clear } = useCatalogCart(tenantId);
   const [state, formAction, pending] = useActionState(createSale, null);
   // S18-06: venta de mostrador en un paso (crea, boleta, cobro total y entrega).
   const [checkoutState, checkoutAction, checkoutPending] = useActionState(checkoutCounterSale, null);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [warehouseId, setWarehouseId] = useState(defaultWarehouseId ?? "");
+  const [extras, setExtras] = useState<Extras>({});
   const t = useTranslations();
 
   // S19-11: reconcilia precio/descuento/IVA del carrito contra la BD una vez al entrar (no en
@@ -118,6 +124,9 @@ export function CatalogPedidoCart({
   // cuando un producto puntual tiene otra tasa de IVA.
   const commonTaxRate =
     lines.length > 0 && lines.every((l) => l.taxRate === lines[0].taxRate) ? lines[0].taxRate : null;
+
+  const allocationItems = lines.map((l) => ({ productId: l.productId, name: l.name, qty: l.qty }));
+  const { covered, allocations } = resolveAllocations(allocationItems, warehouseId || null, stock, extras);
 
   const itemsPayload = JSON.stringify(
     // S23-01: precio, IVA y descuento los pone create_sale desde el producto.
@@ -240,7 +249,14 @@ export function CatalogPedidoCart({
           <>
             <div className="flex flex-col gap-2">
               <Label htmlFor="warehouse_id">{t("sales.cart.warehouse")}</Label>
-              <Select name="warehouse_id" defaultValue={defaultWarehouseId ?? undefined}>
+              <Select
+                name="warehouse_id"
+                value={warehouseId}
+                onValueChange={(v) => {
+                  setWarehouseId(v);
+                  setExtras({});
+                }}
+              >
                 <SelectTrigger id="warehouse_id" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -269,6 +285,17 @@ export function CatalogPedidoCart({
               </Select>
               <p className="text-xs text-muted-foreground">{t("sales.cart.invoiceHint")}</p>
             </div>
+            <div className="sm:col-span-2">
+              <input type="hidden" name="allocations" value={allocations ? JSON.stringify(allocations) : ""} />
+              <AllocationPicker
+                items={allocationItems}
+                warehouses={warehouses}
+                mainId={warehouseId || null}
+                stock={stock}
+                extras={extras}
+                onChange={setExtras}
+              />
+            </div>
           </>
         ) : null}
         <div className="flex flex-col gap-2 sm:col-span-2">
@@ -282,7 +309,7 @@ export function CatalogPedidoCart({
           <Button
             type="submit"
             value="checkout"
-            disabled={busy || !paymentMethod}
+            disabled={busy || !paymentMethod || !covered}
           >
             {checkoutPending ? t("sales.cart.charging") : t("sales.cart.checkout")}
           </Button>

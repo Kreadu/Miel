@@ -29,4 +29,6 @@ export const warehouseSchema = z.object({
   postal_code: optionalText(20),
   phone: optionalText(30),
   whatsapp: optionalText(30),
+  // S18-10: casilla "Presta stock para completar ventas" (marcada = "on").
+  lends_stock: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()),
 });

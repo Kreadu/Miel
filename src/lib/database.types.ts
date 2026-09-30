@@ -1872,6 +1872,7 @@ export type Database = {
           department: string | null
           id: string
           is_default: boolean
+          lends_stock: boolean
           name: string
           phone: string | null
           postal_code: string | null
@@ -1889,6 +1890,7 @@ export type Database = {
           department?: string | null
           id?: string
           is_default?: boolean
+          lends_stock?: boolean
           name: string
           phone?: string | null
           postal_code?: string | null
@@ -1906,6 +1908,7 @@ export type Database = {
           department?: string | null
           id?: string
           is_default?: boolean
+          lends_stock?: boolean
           name?: string
           phone?: string | null
           postal_code?: string | null
@@ -2642,6 +2645,7 @@ export type Database = {
       cancel_sale: { Args: { p_sale_id: string }; Returns: undefined }
       checkout_counter_sale: {
         Args: {
+          p_allocations?: Json
           p_customer_id: string
           p_document_type?: string
           p_items: Json
@@ -2666,6 +2670,10 @@ export type Database = {
       }
       confirm_sale: {
         Args: { p_sale_id: string; p_warehouse_id: string }
+        Returns: undefined
+      }
+      confirm_sale_allocated: {
+        Args: { p_allocations: Json; p_sale_id: string; p_warehouse_id: string }
         Returns: undefined
       }
       create_payroll_period: {

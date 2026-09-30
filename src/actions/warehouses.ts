@@ -13,7 +13,10 @@ const WAREHOUSES_PATH = "/inventario/bodegas";
 
 /** Campos del form (nombre + ubicación/contacto de S19-18), como strings para Zod. */
 function readFields(formData: FormData) {
-  const fields: Record<string, string | undefined> = { name: formData.get("name")?.toString() };
+  const fields: Record<string, string | undefined> = {
+    name: formData.get("name")?.toString(),
+    lends_stock: formData.get("lends_stock")?.toString(),
+  };
   for (const f of WAREHOUSE_DETAIL_FIELDS) fields[f] = formData.get(f)?.toString();
   return fields;
 }
@@ -29,6 +32,7 @@ function toColumns(data: z.infer<typeof warehouseSchema>) {
     postal_code: data.postal_code,
     phone: data.phone,
     whatsapp: data.whatsapp,
+    lends_stock: data.lends_stock,
   };
 }
 

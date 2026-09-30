@@ -39,6 +39,17 @@ export const saleSchema = z
 
 export const DOCUMENT_TYPES = ["boleta", "factura"] as const;
 
+/** S18-10: de qué bodega sale cada parte de un producto (la de la venta + las que prestan stock). */
+export const allocationsSchema = z
+  .array(
+    z.object({
+      product_id: z.uuid("sales.errors.allocationMismatch"),
+      warehouse_id: z.uuid("sales.errors.warehouseInvalid"),
+      qty: z.coerce.number().positive("sales.errors.allocationMismatch"),
+    }),
+  )
+  .min(1, "sales.errors.allocationMismatch");
+
 /** S18-06: venta de mostrador en un paso — exige forma de pago y bodega; cobra el total. */
 export const checkoutSchema = z.object({
   customer_id: z.uuid("sales.errors.customerInvalid").optional().or(z.literal("")),
@@ -47,4 +58,5 @@ export const checkoutSchema = z.object({
   payment_method: z.enum(PAYMENT_METHODS, { error: "sales.errors.paymentMethodRequired" }),
   warehouse_id: z.uuid("sales.errors.warehouseInvalid"),
   document_type: z.enum(DOCUMENT_TYPES, { error: "sales.errors.documentTypeInvalid" }).default("boleta"),
+  allocations: allocationsSchema.optional(),
 });

@@ -12,6 +12,8 @@ export type WarehouseDetails = {
   postal_code: string | null;
   phone: string | null;
   whatsapp: string | null;
+  /** S18-10: presta stock para completar ventas de otras bodegas. */
+  lends_stock?: boolean;
 };
 
 const DETAIL_FIELDS = [
@@ -47,6 +49,18 @@ export function WarehouseFields({
           defaultValue={values?.name}
         />
       </div>
+      <label className="flex items-start gap-2 text-sm sm:col-span-2">
+        <input
+          type="checkbox"
+          name="lends_stock"
+          defaultChecked={values?.lends_stock ?? false}
+          className="mt-0.5 h-4 w-4 accent-primary"
+        />
+        <span>
+          <span className="font-medium">{t("lendsStock")}</span>
+          <span className="block text-xs text-muted-foreground">{t("lendsStockHelp")}</span>
+        </span>
+      </label>
       {DETAIL_FIELDS.map((f) => (
         <div key={f.name} className={`flex flex-col gap-2 ${"wide" in f ? "sm:col-span-2" : ""}`}>
           <Label htmlFor={`${idPrefix}-${f.name}`}>{t(`fields.${f.name}`)}</Label>

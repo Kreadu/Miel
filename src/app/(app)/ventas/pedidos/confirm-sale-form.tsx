@@ -1,69 +1,111 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import { confirmSale } from "@/actions/sales";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+import {
+  AllocationPicker,
+  type AllocationItem,
+  type AllocationWarehouse,
+  type Extras,
+  resolveAllocations,
+  type StockMap,
+} from "./allocation-picker";
+
+/**
+ * Confirmar un pedido (boleta + stock). S18-10: se ve cuánto hay en la bodega elegida y, si no
+ * alcanza, se completa desde otra que preste stock (se pregunta cada vez).
+ */
 export function ConfirmSaleForm({
   saleId,
+  items,
   warehouses,
+  stock,
+  defaultWarehouseId,
 }: {
   saleId: string;
-  warehouses: { id: string; name: string }[];
+  items: AllocationItem[];
+  warehouses: AllocationWarehouse[];
+  stock: StockMap;
+  defaultWarehouseId: string | null;
 }) {
-  const [confirming, setConfirming] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const t = useTranslations();
+  const [confirming, setConfirming] = useState(false);
+  const [warehouseId, setWarehouseId] = useState(defaultWarehouseId ?? "");
+  const [extras, setExtras] = useState<Extras>({});
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const { covered, allocations } = resolveAllocations(items, warehouseId || null, stock, extras);
 
-  if (confirming) {
+  if (!confirming) {
     return (
-      <form
-        className="flex flex-col gap-2 min-w-[200px]"
-        action={async (formData) => {
-          setPending(true);
-          setError(null);
-          const warehouseId = formData.get("warehouse_id") as string;
-          const res = await confirmSale(saleId, warehouseId);
-          if (!res?.ok) {
-            setError(res?.error || "common.errors.unknown");
-            setPending(false);
-          } else {
-            setConfirming(false);
-          }
-        }}
-      >
-        <Select name="warehouse_id" required>
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder={t("sales.orders.warehousePlaceholder")} />
-          </SelectTrigger>
-          <SelectContent>
-            {warehouses.map((w) => (
-              <SelectItem key={w.id} value={w.id} className="text-xs">
-                {w.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="flex gap-1">
-          <Button type="submit" size="sm" disabled={pending} className="h-7 text-xs flex-1">
-            {pending ? "..." : t("sales.orders.confirm")}
-          </Button>
-          <Button type="button" variant="ghost" size="sm" disabled={pending} className="h-7 text-xs flex-1" onClick={() => setConfirming(false)}>
-            {t("sales.orders.cancel")}
-          </Button>
-        </div>
-        {error && <p className="text-[10px] text-destructive leading-tight">{t(error)}</p>}
-      </form>
+      <Button variant="outline" size="sm" className="h-7 w-full text-xs" onClick={() => setConfirming(true)}>
+        {t("sales.orders.confirm")}
+      </Button>
     );
   }
 
   return (
-    <Button variant="outline" size="sm" className="h-7 text-xs w-full" onClick={() => setConfirming(true)}>
-      {t("sales.orders.confirm")}
-    </Button>
+    <div className="flex min-w-[240px] flex-col gap-2">
+      <Select
+        value={warehouseId}
+        onValueChange={(v) => {
+          setWarehouseId(v);
+          setExtras({});
+        }}
+      >
+        <SelectTrigger className="h-8 text-xs">
+          <SelectValue placeholder={t("sales.orders.warehousePlaceholder")} />
+        </SelectTrigger>
+        <SelectContent>
+          {warehouses.map((w) => (
+            <SelectItem key={w.id} value={w.id} className="text-xs">
+              {w.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <AllocationPicker
+        items={items}
+        warehouses={warehouses}
+        mainId={warehouseId || null}
+        stock={stock}
+        extras={extras}
+        onChange={setExtras}
+      />
+      <div className="flex gap-1">
+        <Button
+          type="button"
+          size="sm"
+          className="h-7 flex-1 text-xs"
+          disabled={pending || !warehouseId || !covered}
+          onClick={() => {
+            setError(null);
+            startTransition(async () => {
+              const res = await confirmSale(saleId, warehouseId, allocations ?? undefined);
+              if (res?.ok) setConfirming(false);
+              else setError(res?.error ?? "common.errors.unknown");
+            });
+          }}
+        >
+          {pending ? "..." : t("sales.orders.confirm")}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 flex-1 text-xs"
+          disabled={pending}
+          onClick={() => setConfirming(false)}
+        >
+          {t("sales.orders.cancel")}
+        </Button>
+      </div>
+      {error ? <p className="text-xs leading-tight text-destructive">{t(error)}</p> : null}
+    </div>
   );
 }

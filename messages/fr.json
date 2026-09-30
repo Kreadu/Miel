@@ -466,7 +466,17 @@
       "invoiceCustomerRequired": "Pour une facture, choisissez un client avec type et numéro de pièce d’identité.",
       "documentTypeInvalid": "Choisissez ticket ou facture.",
       "invoiceMarkFailed": "Impossible de marquer la facture. Réessayez.",
-      "saleHasPayments": "Cette vente a déjà été encaissée : faites le remboursement depuis la Caisse."
+      "saleHasPayments": "Cette vente a déjà été encaissée : faites le remboursement depuis la Caisse.",
+      "warehouseNotLending": "Cet entrepôt ne prête pas de stock pour compléter les ventes.",
+      "allocationMismatch": "Les quantités par entrepôt ne correspondent pas à la vente. Vérifiez et réessayez."
+    },
+    "allocation": {
+      "available": "{qty} dans {warehouse}",
+      "missing": "Il manque {qty}",
+      "complete": "Compléter {qty} depuis {warehouse} ({available} dispo.)",
+      "fromOther": "{qty} depuis {warehouse}",
+      "remove": "retirer",
+      "notEnough": "Pas assez dans les entrepôts qui prêtent du stock."
     }
   },
   "customers": {
@@ -837,7 +847,10 @@
     "errors": {
       "createFailed": "Impossible de créer l’entrepôt ou point de vente. Réessayez.",
       "updateFailed": "Impossible de mettre à jour l’entrepôt ou point de vente. Réessayez."
-    }
+    },
+    "lendsStock": "Prête du stock pour compléter les ventes",
+    "lendsStockHelp": "Si un autre entrepôt n’a pas assez, la vente pourra être complétée avec les produits de celui-ci.",
+    "lendsStockTag": "Prête du stock pour compléter les ventes"
   },
   "recipes": {
     "title": "Recette : {name}",

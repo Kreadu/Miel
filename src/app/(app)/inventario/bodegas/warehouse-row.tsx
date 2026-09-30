@@ -63,6 +63,7 @@ export function WarehouseRow({
           {details.name}
         </span>
         {summary ? <span className="text-xs text-muted-foreground">{summary}</span> : null}
+        {details.lends_stock ? <span className="text-xs text-muted-foreground">{t("warehouses.lendsStockTag")}</span> : null}
       </div>
       {canManage ? (
         <div className="flex items-center gap-1">

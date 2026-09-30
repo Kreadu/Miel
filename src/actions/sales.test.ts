@@ -225,3 +225,64 @@ describe("cancelSale / refundSale — caja (S18-08)", () => {
     });
   });
 });
+
+describe("completar desde otra bodega (S18-10)", () => {
+  const WH = "33333333-3333-4333-8333-333333333333";
+  const OTHER = "66666666-6666-4666-8666-666666666666";
+  const PRODUCT = "11111111-1111-4111-8111-111111111111";
+  const allocations = [
+    { product_id: PRODUCT, warehouse_id: WH, qty: 5 },
+    { product_id: PRODUCT, warehouse_id: OTHER, qty: 5 },
+  ];
+
+  it("confirmar con reparto usa confirm_sale_allocated", async () => {
+    rpcResult.current = { error: null };
+    rpcSpy.mockClear();
+    const { confirmSale } = await import("./sales");
+
+    expect(await confirmSale("s-1", WH, allocations)).toEqual({ ok: true });
+    expect(rpcSpy).toHaveBeenCalledWith("confirm_sale_allocated", {
+      p_sale_id: "s-1",
+      p_warehouse_id: WH,
+      p_allocations: allocations,
+    });
+  });
+
+  it("confirmar sin reparto sigue usando confirm_sale", async () => {
+    rpcResult.current = { error: null };
+    rpcSpy.mockClear();
+    const { confirmSale } = await import("./sales");
+
+    await confirmSale("s-1", WH);
+    expect(rpcSpy).toHaveBeenCalledWith("confirm_sale", { p_sale_id: "s-1", p_warehouse_id: WH });
+  });
+
+  it("bodega que no presta stock: clave propia", async () => {
+    rpcResult.current = { error: { code: "P0001", message: "warehouse_not_lending" } };
+    const { confirmSale } = await import("./sales");
+
+    expect(await confirmSale("s-1", WH, allocations)).toEqual({ ok: false, error: "sales.errors.warehouseNotLending" });
+  });
+
+  it("cobrar y entregar manda el reparto", async () => {
+    rpcResult.current = { error: null };
+    rpcSpy.mockClear();
+    const { checkoutCounterSale } = await import("./sales");
+
+    await checkoutCounterSale(
+      null,
+      formData({
+        items,
+        payment_method: "cash",
+        warehouse_id: WH,
+        document_type: "boleta",
+        customer_id: "__counter__",
+        allocations: JSON.stringify(allocations),
+      }),
+    );
+    expect(rpcSpy).toHaveBeenCalledWith(
+      "checkout_counter_sale",
+      expect.objectContaining({ p_allocations: allocations }),
+    );
+  });
+});

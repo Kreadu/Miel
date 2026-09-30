@@ -53,4 +53,9 @@ describe("warehouseSchema", () => {
   it("S19-18: rechaza un teléfono de más de 30 caracteres", () => {
     expect(warehouseSchema.safeParse({ name: "X", phone: "1".repeat(31) }).success).toBe(false);
   });
+
+  it("S18-10: 'presta stock' es una casilla (marcada = true, ausente = false)", () => {
+    expect(warehouseSchema.parse({ name: "X", lends_stock: "on" }).lends_stock).toBe(true);
+    expect(warehouseSchema.parse({ name: "X" }).lends_stock).toBe(false);
+  });
 });

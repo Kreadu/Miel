@@ -466,7 +466,17 @@
       "invoiceCustomerRequired": "For an invoice, choose a customer with ID type and number.",
       "documentTypeInvalid": "Choose receipt or invoice.",
       "invoiceMarkFailed": "Could not mark the invoice. Try again.",
-      "saleHasPayments": "This sale was already paid: make the refund from the Cash register."
+      "saleHasPayments": "This sale was already paid: make the refund from the Cash register.",
+      "warehouseNotLending": "That warehouse doesn't lend stock to complete sales.",
+      "allocationMismatch": "The quantities per warehouse don't match what was sold. Check and try again."
+    },
+    "allocation": {
+      "available": "{qty} in {warehouse}",
+      "missing": "{qty} missing",
+      "complete": "Complete {qty} from {warehouse} ({available} available)",
+      "fromOther": "{qty} from {warehouse}",
+      "remove": "remove",
+      "notEnough": "Not enough in the warehouses that lend stock."
     }
   },
   "customers": {
@@ -837,7 +847,10 @@
     "errors": {
       "createFailed": "Could not create the warehouse or branch. Try again.",
       "updateFailed": "Could not update the warehouse or branch. Try again."
-    }
+    },
+    "lendsStock": "Lends stock to complete sales",
+    "lendsStockHelp": "If another warehouse doesn't have enough, the sale can be completed with products from this one.",
+    "lendsStockTag": "Lends stock to complete sales"
   },
   "recipes": {
     "title": "Recipe: {name}",
