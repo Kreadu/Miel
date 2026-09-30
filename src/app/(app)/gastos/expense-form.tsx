@@ -1,129 +1,120 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect } from "react";
 
-import { type ExpenseState } from "@/actions/expenses";
+import { createExpense, updateExpense } from "@/actions/expenses";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toDatetimeLocalValue } from "@/lib/format";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export type ExpenseFormValues = {
+import { CategorySelect } from "./category-select";
+
+const NONE = "__none__";
+
+export const METHOD_LABEL = {
+  cash: "Efectivo",
+  transfer: "Transferencia",
+  card: "Tarjeta",
+  other: "Otro",
+} as const;
+
+export type ExpenseValues = {
   id: string;
-  kind: "fixed" | "variable";
   category: string;
   description: string;
   amount: number;
-  method: "cash" | "transfer" | "card" | "other";
-  paid_at?: string;
-  supplier_id?: string | null;
+  method: keyof typeof METHOD_LABEL;
+  paid_on: string;
+  supplier_id: string | null;
 };
 
+/** S22-01: formulario de gasto de una hoja (fija o variable). Sin `values` es un alta. */
 export function ExpenseForm({
-  action,
-  values,
+  kind,
+  categories,
   suppliers,
-  submitLabel,
-  pendingLabel,
-  onCancel,
-  onSuccess,
+  values,
+  today,
+  onDone,
 }: {
-  action: (state: ExpenseState, formData: FormData) => Promise<ExpenseState>;
-  values?: Partial<ExpenseFormValues>;
-  suppliers: Array<{ id: string; name: string }>;
-  submitLabel: string;
-  pendingLabel: string;
-  onCancel?: () => void;
-  onSuccess?: () => void;
+  kind: "fixed" | "variable";
+  categories: string[];
+  suppliers: { id: string; name: string }[];
+  values?: ExpenseValues;
+  today: string;
+  onDone?: () => void;
 }) {
-  const [state, formAction, pending] = useActionState(action, null);
-  const [seenState, setSeenState] = useState(state);
-  
-  if (state !== seenState) {
-    setSeenState(state);
-    if (state?.ok) onSuccess?.();
-  }
+  const [state, action, pending] = useActionState(values ? updateExpense : createExpense, null);
+  const id = (f: string) => `${values?.id ?? "new"}-${f}`;
 
-  // Workaround since Radix Select does not allow empty string value natively.
-  // We use "__none__" and handle it in the Server Action.
+  useEffect(() => {
+    if (state?.ok) onDone?.();
+  }, [state, onDone]);
+
   return (
-    <form
-      action={formAction}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
-    >
-      {values?.id ? <input type="hidden" name="id" value={values.id} /> : null}
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="kind">Tipo</Label>
-          <Select name="kind" defaultValue={values?.kind || "fixed"} required>
-            <SelectTrigger id="kind">
-              <SelectValue placeholder="Selecciona tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fixed">Fijo</SelectItem>
-              <SelectItem value="variable">Variable</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="category">Categoría</Label>
-          <Input id="category" name="category" required maxLength={100} defaultValue={values?.category} placeholder="Ej: Arriendo, Fletes, Nómina" />
-        </div>
-
-        <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="description">Descripción</Label>
-          <Input id="description" name="description" required maxLength={200} defaultValue={values?.description} />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="amount">Monto</Label>
+    <form action={action} className="flex flex-col gap-4">
+      {values ? <input type="hidden" name="id" value={values.id} /> : null}
+      <input type="hidden" name="kind" value={kind} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <CategorySelect id={id("category")} kind={kind} categories={categories} defaultValue={values?.category} />
+        <div className="flex flex-col gap-2 lg:col-span-2">
+          <Label htmlFor={id("description")}>Descripción</Label>
           <Input
-            id="amount"
+            id={id("description")}
+            name="description"
+            required
+            maxLength={300}
+            placeholder="Ej. Arriendo local de septiembre"
+            defaultValue={values?.description}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={id("amount")}>Monto</Label>
+          <Input
+            id={id("amount")}
             name="amount"
             type="number"
+            min={0}
             step="0.01"
-            min="0.01"
             required
             defaultValue={values?.amount}
+            className="text-right"
           />
         </div>
-
         <div className="flex flex-col gap-2">
-          <Label htmlFor="method">Método de pago</Label>
-          <Select name="method" defaultValue={values?.method || "transfer"} required>
-            <SelectTrigger id="method">
-              <SelectValue placeholder="Selecciona método" />
+          <Label htmlFor={id("paid_on")}>Fecha</Label>
+          <Input id={id("paid_on")} name="paid_on" type="date" required defaultValue={values?.paid_on ?? today} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={id("method")}>Forma de pago</Label>
+          <Select name="method" defaultValue={values?.method ?? "transfer"}>
+            <SelectTrigger id={id("method")} className="w-full">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="cash">Efectivo</SelectItem>
-              <SelectItem value="transfer">Transferencia</SelectItem>
-              <SelectItem value="card">Tarjeta</SelectItem>
-              <SelectItem value="other">Otro</SelectItem>
+              {Object.entries(METHOD_LABEL).map(([v, label]) => (
+                <SelectItem key={v} value={v}>
+                  {label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="paid_at">Fecha de pago</Label>
-          <Input
-            id="paid_at"
-            name="paid_at"
-            type="datetime-local"
-            defaultValue={toDatetimeLocalValue(values?.paid_at)}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="supplier_id">Proveedor (opcional)</Label>
-          <Select name="supplier_id" defaultValue={values?.supplier_id || "__none__"}>
-            <SelectTrigger id="supplier_id">
-              <SelectValue placeholder="Ninguno" />
+        <div className="flex flex-col gap-2 lg:col-span-3">
+          <Label htmlFor={id("supplier")}>Proveedor (opcional)</Label>
+          <Select name="supplier_id" defaultValue={values?.supplier_id ?? NONE}>
+            <SelectTrigger id={id("supplier")} className="w-full sm:w-80">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__none__">Ninguno</SelectItem>
+              <SelectItem value={NONE}>Sin proveedor</SelectItem>
               {suppliers.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
                   {s.name}
@@ -133,13 +124,12 @@ export function ExpenseForm({
           </Select>
         </div>
       </div>
-
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? pendingLabel : submitLabel}
+          {pending ? "Guardando…" : values ? "Guardar cambios" : "Agregar gasto"}
         </Button>
-        {onCancel ? (
-          <Button type="button" variant="ghost" onClick={onCancel}>
+        {values ? (
+          <Button type="button" variant="ghost" onClick={onDone}>
             Cancelar
           </Button>
         ) : null}

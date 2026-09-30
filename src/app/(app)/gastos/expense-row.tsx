@@ -1,63 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { useCallback, useState } from "react";
 
-import { deleteExpense, updateExpense } from "@/actions/expenses";
+import { deleteExpense } from "@/actions/expenses";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/format";
 
-import { ExpenseForm, type ExpenseFormValues } from "./expense-form";
+import { ExpenseForm, type ExpenseValues, METHOD_LABEL } from "./expense-form";
 
-type ExpenseType = {
-  id: string;
-  kind: "fixed" | "variable";
-  category: string;
-  description: string;
-  amount: number;
-  method: "cash" | "transfer" | "card" | "other";
-  paid_at: string;
-  supplier_id: string | null;
-  suppliers: { name: string } | null;
-};
-
+/** S22-01: una fila de la tabla de gastos, con Editar (en el lugar) y Borrar. */
 export function ExpenseRow({
   expense,
-  suppliersList,
+  supplierName,
+  kind,
+  categories,
+  suppliers,
+  today,
 }: {
-  expense: ExpenseType;
-  suppliersList: Array<{ id: string; name: string }>;
+  expense: ExpenseValues;
+  supplierName: string | null;
+  kind: "fixed" | "variable";
+  categories: string[];
+  suppliers: { id: string; name: string }[];
+  today: string;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const close = useCallback(() => setEditing(false), []);
 
-  const kindLabels = {
-    fixed: "Fijo",
-    variable: "Variable",
-  };
-
-  const methodLabels = {
-    cash: "Efectivo",
-    transfer: "Transferencia",
-    card: "Tarjeta",
-    other: "Otro",
-  };
-
-  if (isEditing) {
-    const values: Partial<ExpenseFormValues> = {
-      ...expense,
-    };
-
+  if (editing) {
     return (
-      <tr>
-        <td colSpan={7} className="p-4">
+      <tr className="border-b border-border bg-muted/30">
+        <td colSpan={6} className="px-3 py-4">
           <ExpenseForm
-            action={updateExpense}
-            values={values}
-            suppliers={suppliersList}
-            submitLabel="Guardar cambios"
-            pendingLabel="Guardando…"
-            onCancel={() => setIsEditing(false)}
-            onSuccess={() => setIsEditing(false)}
+            kind={kind}
+            categories={categories}
+            suppliers={suppliers}
+            values={expense}
+            today={today}
+            onDone={close}
           />
         </td>
       </tr>
@@ -65,49 +45,29 @@ export function ExpenseRow({
   }
 
   return (
-    <tr className="border-b border-border transition-colors hover:bg-muted/50 last:border-0">
-      <td className="px-3 py-3 text-sm">
-        {formatDate(expense.paid_at, { day: "2-digit", month: "short", year: "numeric" })}
+    <tr className="border-b border-border last:border-0">
+      <td className="px-3 py-2.5 tabular-nums">{formatDate(expense.paid_on)}</td>
+      <td className="px-3 py-2.5">{expense.category}</td>
+      <td className="px-3 py-2.5 text-muted-foreground">
+        {expense.description}
+        {supplierName ? ` · ${supplierName}` : ""}
       </td>
-      <td className="px-3 py-3 text-sm">
-        <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
-          {kindLabels[expense.kind]}
-        </span>
-      </td>
-      <td className="px-3 py-3 text-sm font-medium">{expense.category}</td>
-      <td className="px-3 py-3 text-sm text-muted-foreground">{expense.description}</td>
-      <td className="px-3 py-3 text-sm tabular-nums">
-        {formatMoney(expense.amount, {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}
-      </td>
-      <td className="px-3 py-3 text-sm text-muted-foreground">
-        {methodLabels[expense.method]}
-        {expense.suppliers ? ` · ${expense.suppliers.name}` : ""}
-      </td>
-      <td className="px-3 py-3 text-right">
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsEditing(true)}
-            title="Editar gasto"
-          >
-            <Pencil className="size-4" />
+      <td className="px-3 py-2.5 text-muted-foreground">{METHOD_LABEL[expense.method]}</td>
+      <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(expense.amount)}</td>
+      <td className="px-3 py-2.5">
+        <div className="flex justify-end gap-1">
+          <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
+            Editar
           </Button>
-          <form action={deleteExpense}>
+          <form
+            action={deleteExpense}
+            onSubmit={(e) => {
+              if (!confirm(`¿Borrar "${expense.description}"?`)) e.preventDefault();
+            }}
+          >
             <input type="hidden" name="id" value={expense.id} />
-            <Button
-              variant="ghost"
-              size="icon"
-              type="submit"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-              title="Eliminar gasto"
-            >
-              <Trash2 className="size-4" />
+            <Button type="submit" variant="ghost" size="sm">
+              Borrar
             </Button>
           </form>
         </div>

@@ -11,6 +11,16 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 21) · S22-01 — gastos fijos y variables
+
+**Hecho:** migración `20260929212405_categorias-de-gasto.sql` (categorías con tipo, lista inicial, tipo impuesto por trigger);
+validación/acciones reescritas; `/gastos` con dos hojas, totales del mes (incluye mano de obra de
+RRHH), tabla con Editar/Borrar. Épica E22. Verificado: lint ✓, tsc ✓, tests ✓, build ✓.
+
+**Siguiente:** S22-02 estado de resultados.
+
+---
+
 ## Sesión 2026-09-29 (cont. 20) · S21-06 — nómina en Finanzas
 
 **Hecho:** migración `20260929210552` (`monthly_payroll`; P&L, gastos por mes y flujo de caja con

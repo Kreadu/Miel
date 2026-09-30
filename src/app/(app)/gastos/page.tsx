@@ -1,82 +1,147 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { createExpense } from "@/actions/expenses";
+import { formatMoney } from "@/lib/format";
+import { todayInBogota } from "@/lib/inventory-history";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-import { ExpenseForm } from "./expense-form";
+import type { ExpenseValues } from "./expense-form";
 import { ExpenseRow } from "./expense-row";
+import { NewExpense } from "./new-expense";
 
 export const metadata = { title: "Gastos · Miel" };
 
-export default async function GastosPage() {
-  const { active } = await getActiveTenant();
-  if (!active) notFound();
+const SHEETS = {
+  fijos: { kind: "fixed", title: "Gastos fijos", payroll: "gasto_fijo" },
+  variables: { kind: "variable", title: "Gastos variables", payroll: "gasto_variable" },
+} as const;
 
-  if (active.role === "member") {
-    notFound();
-  }
+/** Día calendario en Bogotá ("AAAA-MM-DD") de un timestamp. */
+function bogotaDay(iso: string): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date(iso));
+}
+
+/**
+ * S22-01: Gastos en dos hojas — fijos y variables. Cada hoja: formulario con categorías ya
+ * clasificadas, tabla con Editar/Borrar y total del mes (incluye la nómina clasificada como
+ * gasto en RRHH). Solo owner/admin.
+ */
+export default async function GastosPage({ searchParams }: { searchParams: Promise<{ tipo?: string }> }) {
+  const { active } = await getActiveTenant();
+  if (!active || active.role === "member") notFound();
+
+  const { tipo } = await searchParams;
+  const sheetKey = tipo === "variables" ? "variables" : "fijos";
+  const sheet = SHEETS[sheetKey];
+  const today = todayInBogota();
+  const month = today.slice(0, 7);
 
   const supabase = await createClient();
-  
-  const [expensesRes, suppliersRes] = await Promise.all([
+  const [{ data: categories }, { data: suppliers }, { data: expenses }, { data: payroll }] = await Promise.all([
+    supabase.from("expense_categories").select("name").eq("kind", sheet.kind).order("name"),
+    supabase.from("suppliers").select("id, name").eq("active", true).order("name"),
     supabase
       .from("expenses")
-      .select("id, kind, category, description, amount, method, paid_at, supplier_id, suppliers(name)")
-      .order("paid_at", { ascending: false }),
-    supabase
-      .from("suppliers")
-      .select("id, name")
-      .eq("active", true)
-      .order("name", { ascending: true }),
+      .select("id, category, description, amount, method, paid_at, supplier_id, suppliers(name)")
+      .eq("kind", sheet.kind)
+      .order("paid_at", { ascending: false })
+      .limit(300),
+    supabase.from("monthly_payroll").select("month, labor_cost").eq("classification", sheet.payroll).order("month", { ascending: false }),
   ]);
 
-  const expenses = expensesRes.data || [];
-  const suppliers = suppliersRes.data || [];
-
-  // Ajuste en caso de que supabase devuelva supplier_id como objeto por culpa de relaciones en TS
-  const safeExpenses = expenses.map((e) => ({
-    ...e,
-    suppliers: Array.isArray(e.suppliers) ? e.suppliers[0] : e.suppliers,
+  const categoryNames = (categories ?? []).map((c) => c.name);
+  const rows = (expenses ?? []).map((e) => ({
+    values: {
+      id: e.id,
+      category: e.category,
+      description: e.description,
+      amount: Number(e.amount),
+      method: e.method as ExpenseValues["method"],
+      paid_on: bogotaDay(e.paid_at),
+      supplier_id: e.supplier_id,
+    } satisfies ExpenseValues,
+    supplierName: e.suppliers?.name ?? null,
   }));
+  const payrollThisMonth = (payroll ?? [])
+    .filter((p) => p.month === month)
+    .reduce((s, p) => s + Number(p.labor_cost ?? 0), 0);
+  const expensesThisMonth = rows
+    .filter((r) => r.values.paid_on.startsWith(month))
+    .reduce((s, r) => s + r.values.amount, 0);
+
+  const tab = (key: keyof typeof SHEETS) =>
+    `inline-flex h-10 items-center justify-center rounded-md px-5 text-sm font-medium shadow-sm ${
+      key === sheetKey
+        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+    }`;
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Gastos</h1>
-        <p className="text-sm text-muted-foreground">
-          Gastos fijos y variables para operar y administrar tu negocio.
-        </p>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Gastos</h1>
+          <p className="text-sm text-muted-foreground">
+            Elige la hoja y la categoría: el tipo (fijo o variable) ya viene asignado.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/gastos?tipo=fijos" className={tab("fijos")}>
+            Gastos fijos
+          </Link>
+          <Link href="/gastos?tipo=variables" className={tab("variables")}>
+            Gastos variables
+          </Link>
+        </div>
       </div>
 
-      <ExpenseForm
-        action={createExpense}
-        suppliers={suppliers}
-        submitLabel="Registrar gasto"
-        pendingLabel="Registrando…"
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-lg border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground">{sheet.title} anotados este mes</p>
+          <p className="text-base font-semibold tabular-nums">{formatMoney(expensesThisMonth)}</p>
+        </div>
+        <div className="rounded-lg border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground">Mano de obra este mes (desde RRHH)</p>
+          <p className="text-base font-semibold tabular-nums">{formatMoney(payrollThisMonth)}</p>
+        </div>
+        <div className="rounded-lg border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground">Total {sheet.title.toLowerCase()} del mes</p>
+          <p className="text-base font-semibold tabular-nums">{formatMoney(expensesThisMonth + payrollThisMonth)}</p>
+        </div>
+      </section>
+
+      <NewExpense
+        key={sheetKey}
+        kind={sheet.kind}
+        categories={categoryNames}
+        suppliers={suppliers ?? []}
+        today={today}
       />
 
-      {safeExpenses.length > 0 ? (
+      {rows.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-left">
+          <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
                 <th className="px-3 py-2 font-medium">Fecha</th>
-                <th className="px-3 py-2 font-medium">Tipo</th>
                 <th className="px-3 py-2 font-medium">Categoría</th>
                 <th className="px-3 py-2 font-medium">Descripción</th>
-                <th className="px-3 py-2 font-medium">Monto</th>
-                <th className="px-3 py-2 font-medium">Método</th>
+                <th className="px-3 py-2 font-medium">Pago</th>
+                <th className="px-3 py-2 text-right font-medium">Monto</th>
                 <th className="px-3 py-2" />
               </tr>
             </thead>
             <tbody>
-              {safeExpenses.map((expense) => (
+              {rows.map((r) => (
                 <ExpenseRow
-                  key={expense.id}
-                  // @ts-expect-error supabase type assertion
-                  expense={expense}
-                  suppliersList={suppliers}
+                  key={r.values.id}
+                  expense={r.values}
+                  supplierName={r.supplierName}
+                  kind={sheet.kind}
+                  categories={categoryNames}
+                  suppliers={suppliers ?? []}
+                  today={today}
                 />
               ))}
             </tbody>
@@ -84,9 +149,14 @@ export default async function GastosPage() {
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no has registrado gastos. Registra el primero arriba.
+          Aún no hay {sheet.title.toLowerCase()}. Agrega el primero arriba.
         </p>
       )}
+
+      <p className="text-xs text-muted-foreground">
+        La mano de obra se clasifica en RRHH, en la ficha de cada trabajador (&quot;Su pago es&quot;), y
+        entra aquí al cerrar cada período de nómina.
+      </p>
     </div>
   );
 }

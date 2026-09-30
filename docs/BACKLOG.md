@@ -261,13 +261,25 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
 | S21-06 | Como dueño quiero que la nómina sume en Finanzas como gasto o costo, fijo o variable, según cada trabajador | Vista `monthly_payroll`; P&L, gastos por mes y flujo de caja la incluyen; resumen por clasificación en el período | S21-04, S21-05 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-06-nomina-en-finanzas.md |
 | S21-06 | Contratación de profesionales, licencias/incapacidades, nómina electrónica DIAN, portal del trabajador | A priorizar con el humano | S21-05 | todo | — |
 
+## Épica E22 — Gastos y estado de resultados
+
+Pedido por el humano 2026-09-29: gastos sencillos y fiables (fijos/variables ya clasificados) que
+alimenten un estado de resultados.
+
+| ID | Historia | Criterio | Depende | Estado | Spec |
+|---|---|---|---|---|---|
+| S22-01 | Como dueño quiero anotar gastos en dos hojas (fijos y variables) eligiendo categorías ya clasificadas, y verlos en una tabla con Editar/Borrar | `expense_categories` + tipo impuesto por la categoría; `/gastos?tipo=` | S21-06 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S22-01-gastos-fijos-y-variables.md |
+| S22-02 | Como dueño quiero ver el estado de resultados | Ingresos, costo de ventas, mano de obra, gastos fijos y variables, utilidad | S22-01 | todo | — |
+
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración
   `20260929165506_tipos-de-inventario.sql` sin aplicar al cloud — sin ella fallan los
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S21-06**: migración `20260929210552_nomina-en-finanzas.sql` sin aplicar (no bloquea la app;
+- **S22-01, bloqueante hasta que se resuelva**: migración `20260929212405_categorias-de-gasto.sql` sin aplicar — sin ella falla Gastos
+  (tabla `expense_categories`).
+- **S21-06 (aplicada 2026-09-29)**: migración `20260929210552_nomina-en-finanzas.sql` sin aplicar (no bloquea la app;
   Finanzas no incluye la nómina hasta aplicarla). Finanzas sigue oculto en el menú (S14-01).
 - **S21-04 (aplicada 2026-09-29)**: migración `20260929205403_control-de-uso.sql` sin
   aplicar — sin ella fallan Trabajadores (columna `cost_classification`) y Control de uso; el

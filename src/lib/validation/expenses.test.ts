@@ -1,53 +1,45 @@
 import { describe, expect, it } from "vitest";
-import { expenseSchema } from "./expenses";
 
-describe("expenseSchema", () => {
-  it("valida un gasto valido fijo", () => {
-    const data = {
-      kind: "fixed",
-      category: "Arriendo",
-      description: "Pago de mes",
-      amount: 1500,
-      method: "transfer",
-    };
-    const result = expenseSchema.safeParse(data);
-    expect(result.success).toBe(true);
+import { expenseCategorySchema, expenseSchema } from "./expenses";
+
+const base = {
+  kind: "fixed",
+  category: "Arriendo",
+  description: "Pago del mes",
+  amount: "1500",
+  method: "transfer",
+  paid_on: "2026-09-05",
+};
+
+describe("expenseSchema (S22-01)", () => {
+  it("acepta un gasto válido; el monto llega como texto del formulario", () => {
+    const r = expenseSchema.safeParse(base);
+    expect(r.success && r.data.amount).toBe(1500);
   });
 
-  it("rechaza montos negativos o cero", () => {
-    const data = {
-      kind: "variable",
-      category: "Transporte",
-      description: "Flete",
-      amount: 0,
-      method: "cash",
-    };
-    const result = expenseSchema.safeParse(data);
-    expect(result.success).toBe(false);
+  it("la fecha es un día; se guarda al mediodía de Bogotá", () => {
+    const r = expenseSchema.safeParse(base);
+    expect(r.success && r.data.paid_at).toBe("2026-09-05T17:00:00.000Z");
   });
 
-  it("rechaza metodo invalido", () => {
-    const data = {
-      kind: "variable",
-      category: "Caja",
-      description: "Caja menor",
-      amount: 50,
-      method: "invalid",
-    };
-    const result = expenseSchema.safeParse(data);
-    expect(result.success).toBe(false);
+  it("rechaza monto cero o negativo, método y tipo desconocidos, categoría vacía", () => {
+    expect(expenseSchema.safeParse({ ...base, amount: "0" }).success).toBe(false);
+    expect(expenseSchema.safeParse({ ...base, amount: "-5" }).success).toBe(false);
+    expect(expenseSchema.safeParse({ ...base, method: "bitcoin" }).success).toBe(false);
+    expect(expenseSchema.safeParse({ ...base, kind: "otro" }).success).toBe(false);
+    expect(expenseSchema.safeParse({ ...base, category: "" }).success).toBe(false);
   });
 
-  it("valida proveedor opcional", () => {
-    const data = {
-      kind: "fixed",
-      category: "Arriendo",
-      description: "Mes",
-      amount: 1000,
-      method: "cash",
-      supplier_id: "00000000-0000-0000-0000-000000000000",
-    };
-    const result = expenseSchema.safeParse(data);
-    expect(result.success).toBe(true);
+  it("proveedor opcional ('sin proveedor' → null)", () => {
+    const r = expenseSchema.safeParse({ ...base, supplier_id: "" });
+    expect(r.success && r.data.supplier_id).toBeNull();
+  });
+});
+
+describe("expenseCategorySchema (S22-01)", () => {
+  it("nombre y tipo", () => {
+    expect(expenseCategorySchema.safeParse({ name: "Música ambiental", kind: "fixed" }).success).toBe(true);
+    expect(expenseCategorySchema.safeParse({ name: " ", kind: "fixed" }).success).toBe(false);
+    expect(expenseCategorySchema.safeParse({ name: "X", kind: "otro" }).success).toBe(false);
   });
 });
