@@ -8,6 +8,7 @@ const tenantA: ActiveMembership = {
   tenantName: "Empresa A",
   sellsPhysical: true,
   sellsVirtual: false,
+  categoryModules: null,
   currency: "COP",
 };
 const tenantB: ActiveMembership = {
@@ -16,6 +17,7 @@ const tenantB: ActiveMembership = {
   tenantName: "Empresa B",
   sellsPhysical: true,
   sellsVirtual: false,
+  categoryModules: null,
   currency: "COP",
 };
 

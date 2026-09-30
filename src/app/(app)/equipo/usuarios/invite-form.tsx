@@ -14,7 +14,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function InviteForm() {
+/**
+ * S21-03: invitación por correo. "Acceso" unifica rol y categoría: Administrador, Cuenta de la
+ * tienda (la que usa el modo tienda) o una categoría de trabajador. Desde la ficha de un
+ * trabajador llega con su correo y `workerId` para dejarlo enlazado.
+ */
+export function InviteForm({
+  categories,
+  defaultEmail,
+  defaultAccess,
+  workerId,
+}: {
+  categories: { id: string; name: string }[];
+  defaultEmail?: string | null;
+  defaultAccess?: string;
+  workerId?: string;
+}) {
   const [state, action, pending] = useActionState(createInvitation, null);
   const [copied, setCopied] = useState(false);
 
@@ -27,19 +42,32 @@ export function InviteForm() {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs">
       <form action={action} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        {workerId ? <input type="hidden" name="worker_id" value={workerId} /> : null}
         <div className="flex flex-1 flex-col gap-2">
           <Label htmlFor="email">Correo del invitado</Label>
-          <Input id="email" name="email" type="email" required autoComplete="email" />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            defaultValue={defaultEmail ?? undefined}
+          />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="role">Rol</Label>
-          <Select name="role" defaultValue="member">
-            <SelectTrigger id="role" className="w-32">
+          <Label htmlFor="access">Acceso</Label>
+          <Select name="access" defaultValue={defaultAccess ?? "admin"}>
+            <SelectTrigger id="access" className="w-full sm:w-56">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="member">Operativo</SelectItem>
+              <SelectItem value="admin">Administrador (ve todo)</SelectItem>
+              <SelectItem value="tienda">Cuenta de la tienda (modo tienda)</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  Categoría: {c.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

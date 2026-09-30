@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { WORKER_MODULES } from "@/lib/rrhh/workers";
+import { CATEGORY_MODULES } from "@/lib/rrhh/workers";
 
 // Mismo sentinel que lee src/actions/workers.ts (Radix no admite value="").
 const NONE = "__none__";
@@ -109,7 +109,7 @@ export function WorkerCategoryPicker({
               <fieldset className="flex flex-col gap-2">
                 <legend className="mb-2 text-sm font-medium">Qué puede ver</legend>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
-                  {WORKER_MODULES.map((m) => (
+                  {CATEGORY_MODULES.map((m) => (
                     <label key={m.id} className="flex items-center gap-2 text-sm">
                       <input
                         type="checkbox"
@@ -125,6 +125,9 @@ export function WorkerCategoryPicker({
                     </label>
                   ))}
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Gastos y RRHH son solo para administradores (invítalos por correo como Administrador).
+                </p>
               </fieldset>
               {error ? (
                 <p role="alert" className="text-sm text-destructive">

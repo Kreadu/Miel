@@ -62,7 +62,7 @@ describe("createInvitation — envío de correo (S12-03)", () => {
 
     const result = await createInvitation(
       null,
-      formData({ email: "nuevo@miel.test", role: "member" })
+      formData({ email: "nuevo@miel.test", access: "tienda" })
     );
 
     expect(result).toMatchObject({ ok: true, link: "http://localhost:3000/invite/tok-123" });
@@ -83,7 +83,7 @@ describe("createInvitation — envío de correo (S12-03)", () => {
 
     const result = await createInvitation(
       null,
-      formData({ email: "otro@miel.test", role: "admin" })
+      formData({ email: "otro@miel.test", access: "admin" })
     );
 
     expect(result).toMatchObject({ ok: true, link: "http://localhost:3000/invite/tok-123" });

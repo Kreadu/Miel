@@ -35,6 +35,10 @@ export default async function LoginPage({
             Crear cuenta
           </Link>
         </div>
+        {/* S21-03: los trabajadores no entran aquí, sino en el equipo de la tienda. */}
+        <p className="text-xs text-muted-foreground">
+          ¿Eres trabajador? Entra en el computador de la tienda con tu usuario y código de 4 dígitos.
+        </p>
       </CardContent>
     </Card>
   );

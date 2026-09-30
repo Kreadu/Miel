@@ -11,10 +11,10 @@ import type { Role } from "@/lib/tenant/active-tenant";
 
 // Los ítems (con sus componentes de ícono) se calculan aquí, en el cliente: un componente
 // de ícono no es serializable como prop desde un Server Component (RSC boundary).
-export function SidebarNav({ role }: { role: Role }) {
+export function SidebarNav({ role, modules }: { role: Role; modules: string[] | null }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
-  const items = visibleNavItems(role);
+  const items = visibleNavItems(role, modules);
 
   return (
     <nav className="flex flex-col gap-0.5">

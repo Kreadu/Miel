@@ -11,6 +11,36 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 18) · S21-03 — acceso de trabajadores (correo + modo tienda)
+
+**Hecho:** el humano eligió correo + modo tienda con código (sin tocar `auth.users`). Migración
+`20260929203354`; cookie firmada; `resolveAccess`; guardas por módulo; `/trabajador`; "Acceso a
+Miel" en la ficha; invitaciones con "Acceso"; categorías solo Vender/Inventario/Comprar. Se generó
+`MIEL_SESSION_SECRET` en `.env.local` (no se muestra; documentada en `.env.example`). Hallazgo
+propio corregido antes de probar: un `raise` en `verify_worker_pin` deshacía el registro del
+intento fallido (el bloqueo nunca se activaba). ADR-037. Verificado: lint ✓, tsc ✓, `npm test`
+392/392 ✓, build ✓. Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega la migración y reinicia `npm run dev`; S21-04 (registro de uso de
+acciones) — los ingresos ya se registran en `worker_login_attempts`.
+
+---
+
+## Sesión 2026-09-29 (cont. 17) · S21-03 — bloqueado en el mecanismo de ingreso con código
+
+**Hecho:** decisiones del humano: unificar rol y categoría ("Administrador" o una categoría), dar el
+acceso desde la ficha del trabajador, y mover miembros/invitaciones a `/equipo/usuarios` ("Usuarios
+con correo") — esto último hecho (RRHH queda solo con botones). Verificado: lint ✓, tsc ✓, tests ✓.
+
+**Bloqueo:** el diseño de ingreso con código de 4 dígitos creaba usuarios escribiendo directo en
+`auth.users`/`auth.identities` desde una función security definer (sin service role). El control de
+permisos de la sesión lo bloqueó como debilitamiento de seguridad; no se escribió la migración. El
+humano decide entre alternativas (ver respuesta de la sesión): aprobar ese mecanismo, usar una
+Edge Function con la llave de servicio fuera de `src/`, acceso solo por correo, o PIN como "cambio
+de usuario" dentro de una sesión de tienda.
+
+---
+
 ## Sesión 2026-09-29 (cont. 16) · S21-05 — nómina, licencias y XML DIAN
 
 **Hecho:** migración `20260929200638` (licencias, períodos, liquidaciones, datos DIAN,

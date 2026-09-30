@@ -8,6 +8,7 @@ import { formatMoney } from "@/lib/format";
 import { formatDate } from "@/lib/format";
 import { CONTRACT_TYPES, WORKER_TYPES } from "@/lib/rrhh/workers";
 
+import { WorkerAccess } from "./worker-access";
 import { type WorkerArea, WorkerFields, type WorkerValues } from "./worker-fields";
 
 type Option = { id: string; name: string };
@@ -89,11 +90,21 @@ export function WorkerRow({
             </p>
           ) : null}
         </form>
+        {/* Fuera del form del trabajador: sus propios formularios no pueden ir anidados. */}
+        <WorkerAccess
+          workerId={id}
+          username={values.username ?? null}
+          hasEmailAccount={Boolean(values.user_id)}
+          email={values.email}
+          categoryId={values.category_id}
+          categories={categories}
+        />
       </li>
     );
   }
 
   const category = categories.find((c) => c.id === values.category_id)?.name;
+  const access = [values.username ? "código" : null, values.user_id ? "correo" : null].filter(Boolean).join(" y ");
   const position = positions.find((p) => p.id === values.position_id)?.name;
   const pay =
     values.worker_type === "por_horas"
@@ -119,6 +130,7 @@ export function WorkerRow({
               : WORKER_TYPES[values.worker_type as keyof typeof WORKER_TYPES],
             pay,
             values.worker_type === "temporal" && values.end_date ? `Hasta ${formatDate(values.end_date)}` : null,
+            access ? `Entra con ${access}` : null,
           ]
             .filter(Boolean)
             .join(" · ")}

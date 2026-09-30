@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { BackButton } from "./back-button";
 import { LanguageSwitcher } from "./language-switcher";
 import { SidebarNav } from "./sidebar-nav";
+import { StoreModeControls } from "./store-mode-controls";
 import { TenantSwitcher } from "./tenant-switcher";
 import { BrandLink } from "./brand-link";
 
@@ -26,6 +27,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // El anónimo ya lo corta el proxy; esto cubre membership perdida en caliente (caso borde).
   const { active, memberships } = await getActiveTenant();
   if (!active) redirect("/onboarding");
+  // S21-03: en el equipo de la tienda, nadie usa Miel sin identificarse con su código.
+  if (active.needsWorker) redirect("/trabajador");
 
   const sidebarContent = (
     <>
@@ -34,18 +37,28 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <p className="truncate text-sm font-medium">{active.tenantName}</p>
         <p className="text-xs text-muted-foreground capitalize">{active.role}</p>
       </div>
-      <TenantSwitcher memberships={memberships} activeTenantId={active.tenantId} />
-      <SidebarNav role={active.role} />
+      {active.storeMode ? null : (
+        <TenantSwitcher memberships={memberships} activeTenantId={active.tenantId} />
+      )}
+      <SidebarNav role={active.role} modules={active.modules} />
+      <StoreModeControls
+        storeMode={active.storeMode}
+        workerName={active.worker?.name ?? null}
+        canActivate={active.accountRole === "member"}
+      />
       <div className="mt-auto flex flex-col gap-2 border-t border-sidebar-border pt-4">
         <div className="flex items-center justify-between gap-2">
           <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
           <ThemeToggle />
         </div>
-        <form action={logout}>
-          <Button variant="outline" size="sm" type="submit" className="w-full">
-            Cerrar sesión
-          </Button>
-        </form>
+        {/* En modo tienda no se cierra la sesión de la cuenta de tienda desde aquí. */}
+        {active.storeMode ? null : (
+          <form action={logout}>
+            <Button variant="outline" size="sm" type="submit" className="w-full">
+              Cerrar sesión
+            </Button>
+          </form>
+        )}
       </div>
     </>
   );

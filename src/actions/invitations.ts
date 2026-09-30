@@ -23,7 +23,8 @@ export async function createInvitation(
 ): Promise<InvitationState> {
   const parsed = invitationSchema.safeParse({
     email: formData.get("email"),
-    role: formData.get("role"),
+    access: formData.get("access"),
+    worker_id: formData.get("worker_id") || undefined,
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
@@ -33,7 +34,13 @@ export async function createInvitation(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("invitations")
-    .insert({ tenant_id: active.tenantId, email: parsed.data.email, role: parsed.data.role })
+    .insert({
+      tenant_id: active.tenantId,
+      email: parsed.data.email,
+      role: parsed.data.role,
+      category_id: parsed.data.category_id,
+      worker_id: parsed.data.worker_id,
+    })
     .select("token")
     .single();
   if (error) {
@@ -43,7 +50,7 @@ export async function createInvitation(
 
   const origin = (await headers()).get("origin");
   const link = `${origin}/invite/${data.token}`;
-  revalidatePath("/equipo");
+  revalidatePath("/equipo", "layout");
 
   // Fallo de envío no revierte la invitación: ya quedó creada y es válida vía el link (criterio 2).
   try {
@@ -67,7 +74,7 @@ export async function revokeInvitation(formData: FormData): Promise<void> {
 
   const supabase = await createClient();
   await supabase.from("invitations").delete().eq("id", parsed.data).is("accepted_at", null);
-  revalidatePath("/equipo");
+  revalidatePath("/equipo", "layout");
 }
 
 const acceptSchema = z.object({ token: z.uuid() });

@@ -471,6 +471,7 @@ export type Database = {
       invitations: {
         Row: {
           accepted_at: string | null
+          category_id: string | null
           created_at: string
           created_by: string
           email: string
@@ -479,9 +480,11 @@ export type Database = {
           role: string
           tenant_id: string
           token: string
+          worker_id: string | null
         }
         Insert: {
           accepted_at?: string | null
+          category_id?: string | null
           created_at?: string
           created_by?: string
           email: string
@@ -490,9 +493,11 @@ export type Database = {
           role: string
           tenant_id: string
           token?: string
+          worker_id?: string | null
         }
         Update: {
           accepted_at?: string | null
+          category_id?: string | null
           created_at?: string
           created_by?: string
           email?: string
@@ -501,8 +506,16 @@ export type Database = {
           role?: string
           tenant_id?: string
           token?: string
+          worker_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "invitations_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "worker_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "invitations_tenant_id_fkey"
             columns: ["tenant_id"]
@@ -521,6 +534,7 @@ export type Database = {
       }
       memberships: {
         Row: {
+          category_id: string | null
           created_at: string
           created_by: string
           id: string
@@ -529,6 +543,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category_id?: string | null
           created_at?: string
           created_by?: string
           id?: string
@@ -537,6 +552,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category_id?: string | null
           created_at?: string
           created_by?: string
           id?: string
@@ -545,6 +561,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "memberships_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "worker_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "memberships_tenant_id_fkey"
             columns: ["tenant_id"]
@@ -1850,6 +1873,44 @@ export type Database = {
           },
         ]
       }
+      worker_login_attempts: {
+        Row: {
+          attempted_at: string
+          attempted_by: string | null
+          id: string
+          success: boolean
+          tenant_id: string
+          username: string
+          worker_id: string | null
+        }
+        Insert: {
+          attempted_at?: string
+          attempted_by?: string | null
+          id?: string
+          success: boolean
+          tenant_id: string
+          username: string
+          worker_id?: string | null
+        }
+        Update: {
+          attempted_at?: string
+          attempted_by?: string | null
+          id?: string
+          success?: boolean
+          tenant_id?: string
+          username?: string
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_login_attempts_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       worker_positions: {
         Row: {
           created_at: string
@@ -1896,10 +1957,13 @@ export type Database = {
           id: string
           pension_fund: string | null
           phone: string | null
+          pin_hash: string | null
           position_id: string | null
           salary: number
           tenant_id: string
           updated_at: string
+          user_id: string | null
+          username: string | null
           warehouse_id: string | null
           work_schedule: string
           worker_type: string
@@ -1925,10 +1989,13 @@ export type Database = {
           id?: string
           pension_fund?: string | null
           phone?: string | null
+          pin_hash?: string | null
           position_id?: string | null
           salary?: number
           tenant_id: string
           updated_at?: string
+          user_id?: string | null
+          username?: string | null
           warehouse_id?: string | null
           work_schedule?: string
           worker_type?: string
@@ -1954,10 +2021,13 @@ export type Database = {
           id?: string
           pension_fund?: string | null
           phone?: string | null
+          pin_hash?: string | null
           position_id?: string | null
           salary?: number
           tenant_id?: string
           updated_at?: string
+          user_id?: string | null
+          username?: string | null
           warehouse_id?: string | null
           work_schedule?: string
           worker_type?: string
@@ -2418,7 +2488,15 @@ export type Database = {
     }
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string }
+      active_worker_modules: {
+        Args: { p_tenant_id: string; p_worker_id: string }
+        Returns: { full_name: string; modules: string[] }[]
+      }
       cancel_purchase: { Args: { p_purchase_id: string }; Returns: undefined }
+      clear_worker_pin: {
+        Args: { p_worker_id: string }
+        Returns: undefined
+      }
       close_cash_session: {
         Args: {
           p_counted_amount: number
@@ -2577,6 +2655,10 @@ export type Database = {
         Args: { p_levels: Json; p_product_id: string }
         Returns: number
       }
+      set_worker_pin: {
+        Args: { p_pin: string; p_username: string; p_worker_id: string }
+        Returns: undefined
+      }
       update_purchase: {
         Args: {
           p_items: Json
@@ -2588,6 +2670,10 @@ export type Database = {
       }
       user_is_tenant_admin: { Args: { p_tenant_id: string }; Returns: boolean }
       user_tenant_ids: { Args: never; Returns: string[] }
+      verify_worker_pin: {
+        Args: { p_pin: string; p_tenant_id: string; p_username: string }
+        Returns: { full_name: string; modules: string[]; worker_id: string }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -41,6 +41,9 @@ export type WorkerValues = {
   emergency_phone: string | null;
   warehouse_id: string | null;
   category_id: string | null;
+  /** S21-03: acceso a Miel (solo lectura aquí; se cambia en "Acceso a Miel"). */
+  username?: string | null;
+  user_id?: string | null;
 };
 
 type Option = { id: string; name: string };

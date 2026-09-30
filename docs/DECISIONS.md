@@ -578,3 +578,32 @@ disponible en Node y navegador). Cambio de concepto: Gestion-Future es para una 
 liquida la nómina de varias pymes (rol SUPER_ADMIN de Kreadu); en Miel cada empresa gestiona su
 propio personal y los permisos siguen la matriz owner/admin/member. Una corrección hecha en un
 proyecto no llega sola al otro: si se quiere, se copia a mano. Historia: S21-01.
+
+## ADR-037 · 2026-09-29 · Trabajadores: correo con categoría + "modo tienda" con código de 4 dígitos
+**Contexto:** el humano quiere que cada trabajador entre con usuario y código de 4 dígitos y vea solo
+lo de su categoría, y unificar el "rol" de las invitaciones con la categoría. Un primer diseño
+creaba usuarios de Supabase sin correo insertando en `auth.users` desde una función SQL (Supabase
+exige contraseñas ≥ 6 y la llave de servicio está prohibida en `src/`); el control de permisos de
+la sesión lo bloqueó como debilitamiento de seguridad y no se implementó. El humano eligió la
+combinación de dos accesos.
+**Decisión:**
+1. **Con correo** (desde cualquier lugar): invitación con "Acceso" = Administrador, Cuenta de la
+   tienda (operativo sin categoría) o una categoría (`invitations.category_id` →
+   `memberships.category_id`); desde la ficha del trabajador queda enlazada (`workers.user_id`) y
+   la categoría de la membresía sigue a la del trabajador (trigger).
+2. **Modo tienda** (en el equipo de la tienda): una cuenta operativa activa el modo tienda (cookie
+   httpOnly firmada con HMAC-SHA256, `MIEL_SESSION_SECRET`); cada trabajador se identifica con
+   usuario + código (`workers.pin_hash` = bcrypt vía pgcrypto, ilegible por la API por grants de
+   columna; RPC `verify_worker_pin` con bloqueo de 5 fallos en 15 min y registro en
+   `worker_login_attempts`). Los permisos del trabajador se releen de la BD en cada request
+   (`active_worker_modules`). Salir del modo tienda exige la contraseña de la cuenta.
+3. **Qué ve cada quien** (`resolveAccess`): dueño/admin todo; operativo con categoría sus módulos;
+   en modo tienda, los del trabajador (rol efectivo operativo). Menú filtrado y layouts de módulo
+   con `requireModule` (fuera de la categoría → 404; sin trabajador → `/trabajador`).
+**Consecuencias:** no se crean usuarios de Supabase para los trabajadores del modo tienda: la sesión
+real es la de la cuenta de tienda, así que la **frontera de datos sigue siendo RLS de operativo**;
+la categoría restringe pantallas, no filas (un trabajador con conocimientos técnicos podría leer
+por la API lo que ya lee un operativo, nunca costos, salarios ni finanzas). Por eso el modo tienda
+solo se activa con una cuenta operativa. Las categorías solo ofrecen Vender/Inventario/Comprar:
+Gastos y RRHH son de administradores por RLS. Requiere `MIEL_SESSION_SECRET` en cada entorno
+(sin ella, el modo tienda no se activa). Historia: S21-03.

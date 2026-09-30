@@ -10,6 +10,7 @@ import {
   Wallet,
 } from "lucide-react";
 
+import { canSeeHref } from "./access";
 import type { Role } from "./active-tenant";
 
 export type NavItem = {
@@ -56,8 +57,9 @@ export const NAV_ITEMS: NavItem[] = [
 const HIDDEN_HREFS = new Set(["/produccion", "/finanzas"]);
 
 /** UX, no frontera de seguridad: la frontera real es RLS (docs/arch/permisos-roles.md). */
-export function visibleNavItems(role: Role): NavItem[] {
+export function visibleNavItems(role: Role, modules: string[] | null = null): NavItem[] {
   const enabled = NAV_ITEMS.filter((item) => !HIDDEN_HREFS.has(item.href));
-  if (role === "member") return enabled.filter((item) => !item.ownerAdminOnly);
-  return enabled;
+  const byRole = role === "member" ? enabled.filter((item) => !item.ownerAdminOnly) : enabled;
+  // S21-03: la categoría (o el trabajador del modo tienda) acota aún más.
+  return byRole.filter((item) => canSeeHref(item.href, modules));
 }

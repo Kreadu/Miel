@@ -158,3 +158,42 @@ describe("cargos (S21-02c)", () => {
     );
   });
 });
+
+describe("acceso con código (S21-03)", () => {
+  const W = "11111111-1111-4111-8111-111111111111";
+
+  it("asigna usuario y código por la RPC (el código nunca se guarda en claro)", async () => {
+    const rpc = vi.fn(async () => ({ error: null }));
+    clientState.current = { rpc } as never;
+    const { setWorkerPinAccess } = await import("./workers");
+
+    const r = await setWorkerPinAccess(null, formData({ worker_id: W, username: "ana", pin: "1234", pin_confirm: "1234" }));
+
+    expect(r).toEqual({ ok: true });
+    expect(rpc).toHaveBeenCalledWith("set_worker_pin", { p_worker_id: W, p_username: "ana", p_pin: "1234" });
+  });
+
+  it("los dos códigos deben coincidir y ser 4 números", async () => {
+    const rpc = vi.fn();
+    clientState.current = { rpc } as never;
+    const { setWorkerPinAccess } = await import("./workers");
+
+    expect(
+      await setWorkerPinAccess(null, formData({ worker_id: W, username: "ana", pin: "1234", pin_confirm: "4321" })),
+    ).toMatchObject({ ok: false });
+    expect(
+      await setWorkerPinAccess(null, formData({ worker_id: W, username: "ana", pin: "12", pin_confirm: "12" })),
+    ).toMatchObject({ ok: false });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it("usuario repetido en la empresa → mensaje claro", async () => {
+    clientState.current = { rpc: vi.fn(async () => ({ error: { code: "23505", message: "dup" } })) } as never;
+    const { setWorkerPinAccess } = await import("./workers");
+
+    expect(await setWorkerPinAccess(null, formData({ worker_id: W, username: "ana", pin: "1234", pin_confirm: "1234" }))).toEqual({
+      ok: false,
+      error: "Ese usuario ya lo tiene otro trabajador.",
+    });
+  });
+});

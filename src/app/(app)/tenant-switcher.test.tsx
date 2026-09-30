@@ -11,6 +11,7 @@ const membership = (tenantId: string, tenantName: string) => ({
   role: "owner" as const,
   sellsPhysical: true,
   sellsVirtual: false,
+  categoryModules: null,
   currency: "COP",
 });
 

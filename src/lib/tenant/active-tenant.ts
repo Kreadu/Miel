@@ -7,6 +7,8 @@ export type ActiveMembership = {
   sellsPhysical: boolean;
   sellsVirtual: boolean;
   currency: string;
+  /** S21-03: módulos de la categoría de la membresía (null = sin categoría). */
+  categoryModules: string[] | null;
 };
 
 /**

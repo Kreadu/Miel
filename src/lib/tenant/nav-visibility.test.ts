@@ -74,4 +74,10 @@ describe("visibleNavItems", () => {
       expect(withSeparator).toHaveLength(0);
     }
   });
+
+  it("S21-03: con categoría solo aparecen sus módulos (e Inicio)", () => {
+    const hrefs = visibleNavItems("member", ["ventas", "inventario"]).map((item) => item.href);
+    expect(hrefs).toEqual(["/inicio", "/ventas", "/inventario"]);
+    expect(visibleNavItems("member", []).map((item) => item.href)).toEqual(["/inicio"]);
+  });
 });

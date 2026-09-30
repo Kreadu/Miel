@@ -13,7 +13,7 @@ export default async function InicioPage() {
   const { active } = await getActiveTenant();
   if (!active) redirect("/onboarding");
   
-  const modules = visibleNavItems(active.role).filter((item) => item.href !== "/inicio");
+  const modules = visibleNavItems(active.role, active.modules).filter((item) => item.href !== "/inicio");
 
   return (
     <div className="flex flex-col gap-8">

@@ -312,3 +312,51 @@ export async function deleteWorker(id: string): Promise<{ ok: true } | { ok: fal
   revalidateRrhh();
   return { ok: true };
 }
+
+// ---------- Acceso con código (S21-03, ADR-037) ----------
+
+const pinAccessSchema = z
+  .object({
+    worker_id: z.uuid(),
+    username: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .regex(/^[a-z0-9._-]{3,30}$/, "El usuario: 3 a 30 letras sin tildes, números, punto, guion o guion bajo"),
+    pin: z.string().regex(/^\d{4}$/, "El código son 4 números"),
+    pin_confirm: z.string(),
+  })
+  .refine((d) => d.pin === d.pin_confirm, { message: "Los dos códigos no coinciden.", path: ["pin_confirm"] });
+
+/** Asigna (o cambia) usuario y código. El código se guarda solo como hash, en la BD. */
+export async function setWorkerPinAccess(_prev: WorkerState, formData: FormData): Promise<WorkerState> {
+  const parsed = pinAccessSchema.safeParse({
+    worker_id: formData.get("worker_id"),
+    username: formData.get("username"),
+    pin: formData.get("pin"),
+    pin_confirm: formData.get("pin_confirm"),
+  });
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_worker_pin", {
+    p_worker_id: parsed.data.worker_id,
+    p_username: parsed.data.username,
+    p_pin: parsed.data.pin,
+  });
+  if (error) {
+    if (error.code === "23505") return { ok: false, error: "Ese usuario ya lo tiene otro trabajador." };
+    console.error("setWorkerPinAccess:", error.code);
+    return { ok: false, error: "No se pudo guardar el acceso. Intenta de nuevo." };
+  }
+  revalidateRrhh();
+  return { ok: true };
+}
+
+export async function clearWorkerPinAccess(formData: FormData): Promise<void> {
+  const parsed = z.uuid().safeParse(formData.get("worker_id"));
+  if (!parsed.success) return;
+  const supabase = await createClient();
+  await supabase.rpc("clear_worker_pin", { p_worker_id: parsed.data });
+  revalidateRrhh();
+}
