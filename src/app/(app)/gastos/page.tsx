@@ -43,7 +43,7 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
     supabase.from("suppliers").select("id, name").eq("active", true).order("name"),
     supabase
       .from("expenses")
-      .select("id, category, description, amount, method, paid_at, supplier_id, suppliers(name)")
+      .select("id, category, description, amount, tax_amount, method, paid_at, supplier_id, suppliers(name)")
       .eq("kind", sheet.kind)
       .order("paid_at", { ascending: false })
       .limit(300),
@@ -57,6 +57,7 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
       category: e.category,
       description: e.description,
       amount: Number(e.amount),
+      tax_amount: Number(e.tax_amount),
       method: e.method as ExpenseValues["method"],
       paid_on: bogotaDay(e.paid_at),
       supplier_id: e.supplier_id,
@@ -68,7 +69,7 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
     .reduce((s, p) => s + Number(p.labor_cost ?? 0), 0);
   const expensesThisMonth = rows
     .filter((r) => r.values.paid_on.startsWith(month))
-    .reduce((s, r) => s + r.values.amount, 0);
+    .reduce((s, r) => s + r.values.amount - r.values.tax_amount, 0);
 
   const tab = (key: keyof typeof SHEETS) =>
     `inline-flex h-10 items-center justify-center rounded-md px-5 text-sm font-medium shadow-sm ${
@@ -98,7 +99,7 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-xs text-muted-foreground">{sheet.title} anotados este mes</p>
+          <p className="text-xs text-muted-foreground">{sheet.title} anotados este mes (sin IVA)</p>
           <p className="text-base font-semibold tabular-nums">{formatMoney(expensesThisMonth)}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-3">

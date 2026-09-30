@@ -446,6 +446,7 @@ export type Database = {
           is_default: boolean
           kind: string
           name: string
+          pnl_line: string
           tenant_id: string
         }
         Insert: {
@@ -455,6 +456,7 @@ export type Database = {
           is_default?: boolean
           kind: string
           name: string
+          pnl_line?: string
           tenant_id: string
         }
         Update: {
@@ -464,6 +466,7 @@ export type Database = {
           is_default?: boolean
           kind?: string
           name?: string
+          pnl_line?: string
           tenant_id?: string
         }
         Relationships: []
@@ -480,6 +483,7 @@ export type Database = {
           method: string
           paid_at: string
           supplier_id: string | null
+          tax_amount: number
           tenant_id: string
         }
         Insert: {
@@ -493,6 +497,7 @@ export type Database = {
           method: string
           paid_at?: string
           supplier_id?: string | null
+          tax_amount?: number
           tenant_id: string
         }
         Update: {
@@ -506,6 +511,7 @@ export type Database = {
           method?: string
           paid_at?: string
           supplier_id?: string | null
+          tax_amount?: number
           tenant_id?: string
         }
         Relationships: [
@@ -1776,8 +1782,10 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          income_tax_rate: number
           name: string
           nit: string | null
+          person_type: string
           sells_physical: boolean
           sells_virtual: boolean
         }
@@ -1785,8 +1793,10 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          income_tax_rate?: number
           name: string
           nit?: string | null
+          person_type?: string
           sells_physical?: boolean
           sells_virtual?: boolean
         }
@@ -1794,8 +1804,10 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          income_tax_rate?: number
           name?: string
           nit?: string | null
+          person_type?: string
           sells_physical?: boolean
           sells_virtual?: boolean
         }
@@ -2579,6 +2591,7 @@ export type Database = {
         Returns: { full_name: string; modules: string[] }[]
       }
       cancel_purchase: { Args: { p_purchase_id: string }; Returns: undefined }
+      cancel_sale: { Args: { p_sale_id: string }; Returns: undefined }
       clear_worker_pin: {
         Args: { p_worker_id: string }
         Returns: undefined

@@ -1,19 +1,17 @@
-const round2 = (n: number) => Math.round(n * 100) / 100;
+import { round2 } from "@/lib/money";
 
 /**
- * S19-37: línea de una orden de compra. `unitWithTax` (costo del proveedor + IVA) es el costo
- * que toma el producto al recibir la orden (receive_purchase usa la misma cuenta).
+ * S19-37/S23-01: línea de una orden de compra. `unitWithTax` (costo del proveedor + IVA) es lo
+ * que se le paga por unidad; el costo del producto es `unitCost` (sin IVA: se recupera).
+ * `total` = qty · costo · (1 + IVA), redondeado igual que create_purchase.
  */
 export function purchaseLine(
   qty: number,
   unitCost: number,
   taxRate: number,
 ): { unitWithTax: number; total: number } {
-  const unitWithTax = round2(unitCost * (1 + taxRate / 100));
-  return { unitWithTax, total: round2(qty * unitWithTax) };
-}
-
-/** S19-37: costo antes de IVA a partir del costo del producto (que ya incluye IVA). */
-export function costBeforeTax(costWithTax: number, taxRate: number): number {
-  return round2(costWithTax / (1 + taxRate / 100));
+  return {
+    unitWithTax: round2(unitCost * (1 + taxRate / 100)),
+    total: round2(qty * unitCost * (1 + taxRate / 100)),
+  };
 }

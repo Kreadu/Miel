@@ -41,7 +41,7 @@ describe("visibleNavItems", () => {
     expect(visibleNavItems("member").map((item) => item.href)).not.toContain("/dashboard");
   });
 
-  it("owner ve el orden exacto: Inicio, Vender, Inventario, Comprar, Gastos, RRHH (S19-31)", () => {
+  it("owner ve el orden exacto: Inicio, Vender, Inventario, Comprar, Gastos, RRHH, Resultados (S19-31, S22-02)", () => {
     const items = visibleNavItems("owner");
     expect(items.map((item) => item.href)).toEqual([
       "/inicio",
@@ -50,6 +50,7 @@ describe("visibleNavItems", () => {
       "/compras",
       "/gastos",
       "/equipo",
+      "/resultados",
     ]);
     expect(items.map((item) => item.label)).toEqual([
       "Inicio",
@@ -58,6 +59,7 @@ describe("visibleNavItems", () => {
       "Comprar",
       "Gastos",
       "RRHH",
+      "Resultados",
     ]);
   });
 

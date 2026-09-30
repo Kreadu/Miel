@@ -7,7 +7,8 @@
     "gastos": "Expenses",
     "produccion": "Production",
     "finanzas": "Finance",
-    "equipo": "HR"
+    "equipo": "HR",
+    "resultados": "Results"
   },
   "backButton": {
     "label": "Back"
@@ -58,7 +59,7 @@
     "kindResale": "Resale",
     "unit": "Unit",
     "minStock": "Minimum stock",
-    "cost": "Cost",
+    "cost": "Cost (excl. VAT)",
     "taxRate": "VAT % ({country})",
     "recipe": "Recipe",
     "kindOther": "Other",

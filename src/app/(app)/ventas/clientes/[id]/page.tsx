@@ -7,6 +7,7 @@ import { formatDateTime, formatMoney as baseFormatMoney } from "@/lib/format";
 import { DELIVERY_LABEL, type DeliveryMethod } from "@/lib/shipping";
 import { getActiveTenant } from "@/lib/tenant/server";
 
+import { CancelSaleButton } from "../../pedidos/cancel-sale-button";
 import { InteractionForm } from "./interaction-form";
 
 // S19-36: estados legibles para el historial de compras.
@@ -15,7 +16,7 @@ const SALE_STATUS_LABELS: Record<string, string> = {
   confirmed: "Confirmado",
   shipped: "Despachado",
   delivered: "Entregado",
-  cancelled: "Cancelado",
+  cancelled: "Anulado",
 };
 
 const INTERACTION_KIND_LABELS: Record<string, string> = {
@@ -190,6 +191,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                   <th className="px-3 py-2 text-right font-medium">Envío</th>
                   <th className="px-3 py-2 text-right font-medium">Total</th>
                   <th className="px-3 py-2 text-right font-medium">Saldo</th>
+                  {active.role !== "member" && <th className="px-3 py-2"><span className="sr-only">Acciones</span></th>}
                 </tr>
               </thead>
               <tbody>
@@ -207,6 +209,11 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(p.shipping_cost))}</td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(p.total))}</td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(balance)}</td>
+                      {active.role !== "member" && (
+                        <td className="px-3 py-2.5">
+                          {p.status !== "cancelled" && <CancelSaleButton saleId={p.id} />}
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

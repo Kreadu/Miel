@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { logActivity } from "@/lib/activity/log";
 import { getOrCreateGenericCustomerId } from "@/lib/customers/generic";
@@ -23,8 +24,6 @@ function mapSaleError(message: string | undefined): string {
   if (message?.includes("permission_denied")) return "No tienes permiso para esta operación.";
   if (message?.includes("items_required")) return "Agrega al menos un ítem a la venta.";
   if (message?.includes("item_qty_invalid")) return "La cantidad de un ítem debe ser mayor a cero.";
-  if (message?.includes("item_unit_price_invalid")) return "El precio de un ítem no puede ser negativo.";
-  if (message?.includes("item_discount_invalid")) return "El descuento de un ítem no puede superar el precio de la línea.";
   if (message?.includes("payment_method_invalid")) return "Selecciona una forma de pago válida.";
   if (message?.includes("delivery_method_invalid")) return "Selecciona una forma de entrega válida.";
   if (message?.includes("shipping_rate_invalid")) return "El transporte elegido no es válido.";
@@ -151,5 +150,30 @@ export async function markSaleDelivered(saleId: string): Promise<SaleState> {
   }
 
   revalidatePath(SALES_PATH);
+  return { ok: true };
+}
+
+/**
+ * S23-01: anula una venta (solo owner/admin; cancel_sale lo valida). Devuelve el stock al costo
+ * congelado y registra la devolución de los cobros; en efectivo exige la caja abierta.
+ */
+export async function cancelSale(saleId: string): Promise<SaleState> {
+  const id = z.uuid().safeParse(saleId);
+  if (!id.success) return { ok: false, error: "Venta inválida." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("cancel_sale", { p_sale_id: id.data });
+  if (error) {
+    console.error("cancelSale:", error.code, error.message);
+    if (error.message.includes("permission_denied")) return { ok: false, error: "Solo un administrador puede anular ventas." };
+    if (error.message.includes("sale_already_cancelled")) return { ok: false, error: "La venta ya estaba anulada." };
+    if (error.message.includes("cash_session_required"))
+      return { ok: false, error: "Abre tu caja para devolver el efectivo de esta venta." };
+    return { ok: false, error: "No se pudo anular la venta. Intenta de nuevo." };
+  }
+
+  await logActivity("sale_cancelled", { entityId: id.data });
+  revalidatePath(SALES_PATH);
+  revalidatePath("/ventas/clientes", "layout");
   return { ok: true };
 }

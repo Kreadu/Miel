@@ -19,40 +19,10 @@ describe("saleItemSchema", () => {
     expect(saleItemSchema.safeParse({ ...validItem, qty: -1 }).success).toBe(false);
   });
 
-  it("rechaza unit_price negativo", () => {
-    expect(saleItemSchema.safeParse({ ...validItem, unit_price: -1 }).success).toBe(false);
-  });
-
-  it("rechaza tax_rate fuera de rango", () => {
-    expect(saleItemSchema.safeParse({ ...validItem, tax_rate: -1 }).success).toBe(false);
-    expect(saleItemSchema.safeParse({ ...validItem, tax_rate: 101 }).success).toBe(false);
-  });
-
-  it("tax_rate es opcional y default a 0", () => {
-    const withoutTaxRate = {
-      product_id: validItem.product_id,
-      qty: validItem.qty,
-      unit_price: validItem.unit_price,
-    };
-    const result = saleItemSchema.safeParse(withoutTaxRate);
+  it("S23-01: descarta precio, IVA y descuento del navegador (los pone la BD)", () => {
+    const result = saleItemSchema.safeParse({ ...validItem, discount: 50 });
     expect(result.success).toBe(true);
-    if (result.success) expect(result.data.tax_rate).toBe(0);
-  });
-
-  it("discount es opcional y default a 0", () => {
-    const result = saleItemSchema.safeParse(validItem);
-    expect(result.success).toBe(true);
-    if (result.success) expect(result.data.discount).toBe(0);
-  });
-
-  it("rechaza discount negativo", () => {
-    expect(saleItemSchema.safeParse({ ...validItem, discount: -1 }).success).toBe(false);
-  });
-
-  it("coerciona discount de string a number", () => {
-    const result = saleItemSchema.safeParse({ ...validItem, discount: "15.5" });
-    expect(result.success).toBe(true);
-    if (result.success) expect(result.data.discount).toBe(15.5);
+    if (result.success) expect(result.data).toEqual({ product_id: validItem.product_id, qty: 2 });
   });
 });
 

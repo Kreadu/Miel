@@ -27,7 +27,7 @@ describe("shippingRateSchema (S19-35)", () => {
 
 describe("saleSchema — forma de entrega (S19-35)", () => {
   const base = {
-    items: [{ product_id: "11111111-1111-4111-8111-111111111111", qty: 1, unit_price: 100 }],
+    items: [{ product_id: "11111111-1111-4111-8111-111111111111", qty: 1 }],
   };
   const RATE = "22222222-2222-4222-8222-222222222222";
 

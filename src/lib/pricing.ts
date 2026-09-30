@@ -1,4 +1,4 @@
-const round2 = (n: number) => Math.round(n * 100) / 100;
+import { round2 } from "./money";
 
 /** S19-34: precio de venta = costo + % de venta sobre el costo. */
 export function priceFromMarkup(cost: number, markupPercent: number): number {

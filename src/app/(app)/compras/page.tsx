@@ -2,7 +2,6 @@ import { Truck, Wallet } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { costBeforeTax } from "@/lib/purchases/line";
 import { parseProductIds, suggestedReorderQty } from "@/lib/purchases/reorder";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -86,8 +85,8 @@ export default async function ComprasPage({
       return {
         product_id: p.id,
         qty: String(suggestedReorderQty(Number(alert?.min_stock ?? 0), Number(alert?.total_qty ?? 0))),
-        // El costo del producto ya incluye IVA (S19-37): se sugiere el costo antes de IVA.
-        unit_cost: String(costBeforeTax(p.cost ?? 0, p.tax_rate ?? 0)),
+        // S23-01: el costo del producto no lleva IVA (se recupera).
+        unit_cost: String(p.cost ?? 0),
         tax_rate: String(p.tax_rate ?? 0),
       };
     });
@@ -98,7 +97,7 @@ export default async function ComprasPage({
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Comprar</h1>
           <p className="text-sm text-muted-foreground">
-            Crea tus órdenes de compra. Al recibirlas, el costo con IVA pasa a ser el costo del producto.
+            Crea tus órdenes de compra. Al recibirlas, el costo sin IVA se promedia con el del inventario (el IVA se recupera).
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

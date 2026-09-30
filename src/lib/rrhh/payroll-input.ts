@@ -3,6 +3,7 @@
  * nómina copiado de Gestion-Future (ADR-036). Solo funciones puras: el servidor las usa para
  * liquidar y la BD guarda el resultado.
  */
+import { CONSTANTS_2026 } from "./engine/countries/constants2026";
 import { daysInclusive, intersectDateRanges } from "./services/dateRanges";
 import type { PartTimeEmployeeInput } from "./types/hourly";
 import {
@@ -88,6 +89,20 @@ export function riskClassFor(n: number | null): RiskClass {
   return RISK_CLASSES[(n ?? 1) - 1] ?? RiskClass.CLASS_I;
 }
 
+/** S23-01: quién paga la nómina (datos fiscales de la empresa). */
+export type Employer = { personType: "juridica" | "natural"; workerCount: number };
+
+/**
+ * S23-01: exoneración de aportes (salud 8,5 %, SENA, ICBF, art. 114-1 E.T.): trabajadores que
+ * ganan menos de 10 SMMLV, si el empleador es persona jurídica o persona natural con 2 o más
+ * trabajadores.
+ */
+export function isExempt114_1(employer: Employer, monthlySalary: number): boolean {
+  return (
+    monthlySalary < 10 * CONSTANTS_2026.SMMLV && (employer.personType === "juridica" || employer.workerCount >= 2)
+  );
+}
+
 export type PayrollWorker = {
   id: string;
   full_name: string;
@@ -109,6 +124,7 @@ export function buildMonthlyInput(
   worker: PayrollWorker,
   novelties: Novelties,
   leaves: EmployeeLeaveInput[],
+  exempt: boolean,
 ): ColombiaPayrollInput {
   return {
     employeeId: worker.id,
@@ -117,6 +133,7 @@ export function buildMonthlyInput(
     baseSalaryMonthly: worker.salary,
     daysWorked: novelties.days_worked,
     riskClass: riskClassFor(worker.arl_risk_class),
+    isExempt114_1: exempt,
     extraDiurna: novelties.extra_diurna,
     extraNocturna: novelties.extra_nocturna,
     recargoNocturno: novelties.recargo_nocturno,
@@ -130,6 +147,7 @@ export function buildHourlyInput(
   worker: PayrollWorker & { hourly_rate: number },
   tenantId: string,
   hours: { hours_worked: number; weekly_hours: number },
+  exempt: boolean,
 ): PartTimeEmployeeInput {
   return {
     companyId: tenantId,
@@ -141,6 +159,7 @@ export function buildHourlyInput(
     weeklyHours: hours.weekly_hours,
     hoursWorked: hours.hours_worked,
     riskClass: riskClassFor(worker.arl_risk_class),
+    isExempt114_1: exempt,
   };
 }
 

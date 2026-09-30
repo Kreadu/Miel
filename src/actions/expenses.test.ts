@@ -41,6 +41,7 @@ describe("createExpense (S22-01)", () => {
       category: "Arriendo",
       description: "Local",
       amount: 1_500_000,
+      tax_amount: 0,
       method: "transfer",
       paid_at: "2026-09-05T17:00:00.000Z",
       supplier_id: null,

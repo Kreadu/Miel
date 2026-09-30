@@ -24,13 +24,18 @@ describe("formatDate/formatDateTime", () => {
 });
 
 describe("formatMoney", () => {
-  it("formatea con 2 decimales y locale es-CO por defecto", () => {
+  it("formatea con 2 decimales si hay centavos y locale es-CO por defecto", () => {
     expect(formatMoney(1234.5)).toBe("1.234,50");
   });
 
-  it("no lanza con null/undefined, devuelve 0,00", () => {
-    expect(formatMoney(null)).toBe("0,00");
-    expect(formatMoney(undefined)).toBe("0,00");
+  it("S23-01: sin centavos no muestra decimales", () => {
+    expect(formatMoney(1500000)).toBe("1.500.000");
+    expect(formatMoney(1500000.004)).toBe("1.500.000");
+  });
+
+  it("no lanza con null/undefined, devuelve 0", () => {
+    expect(formatMoney(null)).toBe("0");
+    expect(formatMoney(undefined)).toBe("0");
   });
 
   it("acepta overrides de Intl.NumberFormatOptions", () => {

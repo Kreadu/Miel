@@ -5,7 +5,14 @@
  */
 import { ColombiaPayrollEngine } from "./engine/countries/colombiaEngine";
 import { PartTimeEmployeeEngine } from "./engine/hourly/partTimeEmployeeEngine";
-import { buildHourlyInput, buildMonthlyInput, type LeaveRow, leavesInPeriod } from "./payroll-input";
+import {
+  buildHourlyInput,
+  buildMonthlyInput,
+  type Employer,
+  isExempt114_1,
+  type LeaveRow,
+  leavesInPeriod,
+} from "./payroll-input";
 import type { ColombiaPayrollResult } from "./types/payroll";
 
 export type LiquidationWorker = {
@@ -46,13 +53,17 @@ export function liquidateWorker(
   novelties: SettlementNovelties,
   leaves: LeaveRow[],
   period: { start: string; end: string },
+  employer: Employer = { personType: "juridica", workerCount: 1 },
 ): Liquidation {
   try {
+    // Salario mensual equivalente del trabajador por horas: 240 h (jornada completa).
+    const monthly = worker.worker_type === "por_horas" ? worker.hourly_rate * 240 : worker.salary;
+    const exempt = isExempt114_1(employer, monthly);
     const result =
       worker.worker_type === "por_horas"
-        ? PartTimeEmployeeEngine.calculate(buildHourlyInput(worker, tenantId, novelties))
+        ? PartTimeEmployeeEngine.calculate(buildHourlyInput(worker, tenantId, novelties, exempt))
         : ColombiaPayrollEngine.calculate(
-            buildMonthlyInput(worker, novelties, leavesInPeriod(leaves, period.start, period.end)),
+            buildMonthlyInput(worker, novelties, leavesInPeriod(leaves, period.start, period.end), exempt),
           );
     return {
       ok: true,

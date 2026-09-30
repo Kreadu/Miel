@@ -1,5 +1,6 @@
 import { formatDate, formatMoney } from "@/lib/format";
 
+import { CancelSaleButton } from "./cancel-sale-button";
 import { ConfirmSaleForm } from "./confirm-sale-form";
 import { DeliverSaleAction } from "./deliver-sale-action";
 import { PaymentForm } from "./payment-form";
@@ -12,7 +13,7 @@ const STATUS_LABEL: Record<string, string> = {
   confirmed: "Confirmada",
   shipped: "Despachada",
   delivered: "Entregada",
-  cancelled: "Cancelada",
+  cancelled: "Anulada",
 };
 
 // S19-08: descriptivo (cómo se espera pagar), no un cobro real — ver "Registrar cobro" para eso.
@@ -26,6 +27,7 @@ const PAYMENT_METHOD_LABEL: Record<string, string> = {
 export function SaleRow({
   sale,
   warehouses,
+  canCancel,
 }: {
   sale: {
     id: string;
@@ -41,6 +43,8 @@ export function SaleRow({
     paymentMethod: string | null;
   };
   warehouses: { id: string; name: string }[];
+  /** S23-01: owner/admin pueden anular. */
+  canCancel: boolean;
 }) {
   const isReceivable =
     RECEIVABLE_STATUSES.has(sale.status) && sale.customerId !== null && sale.balance > 0;
@@ -86,6 +90,8 @@ export function SaleRow({
           {isReceivable && (
             <PaymentForm saleId={sale.id} customerId={sale.customerId!} balance={sale.balance} />
           )}
+
+          {canCancel && sale.status !== "cancelled" && <CancelSaleButton saleId={sale.id} />}
         </div>
       </td>
     </tr>

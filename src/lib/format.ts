@@ -1,3 +1,5 @@
+import { round2 } from "./money";
+
 // Formateo centralizado de fechas y montos — hora de Colombia (S12-02).
 // Bogotá no tiene horario de verano: offset fijo UTC-5 todo el año.
 const LOCALE = "es-CO";
@@ -26,14 +28,21 @@ export function formatDateTime(value: string | Date, options: Intl.DateTimeForma
   return formatDate(value, { hour: "2-digit", minute: "2-digit", ...options });
 }
 
+/** S23-01: 2 decimales si el monto tiene centavos, 0 si es entero. */
+export function centsDigits(amount: number): 0 | 2 {
+  return Number.isInteger(round2(amount)) ? 0 : 2;
+}
+
 export function formatMoney(
   value: number | string | null | undefined,
   options: Intl.NumberFormatOptions = {},
 ): string {
   const amount = value == null ? 0 : Number(value);
+  // S23-01: un solo formato de dinero en todo Miel — centavos solo si los hay (1.500 / 1.234,50).
+  const digits = centsDigits(amount);
   return new Intl.NumberFormat(LOCALE, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
     ...options,
   }).format(amount);
 }

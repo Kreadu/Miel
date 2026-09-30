@@ -15,8 +15,13 @@ describe("isSupportedCurrency", () => {
 });
 
 describe("formatMoney", () => {
-  it("formatea COP sin decimales", () => {
+  it("formatea COP sin decimales cuando no hay centavos", () => {
     expect(formatMoney(25000, "COP")).toContain("25.000");
+    expect(formatMoney(25000, "COP")).not.toContain(",");
+  });
+
+  it("S23-01: COP con centavos los muestra (igual que el resto de Miel)", () => {
+    expect(formatMoney(154.7, "COP")).toContain("154,70");
   });
 
   it("formatea EUR con decimales", () => {

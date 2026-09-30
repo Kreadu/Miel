@@ -269,7 +269,17 @@ alimenten un estado de resultados.
 | ID | Historia | Criterio | Depende | Estado | Spec |
 |---|---|---|---|---|---|
 | S22-01 | Como dueño quiero anotar gastos en dos hojas (fijos y variables) eligiendo categorías ya clasificadas, y verlos en una tabla con Editar/Borrar | `expense_categories` + tipo impuesto por la categoría; `/gastos?tipo=` | S21-06 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S22-01-gastos-fijos-y-variables.md |
-| S22-02 | Como dueño quiero ver el estado de resultados | Ingresos, costo de ventas, mano de obra, gastos fijos y variables, utilidad | S22-01 | todo | — |
+| S22-02 | Como dueño quiero ver el estado de resultados con todos los márgenes | `/resultados` bajo RRHH; bruto, EBIT, EBITDA, antes de impuestos, neto, contribución; `expense_categories.pnl_line` | S22-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S22-02-estado-de-resultados.md |
+
+## Épica E23 — Cuentas correctas
+
+Revisión de todas las cuentas (2026-09-30); el humano aprobó arreglar errores e inconsistencias.
+Producción queda oculta y fuera de alcance.
+
+| ID | Historia | Criterio | Depende | Estado | Spec |
+|---|---|---|---|---|---|
+| S23-01 | Como dueño quiero que costos, precios, IVA, nómina y resultados den cifras correctas | IVA fuera del costo; costo promedio único; precio desde el producto; redondeo por línea; envío como ingreso; 114-1 + PILA; renta estimada; anular venta (ADR-038) | S22-02 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S23-01-cuentas-correctas.md |
+| S23-02 | Informe de IVA del mes (generado − descontable) | Pendiente de priorizar | S23-01 | todo | — |
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración
@@ -277,6 +287,13 @@ alimenten un estado de resultados.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
+- **S23-01, bloqueante**: migración `20260930140000_cuentas-correctas.sql` sin aplicar — sin ella fallan
+  Gastos (columna `tax_amount`), Resultados (`income_tax_rate`), crear pedidos (el navegador ya no manda
+  precio) y anular ventas.
+- S23-01: el motor por horas no aplica aún el redondeo PILA; los totales de compra redondean el IVA
+  por orden, no por línea (diferencia máx. de centavos).
+- **S22-02, bloqueante para Resultados**: migración `20260930120000_lineas-de-resultados.sql` sin aplicar —
+  sin ella `/resultados` falla (columna `pnl_line`). Requiere antes la de S22-01.
 - **S22-01, bloqueante hasta que se resuelva**: migración `20260929212405_categorias-de-gasto.sql` sin aplicar — sin ella falla Gastos
   (tabla `expense_categories`).
 - **S21-06 (aplicada 2026-09-29)**: migración `20260929210552_nomina-en-finanzas.sql` sin aplicar (no bloquea la app;

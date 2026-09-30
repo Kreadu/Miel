@@ -450,17 +450,25 @@ export class ColombiaPayrollEngine {
         Math.max(ibcSecuritySocial, CONSTANTS_2026.SMMLV);
     }
 
+    // Miel S23-01 — redondeo PILA: IBC al peso superior; cada subsistema se paga redondeado al
+    // múltiplo de 100 superior (el trabajador aporta su parte al peso; el empleador, la diferencia).
+    ibcSecuritySocial = Math.ceil(ibcSecuritySocial - 1e-6);
+    const ceil100 = (value: number): number =>
+      Math.ceil((value - 1e-6) / 100) * 100;
+
     // --------------------------------------------------------
     // DEDUCCIONES TRABAJADOR
     // --------------------------------------------------------
 
-    const health4pct =
+    const health4pct = Math.round(
       ibcSecuritySocial *
-      CONSTANTS_2026.HEALTH_EMPLOYEE;
+      CONSTANTS_2026.HEALTH_EMPLOYEE
+    );
 
-    const pension4pct =
+    const pension4pct = Math.round(
       ibcSecuritySocial *
-      CONSTANTS_2026.PENSION_EMPLOYEE;
+      CONSTANTS_2026.PENSION_EMPLOYEE
+    );
 
     const fspPct =
       this.calculateFspRate(
@@ -505,34 +513,34 @@ export class ColombiaPayrollEngine {
       RiskClass.CLASS_I;
 
     const health8_5pct =
-      isExempt
-        ? 0
-        : ibcSecuritySocial *
-          CONSTANTS_2026.HEALTH_EMPLOYER;
+      ceil100(
+        ibcSecuritySocial *
+        (CONSTANTS_2026.HEALTH_EMPLOYEE +
+          (isExempt ? 0 : CONSTANTS_2026.HEALTH_EMPLOYER))
+      ) - health4pct;
 
     const pension12pct =
-      ibcSecuritySocial *
-      CONSTANTS_2026.PENSION_EMPLOYER;
+      ceil100(
+        ibcSecuritySocial *
+        (CONSTANTS_2026.PENSION_EMPLOYEE +
+          CONSTANTS_2026.PENSION_EMPLOYER)
+      ) - pension4pct;
 
     const arlValue =
-      ibcSecuritySocial *
-      arlRate;
+      ceil100(ibcSecuritySocial * arlRate);
 
     const sena2pct =
       isExempt
         ? 0
-        : ibcSecuritySocial *
-          CONSTANTS_2026.SENA;
+        : ceil100(ibcSecuritySocial * CONSTANTS_2026.SENA);
 
     const icbf3pct =
       isExempt
         ? 0
-        : ibcSecuritySocial *
-          CONSTANTS_2026.ICBF;
+        : ceil100(ibcSecuritySocial * CONSTANTS_2026.ICBF);
 
     const ccf4pct =
-      ibcSecuritySocial *
-      CONSTANTS_2026.CCF;
+      ceil100(ibcSecuritySocial * CONSTANTS_2026.CCF);
 
     const totalContributions =
       health8_5pct +

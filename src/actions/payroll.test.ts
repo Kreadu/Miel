@@ -39,9 +39,17 @@ describe("createPayrollPeriod (S21-05)", () => {
     const inFn = vi.fn(async () => ({ data: [] }));
     clientState.current = {
       rpc,
-      from: vi.fn((t: string) =>
-        t === "workers" ? { select: () => ({ eq }) } : { select: () => ({ in: inFn }) },
-      ),
+      from: vi.fn((t: string) => {
+        // S23-01: datos fiscales y conteo de trabajadores (exoneración 114-1).
+        if (t === "tenants")
+          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { person_type: "juridica" } }) }) }) };
+        if (t === "workers")
+          return {
+            select: (_cols: string, opts?: { count: string }) =>
+              opts ? { eq: () => ({ eq: () => ({ neq: async () => ({ count: 2 }) }) }) } : { eq },
+          };
+        return { select: () => ({ in: inFn }) };
+      }),
     };
     const { createPayrollPeriod } = await import("./payroll");
 

@@ -36,6 +36,19 @@ describe("expenseSchema (S22-01)", () => {
   });
 });
 
+describe("IVA descontable del gasto (S23-01)", () => {
+  it("opcional: vacío es 0", () => {
+    const r = expenseSchema.safeParse({ ...base, tax_amount: "" });
+    expect(r.success && r.data.tax_amount).toBe(0);
+  });
+
+  it("acepta IVA hasta el monto y rechaza negativo o mayor al monto", () => {
+    expect(expenseSchema.safeParse({ ...base, tax_amount: "239.5" }).success).toBe(true);
+    expect(expenseSchema.safeParse({ ...base, tax_amount: "-1" }).success).toBe(false);
+    expect(expenseSchema.safeParse({ ...base, tax_amount: "1600" }).success).toBe(false);
+  });
+});
+
 describe("expenseCategorySchema (S22-01)", () => {
   it("nombre y tipo", () => {
     expect(expenseCategorySchema.safeParse({ name: "Música ambiental", kind: "fixed" }).success).toBe(true);

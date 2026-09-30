@@ -14,6 +14,8 @@ export const expenseSchema = z
     category: z.string().trim().min(1, "Elige la categoría"),
     description: z.string().trim().min(1, "Escribe una descripción").max(300, "Descripción muy larga"),
     amount: z.coerce.number().positive("El monto debe ser mayor a 0"),
+    // S23-01: IVA descontable incluido en el monto (se recupera: no es gasto). Vacío = 0.
+    tax_amount: z.preprocess((v) => (v === "" || v == null ? 0 : v), z.coerce.number().min(0, "El IVA no puede ser negativo")),
     method: z.enum(EXPENSE_METHODS, { error: "Elige la forma de pago" }),
     paid_on: z.iso.date("Fecha inválida"),
     supplier_id: z
@@ -21,6 +23,7 @@ export const expenseSchema = z
       .optional()
       .transform((v) => v || null),
   })
+  .refine((d) => d.tax_amount <= d.amount, { message: "El IVA no puede ser mayor al monto", path: ["tax_amount"] })
   .transform(({ paid_on, ...rest }) => ({
     ...rest,
     paid_at: new Date(`${paid_on}T12:00:00-05:00`).toISOString(),

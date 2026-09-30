@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/format";
-import { costBeforeTax, purchaseLine } from "@/lib/purchases/line";
+import { purchaseLine } from "@/lib/purchases/line";
 import {
   Select,
   SelectContent,
@@ -105,8 +105,8 @@ export function PurchaseForm({
     const product = products.find((p) => p.id === productId);
     updateItem(key, {
       product_id: productId,
-      // El costo del producto ya incluye IVA (S19-37): se sugiere el costo antes de IVA.
-      unit_cost: product?.cost != null ? String(costBeforeTax(product.cost, product.tax_rate ?? 0)) : "0",
+      // S23-01: el costo del producto no lleva IVA (se recupera).
+      unit_cost: product?.cost != null ? String(product.cost) : "0",
       tax_rate: product?.tax_rate != null ? String(product.tax_rate) : "0",
     });
   }
@@ -163,7 +163,7 @@ export function PurchaseForm({
         </div>
         <div className="flex flex-col gap-2">
           {/* S19-37: foto · producto (código) · cantidad · costo antes de IVA · IVA · costo
-              unitario con IVA (será el costo del producto) · costo total. */}
+              unitario con IVA (lo que se paga; el costo del producto es sin IVA, S23-01) · costo total. */}
           <div className="hidden gap-2 text-xs text-muted-foreground sm:grid sm:grid-cols-[2.5rem_minmax(0,2fr)_repeat(5,minmax(0,1fr))_4.5rem]">
             <span />
             <span>Producto</span>

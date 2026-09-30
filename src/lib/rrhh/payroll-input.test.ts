@@ -72,6 +72,7 @@ describe("buildMonthlyInput (S21-05)", () => {
       },
       { days_worked: 30, extra_diurna: 2, extra_nocturna: 0, recargo_nocturno: 0, horas_dominical_festivo: 0 },
       [],
+      false,
     );
     expect(input).toMatchObject({
       employeeId: "w-1",

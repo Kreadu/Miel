@@ -84,20 +84,20 @@ async function runPayrollAndDianTests(): Promise<void> {
 
   assertEquals(
     emp1.employeeDeductions.health4pct,
-    70036.2,
-    'Deducción Salud Empleado (4%)'
+    70036,
+    'Deducción Salud Empleado (4%, al peso — Miel S23-01)'
   );
 
   assertEquals(
     emp1.employeeDeductions.pension4pct,
-    70036.2,
-    'Deducción Pensión Empleado (4%)'
+    70036,
+    'Deducción Pensión Empleado (4%, al peso — Miel S23-01)'
   );
 
   assertEquals(
     emp1.netPay,
-    1859927.6,
-    'Neto a pagar ($1.859.927,60)'
+    1859928,
+    'Neto a pagar ($1.859.928)'
   );
 
   // =========================================================
@@ -152,8 +152,8 @@ async function runPayrollAndDianTests(): Promise<void> {
 
   assertEquals(
     empExempt.employerContributions.health8_5pct,
-    0,
-    'Aporte Salud Empleador Exento ($0,00)'
+    64,
+    'Salud empleador exento: solo el redondeo PILA (70.036 del trabajador → 70.100) — Miel S23-01'
   );
 
   assertEquals(

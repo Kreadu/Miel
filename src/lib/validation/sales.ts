@@ -5,11 +5,7 @@ import { DELIVERY_METHODS } from "@/lib/shipping";
 export const saleItemSchema = z.object({
   product_id: z.uuid("Selecciona un producto válido."),
   qty: z.coerce.number().positive("La cantidad debe ser mayor a cero."),
-  unit_price: z.coerce.number().min(0, "El precio no puede ser negativo."),
-  tax_rate: z.coerce.number().min(0).max(100, "El IVA debe estar entre 0 y 100.").default(0),
-  // Monto de descuento por línea (precio de lista intacto, S5-08). La UI captura % y lo
-  // convierte a monto antes de enviar; la RPC revalida que no supere el valor de la línea.
-  discount: z.coerce.number().min(0, "El descuento no puede ser negativo.").default(0),
+  // S23-01: precio, IVA y descuento no vienen del navegador — create_sale los toma del producto.
 });
 
 export const PAYMENT_METHODS = ["cash", "card", "transfer", "other"] as const;

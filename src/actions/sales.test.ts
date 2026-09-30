@@ -27,7 +27,7 @@ function formData(fields: Record<string, string>) {
 }
 
 const items = JSON.stringify([
-  { product_id: "11111111-1111-4111-8111-111111111111", qty: 1, unit_price: 100 },
+  { product_id: "11111111-1111-4111-8111-111111111111", qty: 1 },
 ]);
 const RATE = "22222222-2222-4222-8222-222222222222";
 

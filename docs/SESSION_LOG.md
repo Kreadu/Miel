@@ -11,6 +11,40 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont.) · S23-01 — cuentas correctas
+
+**Hecho:** revisión de todas las cuentas y arreglo aprobado por el humano (todas las empresas son
+responsables de IVA; producción queda oculta). Migración `20260930140000_cuentas-correctas.sql`:
+compra entra al kardex sin IVA; `register_movement` usa el promedio si la entrada viene sin costo y
+deja el promedio en `products.cost` (con `search_path`); `create_sale` toma precio/IVA/descuento del
+producto y redondea por línea; `cancel_sale` (owner/admin: devuelve stock y cobros, efectivo exige
+caja); caja sin ventas anuladas; Ventas incluye envío; gastos con `tax_amount`; `tenants.person_type`
+e `income_tax_rate`; corrección de datos de prueba (costos de compra sin IVA, entradas sin costo,
+costo = promedio). TS: `round2` y `saleLine` compartidos; un solo formato de dinero (centavos solo si
+hay); exoneración 114-1 y redondeo PILA en el motor mensual; renta estimada y datos fiscales en
+Resultados; "IVA incluido" en Gastos; "Anular venta" en Pedidos y ficha del cliente. ADR-038.
+Verificado: lint ✓, tsc ✓, `npm test` 418/418 ✓. Sin correr: pgTAP `S23-01-cuentas-correctas.sql`
+(sin CLI de Supabase), navegador, build.
+
+**Pendiente:** humano pega la migración; ventas de prueba ya confirmadas conservan su costo con IVA.
+
+---
+
+## Sesión 2026-09-30 · S22-02 — estado de resultados
+
+**Hecho:** el humano pidió la estructura exacta (ventas → bruta → EBIT → EBITDA → antes de
+impuestos → neta, con márgenes, más margen de contribución) en una página debajo de RRHH (cambia
+el plan anterior de abrirla desde `/gastos`). Migración `20260930120000_lineas-de-resultados.sql`
+(`expense_categories.pnl_line` + categorías Depreciación y amortización, Intereses y gastos
+financieros, Impuesto de renta; leasing y comisiones bancarias → financiero). Cálculo puro
+`src/lib/finance/income-statement.ts` (+6 tests); `/resultados` con selector de mes y mes
+anterior; "Resultados" en el menú. Tipos editados a mano (sin CLI de Supabase).
+
+**Pendiente:** humano pega la migración en el cloud; pgTAP `S22-02-lineas-de-resultados.sql` sin
+correr (no hay CLI de Supabase en este entorno).
+
+---
+
 ## Sesión 2026-09-29 (cont. 22) · plan de S22-02 (sin empezar)
 
 **Estado:** todo commiteado y pusheado (último `d159d2c`); migraciones hasta

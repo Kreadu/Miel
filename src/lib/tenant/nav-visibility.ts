@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Boxes,
+  ChartNoAxesColumn,
   Factory,
   Home,
   Receipt,
@@ -48,6 +49,14 @@ export const NAV_ITEMS: NavItem[] = [
   },
   // S19-31: "RRHH" en el menú; la ruta sigue siendo /equipo (miembros, roles, invitaciones).
   { href: "/equipo", label: "RRHH", i18nKey: "equipo", icon: Users, ownerAdminOnly: true },
+  // S22-02: estado de resultados, debajo de RRHH.
+  {
+    href: "/resultados",
+    label: "Resultados",
+    i18nKey: "resultados",
+    icon: ChartNoAxesColumn,
+    ownerAdminOnly: true,
+  },
 ];
 
 /**

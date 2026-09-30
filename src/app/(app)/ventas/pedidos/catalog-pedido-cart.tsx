@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatMoney } from "@/lib/format";
+import { saleLine } from "@/lib/sales/line";
 
 import { useCatalogCart } from "../use-catalog-cart";
 import { DeliverySection, type Rate } from "./delivery-section";
@@ -83,18 +84,15 @@ export function CatalogPedidoCart({
   // su resumen también se limpia (ajuste de estado en render, sin efecto).
   if (lines.length === 0 && delivery.method !== null) setDelivery({ method: null, cost: 0 });
 
-  // Mismo cálculo que create_sale en la BD (S5-08/S19-08): línea = qty·precio − descuento;
-  // subtotal = Σ línea; iva = Σ (línea · IVA%); total = subtotal + iva. Verificado que coincide
-  // exactamente con la RPC — lo que faltaba era mostrar el desglose, no corregir la cuenta.
+  // Misma cuenta que create_sale (S23-01: redondeo por línea): total = Σ línea + Σ IVA.
   const { subtotal, tax, total } = useMemo(() => {
     return lines.reduce(
       (acc, l) => {
-        const line = l.qty * l.price * (1 - l.discountPercent / 100);
-        const lineTax = line * (l.taxRate / 100);
+        const { net, tax: lineTax } = saleLine(l.qty, l.price, l.discountPercent, l.taxRate);
         return {
-          subtotal: acc.subtotal + line,
+          subtotal: acc.subtotal + net,
           tax: acc.tax + lineTax,
-          total: acc.total + line + lineTax,
+          total: acc.total + net + lineTax,
         };
       },
       { subtotal: 0, tax: 0, total: 0 },
@@ -109,13 +107,8 @@ export function CatalogPedidoCart({
     lines.length > 0 && lines.every((l) => l.taxRate === lines[0].taxRate) ? lines[0].taxRate : null;
 
   const itemsPayload = JSON.stringify(
-    lines.map((l) => ({
-      product_id: l.productId,
-      qty: l.qty,
-      unit_price: l.price,
-      tax_rate: l.taxRate,
-      discount: (l.qty * l.price * l.discountPercent) / 100,
-    })),
+    // S23-01: precio, IVA y descuento los pone create_sale desde el producto.
+    lines.map((l) => ({ product_id: l.productId, qty: l.qty })),
   );
 
   if (lines.length === 0) return null;

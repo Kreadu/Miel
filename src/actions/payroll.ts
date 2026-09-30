@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { dianEmployeeExtra, defaultDaysWorked, leavesInPeriod } from "@/lib/rrhh/payroll-input";
+import { dianEmployeeExtra, defaultDaysWorked, type Employer, leavesInPeriod } from "@/lib/rrhh/payroll-input";
 import { liquidateWorker, type LiquidationWorker, type SettlementNovelties } from "@/lib/rrhh/liquidate";
 import { DianNominaXmlService } from "@/lib/rrhh/services/dianNominaXmlService";
 import type { ColombiaPayrollResult } from "@/lib/rrhh/types/payroll";
@@ -35,8 +35,9 @@ function settlementValues(
   novelties: SettlementNovelties,
   leaves: { type: string; start_date: string; end_date: string }[],
   period: { start: string; end: string },
+  employer: Employer,
 ) {
-  const liq = liquidateWorker(tenantId, worker, novelties, leaves, period);
+  const liq = liquidateWorker(tenantId, worker, novelties, leaves, period, employer);
   return {
     ...novelties,
     gross_earnings: liq.ok ? liq.gross_earnings : 0,
@@ -44,6 +45,20 @@ function settlementValues(
     net_pay: liq.ok ? liq.net_pay : 0,
     result: liq.ok ? liq.result : { error: liq.error },
   };
+}
+
+/** S23-01: tipo de persona de la empresa y trabajadores con contrato laboral (exoneración 114-1). */
+async function employerOf(supabase: Supabase, tenantId: string): Promise<Employer> {
+  const [{ data: tenant }, { count }] = await Promise.all([
+    supabase.from("tenants").select("person_type").eq("id", tenantId).maybeSingle(),
+    supabase
+      .from("workers")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .eq("active", true)
+      .neq("contract_type", "prestacion_servicios"),
+  ]);
+  return { personType: tenant?.person_type === "natural" ? "natural" : "juridica", workerCount: count ?? 0 };
 }
 
 async function leavesByWorker(supabase: Supabase, workerIds: string[]) {
@@ -166,7 +181,10 @@ export async function createPayrollPeriod(_prev: PayrollState, formData: FormDat
     .select(WORKER_COLUMNS)
     .eq("active", true)
     .neq("contract_type", "prestacion_servicios");
-  const leaves = await leavesByWorker(supabase, (workers ?? []).map((w) => w.id));
+  const [leaves, employer] = await Promise.all([
+    leavesByWorker(supabase, (workers ?? []).map((w) => w.id)),
+    employerOf(supabase, active.tenantId),
+  ]);
 
   const settlements = [];
   for (const w of workers ?? []) {
@@ -183,7 +201,7 @@ export async function createPayrollPeriod(_prev: PayrollState, formData: FormDat
       hours_worked: 0,
       weekly_hours: 0,
     };
-    settlements.push({ worker_id: w.id, ...settlementValues(active.tenantId, w, novelties, workerLeaves, period) });
+    settlements.push({ worker_id: w.id, ...settlementValues(active.tenantId, w, novelties, workerLeaves, period, employer) });
   }
 
   const { data: periodId, error } = await supabase.rpc("create_payroll_period", {
@@ -232,11 +250,18 @@ export async function updateSettlement(_prev: PayrollState, formData: FormData):
   const period = await loadPeriod(supabase, s.period_id);
   if (!period || period.status !== "draft") return { ok: false, error: "El período está cerrado." };
 
-  const leaves = (await leavesByWorker(supabase, [s.workers.id])).get(s.workers.id) ?? [];
-  const values = settlementValues(s.tenant_id, s.workers, novelties, leaves, {
-    start: period.period_start,
-    end: period.period_end,
-  });
+  const [leavesMap, employer] = await Promise.all([
+    leavesByWorker(supabase, [s.workers.id]),
+    employerOf(supabase, s.tenant_id),
+  ]);
+  const values = settlementValues(
+    s.tenant_id,
+    s.workers,
+    novelties,
+    leavesMap.get(s.workers.id) ?? [],
+    { start: period.period_start, end: period.period_end },
+    employer,
+  );
   const { error } = await supabase
     .from("payroll_settlements")
     .update({ ...values, result: JSON.parse(JSON.stringify(values.result)) })
@@ -264,7 +289,10 @@ export async function recalculatePeriod(formData: FormData): Promise<void> {
     )
     .eq("period_id", period.id)
     .eq("dian_status", "pending");
-  const leaves = await leavesByWorker(supabase, (rows ?? []).map((r) => r.worker_id));
+  const [leaves, employer] = await Promise.all([
+    leavesByWorker(supabase, (rows ?? []).map((r) => r.worker_id)),
+    employerOf(supabase, period.tenant_id),
+  ]);
 
   const updates = (rows ?? [])
     .filter((r) => r.workers)
@@ -283,6 +311,7 @@ export async function recalculatePeriod(formData: FormData): Promise<void> {
         },
         leaves.get(r.worker_id) ?? [],
         { start: period.period_start, end: period.period_end },
+        employer,
       );
       return {
         id: r.id,

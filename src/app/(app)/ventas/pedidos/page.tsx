@@ -115,6 +115,7 @@ export default async function PedidosPage() {
                     paymentMethod: s.payment_method,
                   }}
                   warehouses={warehouses}
+                  canCancel={active.role !== "member"}
                 />
               ))}
             </tbody>

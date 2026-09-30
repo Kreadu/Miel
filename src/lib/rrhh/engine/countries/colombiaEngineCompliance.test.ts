@@ -132,9 +132,9 @@ describe('Salario integral', () => {
       })
     );
 
-    expect(result.ibcSecuritySocial).toBeCloseTo(
-      integralSalary * CONSTANTS_2026.INTEGRAL_SALARY_IBC_FACTOR,
-      2
+    // Miel S23-01: IBC al peso superior (PILA).
+    expect(result.ibcSecuritySocial).toBe(
+      Math.ceil(integralSalary * CONSTANTS_2026.INTEGRAL_SALARY_IBC_FACTOR - 1e-6)
     );
 
     expect(result.provisions.cesantias).toBe(0);

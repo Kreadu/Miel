@@ -7,7 +7,8 @@
     "gastos": "Gastos",
     "produccion": "Producción",
     "finanzas": "Finanzas",
-    "equipo": "RRHH"
+    "equipo": "RRHH",
+    "resultados": "Resultados"
   },
   "backButton": {
     "label": "Volver"
@@ -58,7 +59,7 @@
     "kindResale": "Reventa",
     "unit": "Unidad",
     "minStock": "Stock mínimo",
-    "cost": "Costo",
+    "cost": "Costo (sin IVA)",
     "taxRate": "IVA % ({country})",
     "recipe": "Receta",
     "kindOther": "Otro",

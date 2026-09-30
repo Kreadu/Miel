@@ -607,3 +607,19 @@ por la API lo que ya lee un operativo, nunca costos, salarios ni finanzas). Por 
 solo se activa con una cuenta operativa. Las categorías solo ofrecen Vender/Inventario/Comprar:
 Gastos y RRHH son de administradores por RLS. Requiere `MIEL_SESSION_SECRET` en cada entorno
 (sin ella, el modo tienda no se activa). Historia: S21-03.
+
+## ADR-038 · 2026-09-30 · Cuentas: IVA recuperable fuera del costo y un solo costo (promedio del kardex)
+**Contexto:** revisión de todas las cuentas (S23-01). El costo del producto se guardaba con IVA
+(S19-37) y el precio de venta sumaba IVA encima; había dos costos (última compra en la ficha,
+promedio en el kardex); el precio de venta lo mandaba el navegador. Miel lo usarán empresas
+responsables de IVA (persona jurídica o natural).
+**Decisión:**
+1. El IVA de compras y gastos es descontable: nunca es costo ni gasto. Kardex y ficha sin IVA;
+   gastos con `tax_amount` aparte. No hay ajuste "no responsable de IVA" (YAGNI hasta que exista
+   ese cliente).
+2. Un solo costo: promedio ponderado del kardex; `register_movement` lo escribe en `products.cost`.
+3. Precio, IVA y descuento de una venta los pone `create_sale` desde el producto.
+4. Redondeo por línea a centavos (IVA incluido); en nómina, redondeo PILA (múltiplo de 100).
+5. Exoneración 114-1 según `tenants.person_type` y número de trabajadores.
+**Consecuencias:** reemplaza la decisión de S19-37 (costo con IVA). Las ventas de prueba ya
+confirmadas conservan su costo congelado anterior. Historia: S23-01.

@@ -30,6 +30,7 @@ export type ExpenseValues = {
   category: string;
   description: string;
   amount: number;
+  tax_amount: number;
   method: keyof typeof METHOD_LABEL;
   paid_on: string;
   supplier_id: string | null;
@@ -85,6 +86,19 @@ export function ExpenseForm({
             step="0.01"
             required
             defaultValue={values?.amount}
+            className="text-right"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={id("tax_amount")}>IVA incluido (se recupera)</Label>
+          <Input
+            id={id("tax_amount")}
+            name="tax_amount"
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="0"
+            defaultValue={values?.tax_amount || undefined}
             className="text-right"
           />
         </div>

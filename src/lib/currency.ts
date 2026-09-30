@@ -1,3 +1,5 @@
+import { centsDigits } from "./format";
+
 export const SUPPORTED_CURRENCIES = [
   { code: "COP", label: "Peso colombiano" },
   { code: "USD", label: "Dólar estadounidense" },
@@ -16,18 +18,20 @@ export function isSupportedCurrency(code: string): code is CurrencyCode {
   return SUPPORTED_CURRENCIES.some((c) => c.code === code);
 }
 
-// Monedas que tradicionalmente se muestran sin decimales.
-const ZERO_DECIMAL_CURRENCIES = new Set(["COP", "CLP"]);
+// El peso chileno no tiene centavos.
+const ZERO_DECIMAL_CURRENCIES = new Set(["CLP"]);
 
+/** S23-01: mismo criterio que `lib/format` — centavos solo si los hay. */
 export function formatMoney(amount: number, currency: string): string {
-  const maximumFractionDigits = ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
+  const digits = ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : centsDigits(amount);
   try {
     return amount.toLocaleString("es-CO", {
       style: "currency",
       currency,
-      maximumFractionDigits,
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
     });
   } catch {
-    return `${amount.toFixed(maximumFractionDigits)} ${currency}`;
+    return `${amount.toFixed(digits)} ${currency}`;
   }
 }

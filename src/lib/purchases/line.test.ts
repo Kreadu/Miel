@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { costBeforeTax, purchaseLine } from "./line";
+import { purchaseLine } from "./line";
 
 describe("purchaseLine (S19-37)", () => {
   it("costo unitario con IVA y costo total de la línea", () => {
@@ -16,9 +16,8 @@ describe("purchaseLine (S19-37)", () => {
   });
 });
 
-describe("costBeforeTax (S19-37)", () => {
-  it("quita el IVA al costo del producto para sugerir el precio del proveedor", () => {
-    expect(costBeforeTax(1190, 19)).toBe(1000);
-    expect(costBeforeTax(500, 0)).toBe(500);
+describe("total sin redondear el unitario (S23-01)", () => {
+  it("el total es qty · costo · (1 + IVA), como create_purchase", () => {
+    expect(purchaseLine(3, 99.99, 19).total).toBe(356.96);
   });
 });

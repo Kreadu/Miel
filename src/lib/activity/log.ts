@@ -4,6 +4,7 @@ import { getActiveTenant } from "@/lib/tenant/server";
 export type ActivityAction =
   | "sale_created"
   | "sale_confirmed"
+  | "sale_cancelled"
   | "payment_registered"
   | "cash_opened"
   | "cash_closed"
@@ -13,6 +14,7 @@ export type ActivityAction =
 export const ACTIVITY_LABEL: Record<ActivityAction, string> = {
   sale_created: "Creó un pedido",
   sale_confirmed: "Generó una boleta",
+  sale_cancelled: "Anuló una venta",
   payment_registered: "Registró un cobro",
   cash_opened: "Abrió caja",
   cash_closed: "Cerró caja",
