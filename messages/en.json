@@ -383,7 +383,7 @@
       "deliverDirectly": "Deliver directly",
       "cancelSale": "Cancel sale",
       "cancelling": "Cancelling…",
-      "cancelConfirm": "Cancel this sale? Stock returns to inventory and payments are recorded as refunds.",
+      "cancelConfirm": "Cancel this sale? Stock returns to inventory.",
       "invoicesPending": "Invoices to issue",
       "invoicesHelp": "Sales paid with an invoice. Issue them in your invoicing system and mark them here.",
       "markIssued": "Mark issued",
@@ -393,7 +393,8 @@
       "charging": "Charging…",
       "changeMethod": "change payment method",
       "howPays": "How is it paid?",
-      "amount": "Amount"
+      "amount": "Amount",
+      "refundInCash": "Paid: refund from Cash register"
     },
     "cart": {
       "title": "Order built from the catalog",
@@ -464,7 +465,8 @@
       "paymentMethodRequired": "Choose the payment method to charge.",
       "invoiceCustomerRequired": "For an invoice, choose a customer with ID type and number.",
       "documentTypeInvalid": "Choose receipt or invoice.",
-      "invoiceMarkFailed": "Could not mark the invoice. Try again."
+      "invoiceMarkFailed": "Could not mark the invoice. Try again.",
+      "saleHasPayments": "This sale was already paid: make the refund from the Cash register."
     }
   },
   "customers": {
@@ -581,7 +583,38 @@
       "sessionInvalid": "Invalid cash register session.",
       "openingNegative": "The opening float cannot be negative.",
       "countedNegative": "The counted amount cannot be negative.",
-      "failed": "Could not complete the cash register operation. Try again."
+      "failed": "Could not complete the cash register operation. Try again.",
+      "refundReasonRequired": "Enter the reason for the refund.",
+      "refundCashRequired": "Open your cash register to make the refund.",
+      "receiptInvalid": "Invalid receipt number.",
+      "receiptNotFound": "There is no sale with that receipt.",
+      "refundFailed": "Could not make the refund. Try again."
+    },
+    "movements": {
+      "title": "My shift's transactions",
+      "readOnly": "Payments and refunds in this shift. They cannot be changed.",
+      "time": "Time",
+      "customer": "Customer",
+      "receipt": "Receipt",
+      "method": "Payment method",
+      "amount": "Amount",
+      "empty": "No payments in this shift yet."
+    },
+    "refund": {
+      "title": "Refund a sale",
+      "help": "For sales already paid: the money comes out of your cash register and the products go back to stock. Owner or administrator only.",
+      "receipt": "Receipt no.",
+      "search": "Search",
+      "notFound": "There is no sale with that receipt.",
+      "saleLine": "Receipt #{number}",
+      "paid": "Paid: {amount}",
+      "openFirst": "Open your cash register to make refunds.",
+      "reason": "Reason for the refund",
+      "reasonPlaceholder": "E.g. Defective product",
+      "submit": "Refund sale",
+      "refunding": "Refunding…",
+      "confirm": "Refund the sale on receipt #{number}? The money comes out of your cash register and the products go back to stock.",
+      "done": "Refund recorded: the money left your cash register and stock was restored."
     }
   },
   "payments": {
@@ -593,7 +626,8 @@
       "amountPositive": "Amount must be greater than zero.",
       "methodInvalid": "Select a valid payment method.",
       "saleNotFound": "The sale does not exist.",
-      "failed": "Could not record the payment. Try again."
+      "failed": "Could not record the payment. Try again.",
+      "cashSessionRequired": "Open your cash register to take cash payments."
     }
   },
   "receivables": {
@@ -1315,7 +1349,8 @@
       "cash_opened": "Opened the cash register",
       "cash_closed": "Closed the cash register",
       "purchase_received": "Received a purchase",
-      "stock_adjusted": "Adjusted stock"
+      "stock_adjusted": "Adjusted stock",
+      "sale_refunded": "Refunded a sale"
     },
     "common": {
       "cancel": "Cancel",

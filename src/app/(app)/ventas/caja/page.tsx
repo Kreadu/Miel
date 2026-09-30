@@ -7,13 +7,14 @@ import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CloseSessionForm } from "./close-session-form";
 import { OpenSessionForm } from "./open-session-form";
+import { RefundForm } from "./refund-form";
 
 export async function generateMetadata() {
   const t = await getTranslations("cash");
   return { title: `${t("title")} · Miel` };
 }
 
-export default async function CajaPage() {
+export default async function CajaPage({ searchParams }: { searchParams: Promise<{ boleta?: string }> }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
 
@@ -23,19 +24,52 @@ export default async function CajaPage() {
   } = await supabase.auth.getUser();
   if (!user) notFound();
   const t = await getTranslations("cash");
+  const tAll = await getTranslations();
+  const canManage = active.role !== "member";
+  const receiptNumber = Number((await searchParams).boleta) || null;
 
   const [mySessionRes, summaryRes] = await Promise.all([
     supabase
       .from("cash_sessions")
       .select("id, opening_amount, opened_at")
+      .eq("tenant_id", active.tenantId)
       .eq("opened_by", user.id)
       .eq("status", "open")
       .maybeSingle(),
-    supabase.from("cash_session_summary").select("*").order("opened_at", { ascending: false }),
+    supabase
+      .from("cash_session_summary")
+      .select("*")
+      .eq("tenant_id", active.tenantId)
+      .order("opened_at", { ascending: false }),
   ]);
 
   const mySession = mySessionRes.data;
   const summaries = summaryRes.data ?? [];
+
+  // S18-08: movimientos de mi turno (cobros y devoluciones), solo lectura.
+  const [movementsRes, refundSaleRes] = await Promise.all([
+    mySession
+      ? supabase
+          .from("customer_payments")
+          .select("id, amount, method, paid_at, note, customers(name), sales(receipt_number)")
+          .eq("cash_session_id", mySession.id)
+          .order("paid_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
+    canManage && receiptNumber
+      ? supabase
+          .from("sales")
+          .select("id, status, total, issued_at, customers(name), sale_items(qty, products(name)), customer_payments(amount)")
+          .eq("tenant_id", active.tenantId)
+          .eq("receipt_number", receiptNumber)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+  const movements = movementsRes.data ?? [];
+  const byMethod = movements.reduce<Record<string, number>>((acc, m) => {
+    acc[m.method] = (acc[m.method] ?? 0) + Number(m.amount);
+    return acc;
+  }, {});
+  const refundSaleRow = refundSaleRes.data;
 
   return (
     <div className="flex flex-col gap-6">
@@ -57,10 +91,131 @@ export default async function CajaPage() {
             })}
           </p>
           <CloseSessionForm sessionId={mySession.id} />
+
+          <section className="flex flex-col gap-2">
+            <h2 className="text-base font-semibold tracking-tight">{t("movements.title")}</h2>
+            <p className="text-xs text-muted-foreground">{t("movements.readOnly")}</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {(["cash", "card", "transfer", "other"] as const).map((m) => (
+                <div key={m} className="rounded-lg border border-border bg-card p-3">
+                  <p className="text-xs text-muted-foreground">{tAll(`sales.paymentMethod.${m}`)}</p>
+                  <p className="text-base font-semibold tabular-nums">${money(byMethod[m] ?? 0)}</p>
+                </div>
+              ))}
+            </div>
+            {movements.length > 0 ? (
+              <div className="overflow-x-auto rounded-lg border border-border bg-card">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-xs text-muted-foreground">
+                      <th className="px-3 py-2 font-medium">{t("movements.time")}</th>
+                      <th className="px-3 py-2 font-medium">{t("movements.customer")}</th>
+                      <th className="px-3 py-2 font-medium">{t("movements.receipt")}</th>
+                      <th className="px-3 py-2 font-medium">{t("movements.method")}</th>
+                      <th className="px-3 py-2 text-right font-medium">{t("movements.amount")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {movements.map((m) => (
+                      <tr key={m.id} className="border-b border-border last:border-0">
+                        <td className="px-3 py-2 tabular-nums">{formatDateTime(m.paid_at)}</td>
+                        <td className="px-3 py-2">
+                          {m.customers?.name ?? "—"}
+                          {Number(m.amount) < 0 && m.note ? (
+                            <span className="block text-xs text-destructive">{m.note}</span>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-2 tabular-nums">
+                          {m.sales?.receipt_number ? `#${m.sales.receipt_number}` : "—"}
+                        </td>
+                        <td className="px-3 py-2">{tAll(`sales.paymentMethod.${m.method}`)}</td>
+                        <td
+                          className={`px-3 py-2 text-right tabular-nums ${Number(m.amount) < 0 ? "text-destructive" : ""}`}
+                        >
+                          ${money(Number(m.amount))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+                {t("movements.empty")}
+              </p>
+            )}
+          </section>
         </div>
       ) : (
         <OpenSessionForm />
       )}
+
+      {canManage ? (
+        <section className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs">
+          <div>
+            <h2 className="text-base font-semibold tracking-tight">{t("refund.title")}</h2>
+            <p className="text-sm text-muted-foreground">{t("refund.help")}</p>
+          </div>
+          {mySession ? (
+            <>
+              <form method="get" className="flex flex-wrap items-end gap-2">
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="boleta" className="text-sm font-medium">
+                    {t("refund.receipt")}
+                  </label>
+                  <input
+                    id="boleta"
+                    name="boleta"
+                    type="number"
+                    min={1}
+                    required
+                    defaultValue={receiptNumber ?? undefined}
+                    className="flex h-9 w-40 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent"
+                >
+                  {t("refund.search")}
+                </button>
+              </form>
+              {receiptNumber && !refundSaleRow ? (
+                <p className="text-sm text-destructive">{t("refund.notFound")}</p>
+              ) : null}
+              {refundSaleRow ? (
+                <div className="flex flex-col gap-3 rounded-md border border-border p-3">
+                  <p className="text-sm">
+                    <span className="font-medium">{t("refund.saleLine", { number: receiptNumber ?? 0 })}</span>
+                    {" · "}
+                    {refundSaleRow.customers?.name ?? "—"} · ${money(refundSaleRow.total)}
+                    {refundSaleRow.issued_at ? ` · ${formatDate(refundSaleRow.issued_at)}` : ""}
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-muted-foreground">
+                    {refundSaleRow.sale_items.map((it, i) => (
+                      <li key={i}>
+                        {it.qty} × {it.products?.name ?? "—"}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-sm text-muted-foreground">
+                    {t("refund.paid", {
+                      amount: `$${money(refundSaleRow.customer_payments.reduce((sum, p) => sum + Number(p.amount), 0))}`,
+                    })}
+                  </p>
+                  {refundSaleRow.status === "cancelled" ? (
+                    <p className="text-sm text-destructive">{tAll("sales.errors.alreadyCancelled")}</p>
+                  ) : (
+                    <RefundForm key={refundSaleRow.id} receiptNumber={receiptNumber ?? 0} />
+                  )}
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">{t("refund.openFirst")}</p>
+          )}
+        </section>
+      ) : null}
 
       {summaries.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
@@ -72,6 +227,8 @@ export default async function CajaPage() {
                 <th className="px-3 py-2 text-right font-medium">{t("base")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("sales")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("cash")}</th>
+                <th className="px-3 py-2 text-right font-medium">{tAll("sales.paymentMethod.card")}</th>
+                <th className="px-3 py-2 text-right font-medium">{tAll("sales.paymentMethod.transfer")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("expected")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("counted")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("difference")}</th>
@@ -98,6 +255,8 @@ export default async function CajaPage() {
                   <td className="px-3 py-2 text-right tabular-nums">${money(s.opening_amount ?? 0)}</td>
                   <td className="px-3 py-2 text-right tabular-nums">${money(s.sales_total ?? 0)}</td>
                   <td className="px-3 py-2 text-right tabular-nums">${money(s.cash_total ?? 0)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">${money(s.card_total ?? 0)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">${money(s.transfer_total ?? 0)}</td>
                   <td className="px-3 py-2 text-right tabular-nums">
                     {s.expected_amount != null ? `$${money(s.expected_amount)}` : "—"}
                   </td>

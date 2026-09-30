@@ -1350,6 +1350,9 @@ export type Database = {
           note: string | null
           payment_method: string | null
           receipt_number: number | null
+          refund_reason: string | null
+          refunded_at: string | null
+          refunded_by: string | null
           shipped_at: string | null
           shipping_address: string | null
           shipping_cost: number
@@ -1376,6 +1379,9 @@ export type Database = {
           note?: string | null
           payment_method?: string | null
           receipt_number?: number | null
+          refund_reason?: string | null
+          refunded_at?: string | null
+          refunded_by?: string | null
           shipped_at?: string | null
           shipping_address?: string | null
           shipping_cost?: number
@@ -1402,6 +1408,9 @@ export type Database = {
           note?: string | null
           payment_method?: string | null
           receipt_number?: number | null
+          refund_reason?: string | null
+          refunded_at?: string | null
+          refunded_by?: string | null
           shipped_at?: string | null
           shipping_address?: string | null
           shipping_cost?: number
@@ -2756,6 +2765,10 @@ export type Database = {
       receive_purchase: {
         Args: { p_purchase_id: string; p_warehouse_id: string }
         Returns: undefined
+      }
+      refund_sale: {
+        Args: { p_reason: string; p_receipt_number: number; p_tenant_id: string }
+        Returns: string
       }
       register_customer_payment: {
         Args: {

@@ -383,7 +383,7 @@
       "deliverDirectly": "Entregar directamente",
       "cancelSale": "Anular venta",
       "cancelling": "Anulando…",
-      "cancelConfirm": "¿Anular esta venta? El stock vuelve al inventario y los cobros se registran como devolución.",
+      "cancelConfirm": "¿Anular esta venta? El stock vuelve al inventario.",
       "invoicesPending": "Facturas por emitir",
       "invoicesHelp": "Ventas cobradas con factura. Emítelas en tu sistema de facturación y márcalas aquí.",
       "markIssued": "Marcar emitida",
@@ -393,7 +393,8 @@
       "charging": "Cobrando…",
       "changeMethod": "cambiar forma de pago",
       "howPays": "¿Cómo paga?",
-      "amount": "Monto"
+      "amount": "Monto",
+      "refundInCash": "Cobrada: devolver desde Caja"
     },
     "cart": {
       "title": "Pedido armado desde el catálogo",
@@ -464,7 +465,8 @@
       "paymentMethodRequired": "Elige la forma de pago para cobrar.",
       "invoiceCustomerRequired": "Para factura elige un cliente con tipo y número de documento.",
       "documentTypeInvalid": "Elige boleta o factura.",
-      "invoiceMarkFailed": "No se pudo marcar la factura. Intenta de nuevo."
+      "invoiceMarkFailed": "No se pudo marcar la factura. Intenta de nuevo.",
+      "saleHasPayments": "Esta venta ya fue cobrada: haz la devolución desde Caja."
     }
   },
   "customers": {
@@ -581,7 +583,38 @@
       "sessionInvalid": "Sesión de caja inválida.",
       "openingNegative": "El monto base no puede ser negativo.",
       "countedNegative": "El monto contado no puede ser negativo.",
-      "failed": "No se pudo completar la operación de caja. Intenta de nuevo."
+      "failed": "No se pudo completar la operación de caja. Intenta de nuevo.",
+      "refundReasonRequired": "Escribe el motivo de la devolución.",
+      "refundCashRequired": "Abre tu caja para hacer la devolución.",
+      "receiptInvalid": "Número de boleta inválido.",
+      "receiptNotFound": "No hay una venta con esa boleta.",
+      "refundFailed": "No se pudo hacer la devolución. Intenta de nuevo."
+    },
+    "movements": {
+      "title": "Movimientos de mi turno",
+      "readOnly": "Cobros y devoluciones de este turno. No se pueden modificar.",
+      "time": "Hora",
+      "customer": "Cliente",
+      "receipt": "Boleta",
+      "method": "Forma de pago",
+      "amount": "Monto",
+      "empty": "Aún no hay cobros en este turno."
+    },
+    "refund": {
+      "title": "Devolver una venta",
+      "help": "Para ventas ya cobradas: el dinero sale de tu caja y los productos vuelven al stock. Solo dueño o administrador.",
+      "receipt": "N.° de boleta",
+      "search": "Buscar",
+      "notFound": "No hay una venta con esa boleta.",
+      "saleLine": "Boleta #{number}",
+      "paid": "Cobrado: {amount}",
+      "openFirst": "Abre tu caja para hacer devoluciones.",
+      "reason": "Motivo de la devolución",
+      "reasonPlaceholder": "Ej. Producto defectuoso",
+      "submit": "Devolver venta",
+      "refunding": "Devolviendo…",
+      "confirm": "¿Devolver la venta de la boleta #{number}? El dinero sale de tu caja y los productos vuelven al stock.",
+      "done": "Devolución registrada: el dinero salió de tu caja y el stock volvió."
     }
   },
   "payments": {
@@ -593,7 +626,8 @@
       "amountPositive": "El monto debe ser mayor a cero.",
       "methodInvalid": "Selecciona un método de pago válido.",
       "saleNotFound": "La venta indicada no existe.",
-      "failed": "No se pudo registrar el cobro. Intenta de nuevo."
+      "failed": "No se pudo registrar el cobro. Intenta de nuevo.",
+      "cashSessionRequired": "Abre tu caja para cobrar en efectivo."
     }
   },
   "receivables": {
@@ -1315,7 +1349,8 @@
       "cash_opened": "Abrió caja",
       "cash_closed": "Cerró caja",
       "purchase_received": "Recibió una compra",
-      "stock_adjusted": "Ajustó stock"
+      "stock_adjusted": "Ajustó stock",
+      "sale_refunded": "Devolvió una venta"
     },
     "common": {
       "cancel": "Cancelar",

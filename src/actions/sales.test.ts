@@ -179,3 +179,49 @@ describe("markInvoiceIssued (S18-06)", () => {
     });
   });
 });
+
+describe("cancelSale / refundSale — caja (S18-08)", () => {
+  it("anular una venta cobrada manda a devolverla desde Caja", async () => {
+    rpcResult.current = { error: { code: "P0001", message: "sale_has_payments" } };
+    const { cancelSale } = await import("./sales");
+
+    expect(await cancelSale("55555555-5555-4555-8555-555555555555")).toEqual({
+      ok: false,
+      error: "sales.errors.saleHasPayments",
+    });
+  });
+
+  it("devolución sin motivo: error sin llamar a la BD", async () => {
+    rpcSpy.mockClear();
+    const { refundSale } = await import("./sales");
+
+    expect(await refundSale(null, formData({ receipt_number: "12", reason: "  " }))).toEqual({
+      ok: false,
+      error: "cash.errors.refundReasonRequired",
+    });
+    expect(rpcSpy).not.toHaveBeenCalled();
+  });
+
+  it("devolución: manda boleta y motivo a la RPC", async () => {
+    rpcResult.current = { error: null };
+    rpcSpy.mockClear();
+    const { refundSale } = await import("./sales");
+
+    expect(await refundSale(null, formData({ receipt_number: "12", reason: "Defectuoso" }))).toEqual({ ok: true });
+    expect(rpcSpy).toHaveBeenCalledWith("refund_sale", {
+      p_tenant_id: "t-1",
+      p_receipt_number: 12,
+      p_reason: "Defectuoso",
+    });
+  });
+
+  it("devolución sin caja abierta: pide abrirla", async () => {
+    rpcResult.current = { error: { code: "P0001", message: "cash_session_required" } };
+    const { refundSale } = await import("./sales");
+
+    expect(await refundSale(null, formData({ receipt_number: "12", reason: "x" }))).toEqual({
+      ok: false,
+      error: "cash.errors.refundCashRequired",
+    });
+  });
+});

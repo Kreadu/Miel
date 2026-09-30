@@ -81,7 +81,7 @@ export async function SaleRow({
           {/* S18-07: separada y abajo, para no confundirla con "Volver". */}
           {canCancel && sale.status !== "cancelled" && (
             <div className="mt-2 w-full border-t border-border pt-2">
-              <CancelSaleButton saleId={sale.id} />
+              <CancelSaleButton saleId={sale.id} paid={sale.total - sale.balance} receiptNumber={sale.receiptNumber} />
             </div>
           )}
         </div>

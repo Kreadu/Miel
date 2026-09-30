@@ -200,7 +200,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(balance)}</td>
                       {active.role !== "member" && (
                         <td className="px-3 py-2.5">
-                          {p.status !== "cancelled" && <CancelSaleButton saleId={p.id} />}
+                          {p.status !== "cancelled" && <CancelSaleButton saleId={p.id} paid={paid} receiptNumber={p.receipt_number} />}
                         </td>
                       )}
                     </tr>

@@ -9,7 +9,8 @@ export type ActivityAction =
   | "cash_opened"
   | "cash_closed"
   | "purchase_received"
-  | "stock_adjusted";
+  | "stock_adjusted"
+  | "sale_refunded";
 
 /**
  * S21-04: deja constancia de una acción importante y de quién la hizo (en el modo tienda, el

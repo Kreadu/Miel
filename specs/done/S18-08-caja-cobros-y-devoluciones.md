@@ -1,7 +1,7 @@
 ---
 id: S18-08
 titulo: Todo cobro entra a la caja; devolución de venta cobrada desde Caja
-estado: spec-ready
+estado: implemented
 depende_de: [S18-06, S18-07, S23-01]
 ---
 
@@ -56,3 +56,20 @@ Fuera de alcance: devolución parcial, "ajustes de caja" libres (no hacen falta:
 - pgTAP: cobro ligado a caja, efectivo sin caja, anular con cobros, devolución (feliz,
   operativo rechazado, sin caja, motivo vacío, atomicidad, tenant ajeno). Vitest de acciones.
 - Lint, tsc, `npm test`; migración y pgTAP los aplica/corre el humano.
+
+## Notas de implementación
+
+- Migración `20260930200000_caja-cobros-y-devoluciones.sql` (aplicar **después** de la de S18-06):
+  columnas `sales.refunded_at/refund_reason/refunded_by`; `register_customer_payment` liga el
+  cobro a la caja (la validación de caja va al final, para no cambiar los errores existentes);
+  `cancel_sale` rechaza con `sale_has_payments`; `refund_sale(p_tenant_id, p_receipt_number,
+  p_reason)`; acción `sale_refunded` en `activity_log`.
+- pgTAP nuevo `S18-08-caja-cobros-y-devoluciones.sql` (20 pruebas). Ajustado `S5-04`: abre la
+  caja del operativo en la preparación (efectivo ahora la exige). **Ninguno corrido aquí.**
+- Caja: filtra por la empresa activa (antes podía mezclar cajas de otra empresa del mismo
+  dueño); columnas Tarjeta y Transferencia en el resumen; detalle del turno; sección de
+  devolución (buscar por n.° de boleta, ver productos y lo cobrado, motivo, confirmar).
+- "Anular venta" en Pedidos y ficha del cliente: si la venta tiene cobros, muestra "Cobrada:
+  devolver desde Caja" con enlace a la boleta.
+- "Quién" en el detalle del turno no se muestra: el turno es de una sola persona (quien abrió la
+  caja); las devoluciones del dueño quedan en su propio turno.

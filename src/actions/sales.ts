@@ -178,6 +178,7 @@ export async function cancelSale(saleId: string): Promise<SaleState> {
     console.error("cancelSale:", error.code, error.message);
     if (error.message.includes("permission_denied")) return { ok: false, error: "sales.errors.cancelAdminOnly" };
     if (error.message.includes("sale_already_cancelled")) return { ok: false, error: "sales.errors.alreadyCancelled" };
+    if (error.message.includes("sale_has_payments")) return { ok: false, error: "sales.errors.saleHasPayments" };
     if (error.message.includes("cash_session_required"))
       return { ok: false, error: "sales.errors.cancelCashRequired" };
     return { ok: false, error: "sales.errors.cancelFailed" };
@@ -246,5 +247,47 @@ export async function markInvoiceIssued(saleId: string): Promise<SaleState> {
     return { ok: false, error: "sales.errors.invoiceMarkFailed" };
   }
   revalidatePath(SALES_PATH);
+  return { ok: true };
+}
+
+const refundSchema = z.object({
+  receipt_number: z.coerce.number().int().positive("cash.errors.receiptInvalid"),
+  reason: z.string().trim().min(1, "cash.errors.refundReasonRequired").max(300, "common.errors.noteTooLong"),
+});
+
+/**
+ * S18-08: devolución de una venta cobrada desde Caja (owner/admin con su caja abierta; la RPC
+ * lo valida). El dinero sale de su caja y el stock vuelve a la bodega de donde salió.
+ */
+export async function refundSale(_prev: SaleState, formData: FormData): Promise<SaleState> {
+  const parsed = refundSchema.safeParse({
+    receipt_number: formData.get("receipt_number"),
+    reason: formData.get("reason"),
+  });
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const { active } = await getActiveTenant();
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
+
+  const supabase = await createClient();
+  const { data: saleId, error } = await supabase.rpc("refund_sale", {
+    p_tenant_id: active.tenantId,
+    p_receipt_number: parsed.data.receipt_number,
+    p_reason: parsed.data.reason,
+  });
+  if (error) {
+    console.error("refundSale:", error.code, error.message);
+    if (error.message.includes("permission_denied")) return { ok: false, error: "common.errors.permissionDenied" };
+    if (error.message.includes("cash_session_required")) return { ok: false, error: "cash.errors.refundCashRequired" };
+    if (error.message.includes("refund_reason_required")) return { ok: false, error: "cash.errors.refundReasonRequired" };
+    if (error.message.includes("sale_not_found")) return { ok: false, error: "cash.errors.receiptNotFound" };
+    if (error.message.includes("sale_already_cancelled")) return { ok: false, error: "sales.errors.alreadyCancelled" };
+    return { ok: false, error: "cash.errors.refundFailed" };
+  }
+
+  await logActivity("sale_refunded", { entityId: saleId ?? undefined, detail: parsed.data.reason });
+  revalidatePath("/ventas/caja");
+  revalidatePath(SALES_PATH);
+  revalidatePath("/ventas/clientes", "layout");
   return { ok: true };
 }

@@ -18,6 +18,7 @@ function mapCustomerPaymentError(message: string | undefined): string {
   if (message?.includes("payment_amount_invalid")) return "payments.errors.amountPositive";
   if (message?.includes("payment_method_invalid")) return "payments.errors.methodInvalid";
   if (message?.includes("sale_not_found")) return "payments.errors.saleNotFound";
+  if (message?.includes("cash_session_required")) return "payments.errors.cashSessionRequired";
   return "payments.errors.failed";
 }
 
@@ -49,5 +50,6 @@ export async function registerCustomerPayment(
     detail: `${parsed.data.amount} (${parsed.data.method})`,
   });
   revalidatePath(SALES_PATH);
+  revalidatePath("/ventas/caja");
   return { ok: true };
 }

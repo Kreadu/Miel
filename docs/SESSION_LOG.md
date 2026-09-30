@@ -11,6 +11,21 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 11) · S18-07 y S18-08 — cobro simple y caja (cobros y devoluciones)
+
+**Hecho:** S18-07 (forma de pago una sola vez, "Cobrar $X en <forma>" con un clic, "Volver",
+"Anular" separada). Hallazgo: los cobros nunca llegaban a la caja (register_customer_payment no
+los ligaba) mientras la devolución de anular sí la descontaba. S18-08 aprobada: todo cobro entra a
+la caja de quien cobra (efectivo exige caja); anular solo sin cobros; devolución de venta cobrada
+desde Caja (owner/admin con caja abierta, por n.° de boleta, motivo, stock vuelve); detalle del
+turno de solo lectura. S18-09 (devolución parcial) anotada para después. Verificado: lint ✓,
+tsc ✓, `npm test` 457/457 ✓. **Sin correr:** pgTAP (S18-06, S18-08, S5-04 ajustado), navegador.
+
+**Pendiente del humano:** aplicar en el SQL editor, en orden, `20260930180000_cobrar-y-entregar.sql`
+y `20260930200000_caja-cobros-y-devoluciones.sql`; correr los pgTAP; probar en el navegador.
+
+---
+
 ## Sesión 2026-09-30 (cont. 10) · S18-06 — cobrar y entregar en un paso + boleta/factura
 
 **Hecho:** ADR-041 (sin Vercel; servidor central; llave IA al instalar). Estudiado el flujo de

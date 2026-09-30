@@ -383,7 +383,7 @@
       "deliverDirectly": "Livrer directement",
       "cancelSale": "Annuler la vente",
       "cancelling": "Annulation…",
-      "cancelConfirm": "Annuler cette vente ? Le stock retourne à l’inventaire et les encaissements sont enregistrés comme remboursement.",
+      "cancelConfirm": "Annuler cette vente ? Le stock retourne à l’inventaire.",
       "invoicesPending": "Factures à émettre",
       "invoicesHelp": "Ventes encaissées avec facture. Émettez-les dans votre logiciel de facturation et marquez-les ici.",
       "markIssued": "Marquer émise",
@@ -393,7 +393,8 @@
       "charging": "Encaissement…",
       "changeMethod": "changer de moyen de paiement",
       "howPays": "Comment paie-t-il ?",
-      "amount": "Montant"
+      "amount": "Montant",
+      "refundInCash": "Encaissée : rembourser depuis la Caisse"
     },
     "cart": {
       "title": "Commande créée depuis le catalogue",
@@ -464,7 +465,8 @@
       "paymentMethodRequired": "Choisissez le moyen de paiement pour encaisser.",
       "invoiceCustomerRequired": "Pour une facture, choisissez un client avec type et numéro de pièce d’identité.",
       "documentTypeInvalid": "Choisissez ticket ou facture.",
-      "invoiceMarkFailed": "Impossible de marquer la facture. Réessayez."
+      "invoiceMarkFailed": "Impossible de marquer la facture. Réessayez.",
+      "saleHasPayments": "Cette vente a déjà été encaissée : faites le remboursement depuis la Caisse."
     }
   },
   "customers": {
@@ -581,7 +583,38 @@
       "sessionInvalid": "Session de caisse non valide.",
       "openingNegative": "Le fond de caisse ne peut pas être négatif.",
       "countedNegative": "Le montant compté ne peut pas être négatif.",
-      "failed": "Impossible de terminer l’opération de caisse. Réessayez."
+      "failed": "Impossible de terminer l’opération de caisse. Réessayez.",
+      "refundReasonRequired": "Saisissez le motif du remboursement.",
+      "refundCashRequired": "Ouvrez votre caisse pour faire le remboursement.",
+      "receiptInvalid": "Numéro de ticket non valide.",
+      "receiptNotFound": "Aucune vente avec ce ticket.",
+      "refundFailed": "Impossible de faire le remboursement. Réessayez."
+    },
+    "movements": {
+      "title": "Mouvements de mon service",
+      "readOnly": "Encaissements et remboursements de ce service. Ils ne peuvent pas être modifiés.",
+      "time": "Heure",
+      "customer": "Client",
+      "receipt": "Ticket",
+      "method": "Moyen de paiement",
+      "amount": "Montant",
+      "empty": "Aucun encaissement pour ce service."
+    },
+    "refund": {
+      "title": "Rembourser une vente",
+      "help": "Pour les ventes déjà encaissées : l’argent sort de votre caisse et les produits retournent au stock. Propriétaire ou administrateur uniquement.",
+      "receipt": "N° de ticket",
+      "search": "Rechercher",
+      "notFound": "Aucune vente avec ce ticket.",
+      "saleLine": "Ticket nº {number}",
+      "paid": "Encaissé : {amount}",
+      "openFirst": "Ouvrez votre caisse pour faire des remboursements.",
+      "reason": "Motif du remboursement",
+      "reasonPlaceholder": "Ex. Produit défectueux",
+      "submit": "Rembourser la vente",
+      "refunding": "Remboursement…",
+      "confirm": "Rembourser la vente du ticket nº {number} ? L’argent sort de votre caisse et les produits retournent au stock.",
+      "done": "Remboursement enregistré : l’argent est sorti de votre caisse et le stock a été rétabli."
     }
   },
   "payments": {
@@ -593,7 +626,8 @@
       "amountPositive": "Le montant doit être supérieur à zéro.",
       "methodInvalid": "Sélectionnez un moyen de paiement valide.",
       "saleNotFound": "La vente indiquée n’existe pas.",
-      "failed": "Impossible d’enregistrer l’encaissement. Réessayez."
+      "failed": "Impossible d’enregistrer l’encaissement. Réessayez.",
+      "cashSessionRequired": "Ouvrez votre caisse pour encaisser en espèces."
     }
   },
   "receivables": {
@@ -1315,7 +1349,8 @@
       "cash_opened": "A ouvert la caisse",
       "cash_closed": "A fermé la caisse",
       "purchase_received": "A réceptionné un achat",
-      "stock_adjusted": "A ajusté le stock"
+      "stock_adjusted": "A ajusté le stock",
+      "sale_refunded": "A remboursé une vente"
     },
     "common": {
       "cancel": "Annuler",

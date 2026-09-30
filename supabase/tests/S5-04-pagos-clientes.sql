@@ -43,6 +43,8 @@ insert into public.sales (id, tenant_id, customer_id, status, subtotal, tax, tot
 set local role authenticated;
 set local "request.jwt.claims" to
   '{"sub": "00000000-0000-0000-0000-00000000a002", "role": "authenticated"}';
+-- S18-08: todo cobro entra a la caja de quien cobra; en efectivo exige la caja abierta.
+select public.open_cash_session(0, '10000000-0000-0000-0000-00000000a001');
 
 -- === C1: Cobro asociado a una venta, monto válido (member) ===
 select lives_ok(
