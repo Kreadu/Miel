@@ -11,6 +11,25 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 22) · plan de S22-02 (sin empezar)
+
+**Estado:** todo commiteado y pusheado (último `d159d2c`); migraciones hasta
+`20260929212405_categorias-de-gasto.sql` aplicadas en el cloud (categorías de gasto sembradas: 22).
+
+**Siguiente paso — S22-02 Estado de resultados** (propuesto al humano, sin confirmar):
+por mes, con selector de mes y comparación con el mes anterior; pantalla nueva abierta con un
+botón desde `/gastos` (sin tocar el menú). Estructura:
+Ingresos por ventas − Costo de ventas − Mano de obra de costo (fija+variable) = Utilidad bruta
+− Gastos fijos (anotados + nómina gasto fijo) − Gastos variables (anotados + nómina gasto
+variable) = Utilidad operacional. Fuentes ya existentes: `monthly_pnl` (income, cogs, expenses,
+payroll_costs, payroll_expenses), `monthly_expenses` (por kind, incluye "Nómina"),
+`monthly_payroll` (por clasificación). Probablemente no requiere migración.
+
+**Nota operativa:** hubo cortes de conexión a Supabase (ConnectTimeout) que sacan al login; si se
+repiten, evaluar reintento en el proxy.
+
+---
+
 ## Sesión 2026-09-29 (cont. 21) · S22-01 — gastos fijos y variables
 
 **Hecho:** migración `20260929212405_categorias-de-gasto.sql` (categorías con tipo, lista inicial, tipo impuesto por trigger);
