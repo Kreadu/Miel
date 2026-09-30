@@ -34,3 +34,26 @@ describe("setWarehouseLends (S18-10: un clic para que una bodega preste stock)",
     expect(await setWarehouseLends("x", true)).toEqual({ ok: false, error: "stock.errors.warehouseInvalid" });
   });
 });
+
+describe("transferStock (S19-39)", () => {
+  const TO = "44444444-4444-4444-8444-444444444444";
+  const P = "55555555-5555-4555-8555-555555555555";
+
+  it("sin productos: error sin llamar a la BD", async () => {
+    const { transferStock } = await import("./warehouses");
+    const fd = new FormData();
+    fd.set("from", WH);
+    fd.set("to", TO);
+    fd.set("items", "[]");
+    expect(await transferStock(null, fd)).toEqual({ ok: false, error: "warehouses.errors.transferItemsRequired" });
+  });
+
+  it("misma bodega: error", async () => {
+    const { transferStock } = await import("./warehouses");
+    const fd = new FormData();
+    fd.set("from", WH);
+    fd.set("to", WH);
+    fd.set("items", JSON.stringify([{ product_id: P, qty: 2 }]));
+    expect(await transferStock(null, fd)).toEqual({ ok: false, error: "warehouses.errors.transferSameWarehouse" });
+  });
+});

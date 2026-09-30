@@ -647,6 +647,7 @@ export type Database = {
           category_id: string | null
           created_at: string
           created_by: string
+          display_name: string | null
           id: string
           role: string
           tenant_id: string
@@ -656,6 +657,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           created_by?: string
+          display_name?: string | null
           id?: string
           role: string
           tenant_id: string
@@ -665,6 +667,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           created_by?: string
+          display_name?: string | null
           id?: string
           role?: string
           tenant_id?: string
@@ -1827,35 +1830,50 @@ export type Database = {
       }
       tenants: {
         Row: {
+          address: string | null
+          city: string | null
           created_at: string
           currency: string
+          email: string | null
           id: string
           income_tax_rate: number
+          logo_url: string | null
           name: string
           nit: string | null
           person_type: string
+          phone: string | null
           sells_physical: boolean
           sells_virtual: boolean
         }
         Insert: {
+          address?: string | null
+          city?: string | null
           created_at?: string
           currency?: string
+          email?: string | null
           id?: string
           income_tax_rate?: number
+          logo_url?: string | null
           name: string
           nit?: string | null
           person_type?: string
+          phone?: string | null
           sells_physical?: boolean
           sells_virtual?: boolean
         }
         Update: {
+          address?: string | null
+          city?: string | null
           created_at?: string
           currency?: string
+          email?: string | null
           id?: string
           income_tax_rate?: number
+          logo_url?: string | null
           name?: string
           nit?: string | null
           person_type?: string
+          phone?: string | null
           sells_physical?: boolean
           sells_virtual?: boolean
         }
@@ -2831,9 +2849,17 @@ export type Database = {
         Args: { p_levels: Json; p_product_id: string }
         Returns: number
       }
+      set_my_display_name: {
+        Args: { p_name: string; p_tenant_id: string }
+        Returns: undefined
+      }
       set_worker_pin: {
         Args: { p_pin: string; p_username: string; p_worker_id: string }
         Returns: undefined
+      }
+      transfer_stock: {
+        Args: { p_from: string; p_items: Json; p_note?: string; p_to: string }
+        Returns: string
       }
       update_purchase: {
         Args: {

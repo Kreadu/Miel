@@ -1,7 +1,7 @@
 ---
 id: S26-01
 titulo: "Mi empresa" (logo y datos) y "Tu nombre" de cada usuario
-estado: approved
+estado: implemented
 depende_de: []
 ---
 
@@ -40,3 +40,13 @@ Fuera de alcance: usar estos datos en el PDF (S26-03); aprobadores (S26-02).
 - pgTAP: `set_my_display_name` (propio sí, ajeno no, vacío no, otra empresa no); update de
   `tenants` solo admin; políticas del bucket. Vitest de acciones (validación, claves de error).
 - Lint, tsc, `npm test`; migración y pgTAP los aplica/corre el humano.
+
+## Notas de implementación
+
+- Migración `20260930230000_mi-empresa-y-tu-nombre.sql` (independiente de las de S18; se puede
+  aplicar en cualquier orden después de ellas). pgTAP `S26-01-mi-empresa-y-tu-nombre.sql`
+  (10 pruebas), **sin correr aquí**. Tipos editados a mano.
+- `actions/company.ts` (`saveCompany`, `setMyDisplayName`), `lib/validation/company.ts`, páginas
+  `/empresa` y `/perfil`; pie del menú con el nombre (o el correo) → "Mi perfil" y "Mi empresa".
+- Antes de aplicar la migración: el menú muestra el correo (sin romper) y "Mi empresa" da
+  "no encontrado".

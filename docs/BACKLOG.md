@@ -220,7 +220,11 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-36 | Como dueño quiero que Pedidos sea la hoja de venta: sin pedido manual, con botón "Crear cliente", solo pedidos por completar, y el historial de compras en la hoja del cliente | Se borra `SaleForm`; `isPendingSale` filtra Pedidos; tabla "Historial de compras" en `/ventas/clientes/[id]`; Catálogo siempre visible en Vender; e2e paso 7 vía catálogo | S19-35 | done (sin migración) | — (reorganización de UI con tests, sin spec) |
 | S19-37 | Como dueño quiero Comprar como hoja de compra: proveedor con +, líneas con foto y costos con IVA, costo con IVA como costo del producto, e historial con fechas y proveedor | `receive_purchase` fija `products.cost` = costo con IVA; `/compras` con formulario, órdenes por recibir e Historial; `quickCreateSupplier` | S19-27, S19-34 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-37-hoja-de-compra.md |
 | S19-38 | Como dueño quiero ver cada bodega en modo lectura, cambiarla solo con "Editar" y poder darla de baja | Principal y otras: lectura → Editar → Guardar/Cancelar; "Eliminar" → "Dar de baja" con confirmación (avisa stock); la principal no se da de baja | S19-25, S18-10 | implemented | specs/done/S19-38-bodegas-ver-editar-y-dar-de-baja.md |
-| S19-39 | Como dueño quiero trasladar stock entre bodegas en un solo paso (sale de A y entra a B) | Sugerido 2026-09-30 al dar de baja bodegas con stock: cuando exista, dar de baja con stock pasa de aviso a bloqueo "traslada primero" | S19-38 | spec-ready | specs/S19-39-traslado-entre-bodegas.md |
+| S19-39 | Como dueño quiero trasladar stock entre bodegas en un solo paso (sale de A y entra a B) | Sugerido 2026-09-30 al dar de baja bodegas con stock: cuando exista, dar de baja con stock pasa de aviso a bloqueo "traslada primero" | S19-38 | implemented (código; migración sin aplicar, pgTAP sin correr) | specs/done/S19-39-traslado-entre-bodegas.md |
+| S19-40 | Como dueño quiero que un producto agotado (aunque tenga mínimo 0) aparezca en las alertas y ver un aviso llamativo en la app | Pedido 2026-09-30: la alerta exigía `min_stock > 0`; aviso visible (banner) con enlace a Alertas → orden de compra | S19-27 | todo | — |
+| S18-11 | Como dueño quiero un historial de pedidos dentro de Pedidos, con botón y rango de fechas | Pedido 2026-09-30: "Historial" como en Compras/Inventario (desde–hasta, cliente, estado, total) | S18-06 | todo | — |
+| S18-12 | Como cajero quiero ver en Caja solo lo del día y, para otros días, elegir un rango de fechas; y ver qué producto y cuántos se vendieron | Pedido 2026-09-30: por defecto hoy; rango desde–hasta; línea con productos y cantidades por venta | S18-08 | todo | — |
+| S26-05 | Como empresa cliente quiero ver mi logo en lugar del de Miel en la app | Pedido 2026-09-30: el logo de "Mi empresa" (S26-01) reemplaza al de Miel en el menú; sin logo, el de Miel | S26-01 | todo | — |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -335,7 +339,7 @@ PDF con `@react-pdf/renderer` (ADR al implementar S26-03).
 
 | ID | Historia | Estado |
 |---|---|---|
-| S26-01 | Página "Mi empresa" (logo, dirección, teléfono, correo) y "Tu nombre" de cada usuario | approved (specs/S26-01-mi-empresa-y-tu-nombre.md) |
+| S26-01 | Página "Mi empresa" (logo, dirección, teléfono, correo) y "Tu nombre" de cada usuario | implemented (código; migración sin aplicar, pgTAP sin correr — specs/done/S26-01-mi-empresa-y-tu-nombre.md) |
 | S26-02 | Aprobadores marcados por el dueño; número OC-0001; "Pendiente de aprobación" → "Aprobar" (quién y cuándo); solo aprobadas se envían/ordenan | todo |
 | S26-03 | PDF de la orden (logo, empresa, proveedor, detalle, pedida/aprobada/enviada por + fecha); descargar y enviar por WhatsApp (celular adjunta; computador abre chat) | todo |
 | S26-04 | Enviar la orden por correo con el PDF adjunto (cuando esté en el servidor central) | todo |

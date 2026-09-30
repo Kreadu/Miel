@@ -131,3 +131,53 @@ export async function setWarehouseLends(
   revalidatePath("/ventas/pedidos");
   return { ok: true };
 }
+
+const transferSchema = z
+  .object({
+    from: z.uuid("stock.errors.warehouseInvalid"),
+    to: z.uuid("stock.errors.warehouseInvalid"),
+    items: z
+      .array(z.object({ product_id: z.uuid("stock.errors.productInvalid"), qty: z.coerce.number().positive("stock.errors.qtyZero") }))
+      .min(1, "warehouses.errors.transferItemsRequired"),
+    note: z.string().trim().max(200, "common.errors.noteTooLong").optional(),
+  })
+  .refine((d) => d.from !== d.to, { message: "warehouses.errors.transferSameWarehouse", path: ["to"] });
+
+/**
+ * S19-39: traslado de stock entre bodegas (p. ej. para cerrar una). Sale de una y entra a la otra
+ * al mismo costo, en una sola transacción (transfer_stock, solo owner/admin).
+ */
+export async function transferStock(_prev: WarehouseState, formData: FormData): Promise<WarehouseState> {
+  let items: unknown;
+  try {
+    items = JSON.parse(formData.get("items")?.toString() ?? "[]");
+  } catch {
+    return { ok: false, error: "warehouses.errors.transferItemsRequired" };
+  }
+  const parsed = transferSchema.safeParse({
+    from: formData.get("from"),
+    to: formData.get("to"),
+    items,
+    note: formData.get("note")?.toString() || undefined,
+  });
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("transfer_stock", {
+    p_from: parsed.data.from,
+    p_to: parsed.data.to,
+    p_items: parsed.data.items,
+    p_note: parsed.data.note,
+  });
+  if (error) {
+    console.error("transferStock:", error.code, error.message);
+    if (error.message.includes("permission_denied")) return { ok: false, error: "common.errors.permissionDenied" };
+    if (error.message.includes("stock_insufficient")) return { ok: false, error: "stock.errors.insufficient" };
+    if (error.message.includes("warehouse_invalid")) return { ok: false, error: "stock.errors.warehouseInvalid" };
+    return { ok: false, error: "warehouses.errors.transferFailed" };
+  }
+
+  revalidatePath(WAREHOUSES_PATH);
+  revalidatePath("/inventario", "layout");
+  return { ok: true };
+}

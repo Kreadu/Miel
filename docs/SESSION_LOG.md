@@ -17,9 +17,18 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 S19-38 implementada (bodegas en modo lectura → Editar → Guardar/Cancelar; "Dar de baja" con aviso
 de stock; la principal no se da de baja). `npm test` 470/470 ✓, lint ✓, tsc ✓. Sin commitear.
 
-**Siguiente paso:** (1) el humano aprueba la spec S19-39 (traslado entre bodegas, pedida por él);
-(2) S26-01 (Mi empresa + Tu nombre) está **aprobada y sin empezar**.
-Migraciones pendientes de aplicar: S18-06, S18-08, S18-10 (en ese orden).
+**Después (mismo día):** S26-01 implementada: "Mi empresa" (logo, NIT, dirección, ciudad,
+teléfono, correo; solo dueño/admin), "Mi perfil" ("Tu nombre", cada uno el suyo vía RPC), pie del
+menú con nombre y enlaces. Migración `20260930230000_mi-empresa-y-tu-nombre.sql`, pgTAP 10
+pruebas (sin correr). `npm test` 478/478 ✓, lint ✓, tsc ✓.
+
+S19-39 aprobada e implementada (traslado entre bodegas; con stock no se da de baja). `npm test`
+480/480 ✓. Nuevos pedidos del humano anotados: S19-40 (alerta de agotados + aviso llamativo),
+S18-11 (historial de pedidos por fechas), S18-12 (Caja por día/rango + productos vendidos),
+S26-05 (logo de la empresa en lugar del de Miel).
+
+**Siguiente paso:** el humano aprueba el plan de S19-40, S18-11, S18-12, S26-05; luego S26-02.
+Migraciones pendientes de aplicar, en orden: S18-06, S18-08, S18-10, S26-01, S19-39.
 
 ---
 

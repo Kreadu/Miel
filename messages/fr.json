@@ -234,7 +234,9 @@
       "owner": "Propriétaire",
       "admin": "Administrateur",
       "member": "Opérationnel"
-    }
+    },
+    "myProfile": "Mon profil",
+    "myCompany": "Mon entreprise"
   },
   "home": {
     "greeting": "Bon retour",
@@ -777,7 +779,6 @@
       "total": "Total",
       "avgCost": "Coût moyen",
       "totalValue": "Valeur totale",
-      "manual": "Manuel",
       "empty": "Aucun mouvement enregistré pour ce produit dans cet entrepôt ou point de vente.",
       "kind": {
         "in": "Entrée",
@@ -785,6 +786,14 @@
         "adjust": "Ajustement",
         "production_in": "Entrée prod.",
         "production_out": "Sortie prod."
+      },
+      "refTypes": {
+        "manual": "Manuel",
+        "sale": "Vente",
+        "sale_cancel": "Vente annulée",
+        "sale_refund": "Remboursement",
+        "purchase": "Achat",
+        "transfer": "Transfert"
       }
     }
   },
@@ -852,7 +861,10 @@
     "tel": "Tél. {phone}",
     "errors": {
       "createFailed": "Impossible de créer l’entrepôt ou point de vente. Réessayez.",
-      "updateFailed": "Impossible de mettre à jour l’entrepôt ou point de vente. Réessayez."
+      "updateFailed": "Impossible de mettre à jour l’entrepôt ou point de vente. Réessayez.",
+      "transferItemsRequired": "Indiquez la quantité à transférer d’au moins un produit.",
+      "transferSameWarehouse": "Choisissez un autre entrepôt de destination.",
+      "transferFailed": "Impossible de transférer. Réessayez."
     },
     "lendsStock": "Prête du stock pour compléter les ventes",
     "lendsStockHelp": "Si un autre entrepôt n’a pas assez, la vente pourra être complétée avec les produits de celui-ci.",
@@ -861,7 +873,20 @@
     "retire": "Désactiver",
     "retired": "Désactivé",
     "retireConfirm": "Désactiver « {name} » ? Il ne pourra plus servir aux ventes. Vous pourrez le réactiver.",
-    "retireConfirmWithStock": "« {name} » a {units} unités en stock ; elles continueront à compter dans l’inventaire jusqu’à ce que vous les déplaciez. Le désactiver quand même ?"
+    "transferFirst": "Il contient {units} unités : transférez-les pour le désactiver.",
+    "transfer": {
+      "open": "Transférer du stock",
+      "title": "Transférer du stock depuis {name}",
+      "to": "Vers",
+      "chooseTo": "Choisissez l’entrepôt de destination",
+      "products": "Produits et quantités",
+      "all": "Tout transférer",
+      "have": "{qty} dispo.",
+      "note": "Note (facultatif)",
+      "submit": "Transférer",
+      "moving": "Transfert…",
+      "confirm": "Transférer le stock choisi de {from} vers {to} ?"
+    }
   },
   "recipes": {
     "title": "Recette : {name}",
@@ -1693,6 +1718,42 @@
       "companyNameRequired": "La raison sociale est obligatoire",
       "softwareIdRequired": "L’identifiant du logiciel est obligatoire",
       "softwarePinRequired": "Le PIN du logiciel est obligatoire"
+    }
+  },
+  "company": {
+    "title": "Mon entreprise",
+    "subtitle": "Ces données et le logo figurent sur les documents générés par Miel, comme les bons de commande.",
+    "logo": "Logo",
+    "logoHelp": "JPG, PNG ou WEBP, 2 Mo max. Idéalement sur fond blanc ou transparent.",
+    "removeLogo": "Retirer le logo",
+    "fields": {
+      "name": "Nom ou raison sociale",
+      "nit": "N° fiscal (NIT)",
+      "address": "Adresse",
+      "city": "Ville",
+      "phone": "Téléphone",
+      "email": "E-mail"
+    },
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré.",
+    "errors": {
+      "logoType": "Le logo doit être au format JPG, PNG ou WEBP.",
+      "logoSize": "Le logo ne peut pas dépasser 2 Mo.",
+      "logoUpload": "Impossible de téléverser le logo. Réessayez.",
+      "saveFailed": "Impossible d’enregistrer les données. Réessayez."
+    }
+  },
+  "profile": {
+    "title": "Mon profil",
+    "name": "Votre nom",
+    "nameHelp": "C’est ainsi que vous apparaîtrez sur les bons de commande que vous demandez, approuvez ou envoyez : qui signe en est responsable.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré.",
+    "errors": {
+      "nameRequired": "Saisissez votre nom.",
+      "saveFailed": "Impossible d’enregistrer votre nom. Réessayez."
     }
   }
 }

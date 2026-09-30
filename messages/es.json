@@ -234,7 +234,9 @@
       "owner": "Dueño",
       "admin": "Administrador",
       "member": "Operativo"
-    }
+    },
+    "myProfile": "Mi perfil",
+    "myCompany": "Mi empresa"
   },
   "home": {
     "greeting": "Hola de nuevo",
@@ -777,7 +779,6 @@
       "total": "Total",
       "avgCost": "Costo prom.",
       "totalValue": "Valor total",
-      "manual": "Manual",
       "empty": "No hay movimientos registrados para este producto en esta bodega o sucursal.",
       "kind": {
         "in": "Entrada",
@@ -785,6 +786,14 @@
         "adjust": "Ajuste",
         "production_in": "Prod. entrada",
         "production_out": "Prod. salida"
+      },
+      "refTypes": {
+        "manual": "Manual",
+        "sale": "Venta",
+        "sale_cancel": "Venta anulada",
+        "sale_refund": "Devolución",
+        "purchase": "Compra",
+        "transfer": "Traslado"
       }
     }
   },
@@ -852,7 +861,10 @@
     "tel": "Tel. {phone}",
     "errors": {
       "createFailed": "No se pudo crear la bodega o sucursal. Intenta de nuevo.",
-      "updateFailed": "No se pudo actualizar la bodega o sucursal. Intenta de nuevo."
+      "updateFailed": "No se pudo actualizar la bodega o sucursal. Intenta de nuevo.",
+      "transferItemsRequired": "Escribe cuánto trasladar de al menos un producto.",
+      "transferSameWarehouse": "Elige una bodega de destino distinta.",
+      "transferFailed": "No se pudo trasladar. Intenta de nuevo."
     },
     "lendsStock": "Presta stock para completar ventas",
     "lendsStockHelp": "Si otra bodega no tiene suficiente, se podrá completar la venta con productos de esta.",
@@ -861,7 +873,20 @@
     "retire": "Dar de baja",
     "retired": "Dada de baja",
     "retireConfirm": "¿Dar de baja «{name}»? Ya no se podrá usar para vender. Puedes reactivarla después.",
-    "retireConfirmWithStock": "«{name}» tiene {units} unidades en stock; seguirán contando en el inventario hasta que las muevas. ¿Darla de baja igual?"
+    "transferFirst": "Tiene {units} unidades: trasládalas para darla de baja.",
+    "transfer": {
+      "open": "Trasladar stock",
+      "title": "Trasladar stock desde {name}",
+      "to": "Hacia",
+      "chooseTo": "Elige la bodega de destino",
+      "products": "Productos y cantidades",
+      "all": "Trasladar todo",
+      "have": "hay {qty}",
+      "note": "Nota (opcional)",
+      "submit": "Trasladar",
+      "moving": "Trasladando…",
+      "confirm": "¿Trasladar el stock elegido de {from} a {to}?"
+    }
   },
   "recipes": {
     "title": "Receta: {name}",
@@ -1693,6 +1718,42 @@
       "companyNameRequired": "La razón social es obligatoria",
       "softwareIdRequired": "El identificador de software es obligatorio",
       "softwarePinRequired": "El PIN del software es obligatorio"
+    }
+  },
+  "company": {
+    "title": "Mi empresa",
+    "subtitle": "Estos datos y el logo salen en los documentos que genera Miel, como las órdenes de compra.",
+    "logo": "Logo",
+    "logoHelp": "JPG, PNG o WEBP, hasta 2 MB. Mejor con fondo blanco o transparente.",
+    "removeLogo": "Quitar logo",
+    "fields": {
+      "name": "Nombre o razón social",
+      "nit": "NIT",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "phone": "Teléfono",
+      "email": "Correo"
+    },
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saved": "Guardado.",
+    "errors": {
+      "logoType": "El logo debe ser JPG, PNG o WEBP.",
+      "logoSize": "El logo no puede pesar más de 2 MB.",
+      "logoUpload": "No se pudo subir el logo. Intenta de nuevo.",
+      "saveFailed": "No se pudieron guardar los datos. Intenta de nuevo."
+    }
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "name": "Tu nombre",
+    "nameHelp": "Así aparecerás en las órdenes de compra que pidas, apruebes o envíes: quien firma se hace responsable.",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saved": "Guardado.",
+    "errors": {
+      "nameRequired": "Escribe tu nombre.",
+      "saveFailed": "No se pudo guardar tu nombre. Intenta de nuevo."
     }
   }
 }

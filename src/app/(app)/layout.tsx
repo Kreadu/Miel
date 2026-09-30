@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Menu } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -31,6 +32,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // S21-03: en el equipo de la tienda, nadie usa Miel sin identificarse con su código.
   if (active.needsWorker) redirect("/trabajador");
 
+  // S26-01: nombre de la cuenta en esta empresa (o el correo si aún no lo puso).
+  const { data: me } = active.storeMode
+    ? { data: null }
+    : await supabase
+        .from("memberships")
+        .select("display_name")
+        .eq("tenant_id", active.tenantId)
+        .eq("user_id", user?.id ?? "")
+        .maybeSingle();
+
   const sidebarContent = (
     <>
       <div className="flex flex-col gap-1">
@@ -49,9 +60,24 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       />
       <div className="mt-auto flex flex-col gap-2 border-t border-sidebar-border pt-4">
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
+          {active.storeMode ? (
+            <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
+          ) : (
+            <Link
+              href="/perfil"
+              className="truncate text-xs text-muted-foreground underline-offset-4 hover:underline"
+              title={t("myProfile")}
+            >
+              {me?.display_name || user?.email}
+            </Link>
+          )}
           <ThemeToggle />
         </div>
+        {!active.storeMode && active.role !== "member" ? (
+          <Link href="/empresa" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+            {t("myCompany")}
+          </Link>
+        ) : null}
         {/* En modo tienda no se cierra la sesión de la cuenta de tienda desde aquí. */}
         {active.storeMode ? null : (
           <form action={logout}>

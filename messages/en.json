@@ -234,7 +234,9 @@
       "owner": "Owner",
       "admin": "Administrator",
       "member": "Staff"
-    }
+    },
+    "myProfile": "My profile",
+    "myCompany": "My company"
   },
   "home": {
     "greeting": "Welcome back",
@@ -777,7 +779,6 @@
       "total": "Total",
       "avgCost": "Avg. cost",
       "totalValue": "Total value",
-      "manual": "Manual",
       "empty": "No movements recorded for this product in this warehouse or branch.",
       "kind": {
         "in": "In",
@@ -785,6 +786,14 @@
         "adjust": "Adjustment",
         "production_in": "Prod. in",
         "production_out": "Prod. out"
+      },
+      "refTypes": {
+        "manual": "Manual",
+        "sale": "Sale",
+        "sale_cancel": "Cancelled sale",
+        "sale_refund": "Refund",
+        "purchase": "Purchase",
+        "transfer": "Transfer"
       }
     }
   },
@@ -852,7 +861,10 @@
     "tel": "Tel. {phone}",
     "errors": {
       "createFailed": "Could not create the warehouse or branch. Try again.",
-      "updateFailed": "Could not update the warehouse or branch. Try again."
+      "updateFailed": "Could not update the warehouse or branch. Try again.",
+      "transferItemsRequired": "Enter how much to transfer of at least one product.",
+      "transferSameWarehouse": "Choose a different destination warehouse.",
+      "transferFailed": "Could not transfer. Try again."
     },
     "lendsStock": "Lends stock to complete sales",
     "lendsStockHelp": "If another warehouse doesn't have enough, the sale can be completed with products from this one.",
@@ -861,7 +873,20 @@
     "retire": "Retire",
     "retired": "Retired",
     "retireConfirm": "Retire “{name}”? It can no longer be used for sales. You can reactivate it later.",
-    "retireConfirmWithStock": "“{name}” has {units} units in stock; they will keep counting in inventory until you move them. Retire it anyway?"
+    "transferFirst": "It has {units} units: transfer them to retire it.",
+    "transfer": {
+      "open": "Transfer stock",
+      "title": "Transfer stock from {name}",
+      "to": "To",
+      "chooseTo": "Choose the destination warehouse",
+      "products": "Products and quantities",
+      "all": "Transfer everything",
+      "have": "{qty} available",
+      "note": "Note (optional)",
+      "submit": "Transfer",
+      "moving": "Transferring…",
+      "confirm": "Transfer the selected stock from {from} to {to}?"
+    }
   },
   "recipes": {
     "title": "Recipe: {name}",
@@ -1693,6 +1718,42 @@
       "companyNameRequired": "Legal company name is required",
       "softwareIdRequired": "Software ID is required",
       "softwarePinRequired": "Software PIN is required"
+    }
+  },
+  "company": {
+    "title": "My company",
+    "subtitle": "This data and the logo appear on documents Miel generates, such as purchase orders.",
+    "logo": "Logo",
+    "logoHelp": "JPG, PNG or WEBP, up to 2 MB. Best with a white or transparent background.",
+    "removeLogo": "Remove logo",
+    "fields": {
+      "name": "Name or legal name",
+      "nit": "Tax ID (NIT)",
+      "address": "Address",
+      "city": "City",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "errors": {
+      "logoType": "The logo must be JPG, PNG or WEBP.",
+      "logoSize": "The logo cannot be larger than 2 MB.",
+      "logoUpload": "Could not upload the logo. Try again.",
+      "saveFailed": "Could not save the data. Try again."
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "name": "Your name",
+    "nameHelp": "This is how you'll appear on purchase orders you request, approve or send: whoever signs is responsible.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "errors": {
+      "nameRequired": "Enter your name.",
+      "saveFailed": "Could not save your name. Try again."
     }
   }
 }

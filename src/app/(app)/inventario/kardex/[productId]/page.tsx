@@ -133,7 +133,9 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
                     {getKindLabel(row.kind || '')}
                   </td>
                   <td className="px-3 py-3 text-sm text-muted-foreground border-r border-border">
-                    {row.ref_type === 'manual' ? t("manual") : row.ref_type} {row.ref_id ? `#${row.ref_id}` : ''}
+                    {row.ref_type && t.has(`refTypes.${row.ref_type}`) ? t(`refTypes.${row.ref_type}`) : row.ref_type}
+                    {/* Los ids internos (uuid de venta o traslado) no le dicen nada a nadie. */}
+                    {row.ref_id && row.ref_id.length < 36 ? ` #${row.ref_id}` : ""}
                   </td>
                   
                   <td className={`px-3 py-3 text-sm text-right font-medium ${(row.qty || 0) > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
