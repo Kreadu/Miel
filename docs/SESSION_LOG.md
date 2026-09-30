@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 8) · S20-06 — idiomas, módulo 6 (Resultados y Finanzas)
+
+**Hecho:** S20-05 commiteado (`6155a51`). Spec S20-06 aprobada. Traducidos es/en/fr: Resultados
+(estado de resultados, márgenes, gráficos, salud, asesor, datos fiscales) y Finanzas (P&L, flujo
+de caja, gastos con categorías traducidas). `assessHealth` devuelve datos; la pantalla arma el
+texto. El asesor con IA responde en el idioma de la pantalla (`advisorSystem(locale)`); los datos
+que recibe siguen en español. Verificado: lint ✓, tsc ✓, `npm test` 445/445 ✓, plurales ICU
+renderizados en es/en/fr. Sin verificar en navegador; IA real sin llave (pospuesta).
+
+**Siguiente paso:** S20-07 (RRHH y nómina), último módulo de E20.
+
+---
+
 ## Sesión 2026-09-30 (cont. 7) · S20-05 — idiomas, módulo 5 (Gastos)
 
 **Hecho:** S20-04 commiteado (`a19dabc`). Spec S20-05 aprobada. Traducidos es/en/fr: Gastos

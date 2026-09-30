@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,12 +14,12 @@ type CashFlowRow = {
   net_cash: number | null;
 };
 
-const chartConfig = {
-  cash_in: { label: "Entradas", color: "var(--chart-5)" },
-  cash_out: { label: "Salidas", color: "var(--chart-2)" },
-} satisfies ChartConfig;
-
 export function CashFlowChart({ data }: { data: CashFlowRow[] }) {
+  const t = useTranslations("finance");
+  const chartConfig = {
+    cash_in: { label: t("cash.in"), color: "var(--chart-5)" },
+    cash_out: { label: t("cash.out"), color: "var(--chart-2)" },
+  } satisfies ChartConfig;
   const chartData = useMemo(() => {
     return data.map((d) => ({
       month: d.month || "N/A",
@@ -31,13 +32,13 @@ export function CashFlowChart({ data }: { data: CashFlowRow[] }) {
   return (
     <Card className="shadow-xs">
       <CardHeader className="pb-4">
-        <CardTitle>Flujo de Caja</CardTitle>
-        <CardDescription>Entradas vs salidas por mes.</CardDescription>
+        <CardTitle>{t("cash.title")}</CardTitle>
+        <CardDescription>{t("cash.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground border border-dashed rounded-md">
-            No hay datos suficientes para graficar.
+            {t("noData")}
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -62,20 +63,20 @@ export function CashFlowChart({ data }: { data: CashFlowRow[] }) {
                         <div className="font-semibold mb-3">{data.month}</div>
                         
                         <div className="flex items-center justify-between gap-4 py-1 text-success">
-                          <span className="font-medium">Entradas</span>
+                          <span className="font-medium">{t("cash.in")}</span>
                           <span className="tabular-nums">
                             {formatMoney(data.cash_in, { style: "currency", currency: "COP", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4 py-1 text-destructive">
-                          <span className="font-medium">Salidas</span>
+                          <span className="font-medium">{t("cash.out")}</span>
                           <span className="tabular-nums">
                             {formatMoney(data.cash_out, { style: "currency", currency: "COP", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </span>
                         </div>
                         <div className="my-2 border-t border-border" />
                         <div className="flex items-center justify-between gap-4 py-1 font-semibold">
-                          <span>Neto</span>
+                          <span>{t("cash.net")}</span>
                           <span className="tabular-nums">
                             {formatMoney(data.net_cash, { style: "currency", currency: "COP", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </span>
@@ -85,8 +86,8 @@ export function CashFlowChart({ data }: { data: CashFlowRow[] }) {
                   }} 
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-                <Bar dataKey="cash_in" name="Entradas" fill="var(--color-cash_in)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="cash_out" name="Salidas" fill="var(--color-cash_out)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cash_in" name={t("cash.in")} fill="var(--color-cash_in)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cash_out" name={t("cash.out")} fill="var(--color-cash_out)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>

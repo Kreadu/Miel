@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getLocale } from "next-intl/server";
 
+import { isLocale } from "@/i18n/locales";
 import { askModel, isAdvisorConfigured } from "@/lib/ai/advisor";
 import { buildAdvisorContext, topProducts } from "@/lib/ai/advisor-context";
 import { loadFinance, rangeBounds } from "@/lib/finance/load";
@@ -12,7 +14,7 @@ import { ADVISOR_DAILY_LIMIT, advisorQuestionSchema } from "@/lib/validation/adv
 
 export type AdvisorState = { ok: true; answer: string } | { ok: false; error: string } | null;
 
-const FAILED = "La IA no pudo responder ahora. Intenta de nuevo en un momento.";
+const FAILED = "advisor.errors.failed";
 
 /**
  * S22-03: pregunta de un dueño al asesor con IA. El navegador solo manda la pregunta y el rango;
@@ -29,8 +31,8 @@ export async function askAdvisor(_prev: AdvisorState, formData: FormData): Promi
   const range = { from: desde, to: hasta };
 
   const { active } = await getActiveTenant();
-  if (!active || active.role === "member") return { ok: false, error: "No tienes permiso para esta operación." };
-  if (!isAdvisorConfigured()) return { ok: false, error: "La IA no está configurada todavía." };
+  if (!active || active.role === "member") return { ok: false, error: "common.errors.permissionDenied" };
+  if (!isAdvisorConfigured()) return { ok: false, error: "advisor.errors.notConfigured" };
 
   const supabase = await createClient();
   const { count } = await supabase
@@ -39,7 +41,7 @@ export async function askAdvisor(_prev: AdvisorState, formData: FormData): Promi
     .eq("tenant_id", active.tenantId)
     .gte("created_at", `${todayInBogota()}T00:00:00-05:00`);
   if ((count ?? 0) >= ADVISOR_DAILY_LIMIT) {
-    return { ok: false, error: `Llegaste al límite de ${ADVISOR_DAILY_LIMIT} preguntas por día. Vuelve mañana.` };
+    return { ok: false, error: "advisor.errors.dailyLimit" };
   }
 
   const { start, end } = rangeBounds(range);
@@ -60,11 +62,12 @@ export async function askAdvisor(_prev: AdvisorState, formData: FormData): Promi
   }
 
   const context = buildAdvisorContext({ range, ...finance, products: topProducts(items.data ?? [], 10) });
-  const answer = await askModel(context, question);
+  const locale = await getLocale();
+  const answer = await askModel(context, question, isLocale(locale) ? locale : "es");
   if (!answer.ok) {
     return {
       ok: false,
-      error: answer.reason === "refused" ? "La IA no pudo responder esa pregunta. Reformúlala." : FAILED,
+      error: answer.reason === "refused" ? "advisor.errors.refused" : FAILED,
     };
   }
 

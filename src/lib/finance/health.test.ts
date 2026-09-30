@@ -20,14 +20,15 @@ describe("assessHealth (S22-03)", () => {
     const monthly = [month(1000, 500, 200), month(1100, 550, 200)];
     const h = assessHealth({ monthly, total: month(2100, 1050, 400), receivable: 300, payable: 100, inventory: 500 });
     expect(h.indicators.every((i) => i.status === "good")).toBe(true);
-    expect(h.summary).toMatch(/sana/i);
+    expect(h.summary).toEqual({ kind: "healthy", count: 0 });
   });
 
   it("umbrales: margen neto negativo es crítico; margen bruto 20 % es atención", () => {
     const total = month(1000, 800, 300);
     const h = assessHealth({ monthly: [total], total, receivable: 0, payable: 0, inventory: 0 });
     expect(byId(h, "net").status).toBe("critical");
-    expect(byId(h, "gross").status).toBe("warning");
+    expect(byId(h, "gross")).toEqual({ id: "gross", status: "warning", value: 0.2 });
+    expect(h.summary).toEqual({ kind: "critical", count: 2 });
   });
 
   it("tendencia: último mes 20 % bajo el promedio anterior es crítico", () => {
@@ -39,13 +40,17 @@ describe("assessHealth (S22-03)", () => {
   it("liquidez: (cartera + inventario) ÷ por pagar < 1 es crítico; sin deudas es bien", () => {
     const t = month(1000, 500);
     expect(byId(assessHealth({ monthly: [t], total: t, receivable: 100, payable: 500, inventory: 200 }), "liquidity").status).toBe("critical");
-    expect(byId(assessHealth({ monthly: [t], total: t, receivable: 0, payable: 0, inventory: 0 }), "liquidity").status).toBe("good");
+    expect(byId(assessHealth({ monthly: [t], total: t, receivable: 0, payable: 0, inventory: 0 }), "liquidity")).toEqual({
+      id: "liquidity",
+      status: "good",
+      value: null,
+    });
   });
 
   it("sin ventas en el rango: sin datos", () => {
     const t = month(0, 0);
     const h = assessHealth({ monthly: [t], total: t, receivable: 0, payable: 0, inventory: 0 });
     expect(h.indicators).toEqual([]);
-    expect(h.summary).toMatch(/sin datos/i);
+    expect(h.summary).toEqual({ kind: "noData", count: 0 });
   });
 });

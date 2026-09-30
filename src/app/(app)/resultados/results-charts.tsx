@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
 import {
@@ -21,27 +22,27 @@ export type ChartMonth = {
   net: number | null;
 };
 
-const moneyConfig = {
-  income: { label: "Ventas", color: "var(--chart-1)" },
-  netProfit: { label: "Utilidad neta", color: "var(--chart-2)" },
-} satisfies ChartConfig;
-
-const marginConfig = {
-  gross: { label: "Margen bruto", color: "var(--chart-1)" },
-  operating: { label: "Margen operativo", color: "var(--chart-2)" },
-  net: { label: "Margen neto", color: "var(--chart-3)" },
-} satisfies ChartConfig;
-
 const compact = (n: number) =>
   new Intl.NumberFormat("es-CO", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 const percent = (n: number) => `${n.toFixed(1)}%`;
 
 /** S22-03: evolución mes a mes del rango — dinero (un eje) y márgenes (un eje, %). */
 export function ResultsCharts({ data }: { data: ChartMonth[] }) {
+  const t = useTranslations("results.charts");
+  const moneyConfig = {
+    income: { label: t("sales"), color: "var(--chart-1)" },
+    netProfit: { label: t("netProfit"), color: "var(--chart-2)" },
+  } satisfies ChartConfig;
+  const marginConfig = {
+    gross: { label: t("gross"), color: "var(--chart-1)" },
+    operating: { label: t("operating"), color: "var(--chart-2)" },
+    net: { label: t("net"), color: "var(--chart-3)" },
+  } satisfies ChartConfig;
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <figure className="flex flex-col gap-2">
-        <figcaption className="text-sm font-medium">Ventas y utilidad neta por mes</figcaption>
+        <figcaption className="text-sm font-medium">{t("salesAndProfit")}</figcaption>
         <ChartContainer config={moneyConfig} className="aspect-auto h-64 w-full">
           <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={2}>
             <CartesianGrid vertical={false} stroke="var(--color-border)" />
@@ -60,7 +61,7 @@ export function ResultsCharts({ data }: { data: ChartMonth[] }) {
       </figure>
 
       <figure className="flex flex-col gap-2">
-        <figcaption className="text-sm font-medium">Márgenes por mes (% de las ventas)</figcaption>
+        <figcaption className="text-sm font-medium">{t("margins")}</figcaption>
         <ChartContainer config={marginConfig} className="aspect-auto h-64 w-full">
           <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke="var(--color-border)" />

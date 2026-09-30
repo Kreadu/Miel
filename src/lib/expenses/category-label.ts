@@ -28,6 +28,8 @@ const DEFAULT_CATEGORY_KEYS: Record<string, string> = {
   "Comisiones bancarias y datáfono": "bankFees",
   "Viáticos y alimentación": "travelMeals",
   "Reparaciones imprevistas": "repairs",
+  // Categoría que usa Finanzas para la nómina clasificada como gasto (monthly_expenses).
+  Nómina: "payroll",
 };
 
 export function defaultCategoryKey(name: string): string | null {

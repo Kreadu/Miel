@@ -1068,7 +1068,8 @@
       "packaging": "Empaques y bolsas",
       "bankFees": "Comisiones bancarias y datáfono",
       "travelMeals": "Viáticos y alimentación",
-      "repairs": "Reparaciones imprevistas"
+      "repairs": "Reparaciones imprevistas",
+      "payroll": "Nómina"
     },
     "errors": {
       "invalidData": "Los datos del gasto no son válidos (monto o tipo).",
@@ -1081,6 +1082,155 @@
       "taxExceedsAmount": "El IVA no puede ser mayor al monto",
       "dateInvalid": "Fecha inválida",
       "kindInvalid": "Tipo de gasto inválido"
+    }
+  },
+  "results": {
+    "title": "Estado de resultados",
+    "subtitle": "Ventas, costos, gastos y nómina de {range}, con todos los márgenes.",
+    "from": "Desde",
+    "to": "Hasta",
+    "view": "Ver",
+    "empty": "Aún no hay ventas, gastos ni nómina en este rango. Elige otros meses arriba.",
+    "statement": "Estado de resultados",
+    "contributionTitle": "Margen de contribución",
+    "concept": "Concepto",
+    "estimated": "(estimado {rate}%)",
+    "rows": {
+      "income": "Ingresos / Ventas",
+      "costOfSales": "(−) Costo de ventas",
+      "grossProfit": "= Utilidad bruta",
+      "operatingExpenses": "(−) Gastos operativos",
+      "ebit": "= Utilidad operativa / EBIT",
+      "depreciation": "(+) Depreciación y amortización",
+      "ebitda": "= EBITDA",
+      "financialExpenses": "(−) Gastos financieros y otros gastos",
+      "preTax": "= Utilidad antes de impuestos",
+      "incomeTax": "(−) Impuesto de renta",
+      "netProfit": "= Utilidad neta",
+      "variableCosts": "(−) Costos y gastos variables",
+      "contribution": "= Margen de contribución"
+    },
+    "margins": {
+      "grossProfit": "Margen bruto",
+      "ebit": "Margen operativo / EBIT",
+      "ebitda": "Margen EBITDA",
+      "preTax": "Margen antes de impuestos",
+      "netProfit": "Margen neto",
+      "contribution": "Margen de contribución"
+    },
+    "charts": {
+      "title": "Análisis gráfico",
+      "salesAndProfit": "Ventas y utilidad neta por mes",
+      "margins": "Márgenes por mes (% de las ventas)",
+      "sales": "Ventas",
+      "netProfit": "Utilidad neta",
+      "gross": "Margen bruto",
+      "operating": "Margen operativo",
+      "net": "Margen neto",
+      "showFigures": "Ver cifras por mes",
+      "month": "Mes"
+    },
+    "health": {
+      "title": "Salud de la empresa",
+      "summary": {
+        "noData": "Sin datos suficientes: no hay ventas en el rango elegido.",
+        "critical": "Atención urgente: {count, plural, one {# indicador en rojo} other {# indicadores en rojo}}.",
+        "warning": "Empresa estable, con {count, plural, one {# punto por mejorar} other {# puntos por mejorar}}.",
+        "healthy": "Empresa sana en el rango elegido."
+      },
+      "status": {
+        "good": "Bien",
+        "warning": "Atención",
+        "critical": "Crítico"
+      },
+      "label": {
+        "net": "Rentabilidad",
+        "gross": "Margen bruto",
+        "operating": "Margen operativo",
+        "trend": "Tendencia de ventas",
+        "liquidity": "Liquidez"
+      },
+      "detail": {
+        "netLoss": "La empresa pierde dinero en el rango.",
+        "net": "De cada $100 vendidos quedan ${amount} de ganancia.",
+        "gross": "Lo que queda de las ventas después del costo de lo vendido.",
+        "operating": "Lo que queda después de pagar la operación (gastos y nómina).",
+        "trend": "Ventas del último mes frente al promedio de los meses anteriores del rango.",
+        "liquidity": "Cartera más inventario frente a lo que se debe a proveedores."
+      },
+      "noDebts": "Sin deudas",
+      "times": "{value} veces"
+    },
+    "advisor": {
+      "title": "Pregúntale a la IA cómo mejorar",
+      "help": "La IA ve las cifras de {range} y tus productos más vendidos (sin datos de clientes ni trabajadores). Sus respuestas son orientación: valida las decisiones importantes con tu contador.",
+      "rangeTo": "{from} a {to}",
+      "empty": "Aún no hay preguntas. Haz la primera arriba.",
+      "question": "Tu pregunta",
+      "placeholder": "Ej. ¿Qué hago para subir la utilidad neta? ¿Qué producto conviene impulsar?",
+      "analyzing": "Analizando…",
+      "ask": "Preguntar a la IA",
+      "waiting": "La IA está revisando tus cifras; puede tardar hasta un minuto.",
+      "notConfigured": "La IA no está configurada todavía (falta la llave en el servidor)."
+    },
+    "fiscal": {
+      "title": "Datos fiscales de la empresa",
+      "help": "Definen la exoneración de aportes en la nómina (art. 114-1) y la renta estimada.",
+      "personType": "Tipo de persona",
+      "juridica": "Persona jurídica",
+      "natural": "Persona natural",
+      "rate": "Tarifa de renta (%)",
+      "saving": "Guardando…",
+      "save": "Guardar",
+      "saved": "Guardado.",
+      "errors": {
+        "saveFailed": "No se pudo guardar. Intenta de nuevo.",
+        "personType": "Elige el tipo de persona",
+        "rateRequired": "Escribe la tarifa",
+        "rateRange": "La tarifa debe estar entre 0 y 100 %"
+      }
+    },
+    "footnote": "Todo sin IVA (se recupera). Ventas incluye los envíos cobrados. La depreciación, los gastos financieros y el impuesto de renta se anotan en Gastos con su categoría; sin renta anotada, se muestra la estimada. La nómina entra al cerrar cada período, como costo o gasto según la ficha del trabajador."
+  },
+  "advisor": {
+    "errors": {
+      "notConfigured": "La IA no está configurada todavía.",
+      "failed": "La IA no pudo responder ahora. Intenta de nuevo en un momento.",
+      "refused": "La IA no pudo responder esa pregunta. Reformúlala.",
+      "dailyLimit": "Llegaste al límite de 20 preguntas por día. Vuelve mañana.",
+      "monthInvalid": "Mes inválido",
+      "questionRequired": "Escribe tu pregunta",
+      "questionTooLong": "La pregunta es muy larga (máx. 1000 caracteres)",
+      "rangeOrder": "El mes inicial debe ser anterior al final",
+      "rangeTooLong": "El rango no puede superar 24 meses"
+    }
+  },
+  "finance": {
+    "title": "Finanzas",
+    "subtitle": "Rentabilidad, gastos y flujo de caja gerencial.",
+    "noData": "No hay datos suficientes para graficar.",
+    "pnl": {
+      "title": "P&L mensual",
+      "description": "Evolución de ingresos netos, costos y gastos.",
+      "income": "Ingresos",
+      "cogs": "Costos",
+      "expenses": "Gastos",
+      "utility": "Utilidad"
+    },
+    "cash": {
+      "title": "Flujo de caja",
+      "description": "Entradas vs salidas por mes.",
+      "in": "Entradas",
+      "out": "Salidas",
+      "net": "Neto"
+    },
+    "expenses": {
+      "title": "Gastos mensuales",
+      "description": "Proporción de gastos fijos vs variables.",
+      "fixed": "Fijo",
+      "variable": "Variable",
+      "byCategory": "Por categoría",
+      "general": "General"
     }
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,14 +15,14 @@ type PnlRow = {
   utility: number | null;
 };
 
-const chartConfig = {
-  income: { label: "Ingresos", color: "var(--chart-1)" },
-  cogs: { label: "Costos (COGS)", color: "var(--chart-2)" },
-  expenses: { label: "Gastos", color: "var(--chart-3)" },
-  utility: { label: "Utilidad", color: "var(--chart-4)" },
-} satisfies ChartConfig;
-
 export function PnlChart({ data }: { data: PnlRow[] }) {
+  const t = useTranslations("finance");
+  const chartConfig = {
+    income: { label: t("pnl.income"), color: "var(--chart-1)" },
+    cogs: { label: t("pnl.cogs"), color: "var(--chart-2)" },
+    expenses: { label: t("pnl.expenses"), color: "var(--chart-3)" },
+    utility: { label: t("pnl.utility"), color: "var(--chart-4)" },
+  } satisfies ChartConfig;
   const chartData = useMemo(() => {
     return data.map((d) => ({
       month: d.month || "N/A",
@@ -35,13 +36,13 @@ export function PnlChart({ data }: { data: PnlRow[] }) {
   return (
     <Card className="shadow-xs">
       <CardHeader className="pb-4">
-        <CardTitle>P&L Mensual</CardTitle>
-        <CardDescription>Evolución de ingresos netos, costos y gastos.</CardDescription>
+        <CardTitle>{t("pnl.title")}</CardTitle>
+        <CardDescription>{t("pnl.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground border border-dashed rounded-md">
-            No hay datos suficientes para graficar.
+            {t("noData")}
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -79,9 +80,9 @@ export function PnlChart({ data }: { data: PnlRow[] }) {
                   }} 
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-                <Bar dataKey="income" name="Ingresos" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="cogs" name="Costos" fill="var(--color-cogs)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expenses" name="Gastos" fill="var(--color-expenses)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="income" name={t("pnl.income")} fill="var(--color-income)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cogs" name={t("pnl.cogs")} fill="var(--color-cogs)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="expenses" name={t("pnl.expenses")} fill="var(--color-expenses)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>

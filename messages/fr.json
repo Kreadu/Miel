@@ -1068,7 +1068,8 @@
       "packaging": "Emballages et sacs",
       "bankFees": "Frais bancaires et de terminal de paiement",
       "travelMeals": "Frais de déplacement et repas",
-      "repairs": "Réparations imprévues"
+      "repairs": "Réparations imprévues",
+      "payroll": "Paie"
     },
     "errors": {
       "invalidData": "Les données de la dépense ne sont pas valides (montant ou type).",
@@ -1081,6 +1082,155 @@
       "taxExceedsAmount": "La TVA (IVA) ne peut pas dépasser le montant",
       "dateInvalid": "Date non valide",
       "kindInvalid": "Type de dépense non valide"
+    }
+  },
+  "results": {
+    "title": "Compte de résultat",
+    "subtitle": "Ventes, coûts, dépenses et paie de {range}, avec toutes les marges.",
+    "from": "Du",
+    "to": "Au",
+    "view": "Voir",
+    "empty": "Aucune vente, dépense ni paie sur cette période. Choisissez d’autres mois ci-dessus.",
+    "statement": "Compte de résultat",
+    "contributionTitle": "Marge sur coûts variables",
+    "concept": "Poste",
+    "estimated": "(estimé {rate} %)",
+    "rows": {
+      "income": "Produits / Ventes",
+      "costOfSales": "(−) Coût des ventes",
+      "grossProfit": "= Marge brute",
+      "operatingExpenses": "(−) Charges d’exploitation",
+      "ebit": "= Résultat d’exploitation / EBIT",
+      "depreciation": "(+) Amortissements",
+      "ebitda": "= EBITDA",
+      "financialExpenses": "(−) Charges financières et autres charges",
+      "preTax": "= Résultat avant impôt",
+      "incomeTax": "(−) Impôt sur le revenu",
+      "netProfit": "= Résultat net",
+      "variableCosts": "(−) Coûts et charges variables",
+      "contribution": "= Marge sur coûts variables"
+    },
+    "margins": {
+      "grossProfit": "Taux de marge brute",
+      "ebit": "Marge d’exploitation / EBIT",
+      "ebitda": "Marge d’EBITDA",
+      "preTax": "Marge avant impôt",
+      "netProfit": "Marge nette",
+      "contribution": "Taux de marge sur coûts variables"
+    },
+    "charts": {
+      "title": "Analyse graphique",
+      "salesAndProfit": "Ventes et résultat net par mois",
+      "margins": "Marges par mois (% des ventes)",
+      "sales": "Ventes",
+      "netProfit": "Résultat net",
+      "gross": "Marge brute",
+      "operating": "Marge d’exploitation",
+      "net": "Marge nette",
+      "showFigures": "Voir les chiffres par mois",
+      "month": "Mois"
+    },
+    "health": {
+      "title": "Santé de l’entreprise",
+      "summary": {
+        "noData": "Données insuffisantes : aucune vente sur la période choisie.",
+        "critical": "Attention urgente : {count, plural, one {# indicateur au rouge} other {# indicateurs au rouge}}.",
+        "warning": "Entreprise stable, avec {count, plural, one {# point à améliorer} other {# points à améliorer}}.",
+        "healthy": "Entreprise en bonne santé sur la période choisie."
+      },
+      "status": {
+        "good": "Bien",
+        "warning": "Attention",
+        "critical": "Critique"
+      },
+      "label": {
+        "net": "Rentabilité",
+        "gross": "Marge brute",
+        "operating": "Marge d’exploitation",
+        "trend": "Tendance des ventes",
+        "liquidity": "Liquidité"
+      },
+      "detail": {
+        "netLoss": "L’entreprise perd de l’argent sur la période.",
+        "net": "Sur 100 $ vendus, il reste {amount} $ de bénéfice.",
+        "gross": "Ce qui reste des ventes après le coût des marchandises vendues.",
+        "operating": "Ce qui reste après avoir payé l’exploitation (dépenses et paie).",
+        "trend": "Ventes du dernier mois par rapport à la moyenne des mois précédents de la période.",
+        "liquidity": "Créances plus stock par rapport à ce qui est dû aux fournisseurs."
+      },
+      "noDebts": "Aucune dette",
+      "times": "{value} fois"
+    },
+    "advisor": {
+      "title": "Demandez à l’IA comment vous améliorer",
+      "help": "L’IA voit les chiffres de {range} et vos produits les plus vendus (sans données clients ni employés). Ses réponses sont indicatives : validez les décisions importantes avec votre comptable.",
+      "rangeTo": "{from} à {to}",
+      "empty": "Aucune question pour le moment. Posez la première ci-dessus.",
+      "question": "Votre question",
+      "placeholder": "Ex. Que faire pour augmenter le résultat net ? Quel produit faut-il pousser ?",
+      "analyzing": "Analyse…",
+      "ask": "Demander à l’IA",
+      "waiting": "L’IA examine vos chiffres ; cela peut prendre jusqu’à une minute.",
+      "notConfigured": "L’IA n’est pas encore configurée (la clé manque sur le serveur)."
+    },
+    "fiscal": {
+      "title": "Données fiscales de l’entreprise",
+      "help": "Elles déterminent l’exonération de cotisations sur la paie (art. 114-1) et l’impôt estimé.",
+      "personType": "Type de personne",
+      "juridica": "Personne morale (persona jurídica)",
+      "natural": "Personne physique (persona natural)",
+      "rate": "Taux de l’impôt sur le revenu (%)",
+      "saving": "Enregistrement…",
+      "save": "Enregistrer",
+      "saved": "Enregistré.",
+      "errors": {
+        "saveFailed": "Impossible d’enregistrer. Réessayez.",
+        "personType": "Choisissez le type de personne",
+        "rateRequired": "Saisissez le taux",
+        "rateRange": "Le taux doit être compris entre 0 et 100 %"
+      }
+    },
+    "footnote": "Tout est hors TVA (IVA), qui est récupérable. Les ventes incluent les frais de livraison facturés. Les amortissements, les charges financières et l’impôt sur le revenu sont saisis dans Dépenses avec leur catégorie ; sans impôt saisi, l’estimation est affichée. La paie est intégrée à la clôture de chaque période, comme coût ou charge selon la fiche de l’employé."
+  },
+  "advisor": {
+    "errors": {
+      "notConfigured": "L’IA n’est pas encore configurée.",
+      "failed": "L’IA n’a pas pu répondre pour le moment. Réessayez dans un instant.",
+      "refused": "L’IA n’a pas pu répondre à cette question. Reformulez-la.",
+      "dailyLimit": "Vous avez atteint la limite de 20 questions par jour. Revenez demain.",
+      "monthInvalid": "Mois non valide",
+      "questionRequired": "Saisissez votre question",
+      "questionTooLong": "La question est trop longue (1000 caractères max.)",
+      "rangeOrder": "Le mois de début doit précéder le mois de fin",
+      "rangeTooLong": "La période ne peut pas dépasser 24 mois"
+    }
+  },
+  "finance": {
+    "title": "Finances",
+    "subtitle": "Rentabilité, dépenses et flux de trésorerie de gestion.",
+    "noData": "Pas assez de données pour le graphique.",
+    "pnl": {
+      "title": "Compte de résultat mensuel",
+      "description": "Évolution des produits nets, coûts et charges.",
+      "income": "Produits",
+      "cogs": "Coûts",
+      "expenses": "Charges",
+      "utility": "Résultat"
+    },
+    "cash": {
+      "title": "Flux de trésorerie",
+      "description": "Entrées et sorties par mois.",
+      "in": "Entrées",
+      "out": "Sorties",
+      "net": "Net"
+    },
+    "expenses": {
+      "title": "Dépenses mensuelles",
+      "description": "Part des dépenses fixes et variables.",
+      "fixed": "Fixe",
+      "variable": "Variable",
+      "byCategory": "Par catégorie",
+      "general": "Général"
     }
   }
 }

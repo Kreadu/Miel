@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { createClient } from "@/lib/supabase/server";
 import { PnlChart } from "./pnl-chart";
 import { CashFlowChart } from "./cash-flow-chart";
 import { ExpensesChart } from "./expenses-chart";
 
-export const metadata = { title: "Finanzas · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("finance");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function FinanzasPage() {
   const { active } = await getActiveTenant();
@@ -14,6 +18,7 @@ export default async function FinanzasPage() {
   }
 
   const supabase = await createClient();
+  const t = await getTranslations("finance");
 
   const [pnlRes, cashRes, expensesRes] = await Promise.all([
     supabase.from("monthly_pnl").select("*").order("month", { ascending: true }),
@@ -28,9 +33,9 @@ export default async function FinanzasPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Finanzas</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Rentabilidad, gastos y flujo de caja gerencial.
+          {t("subtitle")}
         </p>
       </div>
 

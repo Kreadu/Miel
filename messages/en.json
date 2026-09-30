@@ -1068,7 +1068,8 @@
       "packaging": "Packaging and bags",
       "bankFees": "Bank and card terminal fees",
       "travelMeals": "Travel and meals",
-      "repairs": "Unexpected repairs"
+      "repairs": "Unexpected repairs",
+      "payroll": "Payroll"
     },
     "errors": {
       "invalidData": "The expense data is not valid (amount or type).",
@@ -1081,6 +1082,155 @@
       "taxExceedsAmount": "VAT (IVA) cannot exceed the amount",
       "dateInvalid": "Invalid date",
       "kindInvalid": "Invalid expense type"
+    }
+  },
+  "results": {
+    "title": "Income statement",
+    "subtitle": "Sales, costs, expenses and payroll for {range}, with all margins.",
+    "from": "From",
+    "to": "To",
+    "view": "View",
+    "empty": "No sales, expenses or payroll in this range yet. Choose other months above.",
+    "statement": "Income statement",
+    "contributionTitle": "Contribution margin",
+    "concept": "Item",
+    "estimated": "(estimated {rate}%)",
+    "rows": {
+      "income": "Revenue / Sales",
+      "costOfSales": "(−) Cost of sales",
+      "grossProfit": "= Gross profit",
+      "operatingExpenses": "(−) Operating expenses",
+      "ebit": "= Operating profit / EBIT",
+      "depreciation": "(+) Depreciation and amortization",
+      "ebitda": "= EBITDA",
+      "financialExpenses": "(−) Financial and other expenses",
+      "preTax": "= Profit before tax",
+      "incomeTax": "(−) Income tax",
+      "netProfit": "= Net profit",
+      "variableCosts": "(−) Variable costs and expenses",
+      "contribution": "= Contribution margin"
+    },
+    "margins": {
+      "grossProfit": "Gross margin",
+      "ebit": "Operating margin / EBIT",
+      "ebitda": "EBITDA margin",
+      "preTax": "Pre-tax margin",
+      "netProfit": "Net margin",
+      "contribution": "Contribution margin"
+    },
+    "charts": {
+      "title": "Charts",
+      "salesAndProfit": "Sales and net profit by month",
+      "margins": "Margins by month (% of sales)",
+      "sales": "Sales",
+      "netProfit": "Net profit",
+      "gross": "Gross margin",
+      "operating": "Operating margin",
+      "net": "Net margin",
+      "showFigures": "Show figures by month",
+      "month": "Month"
+    },
+    "health": {
+      "title": "Company health",
+      "summary": {
+        "noData": "Not enough data: there are no sales in the selected range.",
+        "critical": "Urgent attention: {count, plural, one {# indicator in red} other {# indicators in red}}.",
+        "warning": "Stable company, with {count, plural, one {# point to improve} other {# points to improve}}.",
+        "healthy": "Healthy company in the selected range."
+      },
+      "status": {
+        "good": "Good",
+        "warning": "Attention",
+        "critical": "Critical"
+      },
+      "label": {
+        "net": "Profitability",
+        "gross": "Gross margin",
+        "operating": "Operating margin",
+        "trend": "Sales trend",
+        "liquidity": "Liquidity"
+      },
+      "detail": {
+        "netLoss": "The company is losing money in the range.",
+        "net": "Out of every $100 sold, ${amount} is profit.",
+        "gross": "What is left of sales after the cost of goods sold.",
+        "operating": "What is left after paying for operations (expenses and payroll).",
+        "trend": "Last month's sales compared with the average of the previous months in the range.",
+        "liquidity": "Receivables plus inventory compared with what is owed to suppliers."
+      },
+      "noDebts": "No debts",
+      "times": "{value}×"
+    },
+    "advisor": {
+      "title": "Ask the AI how to improve",
+      "help": "The AI sees the figures for {range} and your best-selling products (no customer or worker data). Its answers are guidance: check important decisions with your accountant.",
+      "rangeTo": "{from} to {to}",
+      "empty": "No questions yet. Ask the first one above.",
+      "question": "Your question",
+      "placeholder": "E.g. What can I do to increase net profit? Which product should I push?",
+      "analyzing": "Analyzing…",
+      "ask": "Ask the AI",
+      "waiting": "The AI is reviewing your figures; this can take up to a minute.",
+      "notConfigured": "The AI is not set up yet (the server key is missing)."
+    },
+    "fiscal": {
+      "title": "Company tax settings",
+      "help": "They determine the payroll contribution exemption (art. 114-1) and the estimated income tax.",
+      "personType": "Taxpayer type",
+      "juridica": "Legal entity (persona jurídica)",
+      "natural": "Individual (persona natural)",
+      "rate": "Income tax rate (%)",
+      "saving": "Saving…",
+      "save": "Save",
+      "saved": "Saved.",
+      "errors": {
+        "saveFailed": "Could not save. Try again.",
+        "personType": "Choose the taxpayer type",
+        "rateRequired": "Enter the rate",
+        "rateRange": "The rate must be between 0 and 100%"
+      }
+    },
+    "footnote": "All figures exclude VAT (IVA), which is recoverable. Sales include shipping charged. Depreciation, financial expenses and income tax are recorded in Expenses with their category; if no income tax is recorded, the estimate is shown. Payroll comes in when each period is closed, as a cost or expense depending on the worker's profile."
+  },
+  "advisor": {
+    "errors": {
+      "notConfigured": "The AI is not set up yet.",
+      "failed": "The AI could not answer right now. Try again in a moment.",
+      "refused": "The AI could not answer that question. Rephrase it.",
+      "dailyLimit": "You reached the limit of 20 questions per day. Come back tomorrow.",
+      "monthInvalid": "Invalid month",
+      "questionRequired": "Enter your question",
+      "questionTooLong": "The question is too long (max. 1000 characters)",
+      "rangeOrder": "The start month must be before the end month",
+      "rangeTooLong": "The range cannot exceed 24 months"
+    }
+  },
+  "finance": {
+    "title": "Finance",
+    "subtitle": "Profitability, expenses and management cash flow.",
+    "noData": "Not enough data to chart.",
+    "pnl": {
+      "title": "Monthly P&L",
+      "description": "Net revenue, costs and expenses over time.",
+      "income": "Revenue",
+      "cogs": "Costs",
+      "expenses": "Expenses",
+      "utility": "Profit"
+    },
+    "cash": {
+      "title": "Cash flow",
+      "description": "Inflows vs outflows by month.",
+      "in": "Inflows",
+      "out": "Outflows",
+      "net": "Net"
+    },
+    "expenses": {
+      "title": "Monthly expenses",
+      "description": "Share of fixed vs variable expenses.",
+      "fixed": "Fixed",
+      "variable": "Variable",
+      "byCategory": "By category",
+      "general": "General"
     }
   }
 }

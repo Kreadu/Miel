@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildIncomeStatement } from "@/lib/finance/income-statement";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next-intl/server", () => ({ getLocale: vi.fn(async () => "en") }));
 const tenant = { current: { tenantId: "t-1", role: "owner" } as { tenantId: string; role: string } };
 vi.mock("@/lib/tenant/server", () => ({ getActiveTenant: vi.fn(async () => ({ active: tenant.current })) }));
 
@@ -19,7 +20,7 @@ vi.mock("@/lib/finance/load", () => ({
     monthly: [{ month: "2026-09", statement: s }],
     total: s,
     balances: { receivable: 0, payable: 0, inventory: 0 },
-    health: { summary: "Empresa sana en el rango elegido.", indicators: [] },
+    health: { summary: { kind: "healthy", count: 0 }, indicators: [] },
     fiscal: { personType: "juridica", incomeTaxRate: 35 },
   })),
   rangeBounds: () => ({ start: "2026-09-01T00:00:00-05:00", end: "2026-10-01T00:00:00-05:00" }),
@@ -76,7 +77,7 @@ describe("askAdvisor (S22-03)", () => {
   it("sin llave de IA: mensaje claro, sin llamar", async () => {
     configured.current = false;
     const { askAdvisor } = await import("./advisor");
-    expect(await askAdvisor(null, ask)).toEqual({ ok: false, error: "La IA no está configurada todavía." });
+    expect(await askAdvisor(null, ask)).toEqual({ ok: false, error: "advisor.errors.notConfigured" });
     expect(askModel).not.toHaveBeenCalled();
   });
 
@@ -91,7 +92,8 @@ describe("askAdvisor (S22-03)", () => {
     askModel.mockResolvedValue({ ok: true, text: "Sube el precio de Miel 500 g." });
     const { askAdvisor } = await import("./advisor");
     expect(await askAdvisor(null, ask)).toEqual({ ok: true, answer: "Sube el precio de Miel 500 g." });
-    const [context, question] = askModel.mock.calls[0] as [string, string];
+    const [context, question, locale] = askModel.mock.calls[0] as [string, string, string];
+    expect(locale).toBe("en");
     expect(context).toContain("Miel 500 g");
     expect(question).toBe("¿Cómo subo el margen?");
     expect(insert).toHaveBeenCalledWith({

@@ -1,9 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { categoryLabel } from "@/lib/expenses/category-label";
 import { formatMoney } from "@/lib/format";
 
 type ExpenseRow = {
@@ -13,12 +15,13 @@ type ExpenseRow = {
   amount: number | null;
 };
 
-const chartConfig = {
-  fixed: { label: "Fijo", color: "var(--chart-1)" },
-  variable: { label: "Variable", color: "var(--chart-3)" },
-} satisfies ChartConfig;
-
 export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
+  const t = useTranslations("finance");
+  const te = useTranslations("expenses");
+  const chartConfig = {
+    fixed: { label: t("expenses.fixed"), color: "var(--chart-1)" },
+    variable: { label: t("expenses.variable"), color: "var(--chart-3)" },
+  } satisfies ChartConfig;
   const chartData = useMemo(() => {
     // Agrupar por mes
     const map = new Map<string, { month: string; fixed: number; variable: number; categories: { category: string; amount: number; kind: string }[] }>();
@@ -39,7 +42,7 @@ export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
         entry.variable += amount;
       }
       
-      entry.categories.push({ category: row.category || "General", amount, kind: row.kind || "variable" });
+      entry.categories.push({ category: row.category ?? "", amount, kind: row.kind || "variable" });
     }
     
     return Array.from(map.values()).sort((a, b) => a.month.localeCompare(b.month));
@@ -48,13 +51,13 @@ export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
   return (
     <Card className="shadow-xs">
       <CardHeader className="pb-4">
-        <CardTitle>Gastos Mensuales</CardTitle>
-        <CardDescription>Proporción de gastos fijos vs variables.</CardDescription>
+        <CardTitle>{t("expenses.title")}</CardTitle>
+        <CardDescription>{t("expenses.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground border border-dashed rounded-md">
-            No hay datos suficientes para graficar.
+            {t("noData")}
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -81,7 +84,7 @@ export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
                         <div className="flex items-center justify-between gap-4 py-1">
                           <div className="flex items-center gap-1.5 font-medium">
                             <div className="h-2 w-2 rounded-full bg-[var(--color-fixed)]" />
-                            Fijo
+                            {t("expenses.fixed")}
                           </div>
                           <span className="tabular-nums">
                             {formatMoney(data.fixed, { style: "currency", currency: "COP", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -90,7 +93,7 @@ export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
                         <div className="flex items-center justify-between gap-4 py-1">
                           <div className="flex items-center gap-1.5 font-medium">
                             <div className="h-2 w-2 rounded-full bg-[var(--color-variable)]" />
-                            Variable
+                            {t("expenses.variable")}
                           </div>
                           <span className="tabular-nums">
                             {formatMoney(data.variable, { style: "currency", currency: "COP", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -100,12 +103,12 @@ export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
                         {data.categories.length > 0 && (
                           <>
                             <div className="my-2 border-t border-border" />
-                            <div className="text-xs font-semibold text-muted-foreground mb-1">Por categoría</div>
+                            <div className="text-xs font-semibold text-muted-foreground mb-1">{t("expenses.byCategory")}</div>
                             <div className="space-y-1">
                               {[...data.categories].sort((a, b) => b.amount - a.amount).map((cat, i) => (
                                 <div key={i} className="flex items-center justify-between gap-4 text-xs">
                                   <span className="text-muted-foreground capitalize truncate max-w-[120px]">
-                                    {cat.category}
+                                    {cat.category ? categoryLabel(cat.category, te) : t("expenses.general")}
                                   </span>
                                   <span className="tabular-nums text-muted-foreground">
                                     {formatMoney(cat.amount, { style: "currency", currency: "COP", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -120,8 +123,8 @@ export function ExpensesChart({ data }: { data: ExpenseRow[] }) {
                   }} 
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-                <Bar dataKey="fixed" name="Fijo" stackId="a" fill="var(--color-fixed)" radius={[0, 0, 4, 4]} />
-                <Bar dataKey="variable" name="Variable" stackId="a" fill="var(--color-variable)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="fixed" name={t("expenses.fixed")} stackId="a" fill="var(--color-fixed)" radius={[0, 0, 4, 4]} />
+                <Bar dataKey="variable" name={t("expenses.variable")} stackId="a" fill="var(--color-variable)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>

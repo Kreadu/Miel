@@ -17,7 +17,7 @@ export async function saveFiscalSettings(_prev: FiscalState, formData: FormData)
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active || active.role === "member") return { ok: false, error: "No tienes permiso para esta operación." };
+  if (!active || active.role === "member") return { ok: false, error: "common.errors.permissionDenied" };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -26,7 +26,7 @@ export async function saveFiscalSettings(_prev: FiscalState, formData: FormData)
     .eq("id", active.tenantId);
   if (error) {
     console.error("saveFiscalSettings:", error.code);
-    return { ok: false, error: "No se pudo guardar. Intenta de nuevo." };
+    return { ok: false, error: "results.fiscal.errors.saveFailed" };
   }
   revalidatePath("/resultados");
   return { ok: true };

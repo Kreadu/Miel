@@ -35,13 +35,14 @@ describe("buildAdvisorContext (S22-03)", () => {
       ],
       total: s,
       balances: { receivable: 100, payable: 50, inventory: 300 },
-      health: { summary: "Empresa sana en el rango elegido.", indicators: [] },
+      health: { summary: { kind: "healthy", count: 0 }, indicators: [{ id: "gross", status: "good", value: 0.4 }] },
       products: [{ name: "Polen", qty: 10, sales: 500, margin: 0.6 }],
     });
     expect(text).toContain("2026-08 a 2026-09");
     expect(text).toContain("2026-09");
     expect(text).toContain("Polen");
     expect(text).toContain("Empresa sana");
+    expect(text).toContain("Margen bruto: 40.0% (good)");
     expect(text).toContain("Cuentas por cobrar");
   });
 });

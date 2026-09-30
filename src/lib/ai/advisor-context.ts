@@ -1,4 +1,4 @@
-import type { HealthIndicator } from "@/lib/finance/health";
+import type { HealthId, HealthIndicator, HealthSummary } from "@/lib/finance/health";
 import type { IncomeStatement } from "@/lib/finance/income-statement";
 
 /**
@@ -51,6 +51,28 @@ function statementLine(label: string, s: IncomeStatement): string {
   ].join(" | ");
 }
 
+// El bloque de datos para la IA va siempre en español (interno); la respuesta sale en el idioma
+// del usuario (S20-06, `advisorSystem`).
+const HEALTH_LABEL: Record<HealthId, string> = {
+  net: "Rentabilidad (margen neto)",
+  gross: "Margen bruto",
+  operating: "Margen operativo",
+  trend: "Tendencia de ventas (último mes vs. promedio anterior)",
+  liquidity: "Liquidez ((cartera + inventario) ÷ por pagar)",
+};
+
+function healthSummary(s: HealthSummary): string {
+  if (s.kind === "noData") return "Sin datos suficientes: no hay ventas en el rango elegido.";
+  if (s.kind === "critical") return `Atención urgente: ${s.count} indicador(es) en rojo.`;
+  if (s.kind === "warning") return `Empresa estable, con ${s.count} punto(s) por mejorar.`;
+  return "Empresa sana en el rango elegido.";
+}
+
+function healthValue(i: HealthIndicator): string {
+  if (i.value === null) return "sin deudas";
+  return i.id === "liquidity" ? `${i.value.toFixed(2)} veces` : `${(i.value * 100).toFixed(1)}%`;
+}
+
 export function buildAdvisorContext({
   range,
   monthly,
@@ -63,7 +85,7 @@ export function buildAdvisorContext({
   monthly: { month: string; statement: IncomeStatement }[];
   total: IncomeStatement;
   balances: { receivable: number; payable: number; inventory: number };
-  health: { summary: string; indicators: HealthIndicator[] };
+  health: { summary: HealthSummary; indicators: HealthIndicator[] };
   products: ProductSummary[];
 }): string {
   return [
@@ -76,8 +98,8 @@ export function buildAdvisorContext({
     "",
     `Hoy: Cuentas por cobrar ${money(balances.receivable)} | Cuentas por pagar a proveedores ${money(balances.payable)} | Inventario valorizado al costo ${money(balances.inventory)}`,
     "",
-    `Salud (reglas de Miel): ${health.summary}`,
-    ...health.indicators.map((i) => `- ${i.label}: ${i.value} (${i.status})`),
+    `Salud (reglas de Miel): ${healthSummary(health.summary)}`,
+    ...health.indicators.map((i) => `- ${HEALTH_LABEL[i.id]}: ${healthValue(i)} (${i.status})`),
     "",
     "Productos con más ventas en el rango (nombre | unidades | ventas | margen bruto):",
     ...(products.length

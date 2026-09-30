@@ -252,7 +252,7 @@ traducidas con su sigla.
 | S20-03 | 3 · Inventario (resto de pantallas; producto/catálogo ya en piloto) | implemented (specs/done/S20-03-idiomas-inventario.md) |
 | S20-04 | 4 · Comprar | implemented (specs/done/S20-04-idiomas-comprar.md) |
 | S20-05 | 5 · Gastos | implemented (specs/done/S20-05-idiomas-gastos.md) |
-| S20-06 | 6 · Resultados (incluye respuesta de la IA en el idioma del usuario) | todo |
+| S20-06 | 6 · Resultados (incluye respuesta de la IA en el idioma del usuario) | implemented (specs/done/S20-06-idiomas-resultados.md) |
 | S20-07 | 7 · RRHH y nómina | todo |
 
 ## Épica E21 — RRHH: personal y nómina (motor copiado de Gestion-Future, ADR-036)
