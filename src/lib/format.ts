@@ -4,8 +4,15 @@ const LOCALE = "es-CO";
 const TIME_ZONE = "America/Bogota";
 const BOGOTA_OFFSET_MS = 5 * 60 * 60 * 1000;
 
+// Una fecha sin hora ("AAAA-MM-DD", p. ej. columnas `date`) es un día calendario: se lee al
+// mediodía de Bogotá. `new Date("AAAA-MM-DD")` sería medianoche UTC = el día anterior en Bogotá.
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
 export function formatDate(value: string | Date, options: Intl.DateTimeFormatOptions = {}): string {
-  const date = typeof value === "string" ? new Date(value) : value;
+  const date =
+    typeof value === "string"
+      ? new Date(DATE_ONLY.test(value) ? `${value}T12:00:00-05:00` : value)
+      : value;
   return new Intl.DateTimeFormat(LOCALE, {
     timeZone: TIME_ZONE,
     day: "numeric",

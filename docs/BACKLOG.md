@@ -257,7 +257,7 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
 | S21-02 | Como dueño quiero registrar a mis trabajadores y crear categorías que definen qué ve cada uno | `workers` + `worker_categories` (RLS owner/admin); `/equipo/trabajadores` y `/equipo/categorias` | S21-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-02-trabajadores-y-categorias.md |
 | S21-03 | Como trabajador quiero entrar con mi usuario y código de 4 dígitos y ver solo lo de mi categoría | Pestaña "Soy trabajador" en el login (código de empresa + usuario + PIN), bloqueo tras 5 intentos, menú y rutas según los módulos de su categoría; ADR del mecanismo de autenticación | S21-02 | todo | — |
 | S21-04 | Como dueño quiero ver el uso: ingresos/salidas e intentos fallidos, y acciones importantes de cada trabajador | Registro de uso en RRHH | S21-03 | todo | — |
-| S21-05 | Como dueño quiero liquidar la nómina de un período con el motor | Períodos de nómina + liquidación por trabajador con `ColombiaPayrollEngine` | S21-02 | todo | — |
+| S21-05 | Como dueño quiero liquidar la nómina de un período con el motor, con licencias, verla y generar el XML DIAN | Licencias, períodos, liquidación por trabajador, datos DIAN, XML con CUNE y consecutivo | S21-02 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-05-nomina.md |
 | S21-06 | Contratación de profesionales, licencias/incapacidades, nómina electrónica DIAN, portal del trabajador | A priorizar con el humano | S21-05 | todo | — |
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
@@ -266,7 +266,10 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S21-02c, bloqueante hasta que se resuelva**: migración
+- **S21-05, bloqueante hasta que se resuelva**: migración `20260929200638_nomina.sql` sin aplicar
+  — sin ella fallan Nómina, Licencias y Datos DIAN. El XML DIAN se genera pero no se firma ni se
+  envía (falta firma digital y conexión al servicio de la DIAN).
+- **S21-02c (aplicada 2026-09-29)**: migración
   `20260929195544_cargos-urgencia-temporales.sql` sin aplicar — sin ella fallan Trabajadores,
   Temporales y Cargos (la app ya no usa la columna `position`).
 - **S21-02b**: migración `20260929195038_borrar-trabajador.sql` sin aplicar — hasta entonces

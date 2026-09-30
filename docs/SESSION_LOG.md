@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 16) · S21-05 — nómina, licencias y XML DIAN
+
+**Hecho:** migración `20260929200638` (licencias, períodos, liquidaciones, datos DIAN,
+consecutivo, `create_payroll_period` atómica); `payroll-input.ts` + `liquidate.ts` sobre el motor;
+acciones y pantallas `/equipo/nomina`, `/equipo/nomina/[id]`, `/equipo/licencias`,
+`/equipo/nomina/dian`, descarga XML. Hallazgo corregido: `formatDate("AAAA-MM-DD")` mostraba el
+día anterior (zona Bogotá). Verificado: lint ✓, tsc ✓, `npm test` 376/376 ✓, build ✓. Sin correr:
+pgTAP, navegador.
+
+**Pendiente:** humano pega la migración; S21-03 (ingreso con código) sigue en cola, con ADR.
+
+---
+
 ## Sesión 2026-09-29 (cont. 15) · S21-02 — trabajadores y categorías
 
 **Hecho:** "trabajador" en vez de "empleado" (decisión del humano). Decisiones: categorías creadas

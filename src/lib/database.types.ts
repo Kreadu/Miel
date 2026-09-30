@@ -334,6 +334,69 @@ export type Database = {
           },
         ]
       }
+      dian_counters: {
+        Row: {
+          last_consecutive: number
+          tenant_id: string
+        }
+        Insert: {
+          last_consecutive?: number
+          tenant_id: string
+        }
+        Update: {
+          last_consecutive?: number
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      dian_settings: {
+        Row: {
+          address: string | null
+          city: string | null
+          company_name: string
+          department: string | null
+          dv: string
+          email: string | null
+          nit: string
+          phone: string | null
+          software_id: string
+          software_pin: string
+          tenant_id: string
+          test_set_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          company_name: string
+          department?: string | null
+          dv: string
+          email?: string | null
+          nit: string
+          phone?: string | null
+          software_id: string
+          software_pin: string
+          tenant_id: string
+          test_set_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          company_name?: string
+          department?: string | null
+          dv?: string
+          email?: string | null
+          nit?: string
+          phone?: string | null
+          software_id?: string
+          software_pin?: string
+          tenant_id?: string
+          test_set_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -494,6 +557,129 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payroll_periods: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          created_by: string
+          id: string
+          period_end: string
+          period_start: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          period_end: string
+          period_start: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      payroll_settlements: {
+        Row: {
+          created_at: string
+          days_worked: number
+          dian_consecutive: number | null
+          dian_cune: string | null
+          dian_generated_at: string | null
+          dian_status: string
+          dian_xml: string | null
+          extra_diurna: number
+          extra_nocturna: number
+          gross_earnings: number
+          horas_dominical_festivo: number
+          hours_worked: number
+          id: string
+          net_pay: number
+          period_id: string
+          recargo_nocturno: number
+          result: Json
+          tenant_id: string
+          total_deductions: number
+          updated_at: string
+          weekly_hours: number
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string
+          days_worked?: number
+          dian_consecutive?: number | null
+          dian_cune?: string | null
+          dian_generated_at?: string | null
+          dian_status?: string
+          dian_xml?: string | null
+          extra_diurna?: number
+          extra_nocturna?: number
+          gross_earnings?: number
+          horas_dominical_festivo?: number
+          hours_worked?: number
+          id?: string
+          net_pay?: number
+          period_id: string
+          recargo_nocturno?: number
+          result?: Json
+          tenant_id: string
+          total_deductions?: number
+          updated_at?: string
+          weekly_hours?: number
+          worker_id: string
+        }
+        Update: {
+          created_at?: string
+          days_worked?: number
+          dian_consecutive?: number | null
+          dian_cune?: string | null
+          dian_generated_at?: string | null
+          dian_status?: string
+          dian_xml?: string | null
+          extra_diurna?: number
+          extra_nocturna?: number
+          gross_earnings?: number
+          horas_dominical_festivo?: number
+          hours_worked?: number
+          id?: string
+          net_pay?: number
+          period_id?: string
+          recargo_nocturno?: number
+          result?: Json
+          tenant_id?: string
+          total_deductions?: number
+          updated_at?: string
+          weekly_hours?: number
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_settlements_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payroll_settlements_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "payroll_periods"
             referencedColumns: ["id"]
           },
         ]
@@ -1620,6 +1806,50 @@ export type Database = {
         }
         Relationships: []
       }
+      worker_leaves: {
+        Row: {
+          created_at: string
+          created_by: string
+          end_date: string
+          id: string
+          note: string | null
+          start_date: string
+          tenant_id: string
+          type: string
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          end_date: string
+          id?: string
+          note?: string | null
+          start_date: string
+          tenant_id: string
+          type: string
+          worker_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          end_date?: string
+          id?: string
+          note?: string | null
+          start_date?: string
+          tenant_id?: string
+          type?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_leaves_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       worker_positions: {
         Row: {
           created_at: string
@@ -2201,6 +2431,10 @@ export type Database = {
         Args: { p_sale_id: string; p_warehouse_id: string }
         Returns: undefined
       }
+      create_payroll_period: {
+        Args: { p_end: string; p_settlements: Json; p_start: string; p_tenant_id: string }
+        Returns: string
+      }
       create_product_with_stock: {
         Args: {
           p_cost: number
@@ -2277,6 +2511,10 @@ export type Database = {
       mark_sale_shipped: {
         Args: { p_sale_id: string; p_shipping_address: string }
         Returns: undefined
+      }
+      next_dian_consecutive: {
+        Args: { p_tenant_id: string }
+        Returns: number
       }
       open_cash_session: {
         Args: { p_opening_amount: number; p_tenant_id: string }

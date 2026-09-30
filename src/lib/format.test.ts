@@ -64,3 +64,10 @@ describe("toDatetimeLocalValue / fromDatetimeLocalValue", () => {
     expect(schema.safeParse(result).success).toBe(true);
   });
 });
+
+describe("formatDate con fecha sin hora (S21-05)", () => {
+  it("una fecha 'AAAA-MM-DD' es ese día calendario, no el anterior", () => {
+    expect(formatDate("2026-09-01")).toBe("1/9/2026");
+    expect(formatDate("2026-12-31")).toBe("31/12/2026");
+  });
+});
