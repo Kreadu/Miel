@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
@@ -10,13 +11,6 @@ import Link from "next/link";
 
 import { CancelPurchaseAction } from "./cancel-purchase-action";
 import { ReceivePurchaseForm } from "./receive-purchase-form";
-
-const STATUS_LABEL: Record<string, string> = {
-  draft: "Borrador",
-  ordered: "Ordenada",
-  received: "Recibida",
-  cancelled: "Cancelada",
-};
 
 type PurchaseItem = {
   id: string;
@@ -46,6 +40,7 @@ export function PurchaseRow({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [markState, markAction] = useActionState(markPurchaseOrdered, null);
+  const t = useTranslations();
 
   return (
     <>
@@ -54,7 +49,7 @@ export function PurchaseRow({
           <button
             type="button"
             aria-expanded={expanded}
-            aria-label={expanded ? "Ocultar ítems" : "Ver ítems"}
+            aria-label={expanded ? t("purchases.hideItems") : t("purchases.showItems")}
             onClick={() => setExpanded((v) => !v)}
             className="flex items-center gap-1.5 text-left hover:text-foreground"
           >
@@ -62,7 +57,7 @@ export function PurchaseRow({
             {purchase.supplierName}
           </button>
         </td>
-        <td className="px-3 py-2.5 text-muted-foreground">{STATUS_LABEL[purchase.status] ?? purchase.status}</td>
+        <td className="px-3 py-2.5 text-muted-foreground">{t.has(`purchases.statuses.${purchase.status}`) ? t(`purchases.statuses.${purchase.status}`) : purchase.status}</td>
         <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(purchase.total)}</td>
         <td className="px-3 py-2.5 text-muted-foreground">
           {formatDate(purchase.issuedAt ?? purchase.createdAt)}
@@ -73,7 +68,7 @@ export function PurchaseRow({
               <form action={markAction}>
                 <input type="hidden" name="id" value={purchase.id} />
                 <Button type="submit" variant="ghost" size="sm" className="h-7 text-xs">
-                  Marcar como ordenada
+                  {t("purchases.markOrdered")}
                 </Button>
               </form>
             ) : null}
@@ -82,7 +77,7 @@ export function PurchaseRow({
             ) : null}
             {(purchase.status === "draft" || purchase.status === "ordered") && canManage ? (
               <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
-                <Link href={`/compras?editar=${purchase.id}`}>Editar</Link>
+                <Link href={`/compras?editar=${purchase.id}`}>{t("purchases.edit")}</Link>
               </Button>
             ) : null}
             {(purchase.status === "draft" || purchase.status === "ordered") && canManage ? (
@@ -91,7 +86,7 @@ export function PurchaseRow({
           </div>
           {markState && !markState.ok ? (
             <p role="alert" className="mt-1 text-right text-[10px] text-destructive">
-              {markState.error}
+              {t(markState.error)}
             </p>
           ) : null}
         </td>
@@ -103,11 +98,11 @@ export function PurchaseRow({
               <table className="w-full text-left">
                 <thead>
                   <tr className="text-muted-foreground">
-                    <th className="py-1 font-medium">Producto</th>
-                    <th className="py-1 text-right font-medium">Cantidad</th>
-                    <th className="py-1 text-right font-medium">Costo unit.</th>
-                    <th className="py-1 text-right font-medium">IVA %</th>
-                    <th className="py-1 text-right font-medium">Subtotal</th>
+                    <th className="py-1 font-medium">{t("purchases.product")}</th>
+                    <th className="py-1 text-right font-medium">{t("purchases.qty")}</th>
+                    <th className="py-1 text-right font-medium">{t("purchases.unitCost")}</th>
+                    <th className="py-1 text-right font-medium">{t("purchases.taxPercent")}</th>
+                    <th className="py-1 text-right font-medium">{t("purchases.subtotal")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -127,7 +122,7 @@ export function PurchaseRow({
                 </tbody>
               </table>
             ) : (
-              <p className="text-muted-foreground">Sin ítems.</p>
+              <p className="text-muted-foreground">{t("purchases.noItems")}</p>
             )}
           </td>
         </tr>

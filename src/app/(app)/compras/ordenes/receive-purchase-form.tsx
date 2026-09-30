@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { receivePurchase } from "@/actions/purchases";
@@ -16,6 +17,7 @@ export function ReceivePurchaseForm({
   const [receiving, setReceiving] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations();
 
   if (receiving) {
     return (
@@ -27,7 +29,7 @@ export function ReceivePurchaseForm({
           const warehouseId = formData.get("warehouse_id") as string;
           const res = await receivePurchase(purchaseId, warehouseId);
           if (!res?.ok) {
-            setError(res?.error || "Error desconocido");
+            setError(res?.error || "common.errors.unknown");
             setPending(false);
           } else {
             setReceiving(false);
@@ -36,7 +38,7 @@ export function ReceivePurchaseForm({
       >
         <Select name="warehouse_id" required defaultValue={warehouses.length === 1 ? warehouses[0].id : undefined}>
           <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder="Bodega o sucursal destino..." />
+            <SelectValue placeholder={t("purchases.warehousePlaceholder")} />
           </SelectTrigger>
           <SelectContent>
             {warehouses.map((w) => (
@@ -48,20 +50,20 @@ export function ReceivePurchaseForm({
         </Select>
         <div className="flex gap-1">
           <Button type="submit" size="sm" disabled={pending} className="h-7 text-xs flex-1">
-            {pending ? "..." : "Confirmar"}
+            {pending ? "..." : t("purchases.confirm")}
           </Button>
           <Button type="button" variant="ghost" size="sm" disabled={pending} className="h-7 text-xs flex-1" onClick={() => setReceiving(false)}>
-            Cancelar
+            {t("purchases.cancel")}
           </Button>
         </div>
-        {error && <p className="text-[10px] text-destructive leading-tight">{error}</p>}
+        {error && <p className="text-[10px] text-destructive leading-tight">{t(error)}</p>}
       </form>
     );
   }
 
   return (
     <Button variant="outline" size="sm" className="h-7 text-xs w-full" onClick={() => setReceiving(true)}>
-      Recibir
+      {t("purchases.receive")}
     </Button>
   );
 }

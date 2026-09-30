@@ -39,7 +39,7 @@ describe("receivePurchase", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/compras");
   });
 
-  it("warehouse_invalid mapea a mensaje en español", async () => {
+  it("warehouse_invalid mapea a su clave", async () => {
     clientState.current = mockSupabase({ error: { message: "warehouse_invalid" } });
     const { receivePurchase } = await import("./purchases");
 
@@ -49,8 +49,7 @@ describe("receivePurchase", () => {
     );
 
     expect(result).toMatchObject({ ok: false });
-    expect((result as { error: string }).error).not.toContain("warehouse_invalid");
-    expect((result as { error: string }).error.toLowerCase()).toContain("bodega");
+    expect(result).toEqual({ ok: false, error: "purchases.errors.warehouseInvalid" });
   });
 
   it("purchase_not_ordered mapea a mensaje propio", async () => {
@@ -62,7 +61,7 @@ describe("receivePurchase", () => {
       "c5dc9a28-e7fd-4777-b12d-fddbe4e7efe3",
     );
 
-    expect((result as { error: string }).error).not.toContain("purchase_not_ordered");
+    expect(result).toEqual({ ok: false, error: "purchases.errors.notOrdered" });
   });
 });
 
@@ -80,13 +79,13 @@ describe("cancelPurchase", () => {
     expect(result).toMatchObject({ ok: true });
   });
 
-  it("purchase_not_cancellable mapea a mensaje en español", async () => {
+  it("purchase_not_cancellable mapea a su clave", async () => {
     clientState.current = mockSupabase({ error: { message: "purchase_not_cancellable" } });
     const { cancelPurchase } = await import("./purchases");
 
     const result = await cancelPurchase("9b8b443a-a9c4-47c9-980f-cd90d14bda41");
 
-    expect((result as { error: string }).error).not.toContain("purchase_not_cancellable");
+    expect(result).toEqual({ ok: false, error: "purchases.errors.notCancellable" });
   });
 });
 

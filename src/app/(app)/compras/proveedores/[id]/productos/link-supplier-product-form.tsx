@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { linkSupplierProduct } from "@/actions/supplier-products";
@@ -23,6 +24,7 @@ export function LinkSupplierProductForm({
   products: Product[];
 }) {
   const [state, formAction, pending] = useActionState(linkSupplierProduct, null);
+  const t = useTranslations();
 
   return (
     <form
@@ -31,10 +33,10 @@ export function LinkSupplierProductForm({
     >
       <input type="hidden" name="supplier_id" value={supplierId} />
       <div className="flex flex-1 flex-col gap-1.5">
-        <Label htmlFor="product_id">Producto</Label>
+        <Label htmlFor="product_id">{t("suppliers.productsPage.product")}</Label>
         <Select name="product_id" required>
           <SelectTrigger id="product_id" className="w-full">
-            <SelectValue placeholder="Selecciona un producto" />
+            <SelectValue placeholder={t("suppliers.productsPage.placeholder")} />
           </SelectTrigger>
           <SelectContent>
             {products.map((p) => (
@@ -46,11 +48,11 @@ export function LinkSupplierProductForm({
         </Select>
       </div>
       <Button type="submit" disabled={pending}>
-        {pending ? "Asociando…" : "Asociar"}
+        {pending ? t("suppliers.productsPage.linking") : t("suppliers.productsPage.link")}
       </Button>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive sm:basis-full">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

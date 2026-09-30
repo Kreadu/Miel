@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,13 +26,6 @@ const BASE_PATH = "/compras";
 // Radix no admite value="" en un <Select>; "all" no es uuid y se lee como "todos".
 const ALL_SUPPLIERS = "all";
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: "Borrador",
-  ordered: "Ordenada",
-  received: "Recibida",
-  cancelled: "Cancelada",
-};
-
 /**
  * S19-37: Historial de compras — cerrado hasta apretar "Historial"; filtra por rango de fechas
  * (hora de Bogotá) y proveedor con un formulario GET (todo server-side).
@@ -43,11 +37,12 @@ export async function PurchaseHistory({
   suppliers: { id: string; name: string }[];
   params: PurchaseHistoryParams;
 }) {
+  const t = await getTranslations("purchases");
   if (params.historial !== "1") {
     return (
       <div>
         <Button asChild variant="outline">
-          <Link href={`${BASE_PATH}?historial=1`}>Historial</Link>
+          <Link href={`${BASE_PATH}?historial=1`}>{t("history.open")}</Link>
         </Button>
       </div>
     );
@@ -76,30 +71,30 @@ export async function PurchaseHistory({
   return (
     <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-base font-semibold tracking-tight">Historial de compras</h2>
+        <h2 className="text-base font-semibold tracking-tight">{t("history.title")}</h2>
         <Button asChild variant="ghost" size="sm">
-          <Link href={BASE_PATH}>Cerrar</Link>
+          <Link href={BASE_PATH}>{t("history.close")}</Link>
         </Button>
       </div>
 
       <form method="get" action={BASE_PATH} className="grid grid-cols-1 items-end gap-3 sm:grid-cols-4">
         <input type="hidden" name="historial" value="1" />
         <div className="flex flex-col gap-2">
-          <Label htmlFor="desde">Desde</Label>
+          <Label htmlFor="desde">{t("history.from")}</Label>
           <Input id="desde" name="desde" type="date" defaultValue={from} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="hasta">Hasta</Label>
+          <Label htmlFor="hasta">{t("history.to")}</Label>
           <Input id="hasta" name="hasta" type="date" defaultValue={to} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="proveedor">Proveedor</Label>
+          <Label htmlFor="proveedor">{t("supplier")}</Label>
           <Select name="proveedor" defaultValue={supplierId ?? ALL_SUPPLIERS}>
             <SelectTrigger id="proveedor" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_SUPPLIERS}>Todos</SelectItem>
+              <SelectItem value={ALL_SUPPLIERS}>{t("history.all")}</SelectItem>
               {suppliers.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
                   {s.name}
@@ -108,7 +103,7 @@ export async function PurchaseHistory({
             </SelectContent>
           </Select>
         </div>
-        <Button type="submit">Ver</Button>
+        <Button type="submit">{t("history.view")}</Button>
       </form>
 
       {list.length > 0 ? (
@@ -116,11 +111,11 @@ export async function PurchaseHistory({
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Fecha</th>
-                <th className="px-3 py-2 font-medium">Proveedor</th>
-                <th className="px-3 py-2 font-medium">Estado</th>
-                <th className="px-3 py-2 text-right font-medium">Ítems</th>
-                <th className="px-3 py-2 text-right font-medium">Total</th>
+                <th className="px-3 py-2 font-medium">{t("date")}</th>
+                <th className="px-3 py-2 font-medium">{t("supplier")}</th>
+                <th className="px-3 py-2 font-medium">{t("status")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("history.items")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("total")}</th>
               </tr>
             </thead>
             <tbody>
@@ -128,7 +123,7 @@ export async function PurchaseHistory({
                 <tr key={r.id} className="border-b border-border last:border-0">
                   <td className="px-3 py-2.5">{formatDate(r.created_at)}</td>
                   <td className="px-3 py-2.5">{r.suppliers?.name ?? "—"}</td>
-                  <td className="px-3 py-2.5 text-muted-foreground">{STATUS_LABEL[r.status] ?? r.status}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{t.has(`statuses.${r.status}`) ? t(`statuses.${r.status}`) : r.status}</td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{r.purchase_items.length}</td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(r.total))}</td>
                 </tr>
@@ -137,7 +132,7 @@ export async function PurchaseHistory({
             <tfoot>
               <tr className="border-t border-border font-semibold">
                 <td className="px-3 py-2.5" colSpan={4}>
-                  Total comprado (sin canceladas)
+                  {t("history.totalBought")}
                 </td>
                 <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(total)}</td>
               </tr>
@@ -146,7 +141,7 @@ export async function PurchaseHistory({
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-          No hay compras en ese rango de fechas.
+          {t("history.empty")}
         </p>
       )}
     </section>

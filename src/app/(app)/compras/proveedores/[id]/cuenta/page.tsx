@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, ArrowDownRight, FileText } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-export const metadata = { title: "Cuenta de Proveedor · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("suppliers.account");
+  return { title: `${t("title")} · Miel` };
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,6 +32,8 @@ export default async function SupplierAccountPage({ params }: PageProps) {
   const { id } = await params;
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations();
+  const ta = await getTranslations("suppliers.account");
 
   const supabase = await createClient();
 
@@ -53,7 +59,7 @@ export default async function SupplierAccountPage({ params }: PageProps) {
       id: p.id,
       date: new Date(p.created_at),
       type: "purchase",
-      description: "Orden de Compra",
+      description: ta("purchase"),
       debit: Number(p.total),
       credit: 0,
       status: p.status
@@ -65,7 +71,7 @@ export default async function SupplierAccountPage({ params }: PageProps) {
       id: p.id,
       date: new Date(p.paid_at),
       type: "payment",
-      description: p.purchase_id ? "Abono a compra" : "Abono general / Anticipo",
+      description: p.purchase_id ? ta("purchasePayment") : ta("generalPayment"),
       debit: 0,
       credit: Number(p.amount),
       method: p.method,
@@ -100,17 +106,17 @@ export default async function SupplierAccountPage({ params }: PageProps) {
             <Link href="/compras/cuentas-por-pagar" className="text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h1 className="text-xl font-semibold tracking-tight">Cuenta de Proveedor</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{ta("title")}</h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            {supplier.name} {supplier.nit ? `(NIT: ${supplier.nit})` : ""}
+            {supplier.name} {supplier.nit ? ta("nit", { nit: supplier.nit }) : ""}
           </p>
         </div>
         <div className="flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-lg border border-border">
-          <span className="text-sm text-muted-foreground">Saldo Actual:</span>
+          <span className="text-sm text-muted-foreground">{ta("balance")}</span>
           <span className={`text-xl font-semibold tabular-nums ${isDebt ? 'text-destructive' : isFavor ? 'text-success' : ''}`}>
             ${formatMoney(Math.abs(finalBalance))}
-            {isFavor && <span className="text-xs ml-1 font-normal text-muted-foreground">(A favor)</span>}
+            {isFavor && <span className="text-xs ml-1 font-normal text-muted-foreground">{ta("inFavor")}</span>}
           </span>
         </div>
       </div>
@@ -120,11 +126,11 @@ export default async function SupplierAccountPage({ params }: PageProps) {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border bg-muted/30 text-xs text-muted-foreground">
-                <th className="px-4 py-3 font-medium">Fecha</th>
-                <th className="px-4 py-3 font-medium">Concepto</th>
-                <th className="px-4 py-3 text-right font-medium text-destructive/80">Cargo (Compra)</th>
-                <th className="px-4 py-3 text-right font-medium text-success/80">Abono (Pago)</th>
-                <th className="px-4 py-3 text-right font-medium">Saldo</th>
+                <th className="px-4 py-3 font-medium">{ta("date")}</th>
+                <th className="px-4 py-3 font-medium">{ta("concept")}</th>
+                <th className="px-4 py-3 text-right font-medium text-destructive/80">{ta("debit")}</th>
+                <th className="px-4 py-3 text-right font-medium text-success/80">{ta("credit")}</th>
+                <th className="px-4 py-3 text-right font-medium">{ta("runningBalance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -154,8 +160,8 @@ export default async function SupplierAccountPage({ params }: PageProps) {
                           {(entry.status || entry.method || entry.note) && (
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {entry.type === "purchase" 
-                                ? `Estado: ${entry.status}` 
-                                : `Método: ${entry.method}${entry.note ? ` · ${entry.note}` : ""}`}
+                                ? ta("statusLine", { status: t.has(`purchases.statuses.${entry.status}`) ? t(`purchases.statuses.${entry.status}`) : String(entry.status) })
+                                : `${ta("methodLine", { method: t.has(`sales.paymentMethod.${entry.method}`) ? t(`sales.paymentMethod.${entry.method}`) : String(entry.method) })}${entry.note ? ` · ${entry.note}` : ""}`}
                             </p>
                           )}
                         </div>
@@ -177,7 +183,7 @@ export default async function SupplierAccountPage({ params }: PageProps) {
                     </td>
                     <td className={`px-4 py-3 text-sm text-right font-semibold tabular-nums ${isBalDebt ? '' : isBalFavor ? 'text-success' : 'text-muted-foreground'}`}>
                       ${formatMoney(Math.abs(bal))}
-                      {isBalFavor && <span className="text-xs ml-1 font-normal text-muted-foreground">(F)</span>}
+                      {isBalFavor && <span className="text-xs ml-1 font-normal text-muted-foreground">{ta("inFavorShort")}</span>}
                     </td>
                   </tr>
                 );
@@ -188,9 +194,9 @@ export default async function SupplierAccountPage({ params }: PageProps) {
       ) : (
         <div className="rounded-lg border border-dashed border-border p-8 text-center flex flex-col items-center justify-center">
           <FileText className="h-8 w-8 text-muted-foreground/50 mb-3" />
-          <p className="text-sm font-medium">Sin movimientos</p>
+          <p className="text-sm font-medium">{ta("emptyTitle")}</p>
           <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-            Este proveedor no tiene compras procesadas ni pagos registrados en su cuenta.
+            {ta("empty")}
           </p>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { Truck, Wallet } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { parseProductIds, suggestedReorderQty } from "@/lib/purchases/reorder";
 import { createClient } from "@/lib/supabase/server";
@@ -10,7 +11,10 @@ import { PurchaseForm } from "./ordenes/purchase-form";
 import { PurchaseHistory, type PurchaseHistoryParams } from "./ordenes/purchase-history";
 import { PurchaseRow } from "./ordenes/purchase-row";
 
-export const metadata = { title: "Comprar · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("purchases");
+  return { title: `${t("title")} · Miel` };
+}
 
 const LINK_CLASS =
   "inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80";
@@ -24,6 +28,7 @@ export default async function ComprasPage({
   if (!active) notFound();
 
   const canManage = active.role !== "member";
+  const t = await getTranslations("purchases");
   const { editar, reponer, ...history } = await searchParams;
   // S19-27/S19-37: ítems elegidos en Alertas stock mínimo (`?reponer=<id>,<id>`).
   const fromAlerts = parseProductIds(reponer);
@@ -95,19 +100,19 @@ export default async function ComprasPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Comprar</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Crea tus órdenes de compra. Al recibirlas, el costo sin IVA se promedia con el del inventario (el IVA se recupera).
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link href="/compras/proveedores" className={LINK_CLASS}>
             <Truck className="mr-2 h-4 w-4" />
-            Proveedores
+            {t("suppliers")}
           </Link>
           <Link href="/compras/cuentas-por-pagar" className={LINK_CLASS}>
             <Wallet className="mr-2 h-4 w-4" />
-            Cuentas por pagar
+            {t("payables")}
           </Link>
         </div>
       </div>
@@ -140,16 +145,16 @@ export default async function ComprasPage({
         )
       ) : null}
 
-      <h2 className="text-base font-semibold tracking-tight">Órdenes por recibir</h2>
+      <h2 className="text-base font-semibold tracking-tight">{t("toReceive")}</h2>
       {purchases.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Proveedor</th>
-                <th className="px-3 py-2 font-medium">Estado</th>
-                <th className="px-3 py-2 text-right font-medium">Total</th>
-                <th className="px-3 py-2 font-medium">Fecha</th>
+                <th className="px-3 py-2 font-medium">{t("supplier")}</th>
+                <th className="px-3 py-2 font-medium">{t("status")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("total")}</th>
+                <th className="px-3 py-2 font-medium">{t("date")}</th>
                 <th className="px-3 py-2" />
               </tr>
             </thead>
@@ -182,9 +187,7 @@ export default async function ComprasPage({
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          {canManage
-            ? "No hay órdenes por recibir. Las recibidas y canceladas están en el Historial."
-            : "Aún no hay órdenes de compra registradas."}
+          {canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
 

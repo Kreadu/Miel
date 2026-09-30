@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/format";
@@ -9,7 +10,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { LinkSupplierProductForm } from "./link-supplier-product-form";
 import { UnlinkSupplierProductAction } from "./unlink-supplier-product-action";
 
-export const metadata = { title: "Productos del proveedor · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("suppliers.productsPage");
+  return { title: `${t("title")} · Miel` };
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -21,6 +25,7 @@ export default async function SupplierProductsPage({ params }: PageProps) {
   if (!active) notFound();
 
   const canManage = active.role !== "member";
+  const t = await getTranslations("suppliers.productsPage");
 
   const supabase = await createClient();
   const [supplierRes, linksRes, productsRes] = await Promise.all([
@@ -53,7 +58,7 @@ export default async function SupplierProductsPage({ params }: PageProps) {
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <h1 className="text-xl font-semibold tracking-tight">Productos del proveedor</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         </div>
         <p className="text-sm text-muted-foreground">{supplier.name}</p>
       </div>
@@ -65,8 +70,8 @@ export default async function SupplierProductsPage({ params }: PageProps) {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Producto</th>
-                <th className="px-3 py-2 font-medium">Última recepción</th>
+                <th className="px-3 py-2 font-medium">{t("product")}</th>
+                <th className="px-3 py-2 font-medium">{t("lastReceived")}</th>
                 {canManage ? <th className="px-3 py-2" /> : null}
               </tr>
             </thead>
@@ -79,7 +84,7 @@ export default async function SupplierProductsPage({ params }: PageProps) {
                     {l.products ? `${l.products.sku} — ${l.products.name}` : "—"}
                   </td>
                   <td className="px-3 py-2.5 text-muted-foreground">
-                    {l.last_purchased_at ? formatDateTime(l.last_purchased_at) : "Aún sin recibir"}
+                    {l.last_purchased_at ? formatDateTime(l.last_purchased_at) : t("notReceived")}
                   </td>
                   {canManage ? (
                     <td className="px-3 py-2.5 text-right">
@@ -93,8 +98,7 @@ export default async function SupplierProductsPage({ params }: PageProps) {
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no hay productos asociados. Se asocian solos al recibir una compra de este
-          proveedor, o los puedes agregar {canManage ? "arriba" : "cuando gestiones el equipo"}.
+          {canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
     </div>

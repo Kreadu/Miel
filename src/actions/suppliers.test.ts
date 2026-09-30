@@ -43,7 +43,7 @@ describe("quickCreateSupplier (S19-37: + proveedor desde la orden)", () => {
 
     expect(await quickCreateSupplier({ name: "X", nit: "900" })).toEqual({
       ok: false,
-      error: "Ya existe un proveedor con ese NIT.",
+      error: "suppliers.errors.duplicateNit",
     });
   });
 

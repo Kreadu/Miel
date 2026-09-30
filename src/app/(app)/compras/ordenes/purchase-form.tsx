@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
 
 import { createPurchase, updatePurchase } from "@/actions/purchases";
@@ -74,6 +75,7 @@ export function PurchaseForm({
 }) {
   const isEditing = purchase != null;
   const router = useRouter();
+  const t = useTranslations();
   const [state, formAction, pending] = useActionState(isEditing ? updatePurchase : createPurchase, null);
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
@@ -142,22 +144,22 @@ export function PurchaseForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <SupplierPicker suppliers={suppliers} value={supplierId} onChange={setSupplierId} />
         <div className="flex flex-col gap-2">
-          <Label htmlFor="note">Nota (opcional)</Label>
+          <Label htmlFor="note">{t("purchases.form.note")}</Label>
           <Input id="note" name="note" maxLength={500} defaultValue={purchase?.note} />
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
-          <Label>Ítems</Label>
+          <Label>{t("purchases.form.items")}</Label>
           <div className="flex items-center gap-2">
             {suggestedIds.length > 0 ? (
               <Button type="button" variant="link" size="sm" onClick={() => setShowAll((v) => !v)}>
-                {showAll ? "Ver solo sugeridos" : "Ver todo el catálogo"}
+                {showAll ? t("purchases.form.onlySuggested") : t("purchases.form.allCatalog")}
               </Button>
             ) : null}
             <Button type="button" variant="outline" size="sm" onClick={() => setItems((p) => [...p, emptyItem()])}>
-              Agregar ítem
+              {t("purchases.form.addItem")}
             </Button>
           </div>
         </div>
@@ -166,12 +168,12 @@ export function PurchaseForm({
               unitario con IVA (lo que se paga; el costo del producto es sin IVA, S23-01) · costo total. */}
           <div className="hidden gap-2 text-xs text-muted-foreground sm:grid sm:grid-cols-[2.5rem_minmax(0,2fr)_repeat(5,minmax(0,1fr))_4.5rem]">
             <span />
-            <span>Producto</span>
-            <span className="text-right">Cantidad</span>
-            <span className="text-right">Costo antes de IVA</span>
-            <span className="text-right">IVA %</span>
-            <span className="text-right">Costo unit. con IVA</span>
-            <span className="text-right">Costo total</span>
+            <span>{t("purchases.product")}</span>
+            <span className="text-right">{t("purchases.qty")}</span>
+            <span className="text-right">{t("purchases.form.costBeforeTax")}</span>
+            <span className="text-right">{t("purchases.taxPercent")}</span>
+            <span className="text-right">{t("purchases.form.unitWithTax")}</span>
+            <span className="text-right">{t("purchases.form.lineTotal")}</span>
             <span />
           </div>
           {items.map((item) => {
@@ -192,13 +194,13 @@ export function PurchaseForm({
                   ) : null}
                 </div>
                 <Select value={item.product_id} onValueChange={(v) => onProductChange(item.key, v)}>
-                  <SelectTrigger className="w-full min-w-0" aria-label="Producto">
-                    <SelectValue placeholder="Selecciona un producto" />
+                  <SelectTrigger className="w-full min-w-0" aria-label={t("purchases.product")}>
+                    <SelectValue placeholder={t("purchases.form.productPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {suggested.length > 0 ? (
                       <SelectGroup>
-                        <SelectLabel>Sugeridos para este proveedor</SelectLabel>
+                        <SelectLabel>{t("purchases.form.suggested")}</SelectLabel>
                         {suggested.map((p) => (
                           <SelectItem key={p.id} value={p.id}>
                             {p.sku} — {p.name}
@@ -210,7 +212,7 @@ export function PurchaseForm({
                       <>
                         {suggested.length > 0 ? <SelectSeparator /> : null}
                         <SelectGroup>
-                          {suggested.length > 0 ? <SelectLabel>Todo el catálogo</SelectLabel> : null}
+                          {suggested.length > 0 ? <SelectLabel>{t("purchases.form.allProducts")}</SelectLabel> : null}
                           {rest.map((p) => (
                             <SelectItem key={p.id} value={p.id}>
                               {p.sku} — {p.name}
@@ -225,7 +227,7 @@ export function PurchaseForm({
                   type="number"
                   min={0}
                   step="0.001"
-                  aria-label="Cantidad"
+                  aria-label={t("purchases.qty")}
                   className="text-right"
                   value={item.qty}
                   onChange={(e) => updateItem(item.key, { qty: e.target.value })}
@@ -234,7 +236,7 @@ export function PurchaseForm({
                   type="number"
                   min={0}
                   step="0.01"
-                  aria-label="Costo antes de IVA"
+                  aria-label={t("purchases.form.costBeforeTax")}
                   className="text-right"
                   value={item.unit_cost}
                   onChange={(e) => updateItem(item.key, { unit_cost: e.target.value })}
@@ -244,15 +246,15 @@ export function PurchaseForm({
                   min={0}
                   max={100}
                   step="0.01"
-                  aria-label="IVA %"
+                  aria-label={t("purchases.taxPercent")}
                   className="text-right"
                   value={item.tax_rate}
                   onChange={(e) => updateItem(item.key, { tax_rate: e.target.value })}
                 />
-                <p className="text-right text-sm tabular-nums" aria-label="Costo unitario con IVA">
+                <p className="text-right text-sm tabular-nums" aria-label={t("purchases.form.unitWithTax")}>
                   {formatMoney(line.unitWithTax)}
                 </p>
-                <p className="text-right text-sm font-medium tabular-nums" aria-label="Costo total">
+                <p className="text-right text-sm font-medium tabular-nums" aria-label={t("purchases.form.lineTotal")}>
                   {formatMoney(line.total)}
                 </p>
                 <div className="flex justify-end">
@@ -263,7 +265,7 @@ export function PurchaseForm({
                       size="sm"
                       onClick={() => setItems((prev) => prev.filter((it) => it.key !== item.key))}
                     >
-                      Quitar
+                      {t("purchases.form.remove")}
                     </Button>
                   ) : null}
                 </div>
@@ -272,7 +274,7 @@ export function PurchaseForm({
           })}
         </div>
         <p className="text-right text-base font-semibold tabular-nums">
-          Costo total de la compra: {formatMoney(total)}
+          {t("purchases.form.purchaseTotal", { amount: formatMoney(total) })}
         </p>
       </div>
 
@@ -280,26 +282,26 @@ export function PurchaseForm({
         {isEditing ? (
           <>
             <Button type="submit" disabled={pending}>
-              {pending ? "Guardando…" : "Guardar cambios"}
+              {pending ? t("purchases.form.saving") : t("purchases.form.saveChanges")}
             </Button>
             <Button asChild variant="outline" disabled={pending}>
-              <Link href={PURCHASES_PATH}>Cancelar</Link>
+              <Link href={PURCHASES_PATH}>{t("purchases.cancel")}</Link>
             </Button>
           </>
         ) : (
           <>
             <Button type="submit" name="status" value="draft" disabled={pending}>
-              {pending ? "Guardando…" : "Guardar como borrador"}
+              {pending ? t("purchases.form.saving") : t("purchases.form.saveDraft")}
             </Button>
             <Button type="submit" name="status" value="ordered" variant="secondary" disabled={pending}>
-              {pending ? "Guardando…" : "Crear y ordenar"}
+              {pending ? t("purchases.form.saving") : t("purchases.form.createAndOrder")}
             </Button>
           </>
         )}
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

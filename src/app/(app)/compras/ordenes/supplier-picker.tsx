@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
 import { quickCreateSupplier } from "@/actions/suppliers";
@@ -44,6 +45,7 @@ export function SupplierPicker({
   const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const t = useTranslations();
 
   const options = [...suppliers, ...created.filter((c) => !suppliers.some((s) => s.id === c.id))];
 
@@ -66,11 +68,11 @@ export function SupplierPicker({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="supplier_id">Proveedor</Label>
+      <Label htmlFor="supplier_id">{t("purchases.supplier")}</Label>
       <div className="flex items-center gap-2">
         <Select name="supplier_id" required value={value} onValueChange={onChange}>
           <SelectTrigger id="supplier_id" className="w-full min-w-0">
-            <SelectValue placeholder="Selecciona un proveedor" />
+            <SelectValue placeholder={t("purchases.picker.placeholder")} />
           </SelectTrigger>
           <SelectContent>
             {options.map((s) => (
@@ -82,17 +84,17 @@ export function SupplierPicker({
         </Select>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button type="button" variant="outline" size="icon" aria-label="Crear proveedor">
+            <Button type="button" variant="outline" size="icon" aria-label={t("purchases.picker.create")}>
               <Plus className="size-4" />
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Nuevo proveedor</DialogTitle>
+              <DialogTitle>{t("purchases.picker.new")}</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="quick-supplier-name">Nombre</Label>
+                <Label htmlFor="quick-supplier-name">{t("purchases.picker.name")}</Label>
                 <Input
                   id="quick-supplier-name"
                   value={name}
@@ -103,11 +105,11 @@ export function SupplierPicker({
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="quick-supplier-nit">NIT (opcional)</Label>
+                  <Label htmlFor="quick-supplier-nit">{t("purchases.picker.nit")}</Label>
                   <Input id="quick-supplier-nit" value={nit} onChange={(e) => setNit(e.target.value)} maxLength={30} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="quick-supplier-phone">Teléfono (opcional)</Label>
+                  <Label htmlFor="quick-supplier-phone">{t("purchases.picker.phone")}</Label>
                   <Input
                     id="quick-supplier-phone"
                     value={phone}
@@ -118,11 +120,11 @@ export function SupplierPicker({
               </div>
               {error ? (
                 <p role="alert" className="text-sm text-destructive">
-                  {error}
+                  {t(error)}
                 </p>
               ) : null}
               <Button type="button" onClick={handleCreate} disabled={pending || !name.trim()}>
-                {pending ? "Creando…" : "Crear proveedor"}
+                {pending ? t("purchases.picker.creating") : t("purchases.picker.create")}
               </Button>
             </div>
           </DialogContent>

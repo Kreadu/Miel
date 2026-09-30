@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createSupplier } from "@/actions/suppliers";
 import { createClient } from "@/lib/supabase/server";
@@ -7,13 +8,17 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { SupplierForm } from "./supplier-form";
 import { SupplierRow } from "./supplier-row";
 
-export const metadata = { title: "Proveedores · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("suppliers");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function ProveedoresPage() {
   const { active } = await getActiveTenant();
   if (!active) notFound();
 
   const canManage = active.role !== "member";
+  const t = await getTranslations("suppliers");
 
   const supabase = await createClient();
   const { data: suppliers } = await supabase
@@ -24,15 +29,15 @@ export default async function ProveedoresPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Proveedores</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
 
       {canManage ? (
         <SupplierForm
           action={createSupplier}
-          submitLabel="Crear proveedor"
-          pendingLabel="Creando…"
+          submitLabel={t("create")}
+          pendingLabel={t("creating")}
         />
       ) : null}
 
@@ -41,10 +46,10 @@ export default async function ProveedoresPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Nombre</th>
-                <th className="px-3 py-2 font-medium">NIT</th>
-                <th className="px-3 py-2 font-medium">Email</th>
-                <th className="px-3 py-2 font-medium">Teléfono</th>
+                <th className="px-3 py-2 font-medium">{t("name")}</th>
+                <th className="px-3 py-2 font-medium">{t("nit")}</th>
+                <th className="px-3 py-2 font-medium">{t("email")}</th>
+                <th className="px-3 py-2 font-medium">{t("phone")}</th>
                 <th className="px-3 py-2" />
               </tr>
             </thead>
@@ -69,9 +74,7 @@ export default async function ProveedoresPage() {
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          {canManage
-            ? "Aún no tienes proveedores. Crea el primero arriba."
-            : "Aún no hay proveedores registrados."}
+          {canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
     </div>

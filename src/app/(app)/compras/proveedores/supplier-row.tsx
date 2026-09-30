@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { toggleSupplierActive, updateSupplier } from "@/actions/suppliers";
@@ -16,6 +17,7 @@ export function SupplierRow({
   canManage: boolean;
 }) {
   const [editing, setEditing] = useState(false);
+  const t = useTranslations("suppliers");
 
   if (editing) {
     return (
@@ -24,8 +26,8 @@ export function SupplierRow({
           <SupplierForm
             action={updateSupplier}
             values={supplier}
-            submitLabel="Guardar"
-            pendingLabel="Guardando…"
+            submitLabel={t("save")}
+            pendingLabel={t("saving")}
             onCancel={() => setEditing(false)}
             onSuccess={() => setEditing(false)}
           />
@@ -47,24 +49,24 @@ export function SupplierRow({
       <td className="px-3 py-2.5">
         <div className="flex items-center justify-end gap-1">
           <Button asChild variant="ghost" size="sm">
-            <Link href={`/compras/proveedores/${supplier.id}/productos`}>Productos</Link>
+            <Link href={`/compras/proveedores/${supplier.id}/productos`}>{t("products")}</Link>
           </Button>
           {canManage ? (
             <>
               <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
-                Editar
+                {t("edit")}
               </Button>
               <form action={toggleSupplierActive}>
                 <input type="hidden" name="id" value={supplier.id} />
                 <input type="hidden" name="active" value={(!supplier.active).toString()} />
                 <Button type="submit" variant="ghost" size="sm">
-                  {supplier.active ? "Archivar" : "Reactivar"}
+                  {supplier.active ? t("archive") : t("reactivate")}
                 </Button>
               </form>
             </>
           ) : (
             !supplier.active && (
-              <span className="text-xs text-muted-foreground">Archivado</span>
+              <span className="text-xs text-muted-foreground">{t("archived")}</span>
             )
           )}
         </div>

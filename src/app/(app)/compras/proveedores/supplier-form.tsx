@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { type SupplierState } from "@/actions/suppliers";
@@ -33,6 +34,7 @@ export function SupplierForm({
   onSuccess?: () => void;
 }) {
   const [state, formAction, pending] = useActionState(action, null);
+  const t = useTranslations();
   // Ajuste de estado durante el render (patrón oficial de React, no un efecto — S2-01): al ver
   // un `state` de éxito nuevo, notifica al padre (p. ej. cerrar el modo edición).
   const [seenState, setSeenState] = useState(state);
@@ -50,15 +52,15 @@ export function SupplierForm({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Nombre</Label>
+          <Label htmlFor="name">{t("suppliers.name")}</Label>
           <Input id="name" name="name" required maxLength={120} defaultValue={values?.name} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="nit">NIT</Label>
+          <Label htmlFor="nit">{t("suppliers.nit")}</Label>
           <Input id="nit" name="nit" maxLength={30} defaultValue={values?.nit ?? ""} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("suppliers.email")}</Label>
           <Input
             id="email"
             name="email"
@@ -68,11 +70,11 @@ export function SupplierForm({
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="phone">Teléfono</Label>
+          <Label htmlFor="phone">{t("suppliers.phone")}</Label>
           <Input id="phone" name="phone" maxLength={30} defaultValue={values?.phone ?? ""} />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="address">Dirección</Label>
+          <Label htmlFor="address">{t("suppliers.address")}</Label>
           <Input
             id="address"
             name="address"
@@ -88,13 +90,13 @@ export function SupplierForm({
         </Button>
         {onCancel ? (
           <Button type="button" variant="ghost" onClick={onCancel}>
-            Cancelar
+            {t("suppliers.cancel")}
           </Button>
         ) : null}
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

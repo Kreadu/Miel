@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 6) · S20-04 — idiomas, módulo 4 (Comprar)
+
+**Hecho:** S20-03 commiteado (`b1ab3d4`). Anotada S24-01 (hoja técnica PDF por producto) en
+BACKLOG, para después de E20. Spec S20-04 aprobada. Traducidos es/en/fr: portada de Comprar,
+órdenes (formulario, selector y alta rápida de proveedor, fila, recibir, cancelar, historial),
+proveedores (lista, formulario, productos asociados, cuenta), cuentas por pagar. Acciones
+`purchases/suppliers/supplier-products` y sus Zod devuelven claves. Verificado: lint ✓, tsc ✓,
+`npm test` 441/441 ✓. Sin verificar en navegador (requiere sesión del humano).
+
+**Siguiente paso:** S20-05 (Gastos), mismo patrón.
+
+---
+
 ## Sesión 2026-09-30 (cont. 5) · S20-03 — idiomas, módulo 3 (Inventario)
 
 **Hecho:** S20-02 commiteado por el humano (`21b43cf`). Spec S20-03 aprobada. Traducidos es/en/fr:

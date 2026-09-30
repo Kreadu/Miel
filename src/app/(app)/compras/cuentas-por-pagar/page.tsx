@@ -1,15 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FileText, ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-export const metadata = { title: "Cuentas por Pagar · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("purchases");
+  return { title: `${t("payables")} · Miel` };
+}
 
 export default async function CuentasPorPagarPage() {
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations("payables");
 
   const supabase = await createClient();
   const { data: balances, error } = await supabase
@@ -38,12 +43,12 @@ export default async function CuentasPorPagarPage() {
             <Link href="/compras" className="text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h1 className="text-xl font-semibold tracking-tight">Cuentas por Pagar (CxP)</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           </div>
-          <p className="text-sm text-muted-foreground">Saldos pendientes con proveedores.</p>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-lg border border-border">
-          <span className="text-sm text-muted-foreground">Deuda Total:</span>
+          <span className="text-sm text-muted-foreground">{t("totalDebt")}</span>
           <span className="text-lg font-semibold text-destructive tabular-nums">
             ${formatMoney(totalDebt)}
           </span>
@@ -52,20 +57,20 @@ export default async function CuentasPorPagarPage() {
 
       {error ? (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-8 text-center">
-          <p className="text-sm font-medium text-destructive">No se pudieron cargar las cuentas por pagar.</p>
-          <p className="text-xs text-muted-foreground mt-1">Intenta recargar la página.</p>
+          <p className="text-sm font-medium text-destructive">{t("loadError")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("reload")}</p>
         </div>
       ) : balanceList.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-4 py-3 font-medium">Proveedor</th>
-                <th className="px-4 py-3 font-medium">NIT</th>
-                <th className="px-4 py-3 text-right font-medium">Total Comprado</th>
-                <th className="px-4 py-3 text-right font-medium">Total Pagado</th>
-                <th className="px-4 py-3 text-right font-medium">Saldo Pendiente</th>
-                <th className="px-4 py-3 text-center font-medium">Acciones</th>
+                <th className="px-4 py-3 font-medium">{t("supplier")}</th>
+                <th className="px-4 py-3 font-medium">{t("nit")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("totalPurchased")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("totalPaid")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("pending")}</th>
+                <th className="px-4 py-3 text-center font-medium">{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -87,7 +92,7 @@ export default async function CuentasPorPagarPage() {
                     </td>
                     <td className={`px-4 py-3 text-sm text-right font-semibold tabular-nums ${isDebt ? 'text-destructive' : isFavor ? 'text-success' : 'text-muted-foreground'}`}>
                       ${formatMoney(Math.abs(balance))}
-                      {isFavor && <span className="text-xs ml-1 font-normal">(A favor)</span>}
+                      {isFavor && <span className="text-xs ml-1 font-normal">{t("inFavor")}</span>}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <Link
@@ -95,7 +100,7 @@ export default async function CuentasPorPagarPage() {
                         className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
                       >
                         <FileText className="mr-1.5 h-3.5 w-3.5" />
-                        Detalle
+                        {t("detail")}
                       </Link>
                     </td>
                   </tr>
@@ -107,7 +112,7 @@ export default async function CuentasPorPagarPage() {
       ) : (
         <div className="rounded-lg border border-dashed border-border p-8 text-center">
           <p className="text-sm text-muted-foreground">
-            No hay saldos de proveedores registrados aún.
+            {t("empty")}
           </p>
         </div>
       )}

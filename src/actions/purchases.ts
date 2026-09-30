@@ -12,21 +12,21 @@ export type PurchaseState = { ok: false; error: string } | { ok: true } | null;
 const PURCHASES_PATH = "/compras";
 
 function mapPurchaseError(message: string | undefined): string {
-  if (message?.includes("supplier_invalid")) return "Selecciona un proveedor válido y activo.";
-  if (message?.includes("product_invalid")) return "Uno de los productos no es válido o está inactivo.";
-  if (message?.includes("permission_denied")) return "No tienes permiso para esta operación.";
-  if (message?.includes("items_required")) return "Agrega al menos un ítem a la orden.";
-  if (message?.includes("item_qty_invalid")) return "La cantidad de un ítem debe ser mayor a cero.";
-  if (message?.includes("item_unit_cost_invalid")) return "El costo de un ítem no puede ser negativo.";
-  if (message?.includes("purchase_not_found")) return "La orden no existe.";
-  if (message?.includes("purchase_not_draft")) return "Solo se puede marcar como ordenada una orden en borrador.";
-  if (message?.includes("warehouse_invalid")) return "Selecciona una bodega o sucursal válida.";
-  if (message?.includes("purchase_not_ordered")) return "Solo se puede recibir una orden que esté ordenada.";
-  if (message?.includes("purchase_not_cancellable")) return "Esta orden ya no se puede cancelar.";
-  if (message?.includes("purchase_not_updatable")) return "Esta orden ya no se puede editar.";
-  if (message?.includes("status_invalid")) return "Estado de orden inválido.";
-  if (message?.includes("not_authenticated")) return "No estás autenticado.";
-  return "No se pudo guardar la orden de compra. Intenta de nuevo.";
+  if (message?.includes("supplier_invalid")) return "purchases.errors.supplierInvalid";
+  if (message?.includes("product_invalid")) return "sales.errors.productInvalid";
+  if (message?.includes("permission_denied")) return "common.errors.permissionDenied";
+  if (message?.includes("items_required")) return "purchases.errors.itemsRequired";
+  if (message?.includes("item_qty_invalid")) return "sales.errors.qtyPositive";
+  if (message?.includes("item_unit_cost_invalid")) return "products.errors.costNegative";
+  if (message?.includes("purchase_not_found")) return "purchases.errors.notFound";
+  if (message?.includes("purchase_not_draft")) return "purchases.errors.notDraft";
+  if (message?.includes("warehouse_invalid")) return "purchases.errors.warehouseInvalid";
+  if (message?.includes("purchase_not_ordered")) return "purchases.errors.notOrdered";
+  if (message?.includes("purchase_not_cancellable")) return "purchases.errors.notCancellable";
+  if (message?.includes("purchase_not_updatable")) return "purchases.errors.notUpdatable";
+  if (message?.includes("status_invalid")) return "purchases.errors.statusInvalid";
+  if (message?.includes("not_authenticated")) return "common.errors.signInAgain";
+  return "purchases.errors.saveFailed";
 }
 
 /** Solo owner/admin del tenant activo crean órdenes (create_purchase lo valida igual). */
@@ -40,7 +40,7 @@ export async function createPurchase(
   try {
     items = JSON.parse(itemsRaw);
   } catch {
-    return { ok: false, error: "Los ítems de la orden no son válidos." };
+    return { ok: false, error: "purchases.errors.itemsInvalid" };
   }
 
   const parsed = purchaseSchema.safeParse({ ...raw, items });
@@ -71,7 +71,7 @@ export async function markPurchaseOrdered(
   formData: FormData,
 ): Promise<PurchaseState> {
   const parsed = markOrderedSchema.safeParse({ id: formData.get("id") });
-  if (!parsed.success) return { ok: false, error: "Orden inválida." };
+  if (!parsed.success) return { ok: false, error: "purchases.errors.purchaseInvalid" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("mark_purchase_ordered", { p_purchase_id: parsed.data.id });
@@ -88,7 +88,7 @@ export async function markPurchaseOrdered(
 /** Cualquier miembro del tenant recibe una orden ordenada (receive_purchase valida pertenencia, no rol admin). */
 export async function receivePurchase(purchaseId: string, warehouseId: string): Promise<PurchaseState> {
   const parsed = z.object({ purchaseId: z.uuid(), warehouseId: z.uuid() }).safeParse({ purchaseId, warehouseId });
-  if (!parsed.success) return { ok: false, error: "Selecciona una bodega o sucursal válida." };
+  if (!parsed.success) return { ok: false, error: "purchases.errors.warehouseInvalid" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("receive_purchase", {
@@ -109,7 +109,7 @@ export async function receivePurchase(purchaseId: string, warehouseId: string): 
 /** Solo owner/admin cancelan (cancel_purchase lo valida igual). */
 export async function cancelPurchase(purchaseId: string): Promise<PurchaseState> {
   const parsed = z.uuid().safeParse(purchaseId);
-  if (!parsed.success) return { ok: false, error: "Orden inválida." };
+  if (!parsed.success) return { ok: false, error: "purchases.errors.purchaseInvalid" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_purchase", { p_purchase_id: parsed.data });
@@ -131,7 +131,7 @@ export async function updatePurchase(_prev: PurchaseState, formData: FormData): 
   try {
     items = JSON.parse(itemsRaw);
   } catch {
-    return { ok: false, error: "Los ítems de la orden no son válidos." };
+    return { ok: false, error: "purchases.errors.itemsInvalid" };
   }
 
   const parsed = updatePurchaseSchema.safeParse({ ...raw, items });

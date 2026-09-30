@@ -12,8 +12,8 @@ export type SupplierState = { ok: false; error: string } | { ok: true } | null;
 const SUPPLIERS_PATH = "/compras/proveedores";
 
 function mapSupplierError(code: string | undefined): string {
-  if (code === "23505") return "Ya existe un proveedor con ese NIT.";
-  return "No se pudo guardar el proveedor. Intenta de nuevo.";
+  if (code === "23505") return "suppliers.errors.duplicateNit";
+  return "suppliers.errors.saveFailed";
 }
 
 function toColumns(data: z.infer<typeof supplierSchema>) {
@@ -35,7 +35,7 @@ export async function createSupplier(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -67,7 +67,7 @@ export async function quickCreateSupplier(input: {
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase

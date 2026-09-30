@@ -72,7 +72,7 @@ describe("linkSupplierProduct", () => {
       formData({ ...validFields, product_id: "no-es-uuid" }),
     );
 
-    expect(result).toEqual({ ok: false, error: "Producto inválido" });
+    expect(result).toEqual({ ok: false, error: "suppliers.errors.productInvalid" });
     expect(client._insert).not.toHaveBeenCalled();
   });
 
@@ -85,7 +85,7 @@ describe("linkSupplierProduct", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Ese producto ya estaba asociado a este proveedor.",
+      error: "suppliers.errors.alreadyLinked",
     });
   });
 });

@@ -13,9 +13,9 @@ function productosPath(supplierId: string) {
 }
 
 function mapSupplierProductError(code: string | undefined): string {
-  if (code === "23505") return "Ese producto ya estaba asociado a este proveedor.";
-  if (code === "23503") return "Producto o proveedor inválido.";
-  return "No se pudo guardar la asociación. Intenta de nuevo.";
+  if (code === "23505") return "suppliers.errors.alreadyLinked";
+  if (code === "23503") return "suppliers.errors.linkInvalid";
+  return "suppliers.errors.linkFailed";
 }
 
 /** Asociar producto↔proveedor a mano. Solo owner/admin (RLS de supplier_products lo garantiza igual). */
@@ -27,7 +27,7 @@ export async function linkSupplierProduct(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.from("supplier_products").insert({
