@@ -1,47 +1,43 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveAllocations } from "./allocation-picker";
+import { canUseWarehouse, resolveAllocations } from "./allocation-picker";
 
 const P = "p1";
-const MAIN = "cinecultivo";
+const HOME = "cinecultivo";
 const OTHER = "kreadu";
-const stock = { [P]: { [MAIN]: 5, [OTHER]: 10 } };
 const items = [{ productId: P, name: "Miel", qty: 10 }];
 
-describe("resolveAllocations (S18-10, filas bodega + cantidad)", () => {
-  it("si alcanza en la bodega de la venta: sin reparto (flujo de siempre)", () => {
-    expect(resolveAllocations([{ ...items[0], qty: 3 }], MAIN, stock, {})).toEqual({ covered: true, allocations: null });
+describe("resolveAllocations (S18-10: asignar por bodega y aceptar)", () => {
+  it("nada asignado por defecto: no está listo", () => {
+    expect(resolveAllocations(items, { assignments: {}, accepted: {} })).toEqual({ covered: false, allocations: [] });
   });
 
-  it("por defecto la primera fila toma lo que alcanza: faltan 5, no está cubierto", () => {
-    expect(resolveAllocations(items, MAIN, stock, {}).covered).toBe(false);
+  it("5 + 5 asignados pero sin aceptar: no está listo", () => {
+    const assignments = { [P]: [{ warehouseId: HOME, qty: 5 }, { warehouseId: OTHER, qty: 5 }] };
+    expect(resolveAllocations(items, { assignments, accepted: {} }).covered).toBe(false);
   });
 
-  it("5 de Cinecultivo + 5 de Kreadu: cubierto y con reparto", () => {
-    const rows = { [P]: [{ warehouseId: MAIN, qty: 5 }, { warehouseId: OTHER, qty: 5 }] };
-    expect(resolveAllocations(items, MAIN, stock, rows)).toEqual({
+  it("5 + 5 aceptado: listo, con el reparto", () => {
+    const assignments = { [P]: [{ warehouseId: HOME, qty: 5 }, { warehouseId: OTHER, qty: 5 }] };
+    expect(resolveAllocations(items, { assignments, accepted: { [P]: true } })).toEqual({
       covered: true,
       allocations: [
-        { product_id: P, warehouse_id: MAIN, qty: 5 },
+        { product_id: P, warehouse_id: HOME, qty: 5 },
         { product_id: P, warehouse_id: OTHER, qty: 5 },
       ],
     });
   });
 
-  it("si sobra (suma más de lo vendido) no está cubierto", () => {
-    const rows = { [P]: [{ warehouseId: MAIN, qty: 5 }, { warehouseId: OTHER, qty: 7 }] };
-    expect(resolveAllocations(items, MAIN, stock, rows).covered).toBe(false);
+  it("aceptado pero sin sumar el total (p. ej. cambió la cantidad): no está listo", () => {
+    const assignments = { [P]: [{ warehouseId: HOME, qty: 5 }] };
+    expect(resolveAllocations(items, { assignments, accepted: { [P]: true } }).covered).toBe(false);
   });
+});
 
-  it("si una fila pide más de lo que hay en esa bodega no está cubierto", () => {
-    const rows = { [P]: [{ warehouseId: MAIN, qty: 8 }, { warehouseId: OTHER, qty: 2 }] };
-    expect(resolveAllocations(items, MAIN, stock, rows).covered).toBe(false);
-  });
-
-  it("una fila en 0 no se manda", () => {
-    const rows = { [P]: [{ warehouseId: MAIN, qty: 0 }, { warehouseId: OTHER, qty: 10 }] };
-    expect(resolveAllocations(items, MAIN, stock, rows).allocations).toEqual([
-      { product_id: P, warehouse_id: OTHER, qty: 10 },
-    ]);
+describe("canUseWarehouse", () => {
+  it("la bodega propia siempre; otra solo si presta stock", () => {
+    expect(canUseWarehouse({ id: HOME, name: "C", lendsStock: false }, HOME)).toBe(true);
+    expect(canUseWarehouse({ id: OTHER, name: "K", lendsStock: false }, HOME)).toBe(false);
+    expect(canUseWarehouse({ id: OTHER, name: "K", lendsStock: true }, HOME)).toBe(true);
   });
 });

@@ -5,13 +5,13 @@ import { useState, useTransition } from "react";
 
 import { confirmSale } from "@/actions/sales";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import {
   AllocationPicker,
   type AllocationItem,
   type AllocationWarehouse,
-  type AllocationRows,
+  type AllocationState,
+  EMPTY_ALLOCATION,
   resolveAllocations,
   type StockMap,
 } from "./allocation-picker";
@@ -26,20 +26,22 @@ export function ConfirmSaleForm({
   warehouses,
   stock,
   defaultWarehouseId,
+  canManage,
 }: {
   saleId: string;
   items: AllocationItem[];
   warehouses: AllocationWarehouse[];
   stock: StockMap;
   defaultWarehouseId: string | null;
+  canManage: boolean;
 }) {
   const t = useTranslations();
   const [confirming, setConfirming] = useState(false);
-  const [warehouseId, setWarehouseId] = useState(defaultWarehouseId ?? "");
-  const [rows, setRows] = useState<AllocationRows>({});
+  const warehouseId = defaultWarehouseId ?? "";
+  const [alloc, setAlloc] = useState<AllocationState>(EMPTY_ALLOCATION);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const { covered, allocations } = resolveAllocations(items, warehouseId || null, stock, rows);
+  const { covered, allocations } = resolveAllocations(items, alloc);
 
   if (!confirming) {
     return (
@@ -51,31 +53,15 @@ export function ConfirmSaleForm({
 
   return (
     <div className="flex min-w-[240px] flex-col gap-2">
-      <Select
-        value={warehouseId}
-        onValueChange={(v) => {
-          setWarehouseId(v);
-          setRows({});
-        }}
-      >
-        <SelectTrigger className="h-8 text-xs">
-          <SelectValue placeholder={t("sales.orders.warehousePlaceholder")} />
-        </SelectTrigger>
-        <SelectContent>
-          {warehouses.map((w) => (
-            <SelectItem key={w.id} value={w.id} className="text-xs">
-              {w.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <p className="text-xs font-medium">{t("sales.allocation.title")}</p>
       <AllocationPicker
         items={items}
         warehouses={warehouses}
-        mainId={warehouseId || null}
+        homeId={warehouseId || null}
         stock={stock}
-        rows={rows}
-        onChange={setRows}
+        value={alloc}
+        onChange={setAlloc}
+        canManage={canManage}
       />
       <div className="flex gap-1">
         <Button
@@ -86,7 +72,7 @@ export function ConfirmSaleForm({
           onClick={() => {
             setError(null);
             startTransition(async () => {
-              const res = await confirmSale(saleId, warehouseId, allocations ?? undefined);
+              const res = await confirmSale(saleId, warehouseId, allocations);
               if (res?.ok) setConfirming(false);
               else setError(res?.error ?? "common.errors.unknown");
             });

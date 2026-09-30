@@ -76,3 +76,16 @@ Fuera de alcance: traslados de stock entre bodegas como movimiento aparte; repar
   boleta #N" (una venta cobrada y entregada no va a "Pedidos por completar": queda en Caja y en
   el historial del cliente). "Vaciar carrito" pasa a llamarse **"Limpiar pantalla"**.
 - Sin cambios en la BD.
+
+## Segundo cambio pedido por el humano tras probar (2026-09-30)
+
+El humano no lograba sumar Kreadu (no estaba marcada y "Sale de" reiniciaba el reparto). Nuevo flujo:
+- **Nada se asigna por defecto.** Por producto: desplegable con **todas** las bodegas ("Kreadu —
+  hay 10"), cantidad (viene con lo que falta, tope el stock) y **"Asignar"**; se repite hasta el
+  total; **"Aceptar"** cierra el producto (resumen + "cambiar"). "✕" quita una asignación.
+- Siempre se puede usar la bodega propia (la del trabajador o la principal); las demás, si
+  prestan stock. Las que no, se ven en gris y el dueño/administrador las habilita **ahí mismo con
+  un clic** ("Permitir que preste"); a un operativo se le dice que lo pida al encargado.
+- Se quita el desplegable "Sale de" (la bodega de la venta es la propia).
+- "Cobrar y entregar" / "Confirmar" solo con todos los productos aceptados.
+- Sin cambios de BD; acción nueva `setWarehouseLends`.

@@ -323,6 +323,21 @@ productos de venta (vehículos/maquinaria también sirven: manual o ficha del eq
 |---|---|---|
 | S25-01 | Emitir factura electrónica y documento equivalente POS validados por la DIAN desde Miel (resolución de numeración, proveedor tecnológico o software propio habilitado, firma, envío y CUFE/CUDE). Reutilizar lo aprendido en la nómina electrónica (S21-05). Mientras no exista, S18-06 deja las facturas "por emitir". | todo |
 
+## Épica E26 — Orden de compra como documento (plan aprobado por el humano 2026-09-30)
+
+Decisiones: aprueban personas específicas que marca el dueño (el dueño siempre puede); cada
+usuario pone su nombre y se hace responsable (el nombre queda guardado en la orden al pedir,
+aprobar y enviar); logo de la empresa en el PDF; correo cuando Miel esté en el servidor central.
+Aprobadores = cuentas con correo; un trabajador en modo tienda puede pedir pero no aprobar.
+PDF con `@react-pdf/renderer` (ADR al implementar S26-03).
+
+| ID | Historia | Estado |
+|---|---|---|
+| S26-01 | Página "Mi empresa" (logo, dirección, teléfono, correo) y "Tu nombre" de cada usuario | todo |
+| S26-02 | Aprobadores marcados por el dueño; número OC-0001; "Pendiente de aprobación" → "Aprobar" (quién y cuándo); solo aprobadas se envían/ordenan | todo |
+| S26-03 | PDF de la orden (logo, empresa, proveedor, detalle, pedida/aprobada/enviada por + fecha); descargar y enviar por WhatsApp (celular adjunta; computador abre chat) | todo |
+| S26-04 | Enviar la orden por correo con el PDF adjunto (cuando esté en el servidor central) | todo |
+
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración
   `20260929165506_tipos-de-inventario.sql` sin aplicar al cloud — sin ella fallan los

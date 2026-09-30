@@ -22,7 +22,14 @@ import { saleLine } from "@/lib/sales/line";
 import { DOCUMENT_TYPES, PAYMENT_METHODS } from "@/lib/validation/sales";
 
 import { useCatalogCart } from "../use-catalog-cart";
-import { AllocationPicker, type AllocationWarehouse, type AllocationRows, resolveAllocations, type StockMap } from "./allocation-picker";
+import {
+  AllocationPicker,
+  type AllocationState,
+  type AllocationWarehouse,
+  EMPTY_ALLOCATION,
+  resolveAllocations,
+  type StockMap,
+} from "./allocation-picker";
 import { DeliverySection, type Rate } from "./delivery-section";
 
 const NO_CUSTOMER = "__counter__";
@@ -39,6 +46,7 @@ export function CatalogPedidoCart({
   warehouses,
   defaultWarehouseId,
   stock,
+  canManage,
 }: {
   tenantId: string;
   customers: { id: string; name: string }[];
@@ -49,14 +57,17 @@ export function CatalogPedidoCart({
   defaultWarehouseId: string | null;
   /** S18-10: stock por producto y bodega, para ver cuánto hay y completar desde otra. */
   stock: StockMap;
+  /** S18-10: dueño/admin pueden habilitar con un clic que una bodega preste stock. */
+  canManage: boolean;
 }) {
   const { lines, updateQty, updateLineData, removeItem, clear } = useCatalogCart(tenantId);
   const [state, formAction, pending] = useActionState(createSale, null);
   // S18-06: venta de mostrador en un paso (crea, boleta, cobro total y entrega).
   const [checkoutState, checkoutAction, checkoutPending] = useActionState(checkoutCounterSale, null);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [warehouseId, setWarehouseId] = useState(defaultWarehouseId ?? "");
-  const [rows, setRows] = useState<AllocationRows>({});
+  // S18-10: la bodega de la venta es la propia (trabajador o principal); el reparto lo arma el usuario.
+  const warehouseId = defaultWarehouseId ?? "";
+  const [alloc, setAlloc] = useState<AllocationState>(EMPTY_ALLOCATION);
   const t = useTranslations();
 
   // S19-11: reconcilia precio/descuento/IVA del carrito contra la BD una vez al entrar (no en
@@ -99,7 +110,7 @@ export function CatalogPedidoCart({
     if (checkoutState?.ok) {
       clear();
       setPaymentMethod("");
-      setRows({});
+      setAlloc(EMPTY_ALLOCATION);
       setDone(checkoutState.receiptNumber ?? 0);
     }
   }
@@ -134,7 +145,7 @@ export function CatalogPedidoCart({
     lines.length > 0 && lines.every((l) => l.taxRate === lines[0].taxRate) ? lines[0].taxRate : null;
 
   const allocationItems = lines.map((l) => ({ productId: l.productId, name: l.name, qty: l.qty }));
-  const { covered, allocations } = resolveAllocations(allocationItems, warehouseId || null, stock, rows);
+  const { covered, allocations } = resolveAllocations(allocationItems, alloc);
 
   const itemsPayload = JSON.stringify(
     // S23-01: precio, IVA y descuento los pone create_sale desde el producto.
@@ -261,28 +272,7 @@ export function CatalogPedidoCart({
         </div>
         {delivery.method === "pickup" ? (
           <>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="warehouse_id">{t("sales.cart.warehouse")}</Label>
-              <Select
-                name="warehouse_id"
-                value={warehouseId}
-                onValueChange={(v) => {
-                  setWarehouseId(v);
-                  setRows({});
-                }}
-              >
-                <SelectTrigger id="warehouse_id" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {warehouses.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>
-                      {w.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <input type="hidden" name="warehouse_id" value={warehouseId} />
             <div className="flex flex-col gap-2">
               <Label htmlFor="document_type">{t("sales.cart.document")}</Label>
               <Select name="document_type" defaultValue="boleta">
@@ -300,14 +290,16 @@ export function CatalogPedidoCart({
               <p className="text-xs text-muted-foreground">{t("sales.cart.invoiceHint")}</p>
             </div>
             <div className="sm:col-span-2">
-              <input type="hidden" name="allocations" value={allocations ? JSON.stringify(allocations) : ""} />
+              <p className="mb-2 text-sm font-medium">{t("sales.allocation.title")}</p>
+              <input type="hidden" name="allocations" value={covered ? JSON.stringify(allocations) : ""} />
               <AllocationPicker
                 items={allocationItems}
                 warehouses={warehouses}
-                mainId={warehouseId || null}
+                homeId={warehouseId || null}
                 stock={stock}
-                rows={rows}
-                onChange={setRows}
+                value={alloc}
+                onChange={setAlloc}
+                canManage={canManage}
               />
             </div>
           </>

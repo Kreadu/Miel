@@ -376,7 +376,6 @@
       "confirm": "Confirmer",
       "cancel": "Retour",
       "save": "Enregistrer",
-      "warehousePlaceholder": "Entrepôt ou point de vente d’origine...",
       "ship": "Expédier",
       "addressPlaceholder": "Adresse de livraison...",
       "markDelivered": "Marquer livrée",
@@ -413,7 +412,6 @@
       "creating": "Création…",
       "clear": "Effacer l’écran",
       "keepBrowsing": "Continuer à parcourir le catalogue",
-      "warehouse": "Sort de",
       "document": "Justificatif",
       "documentTypes": {
         "boleta": "Ticket (boleta)",
@@ -476,12 +474,19 @@
       "missing": "Il manque {qty}",
       "complete": "Complet",
       "remove": "retirer",
-      "notEnough": "Pas assez dans les entrepôts qui prêtent du stock.",
-      "excess": "{qty} en trop",
-      "have": "{qty} dispo.",
       "qty": "Quantité",
       "chooseWarehouse": "Choisir l’entrepôt",
-      "addWarehouse": "+ Autre entrepôt"
+      "title": "De quel entrepôt sort chaque produit ?",
+      "option": "{warehouse} — {qty} dispo.",
+      "notLending": "(ne prête pas de stock)",
+      "notLendingHelp": "{warehouse} ne prête pas de stock pour compléter les ventes.",
+      "allowLending": "Autoriser le prêt",
+      "askManager": "Demandez au responsable de l’activer.",
+      "assign": "Attribuer",
+      "accept": "Accepter",
+      "change": "modifier",
+      "fromWarehouse": "{qty} de {warehouse}",
+      "tooMany": "Maximum {max} depuis cet entrepôt."
     }
   },
   "customers": {

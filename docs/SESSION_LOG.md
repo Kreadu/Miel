@@ -23,6 +23,12 @@ Verificado: lint ✓, tsc ✓, `npm test` 466/466 ✓. **Sin correr:** pgTAP, na
 bodega", "hay N", "Completo/Faltan/Sobran"); tras "Cobrar y entregar" pantalla limpia + aviso con
 la boleta; "Vaciar carrito" → "Limpiar pantalla". Sin cambios de BD. `npm test` 468/468 ✓.
 
+**Segundo cambio tras probar:** el humano no lograba sumar Kreadu (no estaba marcada y "Sale de"
+reiniciaba el reparto). Ahora: nada asignado por defecto; por producto, bodega (todas, con stock) +
+cantidad + "Asignar", hasta el total, y "Aceptar"; bodegas que no prestan en gris con "Permitir
+que preste" (un clic, dueño/admin, acción `setWarehouseLends`); sin "Sale de". Plan E26 (orden de
+compra como documento) aprobado y anotado en BACKLOG. `npm test` 470/470 ✓.
+
 **Pendiente del humano:** aplicar en el SQL editor, en orden: `20260930180000_cobrar-y-entregar`,
 `20260930200000_caja-cobros-y-devoluciones`, `20260930220000_completar-desde-otra-bodega`
 (hasta aplicar la última, guardar una bodega da error). Correr los pgTAP S18-06, S18-08, S18-10,

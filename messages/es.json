@@ -376,7 +376,6 @@
       "confirm": "Confirmar",
       "cancel": "Volver",
       "save": "Guardar",
-      "warehousePlaceholder": "Bodega o sucursal origen...",
       "ship": "Despachar",
       "addressPlaceholder": "Dirección de envío...",
       "markDelivered": "Marcar entregado",
@@ -413,7 +412,6 @@
       "creating": "Creando…",
       "clear": "Limpiar pantalla",
       "keepBrowsing": "Seguir viendo el catálogo",
-      "warehouse": "Sale de",
       "document": "Comprobante",
       "documentTypes": {
         "boleta": "Boleta",
@@ -476,12 +474,19 @@
       "missing": "Faltan {qty}",
       "complete": "Completo",
       "remove": "quitar",
-      "notEnough": "No hay suficiente en las bodegas que prestan stock.",
-      "excess": "Sobran {qty}",
-      "have": "hay {qty}",
       "qty": "Cantidad",
       "chooseWarehouse": "Elige bodega",
-      "addWarehouse": "+ Otra bodega"
+      "title": "¿De qué bodega sale cada producto?",
+      "option": "{warehouse} — hay {qty}",
+      "notLending": "(no presta stock)",
+      "notLendingHelp": "{warehouse} no presta stock para completar ventas.",
+      "allowLending": "Permitir que preste",
+      "askManager": "Pídele al encargado que la habilite.",
+      "assign": "Asignar",
+      "accept": "Aceptar",
+      "change": "cambiar",
+      "fromWarehouse": "{qty} de {warehouse}",
+      "tooMany": "Máximo {max} desde esta bodega."
     }
   },
   "customers": {

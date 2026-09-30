@@ -69,6 +69,7 @@ export async function SaleRow({
               warehouses={warehouses}
               stock={stock}
               defaultWarehouseId={defaultWarehouseId}
+              canManage={canCancel}
             />
           )}
           

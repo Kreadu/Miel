@@ -376,7 +376,6 @@
       "confirm": "Confirm",
       "cancel": "Back",
       "save": "Save",
-      "warehousePlaceholder": "Source warehouse or branch...",
       "ship": "Ship",
       "addressPlaceholder": "Shipping address...",
       "markDelivered": "Mark delivered",
@@ -413,7 +412,6 @@
       "creating": "Creating…",
       "clear": "Clear screen",
       "keepBrowsing": "Keep browsing the catalog",
-      "warehouse": "Ships from",
       "document": "Receipt type",
       "documentTypes": {
         "boleta": "Receipt (boleta)",
@@ -476,12 +474,19 @@
       "missing": "{qty} missing",
       "complete": "Complete",
       "remove": "remove",
-      "notEnough": "Not enough in the warehouses that lend stock.",
-      "excess": "{qty} too many",
-      "have": "{qty} available",
       "qty": "Quantity",
       "chooseWarehouse": "Choose warehouse",
-      "addWarehouse": "+ Another warehouse"
+      "title": "Which warehouse does each product come from?",
+      "option": "{warehouse} — {qty} available",
+      "notLending": "(doesn't lend stock)",
+      "notLendingHelp": "{warehouse} doesn't lend stock to complete sales.",
+      "allowLending": "Allow it to lend",
+      "askManager": "Ask the manager to enable it.",
+      "assign": "Assign",
+      "accept": "Accept",
+      "change": "change",
+      "fromWarehouse": "{qty} from {warehouse}",
+      "tooMany": "At most {max} from this warehouse."
     }
   },
   "customers": {

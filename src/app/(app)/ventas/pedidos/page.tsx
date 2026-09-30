@@ -128,6 +128,7 @@ export default async function PedidosPage() {
         warehouses={warehouses}
         defaultWarehouseId={defaultWarehouseRes.data ?? null}
         stock={stock}
+        canManage={canManage}
       />
 
       {invoices.length > 0 ? (

@@ -103,3 +103,31 @@ export async function toggleWarehouseActive(formData: FormData): Promise<void> {
     .eq("id", parsed.data.id);
   revalidatePath(WAREHOUSES_PATH);
 }
+
+/**
+ * S18-10: un clic para que una bodega preste (o no) stock para completar ventas, desde la misma
+ * pantalla de Pedidos. Solo owner/admin: la RLS de warehouses no actualiza nada a un operativo.
+ */
+export async function setWarehouseLends(
+  warehouseId: string,
+  lends: boolean,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const id = z.uuid().safeParse(warehouseId);
+  if (!id.success) return { ok: false, error: "stock.errors.warehouseInvalid" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("warehouses")
+    .update({ lends_stock: lends })
+    .eq("id", id.data)
+    .select("id");
+  if (error) {
+    console.error("setWarehouseLends:", error.code);
+    return { ok: false, error: "warehouses.errors.updateFailed" };
+  }
+  if (!data?.length) return { ok: false, error: "common.errors.permissionDenied" };
+
+  revalidatePath(WAREHOUSES_PATH);
+  revalidatePath("/ventas/pedidos");
+  return { ok: true };
+}
