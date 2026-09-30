@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
 import { quickCreateExpenseCategory } from "@/actions/expenses";
@@ -21,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { categoryLabel } from "@/lib/expenses/category-label";
 
 /**
  * S22-01: categoría del gasto (ya clasificada como fija o variable) + "+" para crear una propia
@@ -43,6 +45,8 @@ export function CategorySelect({
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const t = useTranslations("expenses");
+  const tr = useTranslations();
   // Un gasto viejo con categoría escrita a mano (fuera de la lista) sigue mostrándose.
   const options = [...new Set([...categories, ...created, ...(defaultValue ? [defaultValue] : [])])];
 
@@ -63,33 +67,33 @@ export function CategorySelect({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>Categoría</Label>
+      <Label htmlFor={id}>{t("category")}</Label>
       <div className="flex items-center gap-2">
         <Select name="category" value={value} onValueChange={setValue} required>
           <SelectTrigger id={id} className="w-full min-w-0">
-            <SelectValue placeholder="Elige la categoría" />
+            <SelectValue placeholder={t("categorySelect.placeholder")} />
           </SelectTrigger>
           <SelectContent>
             {options.map((c) => (
               <SelectItem key={c} value={c}>
-                {c}
+                {categoryLabel(c, t)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button type="button" variant="outline" size="icon" aria-label="Crear categoría">
+            <Button type="button" variant="outline" size="icon" aria-label={t("categorySelect.create")}>
               <Plus className="size-4" />
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Nueva categoría de gasto {kind === "fixed" ? "fijo" : "variable"}</DialogTitle>
+              <DialogTitle>{kind === "fixed" ? t("categorySelect.newFixed") : t("categorySelect.newVariable")}</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor={`${id}-new`}>Nombre</Label>
+                <Label htmlFor={`${id}-new`}>{t("categorySelect.name")}</Label>
                 <Input
                   id={`${id}-new`}
                   value={name}
@@ -106,11 +110,11 @@ export function CategorySelect({
               </div>
               {error ? (
                 <p role="alert" className="text-sm text-destructive">
-                  {error}
+                  {tr(error)}
                 </p>
               ) : null}
               <Button type="button" onClick={handleCreate} disabled={pending || !name.trim()}>
-                {pending ? "Creando…" : "Crear categoría"}
+                {pending ? t("categorySelect.creating") : t("categorySelect.create")}
               </Button>
             </div>
           </DialogContent>

@@ -1,12 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 
 import { deleteExpense } from "@/actions/expenses";
 import { Button } from "@/components/ui/button";
+import { categoryLabel } from "@/lib/expenses/category-label";
 import { formatDate, formatMoney } from "@/lib/format";
 
-import { ExpenseForm, type ExpenseValues, METHOD_LABEL } from "./expense-form";
+import { ExpenseForm, type ExpenseValues } from "./expense-form";
 
 /** S22-01: una fila de la tabla de gastos, con Editar (en el lugar) y Borrar. */
 export function ExpenseRow({
@@ -26,6 +28,8 @@ export function ExpenseRow({
 }) {
   const [editing, setEditing] = useState(false);
   const close = useCallback(() => setEditing(false), []);
+  const t = useTranslations();
+  const te = useTranslations("expenses");
 
   if (editing) {
     return (
@@ -47,27 +51,27 @@ export function ExpenseRow({
   return (
     <tr className="border-b border-border last:border-0">
       <td className="px-3 py-2.5 tabular-nums">{formatDate(expense.paid_on)}</td>
-      <td className="px-3 py-2.5">{expense.category}</td>
+      <td className="px-3 py-2.5">{categoryLabel(expense.category, te)}</td>
       <td className="px-3 py-2.5 text-muted-foreground">
         {expense.description}
         {supplierName ? ` · ${supplierName}` : ""}
       </td>
-      <td className="px-3 py-2.5 text-muted-foreground">{METHOD_LABEL[expense.method]}</td>
+      <td className="px-3 py-2.5 text-muted-foreground">{t(`sales.paymentMethod.${expense.method}`)}</td>
       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(expense.amount)}</td>
       <td className="px-3 py-2.5">
         <div className="flex justify-end gap-1">
           <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
-            Editar
+            {te("edit")}
           </Button>
           <form
             action={deleteExpense}
             onSubmit={(e) => {
-              if (!confirm(`¿Borrar "${expense.description}"?`)) e.preventDefault();
+              if (!confirm(te("deleteConfirm", { name: expense.description }))) e.preventDefault();
             }}
           >
             <input type="hidden" name="id" value={expense.id} />
             <Button type="submit" variant="ghost" size="sm">
-              Borrar
+              {te("delete")}
             </Button>
           </form>
         </div>

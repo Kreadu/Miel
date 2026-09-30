@@ -251,7 +251,7 @@ traducidas con su sigla.
 | S20-02 | 2 · Vender (pedidos, carrito, clientes, caja, envíos, cobros) | implemented (specs/done/S20-02-idiomas-vender.md) |
 | S20-03 | 3 · Inventario (resto de pantallas; producto/catálogo ya en piloto) | implemented (specs/done/S20-03-idiomas-inventario.md) |
 | S20-04 | 4 · Comprar | implemented (specs/done/S20-04-idiomas-comprar.md) |
-| S20-05 | 5 · Gastos | todo |
+| S20-05 | 5 · Gastos | implemented (specs/done/S20-05-idiomas-gastos.md) |
 | S20-06 | 6 · Resultados (incluye respuesta de la IA en el idioma del usuario) | todo |
 | S20-07 | 7 · RRHH y nómina | todo |
 

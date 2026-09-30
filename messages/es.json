@@ -994,5 +994,93 @@
     "inFavor": "(A favor)",
     "detail": "Detalle",
     "empty": "No hay saldos de proveedores registrados aún."
+  },
+  "expenses": {
+    "title": "Gastos",
+    "subtitle": "Elige la hoja y la categoría: el tipo (fijo o variable) ya viene asignado.",
+    "sheets": {
+      "fijos": "Gastos fijos",
+      "variables": "Gastos variables"
+    },
+    "monthRecorded": {
+      "fijos": "Gastos fijos anotados este mes (sin IVA)",
+      "variables": "Gastos variables anotados este mes (sin IVA)"
+    },
+    "labor": "Mano de obra este mes (desde RRHH)",
+    "monthTotal": {
+      "fijos": "Total gastos fijos del mes",
+      "variables": "Total gastos variables del mes"
+    },
+    "empty": {
+      "fijos": "Aún no hay gastos fijos. Agrega el primero arriba.",
+      "variables": "Aún no hay gastos variables. Agrega el primero arriba."
+    },
+    "laborNote": "La mano de obra se clasifica en RRHH, en la ficha de cada trabajador («Su pago es»), y entra aquí al cerrar cada período de nómina.",
+    "date": "Fecha",
+    "category": "Categoría",
+    "description": "Descripción",
+    "payment": "Pago",
+    "amount": "Monto",
+    "edit": "Editar",
+    "delete": "Borrar",
+    "deleteConfirm": "¿Borrar «{name}»?",
+    "form": {
+      "descriptionPlaceholder": "Ej. Arriendo local de septiembre",
+      "tax": "IVA incluido (se recupera)",
+      "method": "Forma de pago",
+      "supplier": "Proveedor (opcional)",
+      "noSupplier": "Sin proveedor",
+      "saving": "Guardando…",
+      "saveChanges": "Guardar cambios",
+      "add": "Agregar gasto",
+      "cancel": "Cancelar"
+    },
+    "categorySelect": {
+      "placeholder": "Elige la categoría",
+      "create": "Crear categoría",
+      "newFixed": "Nueva categoría de gasto fijo",
+      "newVariable": "Nueva categoría de gasto variable",
+      "name": "Nombre",
+      "creating": "Creando…"
+    },
+    "categories": {
+      "rent": "Arriendo",
+      "utilities": "Servicios públicos (agua, luz, gas)",
+      "internetPhone": "Internet y telefonía",
+      "officeSupplies": "Artículos de oficina y papelería",
+      "cleaning": "Aseo y limpieza",
+      "furnitureMaintenance": "Mobiliario y equipos (mantenimiento)",
+      "toolsMaintenance": "Herramientas y maquinaria (mantenimiento)",
+      "insurance": "Seguros",
+      "accounting": "Contabilidad y asesorías",
+      "software": "Software y suscripciones",
+      "taxesLicenses": "Impuestos y licencias",
+      "security": "Vigilancia y seguridad",
+      "loanPayments": "Cuotas de crédito o leasing",
+      "depreciation": "Depreciación y amortización",
+      "interest": "Intereses y gastos financieros",
+      "incomeTax": "Impuesto de renta",
+      "transport": "Transporte y envíos",
+      "fuel": "Combustible",
+      "vehicleMaintenance": "Mantenimiento de vehículos",
+      "marketing": "Publicidad y marketing",
+      "salesCommissions": "Comisiones de venta",
+      "packaging": "Empaques y bolsas",
+      "bankFees": "Comisiones bancarias y datáfono",
+      "travelMeals": "Viáticos y alimentación",
+      "repairs": "Reparaciones imprevistas"
+    },
+    "errors": {
+      "invalidData": "Los datos del gasto no son válidos (monto o tipo).",
+      "saveFailed": "No se pudo guardar el gasto. Intenta de nuevo.",
+      "expenseInvalid": "Gasto inválido.",
+      "duplicateCategory": "Ya existe una categoría con ese nombre.",
+      "categoryRequired": "Elige la categoría",
+      "descriptionRequired": "Escribe una descripción",
+      "taxNegative": "El IVA no puede ser negativo",
+      "taxExceedsAmount": "El IVA no puede ser mayor al monto",
+      "dateInvalid": "Fecha inválida",
+      "kindInvalid": "Tipo de gasto inválido"
+    }
   }
 }

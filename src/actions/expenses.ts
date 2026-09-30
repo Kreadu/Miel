@@ -14,9 +14,9 @@ const EXPENSES_PATH = "/gastos";
 const NONE = "__none__";
 
 function mapExpenseError(code: string | undefined): string {
-  if (code === "42501") return "No tienes permiso para gestionar gastos.";
-  if (code === "23514") return "Los datos del gasto no son válidos (monto o tipo).";
-  return "No se pudo guardar el gasto. Intenta de nuevo.";
+  if (code === "42501") return "common.errors.permissionDenied";
+  if (code === "23514") return "expenses.errors.invalidData";
+  return "expenses.errors.saveFailed";
 }
 
 function readExpense(formData: FormData) {
@@ -54,13 +54,13 @@ export async function createExpense(_prev: ExpenseState, formData: FormData): Pr
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "No autenticado." };
+  if (!user) return { ok: false, error: "common.errors.signInAgain" };
 
   const { error } = await supabase
     .from("expenses")
@@ -75,7 +75,7 @@ export async function createExpense(_prev: ExpenseState, formData: FormData): Pr
 
 export async function updateExpense(_prev: ExpenseState, formData: FormData): Promise<ExpenseState> {
   const id = z.uuid().safeParse(formData.get("id"));
-  if (!id.success) return { ok: false, error: "Gasto inválido." };
+  if (!id.success) return { ok: false, error: "expenses.errors.expenseInvalid" };
   const parsed = expenseSchema.safeParse(readExpense(formData));
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
@@ -108,7 +108,7 @@ export async function quickCreateExpenseCategory(input: {
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -117,9 +117,9 @@ export async function quickCreateExpenseCategory(input: {
     .select("name")
     .single();
   if (error || !data) {
-    if (error?.code === "23505") return { ok: false, error: "Ya existe una categoría con ese nombre." };
+    if (error?.code === "23505") return { ok: false, error: "expenses.errors.duplicateCategory" };
     console.error("quickCreateExpenseCategory:", error?.code);
-    return { ok: false, error: "No se pudo crear la categoría. Intenta de nuevo." };
+    return { ok: false, error: "catalog.errors.createCategoryFailed" };
   }
   revalidatePath(EXPENSES_PATH);
   return { ok: true, name: data.name };

@@ -53,7 +53,7 @@ describe("createExpense (S22-01)", () => {
     clientState.current = { auth: { getUser: async () => ({ data: { user: { id: "u-1" } } }) }, from };
     const { createExpense } = await import("./expenses");
 
-    expect(await createExpense(null, fd({ ...base, category: "" }))).toEqual({ ok: false, error: "Elige la categoría" });
+    expect(await createExpense(null, fd({ ...base, category: "" }))).toEqual({ ok: false, error: "expenses.errors.categoryRequired" });
     expect(from).not.toHaveBeenCalled();
   });
 });
@@ -79,7 +79,7 @@ describe("quickCreateExpenseCategory (S22-01: + en la hoja)", () => {
 
     expect(await quickCreateExpenseCategory({ name: "Arriendo", kind: "fixed" })).toEqual({
       ok: false,
-      error: "Ya existe una categoría con ese nombre.",
+      error: "expenses.errors.duplicateCategory",
     });
   });
 });

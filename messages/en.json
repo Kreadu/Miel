@@ -994,5 +994,93 @@
     "inFavor": "(In favor)",
     "detail": "Details",
     "empty": "No supplier balances recorded yet."
+  },
+  "expenses": {
+    "title": "Expenses",
+    "subtitle": "Choose the sheet and category: the type (fixed or variable) is already assigned.",
+    "sheets": {
+      "fijos": "Fixed expenses",
+      "variables": "Variable expenses"
+    },
+    "monthRecorded": {
+      "fijos": "Fixed expenses recorded this month (excl. VAT (IVA))",
+      "variables": "Variable expenses recorded this month (excl. VAT (IVA))"
+    },
+    "labor": "Labor this month (from HR)",
+    "monthTotal": {
+      "fijos": "Total fixed expenses this month",
+      "variables": "Total variable expenses this month"
+    },
+    "empty": {
+      "fijos": "No fixed expenses yet. Add the first one above.",
+      "variables": "No variable expenses yet. Add the first one above."
+    },
+    "laborNote": "Labor is classified in HR, on each worker's profile (“Their pay is”), and shows up here when each payroll period is closed.",
+    "date": "Date",
+    "category": "Category",
+    "description": "Description",
+    "payment": "Payment",
+    "amount": "Amount",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete “{name}”?",
+    "form": {
+      "descriptionPlaceholder": "E.g. September store rent",
+      "tax": "VAT (IVA) included (recoverable)",
+      "method": "Payment method",
+      "supplier": "Supplier (optional)",
+      "noSupplier": "No supplier",
+      "saving": "Saving…",
+      "saveChanges": "Save changes",
+      "add": "Add expense",
+      "cancel": "Cancel"
+    },
+    "categorySelect": {
+      "placeholder": "Choose the category",
+      "create": "Create category",
+      "newFixed": "New fixed expense category",
+      "newVariable": "New variable expense category",
+      "name": "Name",
+      "creating": "Creating…"
+    },
+    "categories": {
+      "rent": "Rent",
+      "utilities": "Utilities (water, electricity, gas)",
+      "internetPhone": "Internet and phone",
+      "officeSupplies": "Office supplies and stationery",
+      "cleaning": "Cleaning",
+      "furnitureMaintenance": "Furniture and equipment (maintenance)",
+      "toolsMaintenance": "Tools and machinery (maintenance)",
+      "insurance": "Insurance",
+      "accounting": "Accounting and consulting",
+      "software": "Software and subscriptions",
+      "taxesLicenses": "Taxes and licenses",
+      "security": "Security",
+      "loanPayments": "Loan or leasing payments",
+      "depreciation": "Depreciation and amortization",
+      "interest": "Interest and financial expenses",
+      "incomeTax": "Income tax",
+      "transport": "Transport and shipping",
+      "fuel": "Fuel",
+      "vehicleMaintenance": "Vehicle maintenance",
+      "marketing": "Advertising and marketing",
+      "salesCommissions": "Sales commissions",
+      "packaging": "Packaging and bags",
+      "bankFees": "Bank and card terminal fees",
+      "travelMeals": "Travel and meals",
+      "repairs": "Unexpected repairs"
+    },
+    "errors": {
+      "invalidData": "The expense data is not valid (amount or type).",
+      "saveFailed": "Could not save the expense. Try again.",
+      "expenseInvalid": "Invalid expense.",
+      "duplicateCategory": "A category with that name already exists.",
+      "categoryRequired": "Choose the category",
+      "descriptionRequired": "Enter a description",
+      "taxNegative": "VAT (IVA) cannot be negative",
+      "taxExceedsAmount": "VAT (IVA) cannot exceed the amount",
+      "dateInvalid": "Invalid date",
+      "kindInvalid": "Invalid expense type"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { formatMoney } from "@/lib/format";
 import { todayInBogota } from "@/lib/inventory-history";
@@ -10,11 +11,14 @@ import type { ExpenseValues } from "./expense-form";
 import { ExpenseRow } from "./expense-row";
 import { NewExpense } from "./new-expense";
 
-export const metadata = { title: "Gastos · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("expenses");
+  return { title: `${t("title")} · Miel` };
+}
 
 const SHEETS = {
-  fijos: { kind: "fixed", title: "Gastos fijos", payroll: "gasto_fijo" },
-  variables: { kind: "variable", title: "Gastos variables", payroll: "gasto_variable" },
+  fijos: { kind: "fixed", payroll: "gasto_fijo" },
+  variables: { kind: "variable", payroll: "gasto_variable" },
 } as const;
 
 /** Día calendario en Bogotá ("AAAA-MM-DD") de un timestamp. */
@@ -32,6 +36,7 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
   if (!active || active.role === "member") notFound();
 
   const { tipo } = await searchParams;
+  const t = await getTranslations("expenses");
   const sheetKey = tipo === "variables" ? "variables" : "fijos";
   const sheet = SHEETS[sheetKey];
   const today = todayInBogota();
@@ -82,32 +87,32 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Gastos</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Elige la hoja y la categoría: el tipo (fijo o variable) ya viene asignado.
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/gastos?tipo=fijos" className={tab("fijos")}>
-            Gastos fijos
+            {t("sheets.fijos")}
           </Link>
           <Link href="/gastos?tipo=variables" className={tab("variables")}>
-            Gastos variables
+            {t("sheets.variables")}
           </Link>
         </div>
       </div>
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-xs text-muted-foreground">{sheet.title} anotados este mes (sin IVA)</p>
+          <p className="text-xs text-muted-foreground">{t(`monthRecorded.${sheetKey}`)}</p>
           <p className="text-base font-semibold tabular-nums">{formatMoney(expensesThisMonth)}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-xs text-muted-foreground">Mano de obra este mes (desde RRHH)</p>
+          <p className="text-xs text-muted-foreground">{t("labor")}</p>
           <p className="text-base font-semibold tabular-nums">{formatMoney(payrollThisMonth)}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-xs text-muted-foreground">Total {sheet.title.toLowerCase()} del mes</p>
+          <p className="text-xs text-muted-foreground">{t(`monthTotal.${sheetKey}`)}</p>
           <p className="text-base font-semibold tabular-nums">{formatMoney(expensesThisMonth + payrollThisMonth)}</p>
         </div>
       </section>
@@ -125,11 +130,11 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Fecha</th>
-                <th className="px-3 py-2 font-medium">Categoría</th>
-                <th className="px-3 py-2 font-medium">Descripción</th>
-                <th className="px-3 py-2 font-medium">Pago</th>
-                <th className="px-3 py-2 text-right font-medium">Monto</th>
+                <th className="px-3 py-2 font-medium">{t("date")}</th>
+                <th className="px-3 py-2 font-medium">{t("category")}</th>
+                <th className="px-3 py-2 font-medium">{t("description")}</th>
+                <th className="px-3 py-2 font-medium">{t("payment")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("amount")}</th>
                 <th className="px-3 py-2" />
               </tr>
             </thead>
@@ -150,13 +155,12 @@ export default async function GastosPage({ searchParams }: { searchParams: Promi
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no hay {sheet.title.toLowerCase()}. Agrega el primero arriba.
+          {t(`empty.${sheetKey}`)}
         </p>
       )}
 
       <p className="text-xs text-muted-foreground">
-        La mano de obra se clasifica en RRHH, en la ficha de cada trabajador (&quot;Su pago es&quot;), y
-        entra aquí al cerrar cada período de nómina.
+        {t("laborNote")}
       </p>
     </div>
   );

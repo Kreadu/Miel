@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect } from "react";
 
 import { createExpense, updateExpense } from "@/actions/expenses";
@@ -13,17 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EXPENSE_METHODS } from "@/lib/validation/expenses";
 
 import { CategorySelect } from "./category-select";
 
 const NONE = "__none__";
-
-export const METHOD_LABEL = {
-  cash: "Efectivo",
-  transfer: "Transferencia",
-  card: "Tarjeta",
-  other: "Otro",
-} as const;
 
 export type ExpenseValues = {
   id: string;
@@ -31,7 +26,7 @@ export type ExpenseValues = {
   description: string;
   amount: number;
   tax_amount: number;
-  method: keyof typeof METHOD_LABEL;
+  method: (typeof EXPENSE_METHODS)[number];
   paid_on: string;
   supplier_id: string | null;
 };
@@ -54,6 +49,7 @@ export function ExpenseForm({
 }) {
   const [state, action, pending] = useActionState(values ? updateExpense : createExpense, null);
   const id = (f: string) => `${values?.id ?? "new"}-${f}`;
+  const t = useTranslations();
 
   useEffect(() => {
     if (state?.ok) onDone?.();
@@ -66,18 +62,18 @@ export function ExpenseForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <CategorySelect id={id("category")} kind={kind} categories={categories} defaultValue={values?.category} />
         <div className="flex flex-col gap-2 lg:col-span-2">
-          <Label htmlFor={id("description")}>Descripción</Label>
+          <Label htmlFor={id("description")}>{t("expenses.description")}</Label>
           <Input
             id={id("description")}
             name="description"
             required
             maxLength={300}
-            placeholder="Ej. Arriendo local de septiembre"
+            placeholder={t("expenses.form.descriptionPlaceholder")}
             defaultValue={values?.description}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor={id("amount")}>Monto</Label>
+          <Label htmlFor={id("amount")}>{t("expenses.amount")}</Label>
           <Input
             id={id("amount")}
             name="amount"
@@ -90,7 +86,7 @@ export function ExpenseForm({
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor={id("tax_amount")}>IVA incluido (se recupera)</Label>
+          <Label htmlFor={id("tax_amount")}>{t("expenses.form.tax")}</Label>
           <Input
             id={id("tax_amount")}
             name="tax_amount"
@@ -103,32 +99,32 @@ export function ExpenseForm({
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor={id("paid_on")}>Fecha</Label>
+          <Label htmlFor={id("paid_on")}>{t("expenses.date")}</Label>
           <Input id={id("paid_on")} name="paid_on" type="date" required defaultValue={values?.paid_on ?? today} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor={id("method")}>Forma de pago</Label>
+          <Label htmlFor={id("method")}>{t("expenses.form.method")}</Label>
           <Select name="method" defaultValue={values?.method ?? "transfer"}>
             <SelectTrigger id={id("method")} className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(METHOD_LABEL).map(([v, label]) => (
+              {EXPENSE_METHODS.map((v) => (
                 <SelectItem key={v} value={v}>
-                  {label}
+                  {t(`sales.paymentMethod.${v}`)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex flex-col gap-2 lg:col-span-3">
-          <Label htmlFor={id("supplier")}>Proveedor (opcional)</Label>
+          <Label htmlFor={id("supplier")}>{t("expenses.form.supplier")}</Label>
           <Select name="supplier_id" defaultValue={values?.supplier_id ?? NONE}>
             <SelectTrigger id={id("supplier")} className="w-full sm:w-80">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NONE}>Sin proveedor</SelectItem>
+              <SelectItem value={NONE}>{t("expenses.form.noSupplier")}</SelectItem>
               {suppliers.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
                   {s.name}
@@ -140,17 +136,17 @@ export function ExpenseForm({
       </div>
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Guardando…" : values ? "Guardar cambios" : "Agregar gasto"}
+          {pending ? t("expenses.form.saving") : values ? t("expenses.form.saveChanges") : t("expenses.form.add")}
         </Button>
         {values ? (
           <Button type="button" variant="ghost" onClick={onDone}>
-            Cancelar
+            {t("expenses.form.cancel")}
           </Button>
         ) : null}
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

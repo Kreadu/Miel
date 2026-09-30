@@ -994,5 +994,93 @@
     "inFavor": "(En votre faveur)",
     "detail": "Détail",
     "empty": "Aucun solde fournisseur enregistré pour le moment."
+  },
+  "expenses": {
+    "title": "Dépenses",
+    "subtitle": "Choisissez la feuille et la catégorie : le type (fixe ou variable) est déjà attribué.",
+    "sheets": {
+      "fijos": "Dépenses fixes",
+      "variables": "Dépenses variables"
+    },
+    "monthRecorded": {
+      "fijos": "Dépenses fixes enregistrées ce mois-ci (hors TVA (IVA))",
+      "variables": "Dépenses variables enregistrées ce mois-ci (hors TVA (IVA))"
+    },
+    "labor": "Main-d’œuvre ce mois-ci (depuis RH)",
+    "monthTotal": {
+      "fijos": "Total des dépenses fixes du mois",
+      "variables": "Total des dépenses variables du mois"
+    },
+    "empty": {
+      "fijos": "Aucune dépense fixe pour le moment. Ajoutez la première ci-dessus.",
+      "variables": "Aucune dépense variable pour le moment. Ajoutez la première ci-dessus."
+    },
+    "laborNote": "La main-d’œuvre se classe dans RH, sur la fiche de chaque employé (« Sa paie est »), et apparaît ici à la clôture de chaque période de paie.",
+    "date": "Date",
+    "category": "Catégorie",
+    "description": "Description",
+    "payment": "Paiement",
+    "amount": "Montant",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer « {name} » ?",
+    "form": {
+      "descriptionPlaceholder": "Ex. Loyer du local de septembre",
+      "tax": "TVA (IVA) incluse (récupérable)",
+      "method": "Moyen de paiement",
+      "supplier": "Fournisseur (facultatif)",
+      "noSupplier": "Sans fournisseur",
+      "saving": "Enregistrement…",
+      "saveChanges": "Enregistrer les modifications",
+      "add": "Ajouter la dépense",
+      "cancel": "Annuler"
+    },
+    "categorySelect": {
+      "placeholder": "Choisissez la catégorie",
+      "create": "Créer une catégorie",
+      "newFixed": "Nouvelle catégorie de dépense fixe",
+      "newVariable": "Nouvelle catégorie de dépense variable",
+      "name": "Nom",
+      "creating": "Création…"
+    },
+    "categories": {
+      "rent": "Loyer",
+      "utilities": "Services publics (eau, électricité, gaz)",
+      "internetPhone": "Internet et téléphonie",
+      "officeSupplies": "Fournitures de bureau et papeterie",
+      "cleaning": "Entretien et nettoyage",
+      "furnitureMaintenance": "Mobilier et équipements (entretien)",
+      "toolsMaintenance": "Outils et machines (entretien)",
+      "insurance": "Assurances",
+      "accounting": "Comptabilité et conseil",
+      "software": "Logiciels et abonnements",
+      "taxesLicenses": "Impôts et licences",
+      "security": "Surveillance et sécurité",
+      "loanPayments": "Échéances de crédit ou de leasing",
+      "depreciation": "Amortissements",
+      "interest": "Intérêts et frais financiers",
+      "incomeTax": "Impôt sur le revenu",
+      "transport": "Transport et livraisons",
+      "fuel": "Carburant",
+      "vehicleMaintenance": "Entretien des véhicules",
+      "marketing": "Publicité et marketing",
+      "salesCommissions": "Commissions sur ventes",
+      "packaging": "Emballages et sacs",
+      "bankFees": "Frais bancaires et de terminal de paiement",
+      "travelMeals": "Frais de déplacement et repas",
+      "repairs": "Réparations imprévues"
+    },
+    "errors": {
+      "invalidData": "Les données de la dépense ne sont pas valides (montant ou type).",
+      "saveFailed": "Impossible d’enregistrer la dépense. Réessayez.",
+      "expenseInvalid": "Dépense non valide.",
+      "duplicateCategory": "Une catégorie portant ce nom existe déjà.",
+      "categoryRequired": "Choisissez la catégorie",
+      "descriptionRequired": "Saisissez une description",
+      "taxNegative": "La TVA (IVA) ne peut pas être négative",
+      "taxExceedsAmount": "La TVA (IVA) ne peut pas dépasser le montant",
+      "dateInvalid": "Date non valide",
+      "kindInvalid": "Type de dépense non valide"
+    }
   }
 }

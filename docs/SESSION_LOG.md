@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 7) · S20-05 — idiomas, módulo 5 (Gastos)
+
+**Hecho:** S20-04 commiteado (`a19dabc`). Spec S20-05 aprobada. Traducidos es/en/fr: Gastos
+(hojas fija/variable, totales, formulario, selector y alta rápida de categoría, fila). Las 25
+categorías que trae Miel se traducen al mostrarlas por su nombre exacto
+(`lib/expenses/category-label.ts`); las propias/renombradas, tal cual. Acción y Zod de gastos
+devuelven claves. Verificado: lint ✓, tsc ✓, `npm test` 443/443 ✓. Sin verificar en navegador.
+
+**Siguiente paso:** S20-06 (Resultados + Finanzas; incluye respuesta de la IA en el idioma del
+usuario y usar `categoryLabel` en los gráficos/tablas de gastos).
+
+---
+
 ## Sesión 2026-09-30 (cont. 6) · S20-04 — idiomas, módulo 4 (Comprar)
 
 **Hecho:** S20-03 commiteado (`b1ab3d4`). Anotada S24-01 (hoja técnica PDF por producto) en
