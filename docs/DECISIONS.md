@@ -559,3 +559,22 @@ escritura restringida por RLS a owner/admin del tenant dueño del prefijo de car
 y su formulario completo no cambian; un producto creado desde el catálogo es editable ahí sin
 distinción (misma tabla). El límite de 5MB y los tipos permitidos (jpg/png/webp) se validan en el
 servidor antes de subir, no se confía en la extensión del archivo. Historia: S19-02.
+
+## ADR-036 · 2026-09-29 · RRHH reutiliza el motor de nómina de Gestion-Future como copia, sin vínculo
+**Contexto:** el humano tiene otro proyecto, Gestion-Future (nómina y contratación, sobre
+Cloudflare Workers + D1 + Firebase Auth), y quiere esas capacidades en el módulo RRHH de Miel,
+pero sin que los proyectos queden unidos: Gestion-Future sigue siendo de otro proyecto.
+**Decisión:** se **copia** (no submódulo, no paquete compartido, no import entre repos) solo la
+lógica pura, independiente de la plataforma: motor de nómina Colombia 2026 (`colombiaEngine`,
+`constants2026`), motores por horas (medio tiempo, contratista independiente), tipos, generación
+del XML de nómina electrónica y documento soporte DIAN, rangos de fechas — y sus tests (Jest →
+Vitest). Vive en `src/lib/rrhh/` con un encabezado que marca el origen. Desde la copia es código
+de Miel: evoluciona sin sincronizarse con el original. **No** se copian la API del Worker, el
+esquema D1, la autenticación Firebase, los contadores DIAN sobre D1 ni el dashboard HTML: esas
+capas se rehacen con el stack de Miel (tablas Supabase con RLS por tenant, RPCs, páginas
+Next.js), historia por historia en la épica E21.
+**Consecuencias:** sin dependencias nuevas (el motor solo usa TypeScript y `crypto.subtle`,
+disponible en Node y navegador). Cambio de concepto: Gestion-Future es para una outsourcing que
+liquida la nómina de varias pymes (rol SUPER_ADMIN de Kreadu); en Miel cada empresa gestiona su
+propio personal y los permisos siguen la matriz owner/admin/member. Una corrección hecha en un
+proyecto no llega sola al otro: si se quiere, se copia a mano. Historia: S21-01.

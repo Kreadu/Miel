@@ -245,6 +245,19 @@ partida):**
 **Siguiente paso:** el humano decide cuándo dedicarle una sesión a esto; empieza por el ADR, no
 por código.
 
+## Épica E21 — RRHH: personal y nómina (motor copiado de Gestion-Future, ADR-036)
+
+Pedido por el humano 2026-09-29: traer a RRHH la contratación de personal y el pago de nóminas de
+su proyecto Gestion-Future, como copia (sin quedar unidos). Plan por partes: primero el motor de
+cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
+
+| ID | Historia | Criterio | Depende | Estado | Spec |
+|---|---|---|---|---|---|
+| S21-01 | Como dueño quiero que Miel tenga el motor de nómina de Gestion-Future (Colombia 2026, por horas, XML DIAN) | Copia de la lógica pura a `src/lib/rrhh/` + 56 tests Jest→Vitest en verde; sin vínculo con el original | — | done | specs/done/S21-01-motor-de-nomina.md |
+| S21-02 | Como dueño quiero registrar a mis empleados en RRHH (cargo, salario, ingreso, tipo de contrato) | Tabla `employees` con RLS por tenant + pantalla RRHH → Empleados | S21-01 | todo | — |
+| S21-03 | Como dueño quiero liquidar la nómina de un período con el motor | Períodos de nómina + liquidación por empleado con `ColombiaPayrollEngine` | S21-02 | todo | — |
+| S21-04 | Contratación de profesionales, licencias/incapacidades, nómina electrónica DIAN, portal del empleado | A priorizar con el humano | S21-03 | todo | — |
+
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración
   `20260929165506_tipos-de-inventario.sql` sin aplicar al cloud — sin ella fallan los

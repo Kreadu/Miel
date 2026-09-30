@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 14) · S21-01 — motor de nómina copiado de Gestion-Future
+
+**Hecho:** ADR-036 + épica E21. Copiados a `src/lib/rrhh/` (sin tocar Gestion-Future, que quedó
+sin cambios en git): motor Colombia 2026, motores por horas, tipos, XML DIAN, documento soporte,
+rangos de fechas, y 5 archivos de tests (Jest → Vitest, rutas ajustadas, 2 avisos de lint
+limpiados). No copiado: API Worker, D1, Firebase, contadores DIAN, dashboard. Verificado: 56 tests
+del motor ✓, suite completa 339/339 ✓, tsc ✓, lint ✓.
+
+**Siguiente paso:** S21-02 (Empleados: tabla + RLS + pantalla en RRHH). Referencia del esquema
+original: `~/Escritorio/Gestion-Future/migrations/0001_initial.sql` (solo lectura).
+
+---
+
 ## Sesión 2026-09-29 (cont. 13) · S19-37 — Comprar como hoja de compra
 
 **Hecho:** migración `20260929190630_costo-con-iva-al-recibir.sql` (costo con IVA al recibir); `/compras` = formulario de orden +
