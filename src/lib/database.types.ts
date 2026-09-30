@@ -2372,12 +2372,24 @@ export type Database = {
           },
         ]
       }
+      monthly_payroll: {
+        Row: {
+          cash_out: number | null
+          classification: string | null
+          labor_cost: number | null
+          month: string | null
+          tenant_id: string | null
+        }
+        Relationships: []
+      }
       monthly_pnl: {
         Row: {
           cogs: number | null
           expenses: number | null
           income: number | null
           month: string | null
+          payroll_costs: number | null
+          payroll_expenses: number | null
           tenant_id: string | null
           utility: number | null
         }

@@ -11,6 +11,14 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 20) · S21-06 — nómina en Finanzas
+
+**Hecho:** migración `20260929210552` (`monthly_payroll`; P&L, gastos por mes y flujo de caja con
+nómina); resumen "Costo para la empresa" por clasificación en cada período. Verificado: lint ✓,
+tsc ✓, tests ✓, build ✓. Sin correr: pgTAP. Siguiente: Gastos (pedido del humano).
+
+---
+
 ## Sesión 2026-09-29 (cont. 19) · S21-04 — control de uso + clasificación de costo
 
 **Hecho:** migración `20260929205403`; `logActivity` en pedido, boleta, cobro, abrir/cerrar caja,

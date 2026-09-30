@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { closePeriod, deletePeriod, recalculatePeriod } from "@/actions/payroll";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/format";
+import { COST_CLASSIFICATIONS } from "@/lib/rrhh/workers";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -20,7 +21,7 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
   const { data: period } = await supabase
     .from("payroll_periods")
     .select(
-      "id, period_start, period_end, status, payroll_settlements(id, days_worked, extra_diurna, extra_nocturna, recargo_nocturno, horas_dominical_festivo, hours_worked, weekly_hours, gross_earnings, total_deductions, net_pay, result, dian_status, dian_consecutive, workers(full_name, worker_type))",
+      "id, period_start, period_end, status, payroll_settlements(id, days_worked, extra_diurna, extra_nocturna, recargo_nocturno, horas_dominical_festivo, hours_worked, weekly_hours, gross_earnings, total_deductions, net_pay, result, dian_status, dian_consecutive, workers(full_name, worker_type, cost_classification))",
     )
     .eq("id", id)
     .maybeSingle();
@@ -47,6 +48,22 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
     }))
     .sort((a, b) => a.workerName.localeCompare(b.workerName));
   const editable = period.status === "draft";
+
+  // S21-06: costo para la empresa (devengado + aportes + provisiones) según cómo clasificó a cada
+  // trabajador; así entra a Finanzas al cerrar el período. Sin clasificar = gasto fijo.
+  const costByClass = new Map<string, number>();
+  for (const s of period.payroll_settlements) {
+    const r = (s.result ?? {}) as {
+      employerContributions?: { totalContributions?: number };
+      provisions?: { totalProvisions?: number };
+    };
+    const cost =
+      Number(s.gross_earnings) +
+      Number(r.employerContributions?.totalContributions ?? 0) +
+      Number(r.provisions?.totalProvisions ?? 0);
+    const key = s.workers?.cost_classification ?? "gasto_fijo";
+    costByClass.set(key, (costByClass.get(key) ?? 0) + cost);
+  }
   const total = (k: "gross_earnings" | "total_deductions" | "net_pay") => rows.reduce((sum, r) => sum + r[k], 0);
   const anyGenerated = rows.some((r) => r.dianStatus === "generated");
 
@@ -84,6 +101,24 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
           </div>
         ) : null}
       </div>
+
+      {rows.length > 0 ? (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-base font-semibold tracking-tight">Costo para la empresa</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {(Object.keys(COST_CLASSIFICATIONS) as (keyof typeof COST_CLASSIFICATIONS)[]).map((k) => (
+              <div key={k} className="rounded-lg border border-border bg-card p-3">
+                <p className="text-xs text-muted-foreground">{COST_CLASSIFICATIONS[k]}</p>
+                <p className="text-base font-semibold tabular-nums">{formatMoney(costByClass.get(k) ?? 0)}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Devengado + aportes + provisiones, según &quot;Su pago es&quot; de cada trabajador (sin
+            clasificar cuenta como gasto fijo). Entra a Finanzas al cerrar el período.
+          </p>
+        </section>
+      ) : null}
 
       {rows.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">

@@ -258,6 +258,7 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
 | S21-03 | Como trabajador quiero entrar con mi usuario y código de 4 dígitos y ver solo lo de mi categoría | Correo con "Acceso" (Administrador/Cuenta de la tienda/categoría) + modo tienda con código (cookie firmada, bcrypt, bloqueo 5/15 min), menú y rutas por categoría; ADR-037 | S21-02 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr, requiere `MIEL_SESSION_SECRET`** | specs/done/S21-03-acceso-trabajadores.md |
 | S21-04 | Como dueño quiero ver el uso (ingresos, intentos fallidos y acciones importantes de cada trabajador) y clasificar el pago del trabajador como gasto/costo fijo/variable | `activity_log` + `logActivity` en 7 acciones; `/equipo/uso`; `workers.cost_classification` | S21-03 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-04-control-de-uso.md |
 | S21-05 | Como dueño quiero liquidar la nómina de un período con el motor, con licencias, verla y generar el XML DIAN | Licencias, períodos, liquidación por trabajador, datos DIAN, XML con CUNE y consecutivo | S21-02 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-05-nomina.md |
+| S21-06 | Como dueño quiero que la nómina sume en Finanzas como gasto o costo, fijo o variable, según cada trabajador | Vista `monthly_payroll`; P&L, gastos por mes y flujo de caja la incluyen; resumen por clasificación en el período | S21-04, S21-05 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-06-nomina-en-finanzas.md |
 | S21-06 | Contratación de profesionales, licencias/incapacidades, nómina electrónica DIAN, portal del trabajador | A priorizar con el humano | S21-05 | todo | — |
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
@@ -266,7 +267,9 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S21-04, bloqueante hasta que se resuelva**: migración `20260929205403_control-de-uso.sql` sin
+- **S21-06**: migración `20260929210552_nomina-en-finanzas.sql` sin aplicar (no bloquea la app;
+  Finanzas no incluye la nómina hasta aplicarla). Finanzas sigue oculto en el menú (S14-01).
+- **S21-04 (aplicada 2026-09-29)**: migración `20260929205403_control-de-uso.sql` sin
   aplicar — sin ella fallan Trabajadores (columna `cost_classification`) y Control de uso; el
   registro de acciones falla en silencio (no rompe ventas ni cajas).
 - **S21-03 (aplicada 2026-09-29)**: migración
