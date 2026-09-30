@@ -14,10 +14,10 @@ related: [multitenancy-rls.md, patron-rpc.md]
 - **Vitest** (unit) · **pgTAP** vía Supabase CLI (BD: RLS + RPC) · **Playwright** (e2e humo).
 
 ## Hosting (MVP en free tiers)
-- **Vercel** free: hosting Next.js. Migrar a plan pago al comercializar (términos de uso).
+- **Servidor central** (por definir, ADR-041): hosting de Next.js. Vercel se descartó.
 - **Supabase** free: 500 MB de BD. ⚠️ **Pausa el proyecto tras ~7 días sin actividad** — antes de
   demos a clientes, verificar que el proyecto esté activo. Plan Pro ($25/mes) elimina la pausa.
-- Costo proyectado post-validación: ~USD 45/mes (Vercel Pro + Supabase Pro).
+- Costo proyectado post-validación: Supabase Pro (~USD 25/mes) + el servidor central.
 
 ## Entorno local
 - `npm run dev` — app en http://localhost:3000

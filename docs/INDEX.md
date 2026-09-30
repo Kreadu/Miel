@@ -11,7 +11,7 @@ Regla: toda página nueva de docs/ se registra aquí con una línea y su "cuánd
 - `SESSION_LOG.md` — Bitácora de las últimas ~5 sesiones. **Leer**: al iniciar toda sesión.
 
 ## Operación
-- `deploy.md` — Runbook de deploy en Vercel + Supabase cloud (S9-03). **Leer**: al hacer el
+- `deploy.md` — Runbook de deploy (S9-03). Vercel obsoleto (ADR-041); vale la parte de Supabase cloud. **Leer**: al hacer el
   primer deploy, un re-deploy, o al levantar un segundo ambiente.
 
 ## Arquitectura (docs/arch/)

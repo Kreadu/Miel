@@ -13,17 +13,13 @@ y `ponytail` en intensidad `full` (`.claude/skills/ponytail/SKILL.md`).
 Si el cambio incluye UI, aplica además `miel-design` (`.claude/skills/miel-design/SKILL.md`).
 Si vas a tocar `supabase/` (migraciones, RPCs, pgTAP), aplica `supabase-miel` (`.claude/skills/supabase-miel/SKILL.md`).
 
-**Cómo trabaja el humano hoy (2026-09-28, revisar si sigue vigente):** por defecto, `npm run dev`
-local contra el Supabase cloud del proyecto (`https://seqdrtjdnfnqvztgpdys.supabase.co`), vía
-`.env.local` (gitignored). El humano no tiene cuenta de Vercel — `https://miel-eight.vercel.app/`
-quedó de un deploy manual de una sesión anterior, sin integración Git (`gh api
-repos/Kreadu/Miel/commits/<sha>/check-runs` no muestra ningún check de Vercel, solo GitHub
-Actions/Pages), no se actualiza con los pushes, y probablemente apunta a otro proyecto de
-Supabase — varias cuentas nuevas fallaron ahí con "Correo o contraseña incorrectos" incluso recién
-creadas. No asumas que esa URL sirve para nada hasta que se reconecte Vercel bien (pendiente,
-pospuesto por el humano por cansancio, ver `docs/SESSION_LOG.md` sesión 2026-09-28). Si necesitás
-levantar el server: `npm run dev`, el humano abre `http://localhost:3000` en su propio navegador
-(este entorno corre en su misma compu).
+**Cómo trabaja el humano hoy (2026-09-30, revisar si sigue vigente):** `npm run dev` local
+contra el Supabase cloud del proyecto (`https://seqdrtjdnfnqvztgpdys.supabase.co`), vía
+`.env.local` (gitignored). **Vercel se descartó (ADR-041):** `https://miel-eight.vercel.app/` es un
+despliegue viejo que no sirve y se da de baja; no lo uses ni propongas reconectarlo. Miel se
+instalará en un servidor central por definir; la llave de la IA (`ANTHROPIC_API_KEY`) se configura
+recién ahí. Si necesitás levantar el server: `npm run dev`, el humano abre `http://localhost:3000`
+en su propio navegador (este entorno corre en su misma compu).
 
 Respuestas al humano: concretas, sin verbosidad — regla completa en `AGENTS.md` → Comunicación.
 

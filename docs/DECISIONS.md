@@ -650,3 +650,14 @@ esquemas Zod devuelven **claves** de mensaje, no textos; el componente las tradu
 (4) Traducción por módulo en orden de uso diario; figuras colombianas traducidas con su sigla.
 **Consecuencias:** mientras dure E20 conviven pantallas traducidas y en español. `formatMoney`
 y fechas siguen en formato colombiano (moneda COP) en todos los idiomas.
+
+## ADR-041 · 2026-09-30 · Sin Vercel: Miel se instalará en un servidor central
+**Contexto:** el deploy en Vercel (`miel-eight.vercel.app`) quedó de un despliegue manual de una
+sesión anterior, sin integración con Git ni cuenta del humano, y probablemente apuntando a otro
+proyecto de Supabase. La IA del asesor (ADR-039) sigue sin llave.
+**Decisión (humano):** (1) se abandona Vercel como hosting; ese despliegue se da de baja.
+(2) Miel se instalará en un servidor central (por definir). (3) `ANTHROPIC_API_KEY` se configura
+cuando Miel quede instalado en ese servidor, no antes.
+**Consecuencias:** `docs/deploy.md` queda obsoleto en lo que toca a Vercel (la parte de Supabase
+cloud sigue valiendo). Mientras tanto se trabaja en local (`npm run dev`) contra Supabase cloud.
+Falta una historia para el deploy en el servidor central cuando se elija.

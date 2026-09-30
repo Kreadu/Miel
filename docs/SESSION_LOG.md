@@ -22,7 +22,8 @@ Verificado: lint ✓, tsc ✓, `npm test` 445/445 ✓. Barrido final de la app: 
 (E20 → "Fuera de E20"). Sin verificar en navegador.
 
 **Siguiente paso:** el humano prueba la app en en/fr en el navegador. Pendientes que siguen:
-reconectar Vercel, llave de la IA, S24-01 (hoja técnica).
+S24-01 (hoja técnica). Decisión posterior del humano (ADR-041): Vercel se elimina; Miel irá a un
+servidor central por definir; la llave de la IA se configura al instalarlo ahí.
 
 ---
 

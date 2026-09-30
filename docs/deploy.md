@@ -1,10 +1,13 @@
 ---
 topic: deploy-vercel-supabase-cloud
-status: vigente
+status: obsoleto (Vercel descartado, ADR-041; la parte de Supabase cloud sigue valiendo)
 related: [arch/stack.md, arch/seguridad.md, DECISIONS.md]
 ---
 
 # Deploy — Vercel + Supabase cloud
+
+> **Obsoleto (ADR-041, 2026-09-30):** Vercel se descartó; Miel irá a un servidor central por
+> definir. Las secciones de Supabase cloud siguen valiendo; las de Vercel no se usan.
 
 Runbook reproducible para llevar Miel de local a producción cloud (S9-03). Partiendo de cero:
 sin proyecto Supabase cloud ni proyecto Vercel creados. Requiere: cuenta Supabase, cuenta Vercel,
