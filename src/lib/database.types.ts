@@ -34,6 +34,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      advisor_questions: {
+        Row: {
+          answer: string
+          asked_by: string
+          created_at: string
+          id: string
+          question: string
+          range_from: string
+          range_to: string
+          tenant_id: string
+        }
+        Insert: {
+          answer: string
+          asked_by?: string
+          created_at?: string
+          id?: string
+          question: string
+          range_from: string
+          range_to: string
+          tenant_id: string
+        }
+        Update: {
+          answer?: string
+          asked_by?: string
+          created_at?: string
+          id?: string
+          question?: string
+          range_from?: string
+          range_to?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       activity_log: {
         Row: {
           action: string

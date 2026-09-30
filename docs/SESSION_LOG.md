@@ -11,6 +11,27 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 2) · S22-03 — análisis, salud y asesor con IA
+
+**Hecho:** decisiones del humano: IA = Claude (Anthropic); datos por rango de meses; la IA ve cifras
+y productos (sin personas); a futuro poder cambiar de IA. `/resultados?desde&hasta` (6 meses por
+defecto, máx. 24) con total del rango; **corregido**: las consultas no filtraban por empresa
+(dueño de varias empresas veía cifras mezcladas). `loadFinance` compartido página/IA; gráficos
+(ventas y utilidad; márgenes) con tabla "Ver cifras por mes"; paleta `--chart-*` nueva validada
+con el validador de dataviz (claro/oscuro); salud por reglas (`health.ts`); asesor
+(`actions/advisor.ts`, proveedor aislado en `lib/ai/advisor.ts`, SDK `@anthropic-ai/sdk`
+0.129.0, `claude-opus-5-5`, fallback de servidor), historial en `advisor_questions` (migración
+`20260930160000_asesor-ia.sql`), límite 20/día. ADR-039. Verificado: lint ✓, tsc ✓, `npm test`
+439/439 ✓. Sin correr: pgTAP `S22-03-asesor.sql`, navegador (requiere sesión del humano), llamada
+real a la IA (no hay llave).
+
+**Pendiente:** humano pega la migración `20260930160000_asesor-ia.sql`. La llave
+`ANTHROPIC_API_KEY` queda **pospuesta por decisión del humano hasta mover el repo al GitHub de la
+empresa madre** (la IA se paga por uso desde platform.claude.com, aparte de la suscripción de Claude);
+mientras tanto la sección muestra "La IA no está configurada todavía".
+
+---
+
 ## Sesión 2026-09-30 (cont.) · S23-01 — cuentas correctas
 
 **Hecho:** revisión de todas las cuentas y arreglo aprobado por el humano (todas las empresas son

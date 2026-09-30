@@ -623,3 +623,18 @@ responsables de IVA (persona jurídica o natural).
 5. Exoneración 114-1 según `tenants.person_type` y número de trabajadores.
 **Consecuencias:** reemplaza la decisión de S19-37 (costo con IVA). Las ventas de prueba ya
 confirmadas conservan su costo congelado anterior. Historia: S23-01.
+
+## ADR-039 · 2026-09-30 · Asesor con IA en Resultados (Anthropic, SDK oficial, proveedor aislado)
+**Contexto:** el humano pidió un espacio donde los dueños pregunten a la IA cómo mejorar, con los
+datos de un rango de meses (cifras agregadas y productos, sin datos de personas), y que más
+adelante se pueda cambiar de IA.
+**Decisión:** dependencia nueva `@anthropic-ai/sdk` (SDK oficial), modelo `claude-opus-5-5`,
+esfuerzo `medium`, respaldo automático del servidor ante negativas (`fallbacks: "default"`). Todo
+el acceso al proveedor vive en `src/lib/ai/advisor.ts` (`askModel(datos, pregunta)`): cambiar de IA
+= reemplazar ese archivo. Sin herramientas ni acceso a la BD para la IA; el contexto se arma en el
+servidor con la sesión del usuario (RLS) y la empresa activa. Preguntas y respuestas en
+`advisor_questions` (RLS owner/admin); límite de 20 por empresa por día. Llave
+`ANTHROPIC_API_KEY` solo en `.env.local`. Los gráficos usan una paleta categórica propia
+(`--chart-*`, validada para daltonismo y contraste), única excepción al acento único de ADR-008.
+**Consecuencias:** costo por pregunta (centavos de dólar); los datos del rango salen hacia
+Anthropic al preguntar (se avisa en la pantalla). Historia: S22-03.

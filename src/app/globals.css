@@ -71,11 +71,13 @@
   --border: oklch(0.92 0.008 85);
   --input: oklch(0.92 0.008 85);
   --ring: oklch(0.7 0.13 70);
-  --chart-1: oklch(0.7 0.13 70);
-  --chart-2: oklch(0.55 0.1 55);
-  --chart-3: oklch(0.8 0.1 85);
-  --chart-4: oklch(0.45 0.05 75);
-  --chart-5: oklch(0.35 0.03 70);
+  /* S22-03: paleta categórica de gráficos (orden fijo, validada para daltonismo y contraste con
+     el validador de dataviz). Los gráficos son la única excepción al acento único (ADR-039). */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
   --radius: 0.625rem;
   --sidebar: oklch(0.975 0.006 85);
   --sidebar-foreground: oklch(0.17 0.012 75);
@@ -108,11 +110,11 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.78 0.13 78);
-  --chart-1: oklch(0.78 0.13 78);
-  --chart-2: oklch(0.65 0.11 55);
-  --chart-3: oklch(0.85 0.1 88);
-  --chart-4: oklch(0.55 0.06 75);
-  --chart-5: oklch(0.45 0.03 70);
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
   --sidebar: oklch(0.17 0.012 75);
   --sidebar-foreground: oklch(0.96 0.005 85);
   --sidebar-primary: oklch(0.78 0.13 78);

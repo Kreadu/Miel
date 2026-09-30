@@ -270,6 +270,7 @@ alimenten un estado de resultados.
 |---|---|---|---|---|---|
 | S22-01 | Como dueño quiero anotar gastos en dos hojas (fijos y variables) eligiendo categorías ya clasificadas, y verlos en una tabla con Editar/Borrar | `expense_categories` + tipo impuesto por la categoría; `/gastos?tipo=` | S21-06 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S22-01-gastos-fijos-y-variables.md |
 | S22-02 | Como dueño quiero ver el estado de resultados con todos los márgenes | `/resultados` bajo RRHH; bruto, EBIT, EBITDA, antes de impuestos, neto, contribución; `expense_categories.pnl_line` | S22-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S22-02-estado-de-resultados.md |
+| S22-03 | Como dueño quiero ver el análisis gráfico y la salud de la empresa por rango de meses, y preguntarle a la IA cómo mejorar | Rango `?desde&hasta`; gráficos; salud por reglas; asesor Claude con historial y límite diario (ADR-039) | S22-02, S23-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr, falta `ANTHROPIC_API_KEY`** | specs/done/S22-03-analisis-salud-y-asesor-ia.md |
 
 ## Épica E23 — Cuentas correctas
 
@@ -287,6 +288,11 @@ Producción queda oculta y fuera de alcance.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
+- **S22-03**: migración `20260930160000_asesor-ia.sql` sin aplicar (sin ella el asesor no guarda
+  preguntas; el resto de Resultados funciona). La IA exige `ANTHROPIC_API_KEY` en `.env.local` —
+  **pospuesto por el humano (2026-09-30) hasta que el repo esté en el GitHub de la empresa madre**
+  (la llave y su facturación serán de esa cuenta).
+- Pendiente: permitir elegir proveedor de IA (pedido del humano "en algún momento").
 - **S23-01, bloqueante**: migración `20260930140000_cuentas-correctas.sql` sin aplicar — sin ella fallan
   Gastos (columna `tax_amount`), Resultados (`income_tax_rate`), crear pedidos (el navegador ya no manda
   precio) y anular ventas.
