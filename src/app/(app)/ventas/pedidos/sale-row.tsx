@@ -49,12 +49,6 @@ export async function SaleRow({
             📍 {sale.shippingAddress}
           </div>
         )}
-        {sale.paymentMethod && (
-          <div className="text-[10px] mt-0.5">
-            {/* S19-08: descriptivo (cómo se espera pagar), no un cobro real. */}
-            {t("orders.payment", { method: t(`paymentMethod.${sale.paymentMethod}`) })}
-          </div>
-        )}
       </td>
       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(sale.total)}</td>
       <td className="px-3 py-2.5 text-muted-foreground">
@@ -76,10 +70,20 @@ export async function SaleRow({
           )}
 
           {isReceivable && (
-            <PaymentForm saleId={sale.id} customerId={sale.customerId!} balance={sale.balance} />
+            <PaymentForm
+              saleId={sale.id}
+              customerId={sale.customerId!}
+              balance={sale.balance}
+              defaultMethod={sale.paymentMethod}
+            />
           )}
 
-          {canCancel && sale.status !== "cancelled" && <CancelSaleButton saleId={sale.id} />}
+          {/* S18-07: separada y abajo, para no confundirla con "Volver". */}
+          {canCancel && sale.status !== "cancelled" && (
+            <div className="mt-2 w-full border-t border-border pt-2">
+              <CancelSaleButton saleId={sale.id} />
+            </div>
+          )}
         </div>
       </td>
     </tr>

@@ -173,6 +173,7 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S18-04 | Como dueño quiero que Ventas no tenga botón "Inicio" (ya se vuelve por el logo del sidebar) | `ventas/page.tsx` queda con 3 accesos: Clientes, Sucursal, Cuentas por cobrar | S18-03 | done | specs/done/S18-04-quitar-inicio-de-ventas.md |
 | S18-05 | Como dueño quiero deshacer la agrupación "Sucursal": Pedidos/Caja/POS vuelven a ser accesos directos en Ventas | `ventas/page.tsx` con Pedidos/Caja/POS de vuelta en la raíz (gateados por `sellsPhysical`); se borra `ventas/sucursal/page.tsx` | S18-04, S19-01 | done | specs/done/S18-05-revertir-agrupacion-sucursal.md |
 | S18-06 | Como vendedor quiero cobrar y entregar una venta de mostrador en un solo paso desde el carrito | RPC `checkout_counter_sale` atómica (crear + confirmar + cobrar total + entregar); bodega preseleccionada (la del trabajador o la principal) y cambiable; solo con "Retiro en tienda" | S19-35, S23-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S18-06-cobrar-y-entregar.md |
+| S18-07 | Como vendedor con poca práctica quiero cobrar un pedido con un clic y ver la forma de pago una sola vez | "Cobrar $X en <forma>" (1 clic = saldo); "cambiar forma de pago" con 4 botones grandes; "Volver" en vez de "Cancelar"; "Anular venta" separada | S18-06 | implemented | specs/done/S18-07-cobro-simple-en-pedidos.md |
 
 ## Épica E19 — Canal de venta física y/o virtual (combinables)
 
