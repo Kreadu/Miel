@@ -36,7 +36,7 @@ describe("receivePurchase", () => {
       p_warehouse_id: warehouseId,
     });
     expect(result).toMatchObject({ ok: true });
-    expect(revalidatePath).toHaveBeenCalledWith("/compras/ordenes");
+    expect(revalidatePath).toHaveBeenCalledWith("/compras");
   });
 
   it("warehouse_invalid mapea a mensaje en español", async () => {

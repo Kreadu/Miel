@@ -8,7 +8,7 @@ import { purchaseSchema, updatePurchaseSchema } from "@/lib/validation/purchases
 
 export type PurchaseState = { ok: false; error: string } | { ok: true } | null;
 
-const PURCHASES_PATH = "/compras/ordenes";
+const PURCHASES_PATH = "/compras";
 
 function mapPurchaseError(message: string | undefined): string {
   if (message?.includes("supplier_invalid")) return "Selecciona un proveedor válido y activo.";

@@ -42,7 +42,7 @@ export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage
           </Button>
           {selected.length > 0 ? (
             <Button asChild size="sm">
-              <Link href={`/compras/ordenes?desde=${selected.join(",")}`}>
+              <Link href={`/compras?reponer=${selected.join(",")}`}>
                 Crear orden de compra ({selected.length})
               </Link>
             </Button>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useMemo, useState } from "react";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/format";
+import { costBeforeTax, purchaseLine } from "@/lib/purchases/line";
 import {
   Select,
   SelectContent,
@@ -21,9 +23,19 @@ import {
 } from "@/components/ui/select";
 
 import { splitProducts } from "./product-options";
+import { SupplierPicker } from "./supplier-picker";
 
 type Supplier = { id: string; name: string };
-type Product = { id: string; name: string; sku: string; cost: number | null; tax_rate: number | null };
+type Product = {
+  id: string;
+  name: string;
+  sku: string;
+  cost: number | null;
+  tax_rate: number | null;
+  photo_url: string | null;
+};
+
+const PURCHASES_PATH = "/compras";
 
 type ItemDraft = {
   key: string;
@@ -68,7 +80,7 @@ export function PurchaseForm({
     setSeenState(state);
     if (state?.ok) {
       onSuccess?.();
-      if (isEditing) router.push("/compras/ordenes");
+      if (isEditing) router.push(PURCHASES_PATH);
     }
   }
 
@@ -93,19 +105,19 @@ export function PurchaseForm({
     const product = products.find((p) => p.id === productId);
     updateItem(key, {
       product_id: productId,
-      unit_cost: product?.cost != null ? String(product.cost) : "0",
+      // El costo del producto ya incluye IVA (S19-37): se sugiere el costo antes de IVA.
+      unit_cost: product?.cost != null ? String(costBeforeTax(product.cost, product.tax_rate ?? 0)) : "0",
       tax_rate: product?.tax_rate != null ? String(product.tax_rate) : "0",
     });
   }
 
   const total = useMemo(() => {
     // Ayuda visual solo: la BD recalcula y es la fuente de verdad (create_purchase, S3-02).
-    return items.reduce((acc, it) => {
-      const qty = Number(it.qty) || 0;
-      const cost = Number(it.unit_cost) || 0;
-      const tax = Number(it.tax_rate) || 0;
-      return acc + qty * cost * (1 + tax / 100);
-    }, 0);
+    return items.reduce(
+      (acc, it) =>
+        acc + purchaseLine(Number(it.qty) || 0, Number(it.unit_cost) || 0, Number(it.tax_rate) || 0).total,
+      0,
+    );
   }, [items]);
 
   const itemsPayload = JSON.stringify(
@@ -128,21 +140,7 @@ export function PurchaseForm({
       {isEditing ? <input type="hidden" name="id" value={purchase.id} /> : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="supplier_id">Proveedor</Label>
-          <Select name="supplier_id" required value={supplierId} onValueChange={setSupplierId}>
-            <SelectTrigger id="supplier_id" className="w-full">
-              <SelectValue placeholder="Selecciona un proveedor" />
-            </SelectTrigger>
-            <SelectContent>
-              {suppliers.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  {s.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <SupplierPicker suppliers={suppliers} value={supplierId} onChange={setSupplierId} />
         <div className="flex flex-col gap-2">
           <Label htmlFor="note">Nota (opcional)</Label>
           <Input id="note" name="note" maxLength={500} defaultValue={purchase?.note} />
@@ -164,12 +162,37 @@ export function PurchaseForm({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          {items.map((item) => (
-            <div key={item.key} className="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-end">
-              <div className="flex flex-col gap-1 sm:col-span-2">
-                <Label className="text-xs">Producto</Label>
+          {/* S19-37: foto · producto (código) · cantidad · costo antes de IVA · IVA · costo
+              unitario con IVA (será el costo del producto) · costo total. */}
+          <div className="hidden gap-2 text-xs text-muted-foreground sm:grid sm:grid-cols-[2.5rem_minmax(0,2fr)_repeat(5,minmax(0,1fr))_4.5rem]">
+            <span />
+            <span>Producto</span>
+            <span className="text-right">Cantidad</span>
+            <span className="text-right">Costo antes de IVA</span>
+            <span className="text-right">IVA %</span>
+            <span className="text-right">Costo unit. con IVA</span>
+            <span className="text-right">Costo total</span>
+            <span />
+          </div>
+          {items.map((item) => {
+            const product = products.find((p) => p.id === item.product_id);
+            const line = purchaseLine(
+              Number(item.qty) || 0,
+              Number(item.unit_cost) || 0,
+              Number(item.tax_rate) || 0,
+            );
+            return (
+              <div
+                key={item.key}
+                className="grid grid-cols-2 items-center gap-2 border-b border-border pb-3 last:border-0 sm:grid-cols-[2.5rem_minmax(0,2fr)_repeat(5,minmax(0,1fr))_4.5rem] sm:border-0 sm:pb-0"
+              >
+                <div className="relative size-10 overflow-hidden rounded-md bg-muted">
+                  {product?.photo_url ? (
+                    <Image src={product.photo_url} alt={product.name} fill unoptimized className="object-cover" />
+                  ) : null}
+                </div>
                 <Select value={item.product_id} onValueChange={(v) => onProductChange(item.key, v)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full min-w-0" aria-label="Producto">
                     <SelectValue placeholder="Selecciona un producto" />
                   </SelectTrigger>
                   <SelectContent>
@@ -198,55 +221,58 @@ export function PurchaseForm({
                     ) : null}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label className="text-xs">Cantidad</Label>
                 <Input
                   type="number"
                   min={0}
                   step="0.001"
+                  aria-label="Cantidad"
+                  className="text-right"
                   value={item.qty}
                   onChange={(e) => updateItem(item.key, { qty: e.target.value })}
                 />
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label className="text-xs">Costo unit.</Label>
                 <Input
                   type="number"
                   min={0}
                   step="0.01"
+                  aria-label="Costo antes de IVA"
+                  className="text-right"
                   value={item.unit_cost}
                   onChange={(e) => updateItem(item.key, { unit_cost: e.target.value })}
                 />
-              </div>
-              <div className="flex items-end gap-2">
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label className="text-xs">IVA %</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step="0.01"
-                    value={item.tax_rate}
-                    onChange={(e) => updateItem(item.key, { tax_rate: e.target.value })}
-                  />
+                <Input
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.01"
+                  aria-label="IVA %"
+                  className="text-right"
+                  value={item.tax_rate}
+                  onChange={(e) => updateItem(item.key, { tax_rate: e.target.value })}
+                />
+                <p className="text-right text-sm tabular-nums" aria-label="Costo unitario con IVA">
+                  {formatMoney(line.unitWithTax)}
+                </p>
+                <p className="text-right text-sm font-medium tabular-nums" aria-label="Costo total">
+                  {formatMoney(line.total)}
+                </p>
+                <div className="flex justify-end">
+                  {items.length > 1 ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setItems((prev) => prev.filter((it) => it.key !== item.key))}
+                    >
+                      Quitar
+                    </Button>
+                  ) : null}
                 </div>
-                {items.length > 1 ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setItems((prev) => prev.filter((it) => it.key !== item.key))}
-                  >
-                    Quitar
-                  </Button>
-                ) : null}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        <p className="text-right text-sm text-muted-foreground">
-          Total estimado: {formatMoney(total)}
+        <p className="text-right text-base font-semibold tabular-nums">
+          Costo total de la compra: {formatMoney(total)}
         </p>
       </div>
 
@@ -257,7 +283,7 @@ export function PurchaseForm({
               {pending ? "Guardando…" : "Guardar cambios"}
             </Button>
             <Button asChild variant="outline" disabled={pending}>
-              <Link href="/compras/ordenes">Cancelar</Link>
+              <Link href={PURCHASES_PATH}>Cancelar</Link>
             </Button>
           </>
         ) : (

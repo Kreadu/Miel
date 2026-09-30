@@ -41,7 +41,7 @@ export async function linkSupplierProduct(
   }
 
   revalidatePath(productosPath(parsed.data.supplier_id));
-  revalidatePath("/compras/ordenes");
+  revalidatePath("/compras");
   return { ok: true };
 }
 
@@ -58,5 +58,5 @@ export async function unlinkSupplierProduct(formData: FormData): Promise<void> {
     .eq("product_id", parsed.data.product_id);
 
   revalidatePath(productosPath(parsed.data.supplier_id));
-  revalidatePath("/compras/ordenes");
+  revalidatePath("/compras");
 }

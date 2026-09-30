@@ -11,6 +11,17 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 13) · S19-37 — Comprar como hoja de compra
+
+**Hecho:** migración `20260929190630_costo-con-iva-al-recibir.sql` (costo con IVA al recibir); `/compras` = formulario de orden +
+órdenes por recibir + Historial (fechas/proveedor); "+" proveedor; líneas con foto y costos;
+`/compras/ordenes` redirige. Verificado: lint ✓, tsc ✓, `npm test` 283/283 ✓, build ✓. Sin
+correr: pgTAP, navegador. El dev server se cortó a las 2 h; el humano lo levanta en su terminal.
+
+**Pendiente:** humano pega `supabase/migrations/20260929190630_costo-con-iva-al-recibir.sql`; commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 12) · S19-36 — Pedidos como hoja de venta
 
 **Hecho:** decisiones del humano: dividir la tabla (pendientes en Pedidos, terminados en el

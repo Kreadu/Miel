@@ -50,6 +50,41 @@ export async function createSupplier(
   return { ok: true };
 }
 
+export type QuickSupplierResult =
+  | { ok: false; error: string }
+  | { ok: true; supplier: { id: string; name: string } };
+
+/**
+ * S19-37: "+" junto al proveedor en la orden de compra — alta rápida que devuelve el proveedor
+ * para dejarlo elegido sin salir de la orden.
+ */
+export async function quickCreateSupplier(input: {
+  name: string;
+  nit?: string;
+  phone?: string;
+}): Promise<QuickSupplierResult> {
+  const parsed = supplierSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const { active } = await getActiveTenant();
+  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("suppliers")
+    .insert({ tenant_id: active.tenantId, ...toColumns(parsed.data) })
+    .select("id, name")
+    .single();
+  if (error || !data) {
+    console.error("quickCreateSupplier:", error?.code);
+    return { ok: false, error: mapSupplierError(error?.code) };
+  }
+
+  revalidatePath(SUPPLIERS_PATH);
+  revalidatePath("/compras");
+  return { ok: true, supplier: data };
+}
+
 const updateSchema = supplierSchema.extend({ id: z.uuid() });
 
 export async function updateSupplier(

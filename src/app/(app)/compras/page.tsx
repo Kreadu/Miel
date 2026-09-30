@@ -1,47 +1,195 @@
+import { Truck, Wallet } from "lucide-react";
 import Link from "next/link";
-import { ClipboardList, Truck, Wallet } from "lucide-react";
+import { notFound } from "next/navigation";
+
+import { costBeforeTax } from "@/lib/purchases/line";
+import { parseProductIds, suggestedReorderQty } from "@/lib/purchases/reorder";
+import { createClient } from "@/lib/supabase/server";
+import { getActiveTenant } from "@/lib/tenant/server";
+
+import { PurchaseForm } from "./ordenes/purchase-form";
+import { PurchaseHistory, type PurchaseHistoryParams } from "./ordenes/purchase-history";
+import { PurchaseRow } from "./ordenes/purchase-row";
 
 export const metadata = { title: "Comprar · Miel" };
 
-export default function ComprasPage() {
+const LINK_CLASS =
+  "inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80";
+
+export default async function ComprasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ editar?: string; reponer?: string } & PurchaseHistoryParams>;
+}) {
+  const { active } = await getActiveTenant();
+  if (!active) notFound();
+
+  const canManage = active.role !== "member";
+  const { editar, reponer, ...history } = await searchParams;
+  // S19-27/S19-37: ítems elegidos en Alertas stock mínimo (`?reponer=<id>,<id>`).
+  const fromAlerts = parseProductIds(reponer);
+
+  const supabase = await createClient();
+  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes, alertsRes] =
+    await Promise.all([
+      supabase
+        .from("purchases")
+        .select(
+          "id, status, total, issued_at, created_at, note, supplier_id, suppliers(name), purchase_items(id, qty, unit_cost, tax_rate, product_id, products(sku, name))",
+        )
+        // S19-37: a la vista solo las órdenes por recibir; el resto está en el Historial.
+        .in("status", ["draft", "ordered"])
+        .order("created_at", { ascending: false }),
+      supabase.from("suppliers").select("id, name").eq("active", true).order("name"),
+      supabase
+        .from("products_catalog")
+        .select("id, sku, name, cost, tax_rate, photo_url")
+        .eq("active", true)
+        .order("name"),
+      supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
+      supabase.from("supplier_products").select("supplier_id, product_id"),
+      fromAlerts.length
+        ? supabase
+            .from("low_stock_alerts")
+            .select("product_id, min_stock, total_qty")
+            .in("product_id", fromAlerts)
+        : Promise.resolve({ data: [] }),
+    ]);
+
+  const purchases = purchasesRes.data ?? [];
+  const suppliers = suppliersRes.data ?? [];
+  const products = (productsRes.data ?? []).filter((p) => p.id) as {
+    id: string;
+    sku: string;
+    name: string;
+    cost: number | null;
+    tax_rate: number | null;
+    photo_url: string | null;
+  }[];
+  const warehouses = warehousesRes.data ?? [];
+
+  // Sugeridos por proveedor para el selector de producto (S15-01): agrupa en servidor,
+  // sin refetch al cambiar de proveedor en el cliente.
+  const suggestedBySupplier: Record<string, string[]> = {};
+  for (const sp of supplierProductsRes.data ?? []) {
+    (suggestedBySupplier[sp.supplier_id] ??= []).push(sp.product_id);
+  }
+
+  const editingPurchase = canManage ? purchases.find((p) => p.id === editar) : undefined;
+
+  const alertById = new Map((alertsRes.data ?? []).map((a) => [a.product_id, a]));
+  const initialItems = fromAlerts
+    .map((id) => products.find((p) => p.id === id))
+    .filter((p): p is (typeof products)[number] => p != null)
+    .map((p) => {
+      const alert = alertById.get(p.id);
+      return {
+        product_id: p.id,
+        qty: String(suggestedReorderQty(Number(alert?.min_stock ?? 0), Number(alert?.total_qty ?? 0))),
+        // El costo del producto ya incluye IVA (S19-37): se sugiere el costo antes de IVA.
+        unit_cost: String(costBeforeTax(p.cost ?? 0, p.tax_rate ?? 0)),
+        tax_rate: String(p.tax_rate ?? 0),
+      };
+    });
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Comprar</h1>
           <p className="text-sm text-muted-foreground">
-            Lo que compras para tener tu oferta en inventario: son tus costos.
+            Crea tus órdenes de compra. Al recibirlas, el costo con IVA pasa a ser el costo del producto.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/compras/ordenes"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-          >
-            <ClipboardList className="mr-2 h-4 w-4" />
-            Órdenes de compra
-          </Link>
-          <Link
-            href="/compras/proveedores"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-          >
+          <Link href="/compras/proveedores" className={LINK_CLASS}>
             <Truck className="mr-2 h-4 w-4" />
             Proveedores
           </Link>
-          <Link
-            href="/compras/cuentas-por-pagar"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-          >
+          <Link href="/compras/cuentas-por-pagar" className={LINK_CLASS}>
             <Wallet className="mr-2 h-4 w-4" />
-            CxP
+            Cuentas por pagar
           </Link>
         </div>
       </div>
-      <div className="rounded-lg border border-dashed border-border p-8 text-center">
-        <p className="text-sm text-muted-foreground">
-          Registra tus proveedores y crea órdenes de compra desde los accesos de arriba.
+
+      {canManage ? (
+        editingPurchase ? (
+          <PurchaseForm
+            suppliers={suppliers}
+            products={products}
+            suggestedBySupplier={suggestedBySupplier}
+            purchase={{
+              id: editingPurchase.id,
+              supplier_id: editingPurchase.supplier_id,
+              note: editingPurchase.note ?? "",
+              items: editingPurchase.purchase_items.map((it) => ({
+                product_id: it.product_id,
+                qty: String(it.qty),
+                unit_cost: String(it.unit_cost),
+                tax_rate: String(it.tax_rate),
+              })),
+            }}
+          />
+        ) : (
+          <PurchaseForm
+            suppliers={suppliers}
+            products={products}
+            suggestedBySupplier={suggestedBySupplier}
+            initialItems={initialItems}
+          />
+        )
+      ) : null}
+
+      <h2 className="text-base font-semibold tracking-tight">Órdenes por recibir</h2>
+      {purchases.length > 0 ? (
+        <div className="overflow-x-auto rounded-lg border border-border bg-card">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-border text-xs text-muted-foreground">
+                <th className="px-3 py-2 font-medium">Proveedor</th>
+                <th className="px-3 py-2 font-medium">Estado</th>
+                <th className="px-3 py-2 text-right font-medium">Total</th>
+                <th className="px-3 py-2 font-medium">Fecha</th>
+                <th className="px-3 py-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {purchases.map((p) => (
+                <PurchaseRow
+                  key={p.id}
+                  canManage={canManage}
+                  warehouses={warehouses}
+                  purchase={{
+                    id: p.id,
+                    supplierName: p.suppliers?.name ?? "—",
+                    status: p.status,
+                    total: p.total,
+                    issuedAt: p.issued_at,
+                    createdAt: p.created_at,
+                    items: p.purchase_items.map((it) => ({
+                      id: it.id,
+                      productName: it.products?.name ?? "—",
+                      productSku: it.products?.sku ?? "—",
+                      qty: it.qty,
+                      unitCost: it.unit_cost,
+                      taxRate: it.tax_rate,
+                    })),
+                  }}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+          {canManage
+            ? "No hay órdenes por recibir. Las recibidas y canceladas están en el Historial."
+            : "Aún no hay órdenes de compra registradas."}
         </p>
-      </div>
+      )}
+
+      <PurchaseHistory suppliers={suppliers} params={history} />
     </div>
   );
 }

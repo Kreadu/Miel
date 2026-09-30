@@ -82,7 +82,7 @@ export function PurchaseRow({
             ) : null}
             {(purchase.status === "draft" || purchase.status === "ordered") && canManage ? (
               <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
-                <Link href={`/compras/ordenes?editar=${purchase.id}`}>Editar</Link>
+                <Link href={`/compras?editar=${purchase.id}`}>Editar</Link>
               </Button>
             ) : null}
             {(purchase.status === "draft" || purchase.status === "ordered") && canManage ? (

@@ -7,7 +7,7 @@ export function suggestedReorderQty(minStock: number, currentQty: number): numbe
 
 const uuid = z.uuid();
 
-/** S19-27: ids de producto que Alertas manda a la orden de compra (`?desde=<id>,<id>`). */
+/** S19-27/S19-37: ids de producto que Alertas manda a la orden de compra (`?reponer=<id>,<id>`). */
 export function parseProductIds(raw: string | undefined): string[] {
   if (!raw) return [];
   const ids = raw.split(",").filter((id) => uuid.safeParse(id).success);

@@ -213,6 +213,7 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-34 | Como dueño quiero el historial de stock dentro de cada inventario, por bodega y rango de fechas, y un % de venta sobre el costo que calcule el precio | RPC `inventory_history`; `InventoryHistory` (botón Historial, GET); `PriceFields` costo/%/precio; formulario ordenado en pares | S19-26, S19-32 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-34-historial-y-porcentaje-de-venta.md |
 | S19-35 | Como dueño quiero elegir la forma de entrega en el pedido (retiro, envío gratis, acordado, transporte por peso y km) antes del pago | `shipping_rates` + `/ventas/envios`; `products.weight_kg`; `create_sale` calcula el envío; carrito con sección de entrega y total con envío | S19-06, S19-08 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-35-formas-de-entrega.md |
 | S19-36 | Como dueño quiero que Pedidos sea la hoja de venta: sin pedido manual, con botón "Crear cliente", solo pedidos por completar, y el historial de compras en la hoja del cliente | Se borra `SaleForm`; `isPendingSale` filtra Pedidos; tabla "Historial de compras" en `/ventas/clientes/[id]`; Catálogo siempre visible en Vender; e2e paso 7 vía catálogo | S19-35 | done (sin migración) | — (reorganización de UI con tests, sin spec) |
+| S19-37 | Como dueño quiero Comprar como hoja de compra: proveedor con +, líneas con foto y costos con IVA, costo con IVA como costo del producto, e historial con fechas y proveedor | `receive_purchase` fija `products.cost` = costo con IVA; `/compras` con formulario, órdenes por recibir e Historial; `quickCreateSupplier` | S19-27, S19-34 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-37-hoja-de-compra.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -250,7 +251,9 @@ por código.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S19-35, bloqueante hasta que se resuelva**: migración `20260929183359_formas-de-entrega.sql`
+- **S19-37**: migración `20260929190630_costo-con-iva-al-recibir.sql` sin aplicar — hasta entonces al recibir una orden el costo del
+  producto no se actualiza y el kardex entra sin IVA.
+- **S19-35 (aplicada 2026-09-29)**: migración `20260929183359_formas-de-entrega.sql`
   sin aplicar — sin ella fallan Pedidos (create_sale con parámetros nuevos), Envíos y el
   Catálogo/Inventario (seleccionan `weight_kg`).
 - **S19-34 (aplicada 2026-09-29)**: migración `20260929181537_historial-de-inventario.sql` sin aplicar — hasta
