@@ -411,7 +411,7 @@
       "counter": "Comptoir / sans client",
       "note": "Note (facultatif)",
       "creating": "Création…",
-      "clear": "Vider le panier",
+      "clear": "Effacer l’écran",
       "keepBrowsing": "Continuer à parcourir le catalogue",
       "warehouse": "Sort de",
       "document": "Justificatif",
@@ -423,7 +423,9 @@
       "checkout": "Encaisser et remettre",
       "charging": "Encaissement…",
       "saveAsOrder": "Enregistrer comme commande",
-      "paymentRequiredHint": "Choisissez le moyen de paiement pour encaisser."
+      "paymentRequiredHint": "Choisissez le moyen de paiement pour encaisser.",
+      "done": "Vente encaissée et remise. Elle figure dans la Caisse et l’historique du client.",
+      "doneWithReceipt": "Vente encaissée et remise — ticket nº {number}. Elle figure dans la Caisse et l’historique du client."
     },
     "deliverySection": {
       "title": "Mode de livraison",
@@ -471,12 +473,15 @@
       "allocationMismatch": "Les quantités par entrepôt ne correspondent pas à la vente. Vérifiez et réessayez."
     },
     "allocation": {
-      "available": "{qty} dans {warehouse}",
       "missing": "Il manque {qty}",
-      "complete": "Compléter {qty} depuis {warehouse} ({available} dispo.)",
-      "fromOther": "{qty} depuis {warehouse}",
+      "complete": "Complet",
       "remove": "retirer",
-      "notEnough": "Pas assez dans les entrepôts qui prêtent du stock."
+      "notEnough": "Pas assez dans les entrepôts qui prêtent du stock.",
+      "excess": "{qty} en trop",
+      "have": "{qty} dispo.",
+      "qty": "Quantité",
+      "chooseWarehouse": "Choisir l’entrepôt",
+      "addWarehouse": "+ Autre entrepôt"
     }
   },
   "customers": {

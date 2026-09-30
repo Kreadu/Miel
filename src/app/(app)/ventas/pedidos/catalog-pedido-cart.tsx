@@ -22,7 +22,7 @@ import { saleLine } from "@/lib/sales/line";
 import { DOCUMENT_TYPES, PAYMENT_METHODS } from "@/lib/validation/sales";
 
 import { useCatalogCart } from "../use-catalog-cart";
-import { AllocationPicker, type AllocationWarehouse, type Extras, resolveAllocations, type StockMap } from "./allocation-picker";
+import { AllocationPicker, type AllocationWarehouse, type AllocationRows, resolveAllocations, type StockMap } from "./allocation-picker";
 import { DeliverySection, type Rate } from "./delivery-section";
 
 const NO_CUSTOMER = "__counter__";
@@ -56,7 +56,7 @@ export function CatalogPedidoCart({
   const [checkoutState, checkoutAction, checkoutPending] = useActionState(checkoutCounterSale, null);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [warehouseId, setWarehouseId] = useState(defaultWarehouseId ?? "");
-  const [extras, setExtras] = useState<Extras>({});
+  const [rows, setRows] = useState<AllocationRows>({});
   const t = useTranslations();
 
   // S19-11: reconcilia precio/descuento/IVA del carrito contra la BD una vez al entrar (no en
@@ -91,9 +91,17 @@ export function CatalogPedidoCart({
     if (state?.ok) clear();
   }
   const [seenCheckout, setSeenCheckout] = useState(checkoutState);
+  // S18-10: tras cobrar y entregar, pantalla limpia y un aviso con la boleta.
+  const [done, setDone] = useState<number | null>(null);
+  if (lines.length > 0 && done !== null) setDone(null);
   if (checkoutState !== seenCheckout) {
     setSeenCheckout(checkoutState);
-    if (checkoutState?.ok) clear();
+    if (checkoutState?.ok) {
+      clear();
+      setPaymentMethod("");
+      setRows({});
+      setDone(checkoutState.receiptNumber ?? 0);
+    }
   }
   // El error que se muestra es el del último botón usado.
   const [lastAction, setLastAction] = useState<"order" | "checkout">("order");
@@ -126,14 +134,20 @@ export function CatalogPedidoCart({
     lines.length > 0 && lines.every((l) => l.taxRate === lines[0].taxRate) ? lines[0].taxRate : null;
 
   const allocationItems = lines.map((l) => ({ productId: l.productId, name: l.name, qty: l.qty }));
-  const { covered, allocations } = resolveAllocations(allocationItems, warehouseId || null, stock, extras);
+  const { covered, allocations } = resolveAllocations(allocationItems, warehouseId || null, stock, rows);
 
   const itemsPayload = JSON.stringify(
     // S23-01: precio, IVA y descuento los pone create_sale desde el producto.
     lines.map((l) => ({ product_id: l.productId, qty: l.qty })),
   );
 
-  if (lines.length === 0) return null;
+  if (lines.length === 0) {
+    return done !== null ? (
+      <p role="status" className="rounded-lg border border-success/40 bg-success/10 p-3 text-sm">
+        {done ? t("sales.cart.doneWithReceipt", { number: done }) : t("sales.cart.done")}
+      </p>
+    ) : null;
+  }
 
   return (
     // S18-06: se envía a mano (no con `action`): React 19 resetea un <form action> tras cada
@@ -254,7 +268,7 @@ export function CatalogPedidoCart({
                 value={warehouseId}
                 onValueChange={(v) => {
                   setWarehouseId(v);
-                  setExtras({});
+                  setRows({});
                 }}
               >
                 <SelectTrigger id="warehouse_id" className="w-full">
@@ -292,8 +306,8 @@ export function CatalogPedidoCart({
                 warehouses={warehouses}
                 mainId={warehouseId || null}
                 stock={stock}
-                extras={extras}
-                onChange={setExtras}
+                rows={rows}
+                onChange={setRows}
               />
             </div>
           </>

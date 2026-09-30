@@ -63,3 +63,16 @@ Fuera de alcance: traslados de stock entre bodegas como movimiento aparte; repar
 - Pedidos filtra ventas, clientes y bodegas por la empresa activa (antes podía mezclar empresas
   del mismo dueño).
 - pgTAP `S18-10-completar-desde-otra-bodega.sql` (14 pruebas), **sin correr aquí**.
+
+## Cambio pedido por el humano tras probar (2026-09-30)
+
+- En vez de los botones "Completar X de …": por cada producto, **filas bodega + cantidad**. La
+  primera fila es la bodega de la venta ("Sale de"), con su stock y la cantidad (por defecto lo
+  que alcance). **"+ Otra bodega"** agrega una fila con **desplegable** (solo bodegas que prestan
+  stock), muestra "hay N" al elegirla, y el usuario escribe la cantidad. Arriba: "Completo",
+  "Faltan X" o "Sobran X"; no deja cobrar/confirmar si no suma exacto o si una fila pide más de
+  lo que hay.
+- Tras "Cobrar y entregar" la pantalla se limpia y queda un aviso "Venta cobrada y entregada —
+  boleta #N" (una venta cobrada y entregada no va a "Pedidos por completar": queda en Caja y en
+  el historial del cliente). "Vaciar carrito" pasa a llamarse **"Limpiar pantalla"**.
+- Sin cambios en la BD.

@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { allocationsSchema, checkoutSchema, saleSchema } from "@/lib/validation/sales";
 
-export type SaleState = { ok: false; error: string } | { ok: true } | null;
+export type SaleState = { ok: false; error: string } | { ok: true; receiptNumber?: number } | null;
 
 const SALES_PATH = "/ventas/pedidos";
 
@@ -250,7 +250,10 @@ export async function checkoutCounterSale(_prev: SaleState, formData: FormData):
   await logActivity("payment_registered", { entityId: saleId ?? undefined, detail: data.payment_method });
   revalidatePath(SALES_PATH);
   revalidatePath("/ventas/caja");
-  return { ok: true };
+  const { data: sale } = saleId
+    ? await supabase.from("sales").select("receipt_number").eq("id", saleId).maybeSingle()
+    : { data: null };
+  return { ok: true, receiptNumber: sale?.receipt_number ?? undefined };
 }
 
 /** S18-06: el dueño emitió la factura en su sistema de facturación (owner/admin; la RPC lo valida). */

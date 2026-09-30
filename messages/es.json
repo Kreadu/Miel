@@ -411,7 +411,7 @@
       "counter": "Mostrador / sin cliente",
       "note": "Nota (opcional)",
       "creating": "Creando…",
-      "clear": "Vaciar carrito",
+      "clear": "Limpiar pantalla",
       "keepBrowsing": "Seguir viendo el catálogo",
       "warehouse": "Sale de",
       "document": "Comprobante",
@@ -423,7 +423,9 @@
       "checkout": "Cobrar y entregar",
       "charging": "Cobrando…",
       "saveAsOrder": "Guardar como pedido",
-      "paymentRequiredHint": "Elige la forma de pago para cobrar."
+      "paymentRequiredHint": "Elige la forma de pago para cobrar.",
+      "done": "Venta cobrada y entregada. Queda en Caja y en el historial del cliente.",
+      "doneWithReceipt": "Venta cobrada y entregada — boleta #{number}. Queda en Caja y en el historial del cliente."
     },
     "deliverySection": {
       "title": "Forma de entrega",
@@ -471,12 +473,15 @@
       "allocationMismatch": "Las cantidades por bodega no coinciden con lo vendido. Revisa y vuelve a intentar."
     },
     "allocation": {
-      "available": "Hay {qty} en {warehouse}",
       "missing": "Faltan {qty}",
-      "complete": "Completar {qty} de {warehouse} (hay {available})",
-      "fromOther": "{qty} de {warehouse}",
+      "complete": "Completo",
       "remove": "quitar",
-      "notEnough": "No hay suficiente en las bodegas que prestan stock."
+      "notEnough": "No hay suficiente en las bodegas que prestan stock.",
+      "excess": "Sobran {qty}",
+      "have": "hay {qty}",
+      "qty": "Cantidad",
+      "chooseWarehouse": "Elige bodega",
+      "addWarehouse": "+ Otra bodega"
     }
   },
   "customers": {

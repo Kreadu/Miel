@@ -11,7 +11,7 @@ import {
   AllocationPicker,
   type AllocationItem,
   type AllocationWarehouse,
-  type Extras,
+  type AllocationRows,
   resolveAllocations,
   type StockMap,
 } from "./allocation-picker";
@@ -36,10 +36,10 @@ export function ConfirmSaleForm({
   const t = useTranslations();
   const [confirming, setConfirming] = useState(false);
   const [warehouseId, setWarehouseId] = useState(defaultWarehouseId ?? "");
-  const [extras, setExtras] = useState<Extras>({});
+  const [rows, setRows] = useState<AllocationRows>({});
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const { covered, allocations } = resolveAllocations(items, warehouseId || null, stock, extras);
+  const { covered, allocations } = resolveAllocations(items, warehouseId || null, stock, rows);
 
   if (!confirming) {
     return (
@@ -55,7 +55,7 @@ export function ConfirmSaleForm({
         value={warehouseId}
         onValueChange={(v) => {
           setWarehouseId(v);
-          setExtras({});
+          setRows({});
         }}
       >
         <SelectTrigger className="h-8 text-xs">
@@ -74,8 +74,8 @@ export function ConfirmSaleForm({
         warehouses={warehouses}
         mainId={warehouseId || null}
         stock={stock}
-        extras={extras}
-        onChange={setExtras}
+        rows={rows}
+        onChange={setRows}
       />
       <div className="flex gap-1">
         <Button

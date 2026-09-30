@@ -411,7 +411,7 @@
       "counter": "Walk-in / no customer",
       "note": "Note (optional)",
       "creating": "Creating…",
-      "clear": "Empty cart",
+      "clear": "Clear screen",
       "keepBrowsing": "Keep browsing the catalog",
       "warehouse": "Ships from",
       "document": "Receipt type",
@@ -423,7 +423,9 @@
       "checkout": "Charge and hand over",
       "charging": "Charging…",
       "saveAsOrder": "Save as order",
-      "paymentRequiredHint": "Choose the payment method to charge."
+      "paymentRequiredHint": "Choose the payment method to charge.",
+      "done": "Sale charged and handed over. It's in the Cash register and the customer's history.",
+      "doneWithReceipt": "Sale charged and handed over — receipt #{number}. It's in the Cash register and the customer's history."
     },
     "deliverySection": {
       "title": "Delivery method",
@@ -471,12 +473,15 @@
       "allocationMismatch": "The quantities per warehouse don't match what was sold. Check and try again."
     },
     "allocation": {
-      "available": "{qty} in {warehouse}",
       "missing": "{qty} missing",
-      "complete": "Complete {qty} from {warehouse} ({available} available)",
-      "fromOther": "{qty} from {warehouse}",
+      "complete": "Complete",
       "remove": "remove",
-      "notEnough": "Not enough in the warehouses that lend stock."
+      "notEnough": "Not enough in the warehouses that lend stock.",
+      "excess": "{qty} too many",
+      "have": "{qty} available",
+      "qty": "Quantity",
+      "chooseWarehouse": "Choose warehouse",
+      "addWarehouse": "+ Another warehouse"
     }
   },
   "customers": {

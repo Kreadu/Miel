@@ -19,6 +19,10 @@ Migración `20260930220000_completar-desde-otra-bodega.sql`, pgTAP de 14 pruebas
 reparto, `allocation-picker.tsx` en carrito y en "Confirmar", casilla en la ficha de la bodega.
 Verificado: lint ✓, tsc ✓, `npm test` 466/466 ✓. **Sin correr:** pgTAP, navegador.
 
+**Cambio tras probar (humano):** el reparto pasa a filas bodega + cantidad con desplegable ("+ Otra
+bodega", "hay N", "Completo/Faltan/Sobran"); tras "Cobrar y entregar" pantalla limpia + aviso con
+la boleta; "Vaciar carrito" → "Limpiar pantalla". Sin cambios de BD. `npm test` 468/468 ✓.
+
 **Pendiente del humano:** aplicar en el SQL editor, en orden: `20260930180000_cobrar-y-entregar`,
 `20260930200000_caja-cobros-y-devoluciones`, `20260930220000_completar-desde-otra-bodega`
 (hasta aplicar la última, guardar una bodega da error). Correr los pgTAP S18-06, S18-08, S18-10,
