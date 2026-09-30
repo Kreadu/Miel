@@ -1590,6 +1590,111 @@ export type Database = {
           },
         ]
       }
+      worker_categories: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          modules: string[]
+          name: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          modules?: string[]
+          name: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          modules?: string[]
+          name?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      workers: {
+        Row: {
+          active: boolean
+          address: string | null
+          arl_risk_class: number | null
+          category_id: string | null
+          contract_type: string
+          created_at: string
+          created_by: string
+          doc_number: string
+          doc_type: string
+          email: string | null
+          eps: string | null
+          full_name: string
+          hire_date: string | null
+          id: string
+          pension_fund: string | null
+          phone: string | null
+          position: string | null
+          salary: number
+          tenant_id: string
+          updated_at: string
+          warehouse_id: string | null
+          work_schedule: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          arl_risk_class?: number | null
+          category_id?: string | null
+          contract_type?: string
+          created_at?: string
+          created_by?: string
+          doc_number: string
+          doc_type?: string
+          email?: string | null
+          eps?: string | null
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          pension_fund?: string | null
+          phone?: string | null
+          position?: string | null
+          salary?: number
+          tenant_id: string
+          updated_at?: string
+          warehouse_id?: string | null
+          work_schedule?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          arl_risk_class?: number | null
+          category_id?: string | null
+          contract_type?: string
+          created_at?: string
+          created_by?: string
+          doc_number?: string
+          doc_type?: string
+          email?: string | null
+          eps?: string | null
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          pension_fund?: string | null
+          phone?: string | null
+          position?: string | null
+          salary?: number
+          tenant_id?: string
+          updated_at?: string
+          warehouse_id?: string | null
+          work_schedule?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       cash_flow: {

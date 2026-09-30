@@ -1,3 +1,5 @@
+import { Tags, UserRound } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +10,9 @@ import { revokeInvitation } from "@/actions/invitations";
 import { InviteForm } from "./invite-form";
 
 export const metadata = { title: "RRHH · Miel" };
+
+const LINK_CLASS =
+  "inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80";
 
 const ROLE_LABEL: Record<string, string> = { owner: "Dueño", admin: "Admin", member: "Operativo" };
 
@@ -35,10 +40,31 @@ export default async function EquipoPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">RRHH</h1>
-        <p className="text-sm text-muted-foreground">{active.tenantName}</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">RRHH</h1>
+          <p className="text-sm text-muted-foreground">{active.tenantName}</p>
+        </div>
+        {/* S21-02: trabajadores y sus categorías (qué ve cada uno). */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href="/equipo/trabajadores" className={LINK_CLASS}>
+            <UserRound className="mr-2 h-4 w-4" />
+            Trabajadores
+          </Link>
+          <Link href="/equipo/categorias" className={LINK_CLASS}>
+            <Tags className="mr-2 h-4 w-4" />
+            Categorías de trabajador
+          </Link>
+        </div>
       </div>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-base font-semibold tracking-tight">Usuarios con correo</h2>
+        <p className="text-sm text-muted-foreground">
+          Dueño y administradores entran con correo y contraseña. Los trabajadores entrarán con su
+          usuario y código de 4 dígitos.
+        </p>
+      </section>
 
       <InviteForm />
 

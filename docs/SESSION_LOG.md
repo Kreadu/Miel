@@ -11,6 +11,20 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 15) · S21-02 — trabajadores y categorías
+
+**Hecho:** "trabajador" en vez de "empleado" (decisión del humano). Decisiones: categorías creadas
+por el dueño con módulos marcados; ingreso con pestaña "Soy trabajador" (código de empresa +
+usuario + PIN de 4 dígitos, S21-03); control de uso con ingresos/salidas y acciones (S21-04).
+Migración `20260929194004`; `/equipo/trabajadores`, `/equipo/categorias`, accesos desde RRHH.
+Verificado: lint ✓, tsc ✓, `npm test` 347/347 ✓, build ✓. Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega la migración; S21-03 necesita un ADR del mecanismo de ingreso con
+PIN (Supabase Auth exige contraseña ≥ 6 y crear usuarios sin correo real puede requerir cambiar
+una opción del proyecto; `SUPABASE_SERVICE_ROLE_KEY` sigue prohibida en `src/`).
+
+---
+
 ## Sesión 2026-09-29 (cont. 14) · S21-01 — motor de nómina copiado de Gestion-Future
 
 **Hecho:** ADR-036 + épica E21. Copiados a `src/lib/rrhh/` (sin tocar Gestion-Future, que quedó

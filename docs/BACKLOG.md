@@ -254,9 +254,11 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
 | ID | Historia | Criterio | Depende | Estado | Spec |
 |---|---|---|---|---|---|
 | S21-01 | Como dueño quiero que Miel tenga el motor de nómina de Gestion-Future (Colombia 2026, por horas, XML DIAN) | Copia de la lógica pura a `src/lib/rrhh/` + 56 tests Jest→Vitest en verde; sin vínculo con el original | — | done | specs/done/S21-01-motor-de-nomina.md |
-| S21-02 | Como dueño quiero registrar a mis empleados en RRHH (cargo, salario, ingreso, tipo de contrato) | Tabla `employees` con RLS por tenant + pantalla RRHH → Empleados | S21-01 | todo | — |
-| S21-03 | Como dueño quiero liquidar la nómina de un período con el motor | Períodos de nómina + liquidación por empleado con `ColombiaPayrollEngine` | S21-02 | todo | — |
-| S21-04 | Contratación de profesionales, licencias/incapacidades, nómina electrónica DIAN, portal del empleado | A priorizar con el humano | S21-03 | todo | — |
+| S21-02 | Como dueño quiero registrar a mis trabajadores y crear categorías que definen qué ve cada uno | `workers` + `worker_categories` (RLS owner/admin); `/equipo/trabajadores` y `/equipo/categorias` | S21-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S21-02-trabajadores-y-categorias.md |
+| S21-03 | Como trabajador quiero entrar con mi usuario y código de 4 dígitos y ver solo lo de mi categoría | Pestaña "Soy trabajador" en el login (código de empresa + usuario + PIN), bloqueo tras 5 intentos, menú y rutas según los módulos de su categoría; ADR del mecanismo de autenticación | S21-02 | todo | — |
+| S21-04 | Como dueño quiero ver el uso: ingresos/salidas e intentos fallidos, y acciones importantes de cada trabajador | Registro de uso en RRHH | S21-03 | todo | — |
+| S21-05 | Como dueño quiero liquidar la nómina de un período con el motor | Períodos de nómina + liquidación por trabajador con `ColombiaPayrollEngine` | S21-02 | todo | — |
+| S21-06 | Contratación de profesionales, licencias/incapacidades, nómina electrónica DIAN, portal del trabajador | A priorizar con el humano | S21-05 | todo | — |
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración
@@ -264,7 +266,10 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S19-37**: migración `20260929190630_costo-con-iva-al-recibir.sql` sin aplicar — hasta entonces al recibir una orden el costo del
+- **S21-02, bloqueante hasta que se resuelva**: migración
+  `20260929194004_trabajadores-y-categorias.sql` sin aplicar — sin ella fallan Trabajadores y
+  Categorías de trabajador en RRHH.
+- **S19-37 (aplicada 2026-09-29)**: migración `20260929190630_costo-con-iva-al-recibir.sql` sin aplicar — hasta entonces al recibir una orden el costo del
   producto no se actualiza y el kardex entra sin IVA.
 - **S19-35 (aplicada 2026-09-29)**: migración `20260929183359_formas-de-entrega.sql`
   sin aplicar — sin ella fallan Pedidos (create_sale con parámetros nuevos), Envíos y el
