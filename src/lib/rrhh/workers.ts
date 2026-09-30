@@ -26,5 +26,12 @@ export const WORK_SCHEDULES = {
   por_horas: "Por horas",
 } as const;
 
+/** S21-02c: planta (Trabajadores) vs temporales o por horas (área aparte en RRHH). */
+export const WORKER_TYPES = {
+  planta: "De planta",
+  temporal: "Temporal",
+  por_horas: "Por horas",
+} as const;
+
 export const keysOf = <T extends Record<string, string>>(o: T) =>
   Object.keys(o) as [keyof T & string, ...(keyof T & string)[]];

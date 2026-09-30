@@ -25,6 +25,25 @@ código de 4 dígitos (S21-03) y habrá control de uso (S21-04).
   sin categoría). `/equipo/trabajadores`: agregar, editar, retirar/reactivar (borrado lógico).
   Accesos desde RRHH.
 
+## Ajuste 2026-09-29 (S21-02b, pedido del humano)
+
+- "+" junto a Categoría en la ficha del trabajador (`WorkerCategoryPicker` +
+  `quickCreateWorkerCategory`): crea la categoría con sus módulos y la deja elegida.
+- "Borrar trabajador" al editar (con confirmación): migración
+  `20260929195038_borrar-trabajador.sql` (política delete solo owner/admin), `deleteWorker`.
+  "Retirar" (borrado lógico) sigue en la lista. pgTAP `S21-02b-borrar-trabajador.sql`.
+
+## Ajuste 2026-09-29 (S21-02c, pedido del humano)
+
+- **Cargos** como lista propia: `worker_positions` (RLS owner/admin) y `workers.position_id`; los
+  cargos escritos a mano se pasaron a la lista y se quitó la columna de texto. Pantalla
+  `/equipo/cargos` (crear, editar, borrar) y "+" junto a Cargo en la ficha (`PositionPicker`).
+- **Contacto de urgencia**: `emergency_contact_name`, `emergency_phone`.
+- **Temporales y por horas**: `workers.worker_type` (planta/temporal/por_horas), `end_date`
+  (temporal), `hourly_rate` (por horas, en lugar del salario mensual). Área aparte
+  `/equipo/temporales`; `/equipo/trabajadores` muestra solo planta (`WorkersView`).
+- Migración `20260929195544_cargos-urgencia-temporales.sql`; pgTAP `S21-02c-cargos.sql`.
+
 ## NO-alcance (siguientes historias)
 
 - Usuario y código de 4 dígitos, restricción real de módulos al entrar (S21-03).

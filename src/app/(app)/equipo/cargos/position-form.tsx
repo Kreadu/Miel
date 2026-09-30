@@ -2,26 +2,14 @@
 
 import { useActionState, useState } from "react";
 
-import { createWorker } from "@/actions/workers";
+import { createWorkerPosition } from "@/actions/workers";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { type WorkerArea, WorkerFields } from "./worker-fields";
-
-type Option = { id: string; name: string };
-
-export function WorkerForm({
-  area,
-  categories,
-  positions,
-  warehouses,
-}: {
-  area: WorkerArea;
-  categories: Option[];
-  positions: Option[];
-  warehouses: Option[];
-}) {
+export function PositionForm() {
   const [open, setOpen] = useState(false);
-  const [state, action, pending] = useActionState(createWorker, null);
+  const [state, action, pending] = useActionState(createWorkerPosition, null);
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
@@ -31,25 +19,20 @@ export function WorkerForm({
   if (!open) {
     return (
       <div>
-        <Button onClick={() => setOpen(true)}>
-          {area === "planta" ? "+ Agregar trabajador" : "+ Agregar trabajador temporal o por horas"}
-        </Button>
+        <Button onClick={() => setOpen(true)}>+ Crear cargo</Button>
       </div>
     );
   }
 
   return (
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
-      <WorkerFields
-        idPrefix="new"
-        area={area}
-        categories={categories}
-        positions={positions}
-        warehouses={warehouses}
-      />
+      <div className="flex flex-col gap-2 sm:max-w-sm">
+        <Label htmlFor="new-position">Nombre del cargo</Label>
+        <Input id="new-position" name="name" required maxLength={80} placeholder="Ej. Cajero" />
+      </div>
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Guardando…" : "Guardar trabajador"}
+          {pending ? "Creando…" : "Crear cargo"}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
           Cancelar

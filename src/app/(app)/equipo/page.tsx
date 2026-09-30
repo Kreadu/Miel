@@ -1,4 +1,4 @@
-import { Tags, UserRound } from "lucide-react";
+import { BriefcaseBusiness, Clock, Tags, UserRound } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -50,6 +50,14 @@ export default async function EquipoPage() {
           <Link href="/equipo/trabajadores" className={LINK_CLASS}>
             <UserRound className="mr-2 h-4 w-4" />
             Trabajadores
+          </Link>
+          <Link href="/equipo/temporales" className={LINK_CLASS}>
+            <Clock className="mr-2 h-4 w-4" />
+            Temporales y por horas
+          </Link>
+          <Link href="/equipo/cargos" className={LINK_CLASS}>
+            <BriefcaseBusiness className="mr-2 h-4 w-4" />
+            Cargos
           </Link>
           <Link href="/equipo/categorias" className={LINK_CLASS}>
             <Tags className="mr-2 h-4 w-4" />

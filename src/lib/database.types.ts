@@ -1620,6 +1620,30 @@ export type Database = {
         }
         Relationships: []
       }
+      worker_positions: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       workers: {
         Row: {
           active: boolean
@@ -1632,18 +1656,23 @@ export type Database = {
           doc_number: string
           doc_type: string
           email: string | null
+          emergency_contact_name: string | null
+          emergency_phone: string | null
+          end_date: string | null
           eps: string | null
           full_name: string
           hire_date: string | null
+          hourly_rate: number
           id: string
           pension_fund: string | null
           phone: string | null
-          position: string | null
+          position_id: string | null
           salary: number
           tenant_id: string
           updated_at: string
           warehouse_id: string | null
           work_schedule: string
+          worker_type: string
         }
         Insert: {
           active?: boolean
@@ -1656,18 +1685,23 @@ export type Database = {
           doc_number: string
           doc_type?: string
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_phone?: string | null
+          end_date?: string | null
           eps?: string | null
           full_name: string
           hire_date?: string | null
+          hourly_rate?: number
           id?: string
           pension_fund?: string | null
           phone?: string | null
-          position?: string | null
+          position_id?: string | null
           salary?: number
           tenant_id: string
           updated_at?: string
           warehouse_id?: string | null
           work_schedule?: string
+          worker_type?: string
         }
         Update: {
           active?: boolean
@@ -1680,18 +1714,23 @@ export type Database = {
           doc_number?: string
           doc_type?: string
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_phone?: string | null
+          end_date?: string | null
           eps?: string | null
           full_name?: string
           hire_date?: string | null
+          hourly_rate?: number
           id?: string
           pension_fund?: string | null
           phone?: string | null
-          position?: string | null
+          position_id?: string | null
           salary?: number
           tenant_id?: string
           updated_at?: string
           warehouse_id?: string | null
           work_schedule?: string
+          worker_type?: string
         }
         Relationships: []
       }

@@ -266,9 +266,11 @@ cálculo (portable tal cual), después cada capa rehecha con el stack de Miel.
   inventarios, el Catálogo y Alertas (seleccionan columnas nuevas). Se pega tal cual desde
   `supabase/migrations/20260929165506_tipos-de-inventario.sql`.
 - S19-26: inventarios personalizados por el usuario quedaron fuera (lista fija).
-- **S21-02, bloqueante hasta que se resuelva**: migración
-  `20260929194004_trabajadores-y-categorias.sql` sin aplicar — sin ella fallan Trabajadores y
-  Categorías de trabajador en RRHH.
+- **S21-02c, bloqueante hasta que se resuelva**: migración
+  `20260929195544_cargos-urgencia-temporales.sql` sin aplicar — sin ella fallan Trabajadores,
+  Temporales y Cargos (la app ya no usa la columna `position`).
+- **S21-02b**: migración `20260929195038_borrar-trabajador.sql` sin aplicar — hasta entonces
+  "Borrar trabajador" responde "No se pudo borrar el trabajador" (S21-02 ya aplicada).
 - **S19-37 (aplicada 2026-09-29)**: migración `20260929190630_costo-con-iva-al-recibir.sql` sin aplicar — hasta entonces al recibir una orden el costo del
   producto no se actualiza y el kardex entra sin IVA.
 - **S19-35 (aplicada 2026-09-29)**: migración `20260929183359_formas-de-entrega.sql`

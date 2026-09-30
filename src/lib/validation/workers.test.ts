@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { workerCategorySchema, workerSchema } from "./workers";
+import { workerCategorySchema, workerPositionSchema, workerSchema } from "./workers";
 
 describe("workerCategorySchema (S21-02)", () => {
   it("acepta nombre y módulos válidos", () => {
@@ -42,4 +42,34 @@ describe("workerSchema (S21-02)", () => {
       expect(r.data.hire_date).toBeNull();
     }
   });
+
+  it("S21-02c: tipo de trabajador, valor hora, fecha de término y contacto de urgencia", () => {
+    const r = workerSchema.safeParse({
+      ...base,
+      worker_type: "por_horas",
+      hourly_rate: "9000",
+      end_date: "2026-12-31",
+      emergency_contact_name: " Rosa ",
+      emergency_phone: "3001234567",
+    });
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.worker_type).toBe("por_horas");
+      expect(r.data.hourly_rate).toBe(9000);
+      expect(r.data.end_date).toBe("2026-12-31");
+      expect(r.data.emergency_contact_name).toBe("Rosa");
+    }
+    const def = workerSchema.safeParse(base);
+    expect(def.success && def.data.worker_type).toBe("planta");
+    expect(workerSchema.safeParse({ ...base, worker_type: "freelance" }).success).toBe(false);
+    expect(workerSchema.safeParse({ ...base, hourly_rate: "-1" }).success).toBe(false);
+  });
 });
+
+describe("workerPositionSchema (S21-02c)", () => {
+  it("acepta un cargo y rechaza vacío", () => {
+    expect(workerPositionSchema.safeParse({ name: "Cajero" }).success).toBe(true);
+    expect(workerPositionSchema.safeParse({ name: " " }).success).toBe(false);
+  });
+});
+

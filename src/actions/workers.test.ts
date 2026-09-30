@@ -68,3 +68,93 @@ describe("createWorker (S21-02)", () => {
     });
   });
 });
+
+describe("deleteWorker (S21-02b)", () => {
+  it("borra por id y avisa si no borró nada", async () => {
+    const select = vi.fn(async () => ({ data: [{ id: "w" }], error: null }));
+    const eq = vi.fn(() => ({ select }));
+    const del = vi.fn(() => ({ eq }));
+    clientState.current = { from: vi.fn(() => ({ delete: del })) } as never;
+    const { deleteWorker } = await import("./workers");
+
+    expect(await deleteWorker("11111111-1111-4111-8111-111111111111")).toEqual({ ok: true });
+    expect(eq).toHaveBeenCalledWith("id", "11111111-1111-4111-8111-111111111111");
+
+    select.mockResolvedValueOnce({ data: [], error: null });
+    expect((await deleteWorker("11111111-1111-4111-8111-111111111111")).ok).toBe(false);
+  });
+
+  it("id inválido → error sin tocar la BD", async () => {
+    const from = vi.fn();
+    clientState.current = { from } as never;
+    const { deleteWorker } = await import("./workers");
+
+    expect((await deleteWorker("x")).ok).toBe(false);
+    expect(from).not.toHaveBeenCalled();
+  });
+});
+
+describe("quickCreateWorkerCategory (S21-02b: + desde la ficha)", () => {
+  it("crea y devuelve la categoría para dejarla elegida", async () => {
+    const single = vi.fn(async () => ({ data: { id: "c-1", name: "Vendedor" }, error: null }));
+    const select = vi.fn(() => ({ single }));
+    const insert = vi.fn(() => ({ select }));
+    clientState.current = { from: vi.fn(() => ({ insert })) } as never;
+    const { quickCreateWorkerCategory } = await import("./workers");
+
+    const result = await quickCreateWorkerCategory({ name: "Vendedor", modules: ["ventas"] });
+
+    expect(result).toEqual({ ok: true, category: { id: "c-1", name: "Vendedor" } });
+    expect(insert).toHaveBeenCalledWith({ tenant_id: "t-1", name: "Vendedor", modules: ["ventas"] });
+  });
+
+  it("módulo desconocido → error", async () => {
+    const { quickCreateWorkerCategory } = await import("./workers");
+    expect((await quickCreateWorkerCategory({ name: "X", modules: ["finanzas"] })).ok).toBe(false);
+  });
+});
+
+describe("cargos (S21-02c)", () => {
+  it("quickCreateWorkerPosition crea y devuelve el cargo", async () => {
+    const single = vi.fn(async () => ({ data: { id: "p-1", name: "Cajero" }, error: null }));
+    const select = vi.fn(() => ({ single }));
+    const insert = vi.fn(() => ({ select }));
+    clientState.current = { from: vi.fn(() => ({ insert })) } as never;
+    const { quickCreateWorkerPosition } = await import("./workers");
+
+    expect(await quickCreateWorkerPosition(" Cajero ")).toEqual({
+      ok: true,
+      position: { id: "p-1", name: "Cajero" },
+    });
+    expect(insert).toHaveBeenCalledWith({ tenant_id: "t-1", name: "Cajero" });
+  });
+
+  it("createWorker guarda cargo, tipo, valor hora y urgencia", async () => {
+    clientState.current = mockSupabase(null);
+    const { createWorker } = await import("./workers");
+    const POS = "22222222-2222-4222-8222-222222222222";
+
+    await createWorker(
+      null,
+      formData({
+        full_name: "Ana",
+        doc_number: "1",
+        position_id: POS,
+        worker_type: "por_horas",
+        hourly_rate: "9000",
+        emergency_contact_name: "Rosa",
+        emergency_phone: "300",
+      }),
+    );
+
+    expect(clientState.current.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        position_id: POS,
+        worker_type: "por_horas",
+        hourly_rate: 9000,
+        emergency_contact_name: "Rosa",
+        emergency_phone: "300",
+      }),
+    );
+  });
+});

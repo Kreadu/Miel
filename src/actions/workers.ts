@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
-import { workerCategorySchema, workerSchema } from "@/lib/validation/workers";
+import { workerCategorySchema, workerPositionSchema, workerSchema } from "@/lib/validation/workers";
 
 export type WorkerState = { ok: false; error: string } | { ok: true } | null;
 
@@ -71,6 +71,38 @@ export async function updateWorkerCategory(_prev: WorkerState, formData: FormDat
   return { ok: true };
 }
 
+export type QuickCategoryResult =
+  | { ok: false; error: string }
+  | { ok: true; category: { id: string; name: string } };
+
+/**
+ * S21-02b: "+" junto a Categoría en la ficha del trabajador — crea la categoría y la devuelve
+ * para dejarla elegida sin salir del formulario.
+ */
+export async function quickCreateWorkerCategory(input: {
+  name: string;
+  modules: string[];
+}): Promise<QuickCategoryResult> {
+  const parsed = workerCategorySchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const { active } = await getActiveTenant();
+  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("worker_categories")
+    .insert({ tenant_id: active.tenantId, name: parsed.data.name, modules: parsed.data.modules })
+    .select("id, name")
+    .single();
+  if (error || !data) {
+    console.error("quickCreateWorkerCategory:", error?.code);
+    return { ok: false, error: mapCategoryError(error?.code) };
+  }
+  revalidateRrhh();
+  return { ok: true, category: data };
+}
+
 /** Borrar una categoría deja a sus trabajadores sin categoría (on delete set null). */
 export async function deleteWorkerCategory(formData: FormData): Promise<void> {
   const parsed = z.uuid().safeParse(formData.get("id"));
@@ -80,14 +112,83 @@ export async function deleteWorkerCategory(formData: FormData): Promise<void> {
   revalidateRrhh();
 }
 
+// ---------- Cargos (S21-02c) ----------
+
+function mapPositionError(code: string | undefined): string {
+  if (code === "23505") return "Ya existe un cargo con ese nombre.";
+  return "No se pudo guardar el cargo. Intenta de nuevo.";
+}
+
+export async function createWorkerPosition(_prev: WorkerState, formData: FormData): Promise<WorkerState> {
+  const result = await quickCreateWorkerPosition(formData.get("name")?.toString() ?? "");
+  return result.ok ? { ok: true } : result;
+}
+
+export async function updateWorkerPosition(_prev: WorkerState, formData: FormData): Promise<WorkerState> {
+  const parsed = workerPositionSchema
+    .extend({ id: z.uuid() })
+    .safeParse({ name: formData.get("name"), id: formData.get("id") });
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("worker_positions")
+    .update({ name: parsed.data.name })
+    .eq("id", parsed.data.id);
+  if (error) {
+    console.error("updateWorkerPosition:", error.code);
+    return { ok: false, error: mapPositionError(error.code) };
+  }
+  revalidateRrhh();
+  return { ok: true };
+}
+
+/** Borrar un cargo deja a sus trabajadores sin cargo (on delete set null). */
+export async function deleteWorkerPosition(formData: FormData): Promise<void> {
+  const parsed = z.uuid().safeParse(formData.get("id"));
+  if (!parsed.success) return;
+  const supabase = await createClient();
+  await supabase.from("worker_positions").delete().eq("id", parsed.data);
+  revalidateRrhh();
+}
+
+export type QuickPositionResult =
+  | { ok: false; error: string }
+  | { ok: true; position: { id: string; name: string } };
+
+/** "+" junto a Cargo en la ficha del trabajador: crea el cargo y lo devuelve para elegirlo. */
+export async function quickCreateWorkerPosition(name: string): Promise<QuickPositionResult> {
+  const parsed = workerPositionSchema.safeParse({ name });
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  const { active } = await getActiveTenant();
+  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("worker_positions")
+    .insert({ tenant_id: active.tenantId, name: parsed.data.name })
+    .select("id, name")
+    .single();
+  if (error || !data) {
+    console.error("quickCreateWorkerPosition:", error?.code);
+    return { ok: false, error: mapPositionError(error?.code) };
+  }
+  revalidateRrhh();
+  return { ok: true, position: data };
+}
+
 // ---------- Trabajadores ----------
 
 const WORKER_FIELDS = [
   "full_name",
   "doc_type",
   "doc_number",
-  "position",
+  "position_id",
   "hire_date",
+  "worker_type",
+  "end_date",
+  "hourly_rate",
   "contract_type",
   "salary",
   "work_schedule",
@@ -97,6 +198,8 @@ const WORKER_FIELDS = [
   "phone",
   "email",
   "address",
+  "emergency_contact_name",
+  "emergency_phone",
   "warehouse_id",
   "category_id",
 ] as const;
@@ -116,8 +219,11 @@ function toColumns(d: z.infer<typeof workerSchema>) {
     full_name: d.full_name,
     doc_type: d.doc_type,
     doc_number: d.doc_number,
-    position: d.position,
+    position_id: d.position_id || null,
     hire_date: d.hire_date,
+    worker_type: d.worker_type,
+    end_date: d.end_date,
+    hourly_rate: d.hourly_rate,
     contract_type: d.contract_type,
     salary: d.salary,
     work_schedule: d.work_schedule,
@@ -127,6 +233,8 @@ function toColumns(d: z.infer<typeof workerSchema>) {
     phone: d.phone,
     email: d.email,
     address: d.address,
+    emergency_contact_name: d.emergency_contact_name,
+    emergency_phone: d.emergency_phone,
     warehouse_id: d.warehouse_id || null,
     category_id: d.category_id || null,
   };
@@ -135,6 +243,7 @@ function toColumns(d: z.infer<typeof workerSchema>) {
 function mapWorkerError(code: string | undefined, message?: string): string {
   if (code === "23505") return "Ya existe un trabajador con ese documento.";
   if (message?.includes("category_invalid")) return "Elige una categoría válida.";
+  if (message?.includes("position_invalid")) return "Elige un cargo válido.";
   if (message?.includes("warehouse_invalid")) return "Elige una bodega o sucursal válida.";
   return "No se pudo guardar el trabajador. Intenta de nuevo.";
 }
@@ -187,4 +296,19 @@ export async function toggleWorkerActive(formData: FormData): Promise<void> {
     .update({ active: parsed.data.active === "true" })
     .eq("id", parsed.data.id);
   revalidateRrhh();
+}
+
+/** S21-02b: borrar trabajador (solo owner/admin por RLS). 0 filas = sin permiso o ya no existe. */
+export async function deleteWorker(id: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const parsed = z.uuid().safeParse(id);
+  if (!parsed.success) return { ok: false, error: "Trabajador inválido." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("workers").delete().eq("id", parsed.data).select("id");
+  if (error || !data?.length) {
+    if (error) console.error("deleteWorker:", error.code);
+    return { ok: false, error: "No se pudo borrar el trabajador." };
+  }
+  revalidateRrhh();
+  return { ok: true };
 }

@@ -19,7 +19,15 @@ usuario + PIN de 4 dígitos, S21-03); control de uso con ingresos/salidas y acci
 Migración `20260929194004`; `/equipo/trabajadores`, `/equipo/categorias`, accesos desde RRHH.
 Verificado: lint ✓, tsc ✓, `npm test` 347/347 ✓, build ✓. Sin correr: pgTAP, navegador.
 
-**Pendiente:** humano pega la migración; S21-03 necesita un ADR del mecanismo de ingreso con
+Ajuste S21-02b: "+" de categoría en la ficha del trabajador y "Borrar trabajador" (migración
+`20260929195038`, política delete owner/admin).
+
+Ajuste S21-02c: cargos como lista (`/equipo/cargos` + "+" en la ficha), contacto de urgencia,
+área de temporales y por horas (`/equipo/temporales`; valor hora y fecha de término). Migración
+`20260929195544`.
+
+**Pendiente:** humano pega `20260929195038_borrar-trabajador.sql` y
+`20260929195544_cargos-urgencia-temporales.sql`; S21-03 necesita un ADR del mecanismo de ingreso con
 PIN (Supabase Auth exige contraseña ≥ 6 y crear usuarios sin correo real puede requerir cambiar
 una opción del proyecto; `SUPABASE_SERVICE_ROLE_KEY` sigue prohibida en `src/`).
 
