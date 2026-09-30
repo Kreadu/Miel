@@ -22,6 +22,11 @@ emitir"; DIAN real en S25-01, E25 nueva). Migración `20260930180000_cobrar-y-en
 carrito con "Cobrar y entregar", sección "Facturas por emitir". Verificado: lint ✓, tsc ✓,
 `npm test` 452/452 ✓. **Sin correr:** pgTAP y migración (sin Docker/Supabase CLI), navegador.
 
+**Corrección (reportada por el humano):** tras un error (p. ej. factura sin cliente), React 19
+reseteaba el `<form action>` y los Select de Radix volvían a su valor inicial (forma de pago
+vacía → botón bloqueado; cliente y comprobante también se perdían). El carrito ahora se envía con
+`onSubmit` + `startTransition` (sin reset); el botón usado se lee de `submitter`.
+
 **Pendiente del humano:** pegar la migración en el SQL editor del cloud y correr el pgTAP;
 probar en el navegador (abrir caja → catálogo → carrito con Retiro en tienda → Cobrar y entregar).
 

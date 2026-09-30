@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useActionState, useEffect, useMemo, useRef, useState } from "react";
 
 import { refreshCartProductData } from "@/actions/catalog";
 import { checkoutCounterSale, createSale } from "@/actions/sales";
@@ -127,8 +127,17 @@ export function CatalogPedidoCart({
   if (lines.length === 0) return null;
 
   return (
+    // S18-06: se envía a mano (no con `action`): React 19 resetea un <form action> tras cada
+    // envío y los Select de Radix vuelven a su valor inicial — un error borraba forma de pago,
+    // cliente y comprobante ya elegidos. Así, tras un error todo queda como estaba.
     <form
-      action={formAction}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const checkout = (e.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "checkout";
+        setLastAction(checkout ? "checkout" : "order");
+        startTransition(() => (checkout ? checkoutAction(formData) : formAction(formData)));
+      }}
       className="flex flex-col gap-4 rounded-lg border border-primary/30 bg-card p-4 shadow-xs"
     >
       <input type="hidden" name="items" value={itemsPayload} />
@@ -272,8 +281,7 @@ export function CatalogPedidoCart({
         {delivery.method === "pickup" ? (
           <Button
             type="submit"
-            formAction={checkoutAction}
-            onClick={() => setLastAction("checkout")}
+            value="checkout"
             disabled={busy || !paymentMethod}
           >
             {checkoutPending ? t("sales.cart.charging") : t("sales.cart.checkout")}
@@ -282,7 +290,7 @@ export function CatalogPedidoCart({
         <Button
           type="submit"
           variant={delivery.method === "pickup" ? "outline" : "default"}
-          onClick={() => setLastAction("order")}
+          value="order"
           disabled={busy || !delivery.method}
         >
           {pending ? t("sales.cart.creating") : t("sales.cart.saveAsOrder")}
