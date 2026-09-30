@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createCustomer } from "@/actions/customers";
 import { createClient } from "@/lib/supabase/server";
@@ -7,13 +8,17 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { CustomerForm } from "./customer-form";
 import { CustomerRow } from "./customer-row";
 
-export const metadata = { title: "Clientes · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("customers");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function ClientesPage() {
   const { active } = await getActiveTenant();
   if (!active) notFound();
 
   const canManage = active.role !== "member";
+  const t = await getTranslations("customers");
 
   const supabase = await createClient();
   const { data: customers } = await supabase
@@ -24,15 +29,15 @@ export default async function ClientesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Clientes</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
 
       {canManage ? (
         <CustomerForm
           action={createCustomer}
-          submitLabel="Crear cliente"
-          pendingLabel="Creando…"
+          submitLabel={t("create")}
+          pendingLabel={t("creating")}
         />
       ) : null}
 
@@ -41,10 +46,10 @@ export default async function ClientesPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Nombre</th>
-                <th className="px-3 py-2 font-medium">Documento</th>
-                <th className="px-3 py-2 font-medium">Email</th>
-                <th className="px-3 py-2 font-medium">Teléfono</th>
+                <th className="px-3 py-2 font-medium">{t("name")}</th>
+                <th className="px-3 py-2 font-medium">{t("document")}</th>
+                <th className="px-3 py-2 font-medium">{t("email")}</th>
+                <th className="px-3 py-2 font-medium">{t("phone")}</th>
                 <th className="px-3 py-2" />
               </tr>
             </thead>
@@ -71,9 +76,7 @@ export default async function ClientesPage() {
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          {canManage
-            ? "Aún no tienes clientes. Crea el primero arriba."
-            : "Aún no hay clientes registrados."}
+          {canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
     </div>

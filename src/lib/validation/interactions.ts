@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const interactionSchema = z.object({
-  customer_id: z.uuid("Cliente inválido"),
+  customer_id: z.uuid("interactions.errors.customerInvalid"),
   kind: z.enum(["note", "followup", "complaint", "promo"], {
-    message: "Tipo de interacción inválido",
+    message: "interactions.errors.kindInvalid",
   }),
-  note: z.string().trim().min(1, "La nota es obligatoria").max(1000, "Nota muy larga"),
+  note: z.string().trim().min(1, "interactions.errors.noteRequired").max(1000, "common.errors.noteTooLong"),
   occurred_at: z.string().trim().optional().or(z.literal("")),
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
 import { getExchangeRate } from "@/actions/exchange-rate";
@@ -22,6 +23,7 @@ export function CurrencySelector({
   const [selected, setSelected] = useState(baseCurrency);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const t = useTranslations();
 
   function handleChange(code: string) {
     setSelected(code);
@@ -40,7 +42,7 @@ export function CurrencySelector({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">Ver precios en</span>
+        <span className="text-xs text-muted-foreground">{t("catalog.viewPricesIn")}</span>
         <Select value={selected} onValueChange={handleChange}>
           <SelectTrigger className="h-8 w-44">
             <SelectValue />
@@ -48,17 +50,17 @@ export function CurrencySelector({
           <SelectContent>
             {SUPPORTED_CURRENCIES.map((c) => (
               <SelectItem key={c.code} value={c.code}>
-                {c.code} — {c.label}
+                {c.code} — {t(`catalog.currencies.${c.code}`)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {pending ? <span className="text-xs text-muted-foreground">Convirtiendo…</span> : null}
+        {pending ? <span className="text-xs text-muted-foreground">{t("catalog.converting")}</span> : null}
       </div>
-      {error ? <p className="text-xs text-destructive">{error}</p> : null}
+      {error ? <p className="text-xs text-destructive">{t(error)}</p> : null}
       {selected !== baseCurrency && !error ? (
         <p className="text-xs text-muted-foreground">
-          Conversión aproximada (tasa de mercado), no es un precio de cobro.
+          {t("catalog.approxConversion")}
         </p>
       ) : null}
     </div>

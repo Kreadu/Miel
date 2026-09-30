@@ -1,15 +1,15 @@
 import { centsDigits } from "./format";
 
 export const SUPPORTED_CURRENCIES = [
-  { code: "COP", label: "Peso colombiano" },
-  { code: "USD", label: "Dólar estadounidense" },
-  { code: "EUR", label: "Euro" },
-  { code: "GBP", label: "Libra esterlina" },
-  { code: "MXN", label: "Peso mexicano" },
-  { code: "ARS", label: "Peso argentino" },
-  { code: "BRL", label: "Real brasileño" },
-  { code: "CLP", label: "Peso chileno" },
-  { code: "PEN", label: "Sol peruano" },
+  { code: "COP" },
+  { code: "USD" },
+  { code: "EUR" },
+  { code: "GBP" },
+  { code: "MXN" },
+  { code: "ARS" },
+  { code: "BRL" },
+  { code: "CLP" },
+  { code: "PEN" },
 ] as const;
 
 export type CurrencyCode = (typeof SUPPORTED_CURRENCIES)[number]["code"];

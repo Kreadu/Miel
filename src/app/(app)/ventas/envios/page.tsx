@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -6,7 +7,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { RateForm } from "./rate-form";
 import { RateRow } from "./rate-row";
 
-export const metadata = { title: "Envíos · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("shipping");
+  return { title: `${t("title")} · Miel` };
+}
 
 /**
  * S19-35: tipos de transporte y sus tarifas (base + por kg + por km). En el pedido, "Envío por
@@ -16,6 +20,7 @@ export default async function EnviosPage() {
   const { active } = await getActiveTenant();
   if (!active) notFound();
   const canManage = active.role !== "member";
+  const t = await getTranslations("shipping");
 
   const supabase = await createClient();
   const { data: rates } = await supabase
@@ -26,10 +31,9 @@ export default async function EnviosPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Envíos</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Tus transportes y sus tarifas. Valor del envío = base + (valor por kg × peso del pedido) +
-          (valor por km × km).
+          {t("subtitle")}
         </p>
       </div>
 
@@ -43,9 +47,7 @@ export default async function EnviosPage() {
         </ul>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          {canManage
-            ? "Aún no tienes transportes. Agrega hasta 3 (por ejemplo Moto, Camioneta y Transportadora)."
-            : "Aún no hay transportes configurados."}
+          {canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
     </div>

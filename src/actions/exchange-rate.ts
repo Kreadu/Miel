@@ -11,7 +11,7 @@ export type ExchangeRateState = { ok: true; rate: number } | { ok: false; error:
  */
 export async function getExchangeRate(base: string, target: string): Promise<ExchangeRateState> {
   if (!isSupportedCurrency(base) || !isSupportedCurrency(target)) {
-    return { ok: false, error: "Moneda no soportada." };
+    return { ok: false, error: "catalog.errors.currencyUnsupported" };
   }
   if (base === target) return { ok: true, rate: 1 };
 
@@ -19,15 +19,15 @@ export async function getExchangeRate(base: string, target: string): Promise<Exc
     const res = await fetch(`https://open.er-api.com/v6/latest/${base}`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return { ok: false, error: "No se pudo obtener la tasa de cambio." };
+    if (!res.ok) return { ok: false, error: "catalog.errors.rateFailed" };
 
     const data: { rates?: Record<string, number> } = await res.json();
     const rate = data.rates?.[target];
-    if (typeof rate !== "number") return { ok: false, error: "Moneda no disponible." };
+    if (typeof rate !== "number") return { ok: false, error: "catalog.errors.currencyUnavailable" };
 
     return { ok: true, rate };
   } catch (error) {
     console.error("getExchangeRate:", error);
-    return { ok: false, error: "No se pudo obtener la tasa de cambio. Revisa tu conexión." };
+    return { ok: false, error: "catalog.errors.rateOffline" };
   }
 }

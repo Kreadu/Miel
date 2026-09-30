@@ -11,14 +11,14 @@ export type CustomerPaymentState = { ok: false; error: string } | { ok: true } |
 const SALES_PATH = "/ventas/pedidos";
 
 function mapCustomerPaymentError(message: string | undefined): string {
-  if (message?.includes("payment_exceeds_balance")) return "El monto supera el saldo pendiente de la venta.";
-  if (message?.includes("sale_not_receivable")) return "Esta venta no está en un estado cobrable.";
-  if (message?.includes("sale_customer_mismatch")) return "La venta no corresponde a este cliente.";
-  if (message?.includes("customer_not_found")) return "Cliente inválido.";
-  if (message?.includes("payment_amount_invalid")) return "El monto debe ser mayor a cero.";
-  if (message?.includes("payment_method_invalid")) return "Selecciona un método de pago válido.";
-  if (message?.includes("sale_not_found")) return "La venta indicada no existe.";
-  return "No se pudo registrar el cobro. Intenta de nuevo.";
+  if (message?.includes("payment_exceeds_balance")) return "payments.errors.exceedsBalance";
+  if (message?.includes("sale_not_receivable")) return "payments.errors.notReceivable";
+  if (message?.includes("sale_customer_mismatch")) return "payments.errors.customerMismatch";
+  if (message?.includes("customer_not_found")) return "payments.errors.customerInvalid";
+  if (message?.includes("payment_amount_invalid")) return "payments.errors.amountPositive";
+  if (message?.includes("payment_method_invalid")) return "payments.errors.methodInvalid";
+  if (message?.includes("sale_not_found")) return "payments.errors.saleNotFound";
+  return "payments.errors.failed";
 }
 
 /** Cualquier miembro del tenant activo registra cobros (register_customer_payment lo valida igual: pertenencia, no rol admin). */

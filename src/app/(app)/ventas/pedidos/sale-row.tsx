@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { formatDate, formatMoney } from "@/lib/format";
 
 import { CancelSaleButton } from "./cancel-sale-button";
@@ -8,23 +10,7 @@ import { ShipSaleForm } from "./ship-sale-form";
 
 const RECEIVABLE_STATUSES = new Set(["confirmed", "shipped", "delivered"]);
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: "Borrador",
-  confirmed: "Confirmada",
-  shipped: "Despachada",
-  delivered: "Entregada",
-  cancelled: "Anulada",
-};
-
-// S19-08: descriptivo (cómo se espera pagar), no un cobro real — ver "Registrar cobro" para eso.
-const PAYMENT_METHOD_LABEL: Record<string, string> = {
-  cash: "Efectivo",
-  card: "Tarjeta",
-  transfer: "Transferencia",
-  other: "Otro",
-};
-
-export function SaleRow({
+export async function SaleRow({
   sale,
   warehouses,
   canCancel,
@@ -46,16 +32,17 @@ export function SaleRow({
   /** S23-01: owner/admin pueden anular. */
   canCancel: boolean;
 }) {
+  const t = await getTranslations("sales");
   const isReceivable =
     RECEIVABLE_STATUSES.has(sale.status) && sale.customerId !== null && sale.balance > 0;
 
   return (
     <tr className="border-b border-border text-sm last:border-0">
-      <td className="px-3 py-2.5">{sale.customerName ?? "Mostrador"}</td>
+      <td className="px-3 py-2.5">{sale.customerName ?? t("orders.counter")}</td>
       <td className="px-3 py-2.5 text-muted-foreground">
-        <div>{STATUS_LABEL[sale.status] ?? sale.status}</div>
+        <div>{t.has(`status.${sale.status}`) ? t(`status.${sale.status}`) : sale.status}</div>
         {sale.receiptNumber !== null && (
-          <div className="text-[10px] mt-0.5 tabular-nums">Recibo #{sale.receiptNumber}</div>
+          <div className="text-[10px] mt-0.5 tabular-nums">{t("orders.receipt", { number: sale.receiptNumber })}</div>
         )}
         {sale.shippingAddress && (
           <div className="text-[10px] mt-0.5 truncate max-w-[150px]" title={sale.shippingAddress}>
@@ -64,7 +51,8 @@ export function SaleRow({
         )}
         {sale.paymentMethod && (
           <div className="text-[10px] mt-0.5">
-            Pago: {PAYMENT_METHOD_LABEL[sale.paymentMethod] ?? sale.paymentMethod}
+            {/* S19-08: descriptivo (cómo se espera pagar), no un cobro real. */}
+            {t("orders.payment", { method: t(`paymentMethod.${sale.paymentMethod}`) })}
           </div>
         )}
       </td>

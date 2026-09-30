@@ -22,8 +22,8 @@ function readFields(formData: FormData) {
 }
 
 function mapError(code: string | undefined): string {
-  if (code === "23505") return "Ya existe un transporte con ese nombre.";
-  return "No se pudo guardar el transporte. Intenta de nuevo.";
+  if (code === "23505") return "shipping.errors.duplicateName";
+  return "shipping.errors.saveFailed";
 }
 
 /** S19-35: solo owner/admin gestionan tarifas (RLS de shipping_rates lo garantiza igual). */
@@ -35,7 +35,7 @@ export async function createShippingRate(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.from("shipping_rates").insert({

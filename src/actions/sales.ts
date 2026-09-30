@@ -19,17 +19,17 @@ const SALES_PATH = "/ventas/pedidos";
 const NO_CUSTOMER_SENTINEL = "__counter__";
 
 function mapSaleError(message: string | undefined): string {
-  if (message?.includes("customer_invalid")) return "Selecciona un cliente válido y activo.";
-  if (message?.includes("product_invalid")) return "Uno de los productos no es válido o está inactivo.";
-  if (message?.includes("permission_denied")) return "No tienes permiso para esta operación.";
-  if (message?.includes("items_required")) return "Agrega al menos un ítem a la venta.";
-  if (message?.includes("item_qty_invalid")) return "La cantidad de un ítem debe ser mayor a cero.";
-  if (message?.includes("payment_method_invalid")) return "Selecciona una forma de pago válida.";
-  if (message?.includes("delivery_method_invalid")) return "Selecciona una forma de entrega válida.";
-  if (message?.includes("shipping_rate_invalid")) return "El transporte elegido no es válido.";
-  if (message?.includes("shipping_km_invalid")) return "Escribe los km del envío.";
-  if (message?.includes("shipping_cost_invalid")) return "El valor del envío no es válido.";
-  return "No se pudo guardar la venta. Intenta de nuevo.";
+  if (message?.includes("customer_invalid")) return "sales.errors.customerInvalid";
+  if (message?.includes("product_invalid")) return "sales.errors.productInvalid";
+  if (message?.includes("permission_denied")) return "common.errors.permissionDenied";
+  if (message?.includes("items_required")) return "sales.errors.itemsRequired";
+  if (message?.includes("item_qty_invalid")) return "sales.errors.qtyPositive";
+  if (message?.includes("payment_method_invalid")) return "sales.errors.paymentMethodInvalid";
+  if (message?.includes("delivery_method_invalid")) return "sales.errors.deliveryMethodInvalid";
+  if (message?.includes("shipping_rate_invalid")) return "sales.errors.shippingRateInvalid";
+  if (message?.includes("shipping_km_invalid")) return "sales.errors.kmRequired";
+  if (message?.includes("shipping_cost_invalid")) return "sales.errors.shippingCostInvalid";
+  return "sales.errors.saveFailed";
 }
 
 /** Cualquier miembro del tenant activo crea ventas (create_sale lo valida igual: pertenencia, no rol admin). */
@@ -43,14 +43,14 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
   try {
     items = JSON.parse(itemsRaw);
   } catch {
-    return { ok: false, error: "Los ítems de la venta no son válidos." };
+    return { ok: false, error: "sales.errors.itemsInvalid" };
   }
 
   const parsed = saleSchema.safeParse({ ...raw, items });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No tienes una empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
 
@@ -83,7 +83,7 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
 
 export async function confirmSale(saleId: string, warehouseId: string): Promise<SaleState> {
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No tienes una empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("confirm_sale", {
@@ -93,17 +93,17 @@ export async function confirmSale(saleId: string, warehouseId: string): Promise<
 
   if (error) {
     console.error("confirmSale:", error.code, error.message);
-    if (error.message.includes("not_authenticated")) return { ok: false, error: "No estás autenticado." };
-    if (error.message.includes("permission_denied")) return { ok: false, error: "No tienes permiso para confirmar esta venta." };
-    if (error.message.includes("warehouse_invalid")) return { ok: false, error: "La bodega o sucursal seleccionada es inválida." };
-    if (error.message.includes("sale_not_draft")) return { ok: false, error: "La venta ya no está en borrador." };
-    if (error.message.includes("stock_insufficient")) return { ok: false, error: "No hay stock suficiente para confirmar esta venta." };
+    if (error.message.includes("not_authenticated")) return { ok: false, error: "common.errors.signInAgain" };
+    if (error.message.includes("permission_denied")) return { ok: false, error: "common.errors.permissionDenied" };
+    if (error.message.includes("warehouse_invalid")) return { ok: false, error: "sales.errors.warehouseInvalid" };
+    if (error.message.includes("sale_not_draft")) return { ok: false, error: "sales.errors.notDraft" };
+    if (error.message.includes("stock_insufficient")) return { ok: false, error: "sales.errors.stockInsufficient" };
     if (error.message.includes("cash_session_required"))
       return {
         ok: false,
-        error: "Abre tu caja para generar la boleta: el pedido tiene productos que se venden en tienda.",
+        error: "sales.errors.cashSessionRequired",
       };
-    return { ok: false, error: "No se pudo confirmar la venta. Intenta de nuevo." };
+    return { ok: false, error: "sales.errors.confirmFailed" };
   }
 
   await logActivity("sale_confirmed", { entityId: saleId });
@@ -113,7 +113,7 @@ export async function confirmSale(saleId: string, warehouseId: string): Promise<
 
 export async function markSaleShipped(saleId: string, shippingAddress: string): Promise<SaleState> {
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No tienes una empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("mark_sale_shipped", {
@@ -123,10 +123,10 @@ export async function markSaleShipped(saleId: string, shippingAddress: string): 
 
   if (error) {
     console.error("markSaleShipped:", error.code, error.message);
-    if (error.message.includes("not_authenticated")) return { ok: false, error: "No estás autenticado." };
-    if (error.message.includes("shipping_address_required")) return { ok: false, error: "La dirección de envío es obligatoria." };
-    if (error.message.includes("sale_not_confirmed_or_not_found")) return { ok: false, error: "La venta no está confirmada o no existe." };
-    return { ok: false, error: "No se pudo despachar la venta. Intenta de nuevo." };
+    if (error.message.includes("not_authenticated")) return { ok: false, error: "common.errors.signInAgain" };
+    if (error.message.includes("shipping_address_required")) return { ok: false, error: "sales.errors.addressRequired" };
+    if (error.message.includes("sale_not_confirmed_or_not_found")) return { ok: false, error: "sales.errors.notConfirmed" };
+    return { ok: false, error: "sales.errors.shipFailed" };
   }
 
   revalidatePath(SALES_PATH);
@@ -135,7 +135,7 @@ export async function markSaleShipped(saleId: string, shippingAddress: string): 
 
 export async function markSaleDelivered(saleId: string): Promise<SaleState> {
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No tienes una empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("mark_sale_delivered", {
@@ -144,9 +144,9 @@ export async function markSaleDelivered(saleId: string): Promise<SaleState> {
 
   if (error) {
     console.error("markSaleDelivered:", error.code, error.message);
-    if (error.message.includes("not_authenticated")) return { ok: false, error: "No estás autenticado." };
-    if (error.message.includes("sale_not_confirmed_or_shipped")) return { ok: false, error: "La venta no ha sido despachada ni confirmada." };
-    return { ok: false, error: "No se pudo entregar la venta. Intenta de nuevo." };
+    if (error.message.includes("not_authenticated")) return { ok: false, error: "common.errors.signInAgain" };
+    if (error.message.includes("sale_not_confirmed_or_shipped")) return { ok: false, error: "sales.errors.notShippedOrConfirmed" };
+    return { ok: false, error: "sales.errors.deliverFailed" };
   }
 
   revalidatePath(SALES_PATH);
@@ -159,17 +159,17 @@ export async function markSaleDelivered(saleId: string): Promise<SaleState> {
  */
 export async function cancelSale(saleId: string): Promise<SaleState> {
   const id = z.uuid().safeParse(saleId);
-  if (!id.success) return { ok: false, error: "Venta inválida." };
+  if (!id.success) return { ok: false, error: "sales.errors.saleInvalid" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_sale", { p_sale_id: id.data });
   if (error) {
     console.error("cancelSale:", error.code, error.message);
-    if (error.message.includes("permission_denied")) return { ok: false, error: "Solo un administrador puede anular ventas." };
-    if (error.message.includes("sale_already_cancelled")) return { ok: false, error: "La venta ya estaba anulada." };
+    if (error.message.includes("permission_denied")) return { ok: false, error: "sales.errors.cancelAdminOnly" };
+    if (error.message.includes("sale_already_cancelled")) return { ok: false, error: "sales.errors.alreadyCancelled" };
     if (error.message.includes("cash_session_required"))
-      return { ok: false, error: "Abre tu caja para devolver el efectivo de esta venta." };
-    return { ok: false, error: "No se pudo anular la venta. Intenta de nuevo." };
+      return { ok: false, error: "sales.errors.cancelCashRequired" };
+    return { ok: false, error: "sales.errors.cancelFailed" };
   }
 
   await logActivity("sale_cancelled", { entityId: id.data });

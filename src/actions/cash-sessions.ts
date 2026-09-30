@@ -12,13 +12,13 @@ export type CashSessionState = { ok: false; error: string } | { ok: true } | nul
 const CASH_PATH = "/ventas/caja";
 
 function mapCashSessionError(message: string | undefined): string {
-  if (message?.includes("cash_session_already_open")) return "Ya tienes una sesión de caja abierta.";
-  if (message?.includes("cash_session_not_open")) return "No hay una sesión abierta para cerrar.";
-  if (message?.includes("cash_session_not_found")) return "Sesión de caja inválida.";
-  if (message?.includes("permission_denied")) return "No tienes permiso para esta operación.";
-  if (message?.includes("opening_amount_invalid")) return "El monto base debe ser mayor o igual a cero.";
-  if (message?.includes("counted_amount_invalid")) return "El monto contado debe ser mayor o igual a cero.";
-  return "No se pudo completar la operación de caja. Intenta de nuevo.";
+  if (message?.includes("cash_session_already_open")) return "cash.errors.alreadyOpen";
+  if (message?.includes("cash_session_not_open")) return "cash.errors.notOpen";
+  if (message?.includes("cash_session_not_found")) return "cash.errors.sessionInvalid";
+  if (message?.includes("permission_denied")) return "common.errors.permissionDenied";
+  if (message?.includes("opening_amount_invalid")) return "cash.errors.openingNegative";
+  if (message?.includes("counted_amount_invalid")) return "cash.errors.countedNegative";
+  return "cash.errors.failed";
 }
 
 export async function openCashSession(
@@ -29,7 +29,7 @@ export async function openCashSession(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("open_cash_session", {

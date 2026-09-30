@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-export const metadata = { title: "Cuentas por cobrar · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("sales.links");
+  return { title: `${t("receivables")} · Miel` };
+}
 
 export default async function CuentasPorCobrarPage() {
   const { active } = await getActiveTenant();
@@ -14,6 +18,7 @@ export default async function CuentasPorCobrarPage() {
   // customer_balances ya se filtra por rol admin/owner en su propia definición (member no ve
   // saldos globales, permisos-roles.md); aquí solo se evita renderizar la página a member.
   if (active.role === "member") notFound();
+  const t = await getTranslations("receivables");
 
   const supabase = await createClient();
   const { data: balances, error } = await supabase
@@ -35,12 +40,12 @@ export default async function CuentasPorCobrarPage() {
             <Link href="/ventas" className="text-muted-foreground transition-colors hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h1 className="text-xl font-semibold tracking-tight">Cuentas por cobrar (CxC)</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           </div>
-          <p className="text-sm text-muted-foreground">Saldos pendientes de tus clientes.</p>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex items-center gap-4 rounded-lg border border-border bg-muted/30 px-4 py-2">
-          <span className="text-sm text-muted-foreground">Por cobrar:</span>
+          <span className="text-sm text-muted-foreground">{t("toCollect")}</span>
           <span className="text-lg font-semibold text-destructive tabular-nums">
             {formatMoney(totalReceivable)}
           </span>
@@ -49,19 +54,19 @@ export default async function CuentasPorCobrarPage() {
 
       {error ? (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-8 text-center">
-          <p className="text-sm font-medium text-destructive">No se pudieron cargar las cuentas por cobrar.</p>
-          <p className="mt-1 text-xs text-muted-foreground">Intenta recargar la página.</p>
+          <p className="text-sm font-medium text-destructive">{t("loadError")}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("reload")}</p>
         </div>
       ) : balanceList.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-4 py-3 font-medium">Cliente</th>
-                <th className="px-4 py-3 font-medium">Documento</th>
-                <th className="px-4 py-3 text-right font-medium">Total vendido</th>
-                <th className="px-4 py-3 text-right font-medium">Total cobrado</th>
-                <th className="px-4 py-3 text-right font-medium">Saldo</th>
+                <th className="px-4 py-3 font-medium">{t("customer")}</th>
+                <th className="px-4 py-3 font-medium">{t("document")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("totalSold")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("totalCollected")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("balance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -86,7 +91,7 @@ export default async function CuentasPorCobrarPage() {
                       }`}
                     >
                       {formatMoney(Math.abs(balance))}
-                      {isFavor && <span className="ml-1 text-xs font-normal">(a favor)</span>}
+                      {isFavor && <span className="ml-1 text-xs font-normal">{t("inFavor")}</span>}
                     </td>
                   </tr>
                 );
@@ -96,7 +101,7 @@ export default async function CuentasPorCobrarPage() {
         </div>
       ) : (
         <div className="rounded-lg border border-dashed border-border p-8 text-center">
-          <p className="text-sm text-muted-foreground">No hay saldos de clientes registrados aún.</p>
+          <p className="text-sm text-muted-foreground">{t("empty")}</p>
         </div>
       )}
     </div>

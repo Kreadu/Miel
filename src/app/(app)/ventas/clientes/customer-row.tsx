@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import Link from "next/link";
 import { FileText } from "lucide-react";
@@ -17,6 +18,7 @@ export function CustomerRow({
   canManage: boolean;
 }) {
   const [editing, setEditing] = useState(false);
+  const t = useTranslations("customers");
 
   if (editing) {
     return (
@@ -25,8 +27,8 @@ export function CustomerRow({
           <CustomerForm
             action={updateCustomer}
             values={customer}
-            submitLabel="Guardar"
-            pendingLabel="Guardando…"
+            submitLabel={t("save")}
+            pendingLabel={t("saving")}
             onCancel={() => setEditing(false)}
             onSuccess={() => setEditing(false)}
           />
@@ -56,24 +58,24 @@ export function CustomerRow({
             className="inline-flex h-8 items-center justify-center rounded-md px-3 text-xs font-medium hover:bg-accent hover:text-accent-foreground text-muted-foreground"
           >
             <FileText className="mr-1.5 h-3.5 w-3.5" />
-            CRM
+            {t("crm")}
           </Link>
           {canManage ? (
             <>
               <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
-                Editar
+                {t("edit")}
               </Button>
               <form action={toggleCustomerActive}>
                 <input type="hidden" name="id" value={customer.id} />
                 <input type="hidden" name="active" value={(!customer.active).toString()} />
                 <Button type="submit" variant="ghost" size="sm">
-                  {customer.active ? "Archivar" : "Reactivar"}
+                  {customer.active ? t("archive") : t("reactivate")}
                 </Button>
               </form>
             </>
           ) : (
             !customer.active && (
-              <span className="block text-right text-xs text-muted-foreground ml-2">Archivado</span>
+              <span className="block text-right text-xs text-muted-foreground ml-2">{t("archived")}</span>
             )
           )}
         </div>

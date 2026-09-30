@@ -1,11 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { markSaleDelivered } from "@/actions/sales";
 import { Button } from "@/components/ui/button";
 
 export function DeliverSaleAction({ saleId, isShipped }: { saleId: string; isShipped: boolean }) {
   const [pending, setPending] = useState(false);
+  const t = useTranslations("sales.orders");
 
   return (
     <Button 
@@ -21,7 +23,7 @@ export function DeliverSaleAction({ saleId, isShipped }: { saleId: string; isShi
         setPending(false);
       }}
     >
-      {pending ? "..." : (isShipped ? "Marcar entregado" : "Entregar directamente")}
+      {pending ? "..." : (isShipped ? t("markDelivered") : t("deliverDirectly"))}
     </Button>
   );
 }

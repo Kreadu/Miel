@@ -32,7 +32,7 @@ describe("interactionSchema", () => {
     });
     expect(res.success).toBe(false);
     if (!res.success) {
-      expect(res.error.issues[0].message).toBe("Cliente inválido");
+      expect(res.error.issues[0].message).toBe("interactions.errors.customerInvalid");
     }
   });
 
@@ -44,7 +44,7 @@ describe("interactionSchema", () => {
     });
     expect(res.success).toBe(false);
     if (!res.success) {
-      expect(res.error.issues[0].message).toBe("Tipo de interacción inválido");
+      expect(res.error.issues[0].message).toBe("interactions.errors.kindInvalid");
     }
   });
 
@@ -56,7 +56,7 @@ describe("interactionSchema", () => {
     });
     expect(res.success).toBe(false);
     if (!res.success) {
-      expect(res.error.issues[0].message).toBe("La nota es obligatoria");
+      expect(res.error.issues[0].message).toBe("interactions.errors.noteRequired");
     }
   });
 });

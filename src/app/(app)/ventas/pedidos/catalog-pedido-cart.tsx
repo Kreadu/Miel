@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 
 import { refreshCartProductData } from "@/actions/catalog";
@@ -18,18 +19,12 @@ import {
 } from "@/components/ui/select";
 import { formatMoney } from "@/lib/format";
 import { saleLine } from "@/lib/sales/line";
+import { PAYMENT_METHODS } from "@/lib/validation/sales";
 
 import { useCatalogCart } from "../use-catalog-cart";
 import { DeliverySection, type Rate } from "./delivery-section";
 
 const NO_CUSTOMER = "__counter__";
-
-const PAYMENT_METHOD_LABEL = {
-  cash: "Efectivo",
-  card: "Tarjeta",
-  transfer: "Transferencia",
-  other: "Otro",
-} as const;
 
 /**
  * S19-06/S19-07: el carrito armado desde /ventas/catalogo se confirma acá, en la misma página
@@ -48,6 +43,7 @@ export function CatalogPedidoCart({
 }) {
   const { lines, updateQty, updateLineData, removeItem, clear } = useCatalogCart(tenantId);
   const [state, formAction, pending] = useActionState(createSale, null);
+  const t = useTranslations();
 
   // S19-11: reconcilia precio/descuento/IVA del carrito contra la BD una vez al entrar (no en
   // cada render — `refreshedRef` evita que la propia actualización de `lines` retrigger esto).
@@ -121,9 +117,9 @@ export function CatalogPedidoCart({
       <input type="hidden" name="items" value={itemsPayload} />
 
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-medium">Pedido armado desde el catálogo</p>
+        <p className="text-sm font-medium">{t("sales.cart.title")}</p>
         <p className="text-xs text-muted-foreground">
-          Ajustá cantidades, elegí la forma de entrega, la forma de pago y el cliente, y confirmá.
+          {t("sales.cart.help")}
         </p>
       </div>
 
@@ -158,18 +154,18 @@ export function CatalogPedidoCart({
                 size="sm"
                 onClick={() => removeItem(l.productId)}
               >
-                Quitar
+                {t("sales.cart.remove")}
               </Button>
             </div>
           </div>
         ))}
         <div className="flex flex-col items-end gap-0.5 pt-2 text-sm">
-          <p className="text-muted-foreground">Subtotal: {formatMoney(subtotal)}</p>
+          <p className="text-muted-foreground">{t("sales.cart.subtotal", { amount: formatMoney(subtotal) })}</p>
           <p className="text-muted-foreground">
-            IVA {DEFAULT_TAX_COUNTRY_LABEL}
+            {t("sales.cart.tax", { country: DEFAULT_TAX_COUNTRY_LABEL })}
             {commonTaxRate !== null ? ` (${commonTaxRate}%)` : ""}: {formatMoney(tax)}
           </p>
-          <p className="font-semibold">Total a pagar: {formatMoney(total)}</p>
+          <p className="font-semibold">{t("sales.cart.total", { amount: formatMoney(total) })}</p>
         </div>
       </div>
 
@@ -177,35 +173,35 @@ export function CatalogPedidoCart({
 
       {delivery.method ? (
         <div className="flex flex-col items-end gap-0.5 border-t border-border pt-3 text-sm">
-          <p className="text-muted-foreground">Envío: {formatMoney(delivery.cost)}</p>
-          <p className="text-base font-semibold">Total con envío: {formatMoney(total + delivery.cost)}</p>
+          <p className="text-muted-foreground">{t("sales.cart.shipping", { amount: formatMoney(delivery.cost) })}</p>
+          <p className="text-base font-semibold">{t("sales.cart.totalWithShipping", { amount: formatMoney(total + delivery.cost) })}</p>
         </div>
       ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="payment_method">Forma de pago (opcional)</Label>
+          <Label htmlFor="payment_method">{t("sales.cart.paymentMethod")}</Label>
           <Select name="payment_method">
             <SelectTrigger id="payment_method" className="w-full">
-              <SelectValue placeholder="Sin elegir" />
+              <SelectValue placeholder={t("sales.cart.noChoice")} />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(PAYMENT_METHOD_LABEL).map(([value, label]) => (
+              {PAYMENT_METHODS.map((value) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  {t(`sales.paymentMethod.${value}`)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="customer_id">Cliente</Label>
+          <Label htmlFor="customer_id">{t("sales.cart.customer")}</Label>
           <Select name="customer_id" defaultValue={NO_CUSTOMER}>
             <SelectTrigger id="customer_id" className="w-full">
-              <SelectValue placeholder="Mostrador / sin cliente" />
+              <SelectValue placeholder={t("sales.cart.counter")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_CUSTOMER}>Mostrador / sin cliente</SelectItem>
+              <SelectItem value={NO_CUSTOMER}>{t("sales.cart.counter")}</SelectItem>
               {customers.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
@@ -215,25 +211,25 @@ export function CatalogPedidoCart({
           </Select>
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="note">Nota (opcional)</Label>
+          <Label htmlFor="note">{t("sales.cart.note")}</Label>
           <Input id="note" name="note" maxLength={500} />
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending || !delivery.method}>
-          {pending ? "Creando…" : "Confirmar pedido"}
+          {pending ? t("sales.cart.creating") : t("sales.cart.submit")}
         </Button>
         <Button type="button" variant="ghost" onClick={clear}>
-          Vaciar carrito
+          {t("sales.cart.clear")}
         </Button>
         <Button asChild variant="ghost" type="button">
-          <Link href="/ventas/catalogo">Seguir viendo el catálogo</Link>
+          <Link href="/ventas/catalogo">{t("sales.cart.keepBrowsing")}</Link>
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

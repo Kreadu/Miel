@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/format";
 import {
-  DELIVERY_LABEL,
   DELIVERY_METHODS,
   type DeliveryMethod,
   type ShippingRate,
@@ -33,6 +33,7 @@ export function DeliverySection({
   const [agreed, setAgreed] = useState("");
   const [km, setKm] = useState("");
   const [rateId, setRateId] = useState("");
+  const t = useTranslations("sales");
 
   const kmValue = Number(km) || 0;
   const rateCost = (r: Rate) => shippingCost(r, weightKg, kmValue);
@@ -49,7 +50,7 @@ export function DeliverySection({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm font-medium">Forma de entrega</p>
+      <p className="text-sm font-medium">{t("deliverySection.title")}</p>
       <input type="hidden" name="delivery_method" value={method ?? ""} />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {DELIVERY_METHODS.map((m) => (
@@ -63,14 +64,14 @@ export function DeliverySection({
               report({ method: m });
             }}
           >
-            {DELIVERY_LABEL[m]}
+            {t(`delivery.${m}`)}
           </Button>
         ))}
       </div>
 
       {method === "agreed" ? (
         <div className="flex flex-col gap-2 sm:w-64">
-          <Label htmlFor="shipping_cost">Valor acordado del envío</Label>
+          <Label htmlFor="shipping_cost">{t("deliverySection.agreedCost")}</Label>
           <Input
             id="shipping_cost"
             name="shipping_cost"
@@ -90,13 +91,13 @@ export function DeliverySection({
       {method === "carrier" ? (
         rates.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No hay transportes configurados. Agrégalos en Vender → Envíos.
+            {t("deliverySection.noRates")}
           </p>
         ) : (
           <div className="flex flex-col gap-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="shipping_km">Distancia (km)</Label>
+                <Label htmlFor="shipping_km">{t("deliverySection.distance")}</Label>
                 <Input
                   id="shipping_km"
                   name="shipping_km"
@@ -112,7 +113,7 @@ export function DeliverySection({
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium">Peso del pedido</span>
+                <span className="text-sm font-medium">{t("deliverySection.weight")}</span>
                 <p className="flex h-9 items-center text-sm tabular-nums text-muted-foreground">
                   {weightKg.toLocaleString("es-CO")} kg
                 </p>

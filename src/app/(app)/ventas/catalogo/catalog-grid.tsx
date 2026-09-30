@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { ProductCard } from "@/components/products/product-card";
@@ -28,6 +29,7 @@ export function CatalogGrid({
   const [displayCurrency, setDisplayCurrency] = useState(baseCurrency);
   const [rate, setRate] = useState(1);
   const { lines, addItem } = useCatalogCart(tenantId);
+  const t = useTranslations("catalog");
 
   // Solo agrega al carrito — el humano pidió explícitamente quedarse viendo el catálogo y
   // navegar a Pedidos cuando él elija, con el botón "Ver pedido" (no automático por producto).
@@ -56,7 +58,7 @@ export function CatalogGrid({
         />
         {cartCount > 0 ? (
           <Button asChild size="sm">
-            <Link href="/ventas/pedidos">Ver pedido ({cartCount})</Link>
+            <Link href="/ventas/pedidos">{t("viewOrder", { count: cartCount })}</Link>
           </Button>
         ) : null}
       </div>

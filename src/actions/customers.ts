@@ -15,8 +15,8 @@ export type CustomerState =
 const CUSTOMERS_PATH = "/ventas/clientes";
 
 function mapCustomerError(code: string | undefined): string {
-  if (code === "23505") return "Ya existe un cliente con ese tipo y número de documento.";
-  return "No se pudo guardar el cliente. Intenta de nuevo.";
+  if (code === "23505") return "customers.errors.duplicateDoc";
+  return "customers.errors.saveFailed";
 }
 
 function toColumns(data: z.infer<typeof customerSchema>) {
@@ -43,7 +43,7 @@ export async function createCustomer(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase

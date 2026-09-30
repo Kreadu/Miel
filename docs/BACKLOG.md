@@ -248,7 +248,7 @@ traducidas con su sigla.
 | ID | Módulo | Estado |
 |---|---|---|
 | S20-01 | 1 · Entrada: landing, acceso, empresa, invitación, modo tienda, marco, Inicio | implemented (specs/done/S20-01-idiomas-entrada.md) |
-| S20-02 | 2 · Vender (pedidos, carrito, clientes, caja, envíos, cobros) | todo |
+| S20-02 | 2 · Vender (pedidos, carrito, clientes, caja, envíos, cobros) | implemented (specs/done/S20-02-idiomas-vender.md) |
 | S20-03 | 3 · Inventario (resto de pantallas; producto/catálogo ya en piloto) | todo |
 | S20-04 | 4 · Comprar | todo |
 | S20-05 | 5 · Gastos | todo |

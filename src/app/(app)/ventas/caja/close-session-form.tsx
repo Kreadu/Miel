@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { closeCashSession } from "@/actions/cash-sessions";
@@ -9,21 +10,20 @@ import { Label } from "@/components/ui/label";
 
 export function CloseSessionForm({ sessionId }: { sessionId: string }) {
   const [state, formAction, pending] = useActionState(closeCashSession, null);
+  const t = useTranslations();
 
   return (
     <form action={formAction} className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
       <input type="hidden" name="session_id" value={sessionId} />
       <div className="flex flex-col gap-2 max-w-xs">
-        <Label htmlFor="counted_amount">Monto contado al cierre</Label>
+        <Label htmlFor="counted_amount">{t("cash.countedAmount")}</Label>
         <Input id="counted_amount" name="counted_amount" type="number" step="0.01" min="0" required />
         <p className="text-xs text-muted-foreground">
-          Cuenta el efectivo que hay en la caja y escribe el total. Miel lo compara con lo que
-          debería haber (el monto base más las ventas en efectivo del turno) y guarda la
-          diferencia.
+          {t("cash.countedHelp")}
         </p>
       </div>
       <div className="flex flex-col gap-2 max-w-sm">
-        <Label htmlFor="note">Nota (opcional)</Label>
+        <Label htmlFor="note">{t("cash.noteOptional")}</Label>
         <textarea
           id="note"
           name="note"
@@ -34,12 +34,12 @@ export function CloseSessionForm({ sessionId }: { sessionId: string }) {
       </div>
       <div>
         <Button type="submit" variant="destructive" disabled={pending}>
-          {pending ? "Cerrando…" : "Cerrar caja"}
+          {pending ? t("cash.closing") : t("cash.closeCash")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

@@ -63,7 +63,7 @@ describe("createSale — forma de entrega (S19-35)", () => {
       formData({ items, delivery_method: "agreed", shipping_cost: "", shipping_km: "" }),
     );
 
-    expect(result).toEqual({ ok: false, error: "Escribe el valor del envío acordado." });
+    expect(result).toEqual({ ok: false, error: "sales.errors.agreedCostRequired" });
     expect(rpcSpy).not.toHaveBeenCalled();
   });
 
@@ -76,7 +76,7 @@ describe("createSale — forma de entrega (S19-35)", () => {
       formData({ items, delivery_method: "carrier", shipping_rate_id: RATE, shipping_km: "3" }),
     );
 
-    expect(result).toEqual({ ok: false, error: "El transporte elegido no es válido." });
+    expect(result).toEqual({ ok: false, error: "sales.errors.shippingRateInvalid" });
   });
 });
 
@@ -87,7 +87,7 @@ describe("confirmSale — caja cerrada (S19-22)", () => {
 
     expect(await confirmSale("s-1", "w-1")).toEqual({
       ok: false,
-      error: "Abre tu caja para generar la boleta: el pedido tiene productos que se venden en tienda.",
+      error: "sales.errors.cashSessionRequired",
     });
   });
 });

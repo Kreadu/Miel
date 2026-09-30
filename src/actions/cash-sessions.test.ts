@@ -58,13 +58,13 @@ describe("openCashSession — tenant activo explícito (S12-04)", () => {
     expect(result).toMatchObject({ ok: false });
   });
 
-  it("permission_denied mapea a mensaje en español", async () => {
+  it("permission_denied mapea a una clave de mensaje", async () => {
     clientState.current = mockSupabase({ error: { message: "permission_denied" } });
     const { openCashSession } = await import("./cash-sessions");
 
     const result = await openCashSession(null, formData({ opening_amount: "500" }));
 
     expect(result).toMatchObject({ ok: false });
-    expect((result as { error: string }).error).not.toContain("permission_denied");
+    expect(result).toEqual({ ok: false, error: "common.errors.permissionDenied" });
   });
 });

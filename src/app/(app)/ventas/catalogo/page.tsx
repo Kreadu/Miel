@@ -11,7 +11,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CatalogGrid } from "./catalog-grid";
 
-export const metadata = { title: "Catálogo · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("catalog");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function CatalogoPage({
   searchParams,

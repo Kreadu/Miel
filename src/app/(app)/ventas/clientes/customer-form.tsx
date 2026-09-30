@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { type CustomerState } from "@/actions/customers";
@@ -35,6 +36,7 @@ export function CustomerForm({
   onSuccess?: () => void;
 }) {
   const [state, formAction, pending] = useActionState(action, null);
+  const t = useTranslations();
   const [seenState, setSeenState] = useState(state);
   
   if (state !== seenState) {
@@ -51,11 +53,11 @@ export function CustomerForm({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="name">Nombre</Label>
+          <Label htmlFor="name">{t("customers.name")}</Label>
           <Input id="name" name="name" required maxLength={120} defaultValue={values?.name} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="doc_type">Tipo Doc.</Label>
+          <Label htmlFor="doc_type">{t("customers.docType")}</Label>
           <select
             id="doc_type"
             name="doc_type"
@@ -65,15 +67,15 @@ export function CustomerForm({
             <option value="nit">NIT</option>
             <option value="cc">CC</option>
             <option value="ce">CE</option>
-            <option value="other">Otro</option>
+            <option value="other">{t("customers.other")}</option>
           </select>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="doc_number">Número Doc.</Label>
+          <Label htmlFor="doc_number">{t("customers.docNumber")}</Label>
           <Input id="doc_number" name="doc_number" maxLength={30} defaultValue={values?.doc_number ?? ""} />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("customers.email")}</Label>
           <Input
             id="email"
             name="email"
@@ -83,11 +85,11 @@ export function CustomerForm({
           />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="phone">Teléfono</Label>
+          <Label htmlFor="phone">{t("customers.phone")}</Label>
           <Input id="phone" name="phone" maxLength={30} defaultValue={values?.phone ?? ""} />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-4">
-          <Label htmlFor="address">Dirección</Label>
+          <Label htmlFor="address">{t("customers.address")}</Label>
           <Input
             id="address"
             name="address"
@@ -96,7 +98,7 @@ export function CustomerForm({
           />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-4">
-          <Label htmlFor="note">Nota</Label>
+          <Label htmlFor="note">{t("customers.note")}</Label>
           <textarea 
             id="note" 
             name="note" 
@@ -114,13 +116,13 @@ export function CustomerForm({
         </Button>
         {onCancel ? (
           <Button type="button" variant="ghost" onClick={onCancel}>
-            Cancelar
+            {t("customers.cancel")}
           </Button>
         ) : null}
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

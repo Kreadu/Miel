@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createShippingRate } from "@/actions/shipping";
@@ -11,6 +12,7 @@ import { RateFields } from "./rate-fields";
 export function RateForm() {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(createShippingRate, null);
+  const t = useTranslations();
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
@@ -20,7 +22,7 @@ export function RateForm() {
   if (!open) {
     return (
       <div>
-        <Button onClick={() => setOpen(true)}>+ Agregar transporte</Button>
+        <Button onClick={() => setOpen(true)}>{t("shipping.add")}</Button>
       </div>
     );
   }
@@ -30,15 +32,15 @@ export function RateForm() {
       <RateFields idPrefix="new" />
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Creando…" : "Crear transporte"}
+          {pending ? t("shipping.creating") : t("shipping.create")}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-          Cancelar
+          {t("shipping.cancel")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

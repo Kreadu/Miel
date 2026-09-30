@@ -25,7 +25,7 @@ describe("customerSchema", () => {
     const res = customerSchema.safeParse({ name: "   ", doc_type: "nit" });
     expect(res.success).toBe(false);
     if (!res.success) {
-      expect(res.error.issues[0].message).toBe("El nombre es obligatorio");
+      expect(res.error.issues[0].message).toBe("customers.errors.nameRequired");
     }
   });
 
@@ -33,7 +33,7 @@ describe("customerSchema", () => {
     const res = customerSchema.safeParse({ name: "Juan", doc_type: "pasaporte" });
     expect(res.success).toBe(false);
     if (!res.success) {
-      expect(res.error.issues[0].message).toBe("Tipo de documento inválido");
+      expect(res.error.issues[0].message).toBe("customers.errors.docTypeInvalid");
     }
   });
 
@@ -41,7 +41,7 @@ describe("customerSchema", () => {
     const res = customerSchema.safeParse({ name: "Juan", doc_type: "cc", email: "no-soy-un-correo" });
     expect(res.success).toBe(false);
     if (!res.success) {
-      expect(res.error.issues[0].message).toBe("Email inválido");
+      expect(res.error.issues[0].message).toBe("customers.errors.emailInvalid");
     }
   });
 

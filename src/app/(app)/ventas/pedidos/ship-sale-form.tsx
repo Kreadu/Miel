@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { markSaleShipped } from "@/actions/sales";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ export function ShipSaleForm({ saleId }: { saleId: string }) {
   const [shipping, setShipping] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations();
 
   if (shipping) {
     return (
@@ -20,7 +22,7 @@ export function ShipSaleForm({ saleId }: { saleId: string }) {
           const address = formData.get("shipping_address") as string;
           const res = await markSaleShipped(saleId, address);
           if (!res?.ok) {
-            setError(res?.error || "Error desconocido");
+            setError(res?.error || "common.errors.unknown");
             setPending(false);
           } else {
             setShipping(false);
@@ -29,13 +31,13 @@ export function ShipSaleForm({ saleId }: { saleId: string }) {
       >
         <Input 
           name="shipping_address" 
-          placeholder="Dirección de envío..." 
+          placeholder={t("sales.orders.addressPlaceholder")}
           required 
           className="h-8 text-xs" 
         />
         <div className="flex gap-1">
           <Button type="submit" size="sm" disabled={pending} className="h-7 text-xs flex-1">
-            {pending ? "..." : "Guardar"}
+            {pending ? "..." : t("sales.orders.save")}
           </Button>
           <Button 
             type="button" 
@@ -45,17 +47,17 @@ export function ShipSaleForm({ saleId }: { saleId: string }) {
             className="h-7 text-xs flex-1" 
             onClick={() => setShipping(false)}
           >
-            Cancelar
+            {t("sales.orders.cancel")}
           </Button>
         </div>
-        {error && <p className="text-[10px] text-destructive leading-tight">{error}</p>}
+        {error && <p className="text-[10px] text-destructive leading-tight">{t(error)}</p>}
       </form>
     );
   }
 
   return (
     <Button variant="outline" size="sm" className="h-7 text-xs w-full" onClick={() => setShipping(true)}>
-      Despachar
+      {t("sales.orders.ship")}
     </Button>
   );
 }

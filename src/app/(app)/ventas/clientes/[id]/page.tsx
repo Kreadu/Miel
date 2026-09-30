@@ -1,32 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, FileText, TrendingUp, ShoppingCart, MessageSquare } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney as baseFormatMoney } from "@/lib/format";
-import { DELIVERY_LABEL, type DeliveryMethod } from "@/lib/shipping";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CancelSaleButton } from "../../pedidos/cancel-sale-button";
 import { InteractionForm } from "./interaction-form";
 
-// S19-36: estados legibles para el historial de compras.
-const SALE_STATUS_LABELS: Record<string, string> = {
-  draft: "Borrador",
-  confirmed: "Confirmado",
-  shipped: "Despachado",
-  delivered: "Entregado",
-  cancelled: "Anulado",
-};
-
-const INTERACTION_KIND_LABELS: Record<string, string> = {
-  note: "Nota",
-  followup: "Seguimiento",
-  complaint: "Reclamo",
-  promo: "Promoción",
-};
-
-export const metadata = { title: "Ficha de Cliente · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("customers.detail");
+  return { title: `${t("title")} · Miel` };
+}
 
 interface CustomerHistoryPageProps {
   params: Promise<{ id: string }>;
@@ -36,6 +23,8 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
   const { id } = await params;
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations();
+  const td = await getTranslations("customers.detail");
 
   const supabase = await createClient();
 
@@ -138,7 +127,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <ShoppingCart className="h-4 w-4" />
-            Compras Totales
+            {td("totalPurchases")}
           </div>
           <div className="mt-4 text-2xl font-bold tabular-nums">
             {history.total_sales_count}
@@ -148,7 +137,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <TrendingUp className="h-4 w-4" />
-            Monto Total Comprado
+            {td("totalAmount")}
           </div>
           <div className="mt-4 text-2xl font-bold text-success tabular-nums">
             {formatMoney(Number(history.total_sales_amount))}
@@ -158,7 +147,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <FileText className="h-4 w-4" />
-            Ticket Promedio
+            {td("avgTicket")}
           </div>
           <div className="mt-4 text-2xl font-bold tabular-nums">
             {formatMoney(Number(history.average_ticket))}
@@ -168,7 +157,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            Última Compra
+            {td("lastPurchase")}
           </div>
           <div className="mt-4 text-lg font-bold">
             {history.last_sale_at ? formatDate(history.last_sale_at) : "—"}
@@ -178,20 +167,20 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
 
       {/* S19-36: Historial de compras */}
       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold">Historial de compras</h2>
+        <h2 className="mb-4 text-lg font-semibold">{td("history")}</h2>
         {purchases && purchases.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="px-3 py-2 font-medium">Fecha</th>
-                  <th className="px-3 py-2 font-medium">Recibo</th>
-                  <th className="px-3 py-2 font-medium">Estado</th>
-                  <th className="px-3 py-2 font-medium">Entrega</th>
-                  <th className="px-3 py-2 text-right font-medium">Envío</th>
-                  <th className="px-3 py-2 text-right font-medium">Total</th>
-                  <th className="px-3 py-2 text-right font-medium">Saldo</th>
-                  {active.role !== "member" && <th className="px-3 py-2"><span className="sr-only">Acciones</span></th>}
+                  <th className="px-3 py-2 font-medium">{td("date")}</th>
+                  <th className="px-3 py-2 font-medium">{td("receipt")}</th>
+                  <th className="px-3 py-2 font-medium">{td("status")}</th>
+                  <th className="px-3 py-2 font-medium">{td("delivery")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{td("shipping")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{td("total")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{td("balance")}</th>
+                  {active.role !== "member" && <th className="px-3 py-2"><span className="sr-only">{td("actions")}</span></th>}
                 </tr>
               </thead>
               <tbody>
@@ -202,9 +191,9 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                     <tr key={p.id} className="border-b border-border last:border-0">
                       <td className="px-3 py-2.5">{formatDate(p.created_at)}</td>
                       <td className="px-3 py-2.5 tabular-nums">{p.receipt_number ? `#${p.receipt_number}` : "—"}</td>
-                      <td className="px-3 py-2.5">{SALE_STATUS_LABELS[p.status] ?? p.status}</td>
+                      <td className="px-3 py-2.5">{t.has(`sales.status.${p.status}`) ? t(`sales.status.${p.status}`) : p.status}</td>
                       <td className="px-3 py-2.5 text-muted-foreground">
-                        {p.delivery_method ? DELIVERY_LABEL[p.delivery_method as DeliveryMethod] : "—"}
+                        {p.delivery_method ? t(`sales.delivery.${p.delivery_method}`) : "—"}
                       </td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(p.shipping_cost))}</td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(p.total))}</td>
@@ -221,16 +210,16 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
             </table>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">Este cliente aún no tiene compras.</p>
+          <p className="text-sm text-muted-foreground">{td("noPurchases")}</p>
         )}
       </div>
 
       {/* Timeline */}
       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-6">Línea de tiempo de ventas y pagos</h2>
+        <h2 className="text-lg font-semibold mb-6">{td("timeline")}</h2>
         
         {events.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Este cliente aún no tiene ventas ni pagos registrados.</p>
+          <p className="text-sm text-muted-foreground">{td("timelineEmpty")}</p>
         ) : (
           <div className="relative border-l border-border ml-3 pl-6 flex flex-col gap-8">
             {events.map((ev, idx) => (
@@ -242,12 +231,15 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                     </div>
                     <div>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                        <span className="font-medium text-sm">Venta confirmada</span>
+                        <span className="font-medium text-sm">{td("saleConfirmed")}</span>
                         <span className="text-xs text-muted-foreground">{formatDate(ev.date)}</span>
                       </div>
                       <p className="text-sm mt-1 text-muted-foreground">
-                        Monto: <span className="font-semibold text-foreground">{formatMoney(ev.amount)}</span>
-                        {ev.receipt ? ` · Recibo #${ev.receipt}` : ""}
+                        {td.rich("saleAmount", {
+                          amount: formatMoney(ev.amount),
+                          b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+                        })}
+                        {ev.receipt ? td("receiptSuffix", { number: ev.receipt }) : ""}
                       </p>
                     </div>
                   </>
@@ -259,12 +251,16 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                     <div>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                         <span className="font-medium text-sm flex items-center gap-1.5">
-                          Pago recibido
+                          {td("paymentReceived")}
                         </span>
                         <span className="text-xs text-muted-foreground">{formatDate(ev.date)}</span>
                       </div>
                       <p className="text-sm mt-1 text-muted-foreground">
-                        Abono de <span className="font-semibold text-success">{formatMoney(ev.amount)}</span> vía {ev.method}
+                        {td.rich("paymentLine", {
+                          amount: formatMoney(ev.amount),
+                          method: t.has(`sales.paymentMethod.${ev.method}`) ? t(`sales.paymentMethod.${ev.method}`) : ev.method,
+                          b: (chunks) => <span className="font-semibold text-success">{chunks}</span>,
+                        })}
                       </p>
                     </div>
                   </>
@@ -278,13 +274,13 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
       {/* Interacciones postventa (S5-07) */}
       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold">Interacciones postventa</h2>
+          <h2 className="text-lg font-semibold">{td("interactions")}</h2>
           <InteractionForm customerId={id} />
         </div>
 
         {!interactions || interactions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Aún no hay interacciones registradas con este cliente.
+            {td("interactionsEmpty")}
           </p>
         ) : (
           <div className="relative border-l border-border ml-3 pl-6 flex flex-col gap-6">
@@ -295,7 +291,7 @@ export default async function CustomerHistoryPage({ params }: CustomerHistoryPag
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                   <span className="font-medium text-sm">
-                    {INTERACTION_KIND_LABELS[it.kind] ?? it.kind}
+                    {t.has(`interactions.kind.${it.kind}`) ? t(`interactions.kind.${it.kind}`) : it.kind}
                   </span>
                   <span className="text-xs text-muted-foreground">{formatDate(it.occurred_at)}</span>
                 </div>

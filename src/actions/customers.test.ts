@@ -74,7 +74,7 @@ describe("createCustomer", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Ya existe un cliente con ese tipo y número de documento.",
+      error: "customers.errors.duplicateDoc",
     });
   });
 
@@ -85,7 +85,7 @@ describe("createCustomer", () => {
 
     const result = await createCustomer(null, formData({ name: "", doc_type: "cc" }));
 
-    expect(result).toEqual({ ok: false, error: "El nombre es obligatorio" });
+    expect(result).toEqual({ ok: false, error: "customers.errors.nameRequired" });
     expect(client._insert).not.toHaveBeenCalled();
   });
 });

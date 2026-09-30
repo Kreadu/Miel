@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatDateTime, formatMoney as money } from "@/lib/format";
@@ -7,7 +8,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { CloseSessionForm } from "./close-session-form";
 import { OpenSessionForm } from "./open-session-form";
 
-export const metadata = { title: "Caja · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("cash");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function CajaPage() {
   const { active } = await getActiveTenant();
@@ -18,6 +22,7 @@ export default async function CajaPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) notFound();
+  const t = await getTranslations("cash");
 
   const [mySessionRes, summaryRes] = await Promise.all([
     supabase
@@ -35,20 +40,21 @@ export default async function CajaPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Caja</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
         <p className="text-sm text-muted-foreground">
-          Registra el dinero con el que empiezas el turno y cuánto queda al terminarlo.
+          {t("subtitle")}
         </p>
       </div>
 
       {mySession ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm">
-            Sesión abierta desde{" "}
-            <span className="font-medium">{formatDateTime(mySession.opened_at)}</span> con base{" "}
-            <span className="font-medium tabular-nums">${money(mySession.opening_amount)}</span>.
-            Al cerrar, cuenta el efectivo y Miel te dirá si coincide.
+            {t.rich("openSince", {
+              date: formatDateTime(mySession.opened_at),
+              amount: `$${money(mySession.opening_amount)}`,
+              b: (chunks) => <span className="font-medium tabular-nums">{chunks}</span>,
+            })}
           </p>
           <CloseSessionForm sessionId={mySession.id} />
         </div>
@@ -61,21 +67,21 @@ export default async function CajaPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Turno</th>
-                <th className="px-3 py-2 font-medium">Estado</th>
-                <th className="px-3 py-2 text-right font-medium">Base</th>
-                <th className="px-3 py-2 text-right font-medium">Ventas</th>
-                <th className="px-3 py-2 text-right font-medium">Efectivo</th>
-                <th className="px-3 py-2 text-right font-medium">Esperado</th>
-                <th className="px-3 py-2 text-right font-medium">Contado</th>
-                <th className="px-3 py-2 text-right font-medium">Diferencia</th>
+                <th className="px-3 py-2 font-medium">{t("shift")}</th>
+                <th className="px-3 py-2 font-medium">{t("status")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("base")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("sales")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("cash")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("expected")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("counted")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("difference")}</th>
               </tr>
             </thead>
             <tbody>
               {summaries.map((s) => (
                 <tr key={s.cash_session_id} className="border-b border-border last:border-0 text-sm">
                   <td className="px-3 py-2">
-                    {s.opened_by === user.id ? "Tú" : "Otro usuario"} ·{" "}
+                    {s.opened_by === user.id ? t("you") : t("otherUser")} ·{" "}
                     {formatDate(s.opened_at!)}
                   </td>
                   <td className="px-3 py-2">
@@ -86,7 +92,7 @@ export default async function CajaPage() {
                           : "rounded-sm bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground"
                       }
                     >
-                      {s.status === "open" ? "Abierta" : "Cerrada"}
+                      {s.status === "open" ? t("open") : t("closed")}
                     </span>
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">${money(s.opening_amount ?? 0)}</td>
@@ -113,7 +119,7 @@ export default async function CajaPage() {
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no hay sesiones de caja registradas.
+          {t("empty")}
         </p>
       )}
     </div>

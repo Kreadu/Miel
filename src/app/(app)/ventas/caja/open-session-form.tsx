@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { openCashSession } from "@/actions/cash-sessions";
@@ -9,24 +10,25 @@ import { Label } from "@/components/ui/label";
 
 export function OpenSessionForm() {
   const [state, formAction, pending] = useActionState(openCashSession, null);
+  const t = useTranslations();
 
   return (
     <form action={formAction} className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
       <div className="flex flex-col gap-2 max-w-xs">
-        <Label htmlFor="opening_amount">Monto base de caja</Label>
+        <Label htmlFor="opening_amount">{t("cash.openingAmount")}</Label>
         <Input id="opening_amount" name="opening_amount" type="number" step="0.01" min="0" required />
         <p className="text-xs text-muted-foreground">
-          El dinero con el que arrancas el turno, para poder dar cambio.
+          {t("cash.openingHelp")}
         </p>
       </div>
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Abriendo…" : "Abrir caja"}
+          {pending ? t("cash.opening") : t("cash.openCash")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

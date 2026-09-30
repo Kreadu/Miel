@@ -4,13 +4,6 @@ import { round2 } from "./money";
 export const DELIVERY_METHODS = ["pickup", "free_city", "agreed", "carrier"] as const;
 export type DeliveryMethod = (typeof DELIVERY_METHODS)[number];
 
-export const DELIVERY_LABEL: Record<DeliveryMethod, string> = {
-  pickup: "Retiro en tienda",
-  free_city: "Envío gratis en la ciudad",
-  agreed: "Envío acordado con el cliente",
-  carrier: "Envío por transporte",
-};
-
 export type ShippingRate = { base_price: number; price_per_kg: number; price_per_km: number };
 
 /** Costo de un transporte: base + kg·peso + km·distancia (misma fórmula que create_sale). */

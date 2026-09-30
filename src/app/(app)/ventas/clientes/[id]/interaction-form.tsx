@@ -1,22 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createInteraction } from "@/actions/interactions";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-const KIND_LABELS: Record<string, string> = {
-  note: "Nota",
-  followup: "Seguimiento",
-  complaint: "Reclamo",
-  promo: "Promoción",
-};
+const KINDS = ["note", "followup", "complaint", "promo"] as const;
 
 export function InteractionForm({ customerId }: { customerId: string }) {
   const [state, formAction, pending] = useActionState(createInteraction, null);
   const [seenState, setSeenState] = useState(state);
   const [expanded, setExpanded] = useState(false);
+  const t = useTranslations();
 
   if (state !== seenState) {
     setSeenState(state);
@@ -26,7 +23,7 @@ export function InteractionForm({ customerId }: { customerId: string }) {
   if (!expanded) {
     return (
       <Button type="button" variant="outline" onClick={() => setExpanded(true)}>
-        Registrar interacción
+        {t("interactions.register")}
       </Button>
     );
   }
@@ -40,22 +37,22 @@ export function InteractionForm({ customerId }: { customerId: string }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="kind">Tipo</Label>
+          <Label htmlFor="kind">{t("interactions.type")}</Label>
           <select
             id="kind"
             name="kind"
             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             defaultValue="note"
           >
-            {Object.entries(KIND_LABELS).map(([value, label]) => (
+            {KINDS.map((value) => (
               <option key={value} value={value}>
-                {label}
+                {t(`interactions.kind.${value}`)}
               </option>
             ))}
           </select>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="occurred_at">Fecha (opcional)</Label>
+          <Label htmlFor="occurred_at">{t("interactions.date")}</Label>
           <input
             id="occurred_at"
             name="occurred_at"
@@ -64,7 +61,7 @@ export function InteractionForm({ customerId }: { customerId: string }) {
           />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label htmlFor="note">Nota</Label>
+          <Label htmlFor="note">{t("interactions.note")}</Label>
           <textarea
             id="note"
             name="note"
@@ -78,15 +75,15 @@ export function InteractionForm({ customerId }: { customerId: string }) {
 
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Guardando…" : "Guardar interacción"}
+          {pending ? t("interactions.saving") : t("interactions.save")}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setExpanded(false)}>
-          Cancelar
+          {t("interactions.cancel")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

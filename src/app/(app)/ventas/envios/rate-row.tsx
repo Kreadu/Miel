@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { deleteShippingRate, updateShippingRate } from "@/actions/shipping";
@@ -19,6 +20,7 @@ export function RateRow({
 }) {
   const [editing, setEditing] = useState(false);
   const [state, action, pending] = useActionState(updateShippingRate, null);
+  const t = useTranslations();
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
@@ -33,15 +35,15 @@ export function RateRow({
           <RateFields idPrefix={id} values={values} />
           <div className="flex items-center gap-2">
             <Button type="submit" size="sm" disabled={pending}>
-              {pending ? "Guardando…" : "Guardar"}
+              {pending ? t("shipping.saving") : t("shipping.save")}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
-              Cancelar
+              {t("shipping.cancel")}
             </Button>
           </div>
           {state && !state.ok ? (
             <p role="alert" className="text-xs text-destructive">
-              {state.error}
+              {t(state.error)}
             </p>
           ) : null}
         </form>
@@ -54,24 +56,27 @@ export function RateRow({
       <div className="flex flex-col gap-0.5">
         <span className="font-medium">{values.name}</span>
         <span className="text-xs text-muted-foreground tabular-nums">
-          Base {formatMoney(values.base_price)} · {formatMoney(values.price_per_kg)} por kg ·{" "}
-          {formatMoney(values.price_per_km)} por km
+          {t("shipping.summary", {
+            base: formatMoney(values.base_price),
+            kg: formatMoney(values.price_per_kg),
+            km: formatMoney(values.price_per_km),
+          })}
         </span>
       </div>
       {canManage ? (
         <div className="flex items-center gap-1">
           <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
-            Editar
+            {t("shipping.edit")}
           </Button>
           <form
             action={deleteShippingRate}
             onSubmit={(e) => {
-              if (!confirm(`¿Eliminar "${values.name}"?`)) e.preventDefault();
+              if (!confirm(t("shipping.deleteConfirm", { name: values.name }))) e.preventDefault();
             }}
           >
             <input type="hidden" name="id" value={id} />
             <Button type="submit" variant="ghost" size="sm">
-              Eliminar
+              {t("shipping.delete")}
             </Button>
           </form>
         </div>

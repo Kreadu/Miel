@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import { isPendingSale } from "@/lib/sales/pending";
@@ -9,11 +10,15 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { CatalogPedidoCart } from "./catalog-pedido-cart";
 import { SaleRow } from "./sale-row";
 
-export const metadata = { title: "Pedidos · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("sales.orders");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function PedidosPage() {
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations("sales.orders");
 
   const supabase = await createClient();
   const {
@@ -54,27 +59,28 @@ export default async function PedidosPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Pedidos</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{active.tenantName}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="outline">
-            <Link href="/ventas/catalogo">Ir al catálogo</Link>
+            <Link href="/ventas/catalogo">{t("goToCatalog")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/ventas/clientes">Crear cliente</Link>
+            <Link href="/ventas/clientes">{t("createCustomer")}</Link>
           </Button>
         </div>
       </div>
 
       {cashOpen ? null : (
         <p className="rounded-lg border border-border bg-muted/50 p-3 text-sm text-muted-foreground">
-          Tu caja está cerrada: puedes crear pedidos, pero para generar la boleta de productos que
-          se venden en tienda{" "}
-          <Link href="/ventas/caja" className="font-medium text-foreground underline underline-offset-4">
-            abre la caja
-          </Link>
-          .
+          {t.rich("cashClosed", {
+            link: (chunks) => (
+              <Link href="/ventas/caja" className="font-medium text-foreground underline underline-offset-4">
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       )}
 
@@ -84,17 +90,17 @@ export default async function PedidosPage() {
         rates={ratesRes.data ?? []}
       />
 
-      <h2 className="text-base font-semibold tracking-tight">Pedidos por completar</h2>
+      <h2 className="text-base font-semibold tracking-tight">{t("pending")}</h2>
       {sales.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Cliente</th>
-                <th className="px-3 py-2 font-medium">Estado</th>
-                <th className="px-3 py-2 text-right font-medium">Total</th>
-                <th className="px-3 py-2 font-medium">Fecha</th>
-                <th className="px-3 py-2 font-medium text-right">Acciones</th>
+                <th className="px-3 py-2 font-medium">{t("customer")}</th>
+                <th className="px-3 py-2 font-medium">{t("status")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("total")}</th>
+                <th className="px-3 py-2 font-medium">{t("date")}</th>
+                <th className="px-3 py-2 font-medium text-right">{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -123,8 +129,7 @@ export default async function PedidosPage() {
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          No hay pedidos por completar. Arma uno desde el catálogo; los terminados están en el
-          historial de compras de cada cliente.
+          {t("empty")}
         </p>
       )}
     </div>

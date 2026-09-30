@@ -11,6 +11,21 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 4) · S20-02 — idiomas, módulo 2 (Vender)
+
+**Hecho:** S20-01 commiteado por el humano (`2cac51b`). Spec S20-02 aprobada. Traducidos es/en/fr:
+portada de Vender, Pedidos (carrito, confirmar, despachar, entregar, cobrar, anular, entrega),
+Clientes (lista, formulario, ficha con historial/línea de tiempo/interacciones), Caja, Cuentas
+por cobrar, Envíos, selector de moneda del Catálogo; títulos de pestaña con `generateMetadata`.
+Acciones `sales/customers/cash-sessions/customer-payments/shipping/interactions/exchange-rate` y
+sus Zod devuelven claves. Borrados por quedar huérfanos: `DELIVERY_LABEL` y nombres de moneda en
+`SUPPORTED_CURRENCIES`. Verificado: lint ✓, tsc ✓, `npm test` 441/441 ✓. Sin verificar en
+navegador (las rutas de la app requieren sesión del humano).
+
+**Siguiente paso:** S20-03 (Inventario), mismo patrón.
+
+---
+
 ## Sesión 2026-09-30 (cont. 3) · S20-01 — idiomas, módulo 1 (entrada). Pausado por el humano
 
 **Hecho:** ADR-040 (next-intl, cookie, acciones devuelven claves). Traducidos es/en/fr: landing

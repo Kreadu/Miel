@@ -17,7 +17,7 @@ export async function createInteraction(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
 
@@ -29,7 +29,7 @@ export async function createInteraction(
     .eq("id", parsed.data.customer_id)
     .eq("tenant_id", active.tenantId)
     .maybeSingle();
-  if (!customer) return { ok: false, error: "Cliente inválido." };
+  if (!customer) return { ok: false, error: "interactions.errors.customerInvalid" };
 
   const { error } = await supabase.from("customer_interactions").insert({
     tenant_id: active.tenantId,
@@ -41,7 +41,7 @@ export async function createInteraction(
 
   if (error) {
     console.error("createInteraction:", error.code);
-    return { ok: false, error: "No se pudo registrar la interacción. Intenta de nuevo." };
+    return { ok: false, error: "interactions.errors.saveFailed" };
   }
 
   revalidatePath(`/ventas/clientes/${parsed.data.customer_id}`);
