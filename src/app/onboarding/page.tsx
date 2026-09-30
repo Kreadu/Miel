@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { logout } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,10 @@ import { Logo } from "@/components/ui/logo";
 
 import { OnboardingForm } from "./onboarding-form";
 
-export const metadata = { title: "Onboarding · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("onboarding");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
@@ -32,6 +36,8 @@ export default async function OnboardingPage() {
     .eq("user_id", user.id);
   const memberships = myMemberships ?? [];
 
+  const t = await getTranslations("onboarding");
+
   // La empresa se funda solo en el registro inicial (ADR-031): con cualquier membership previa
   // (propia u obtenida por invitación) ya no hay nada que crear aquí.
   if (memberships.length > 0) redirect("/inicio");
@@ -45,15 +51,15 @@ export default async function OnboardingPage() {
       <div className="w-full max-w-sm">
         <Card>
           <CardHeader>
-            <CardTitle>Crea tu empresa</CardTitle>
-            <CardDescription>Con esto quedas como owner de tu empresa en Miel.</CardDescription>
+            <CardTitle>{t("title")}</CardTitle>
+            <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <OnboardingForm />
             <div className="flex justify-end text-sm">
               <form action={logout}>
                 <Button variant="outline" type="submit">
-                  Cerrar sesión
+                  {t("logout")}
                 </Button>
               </form>
             </div>

@@ -11,6 +11,22 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 3) · S20-01 — idiomas, módulo 1 (entrada). Pausado por el humano
+
+**Hecho:** ADR-040 (next-intl, cookie, acciones devuelven claves). Traducidos es/en/fr: landing
+(con selector de idioma), login/registro/recuperar contraseña (con selector), crear empresa,
+invitación, modo tienda, marco de la app, Inicio, botón de tema. Selector movido a
+`src/components/language-switcher.tsx`. Test de paridad `src/i18n/messages.test.ts` y ayudante
+`src/i18n/test-utils.tsx` (`renderIntl`). Corregido: resumen gerencial de Inicio sin filtro de
+empresa. Script de mezcla de mensajes usado: deep-merge por idioma (no commiteado). Verificado:
+lint ✓, tsc ✓, `npm test` 441/441 ✓, login y landing responden en es/en/fr (curl con cookie).
+
+**Siguiente paso:** S20-02 (Vender). Patrón: claves en acciones/Zod → `t(state.error)` en el
+formulario; textos del componente con `useTranslations`/`getTranslations`; agregar las claves en
+los tres JSON; el test de paridad avisa si falta alguna.
+
+---
+
 ## Sesión 2026-09-30 (cont. 2) · S22-03 — análisis, salud y asesor con IA
 
 **Hecho:** decisiones del humano: IA = Claude (Anthropic); datos por rango de meses; la IA ve cifras

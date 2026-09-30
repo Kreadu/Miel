@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { updatePassword } from "@/actions/auth";
@@ -10,10 +11,12 @@ import { PasswordInput } from "@/components/password-input";
 export function ResetPasswordForm() {
   const [state, action, pending] = useActionState(updatePassword, null);
 
+  const t = useTranslations();
+
   return (
     <form action={action} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Contraseña nueva</Label>
+        <Label htmlFor="password">{t("auth.reset.newPassword")}</Label>
         <PasswordInput
           id="password"
           name="password"
@@ -24,11 +27,11 @@ export function ResetPasswordForm() {
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
       <Button type="submit" disabled={pending}>
-        {pending ? "Guardando…" : "Guardar y entrar"}
+        {pending ? t("auth.reset.submitting") : t("auth.reset.submit")}
       </Button>
     </form>
   );

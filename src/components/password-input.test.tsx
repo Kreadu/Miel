@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, screen } from "@testing-library/react";
+
+import { renderIntl as render } from "@/i18n/test-utils";
 
 import { PasswordInput } from "./password-input";
 

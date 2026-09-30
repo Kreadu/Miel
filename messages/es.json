@@ -74,5 +74,224 @@
     "quantity": "Cantidad",
     "markupPercent": "% de venta",
     "weightKg": "Peso (kg)"
+  },
+  "common": {
+    "backHome": "Volver al inicio",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "errors": {
+      "noActiveTenant": "No se pudo determinar la empresa activa.",
+      "signInAgain": "Inicia sesión de nuevo."
+    },
+    "toggleTheme": "Cambiar tema"
+  },
+  "auth": {
+    "resetSent": "Si el correo existe, enviamos un enlace de recuperación.",
+    "errors": {
+      "emailInvalid": "Correo electrónico inválido",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "passwordRequired": "Ingresa tu contraseña",
+      "signupFailed": "No se pudo completar el registro. Intenta de nuevo.",
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "resetFailed": "No se pudo enviar el correo. Intenta de nuevo en unos minutos.",
+      "updateFailed": "No se pudo actualizar la contraseña. El enlace pudo expirar — solicita uno nuevo."
+    },
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Entra con tu correo y contraseña.",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "createAccount": "Crear cuenta",
+      "workerHint": "¿Eres trabajador? Entra en el computador de la tienda con tu usuario y código de 4 dígitos."
+    },
+    "signup": {
+      "title": "Crear cuenta",
+      "description": "Regístrate con tu correo y una contraseña de al menos 8 caracteres.",
+      "submit": "Crear cuenta",
+      "submitting": "Creando cuenta…",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Inicia sesión"
+    },
+    "forgot": {
+      "title": "Recuperar contraseña",
+      "description": "Te enviaremos un enlace para fijar una contraseña nueva.",
+      "linkInvalid": "El enlace es inválido, expiró o ya fue usado. Solicita uno nuevo.",
+      "submit": "Enviar enlace",
+      "submitting": "Enviando…",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "reset": {
+      "title": "Contraseña nueva",
+      "description": "Fija la contraseña con la que entrarás de ahora en adelante.",
+      "newPassword": "Contraseña nueva",
+      "submit": "Guardar y entrar",
+      "submitting": "Guardando…"
+    }
+  },
+  "onboarding": {
+    "title": "Crea tu empresa",
+    "description": "Con esto quedas como dueño de tu empresa en Miel.",
+    "logout": "Cerrar sesión",
+    "name": "Nombre de la empresa",
+    "nit": "NIT (opcional)",
+    "howSells": "¿Cómo vende tu empresa?",
+    "physical": "Local físico (caja, sucursal)",
+    "virtual": "Catálogo online",
+    "pickOne": "Elige al menos una opción.",
+    "submit": "Crear empresa",
+    "submitting": "Creando…",
+    "errors": {
+      "nameRequired": "El nombre de la empresa es obligatorio",
+      "channelRequired": "Elige al menos un canal de venta: local físico o catálogo online",
+      "alreadyMember": "Ya perteneces a una empresa en Miel. Las empresas se crean solo al registrarte.",
+      "failed": "No se pudo crear la empresa. Intenta de nuevo."
+    }
+  },
+  "store": {
+    "mode": "Modo tienda",
+    "noWorker": "Sin trabajador",
+    "changeWorker": "Cambiar trabajador",
+    "exit": "Salir del modo tienda",
+    "activate": "Activar modo tienda",
+    "pinTitle": "Entrar como trabajador",
+    "pinDescription": "Escribe tu usuario y tu código para empezar.",
+    "exitManager": "Salir del modo tienda (encargado)",
+    "exitDescription": "Solo el encargado: al salir, este equipo deja de pedir el código a los trabajadores.",
+    "back": "Volver",
+    "username": "Usuario",
+    "pin": "Código de 4 dígitos",
+    "verifying": "Verificando…",
+    "enter": "Entrar",
+    "accountPassword": "Contraseña de la cuenta de la tienda",
+    "errors": {
+      "notConfigured": "Falta configurar MIEL_SESSION_SECRET en el servidor.",
+      "ownerCannotActivate": "El modo tienda se activa con la cuenta de la tienda (operativa), no con la del dueño o un administrador.",
+      "usernameRequired": "Escribe tu usuario",
+      "pinFormat": "El código son 4 números",
+      "notStoreMode": "Este equipo no está en modo tienda.",
+      "tooManyAttempts": "Demasiados intentos. Espera 15 minutos o pide ayuda al encargado.",
+      "verifyFailed": "No se pudo verificar. Intenta de nuevo.",
+      "invalidPin": "Usuario o código incorrectos.",
+      "passwordRequired": "Escribe la contraseña de la cuenta",
+      "wrongPassword": "Contraseña incorrecta."
+    }
+  },
+  "invitations": {
+    "metaTitle": "Invitación",
+    "title": "Invitación a un equipo",
+    "description": "Acepta para unirte a la empresa que te invitó.",
+    "accept": "Aceptar invitación y unirme",
+    "joining": "Uniéndote…",
+    "errors": {
+      "accessRequired": "Elige el acceso.",
+      "createFailed": "No se pudo crear la invitación. Intenta de nuevo.",
+      "invalidLink": "Enlace de invitación inválido.",
+      "invalid": "Esta invitación no es válida o ya fue usada."
+    }
+  },
+  "layout": {
+    "logout": "Cerrar sesión",
+    "openMenu": "Abrir menú",
+    "menuTitle": "Menú de navegación",
+    "roles": {
+      "owner": "Dueño",
+      "admin": "Administrador",
+      "member": "Operativo"
+    }
+  },
+  "home": {
+    "greeting": "Hola de nuevo",
+    "modules": "Módulos",
+    "summary": "Resumen gerencial",
+    "metrics": {
+      "sales": "Ventas del mes",
+      "profit": "Utilidad del mes",
+      "inventory": "Valor en inventario",
+      "receivable": "Cuentas por cobrar",
+      "payable": "Cuentas por pagar"
+    },
+    "insights": {
+      "topSold": "Top 10 más vendidos",
+      "leastSold": "Top 10 menos vendidos",
+      "topMargin": "Top 10 más rentables",
+      "lowStock": "Alertas stock mínimo",
+      "noSales": "Aún no hay ventas registradas.",
+      "noMargin": "Aún no hay ventas rentables.",
+      "units": "{qty} und",
+      "seeAll": "Ver todas",
+      "allGood": "Todo el inventario en nivel óptimo."
+    }
+  },
+  "landing": {
+    "login": "Iniciar sesión",
+    "signup": "Crear cuenta",
+    "benefitsLink": "Beneficios",
+    "howLink": "Cómo funciona",
+    "meta": {
+      "title": "Miel — ERP simple para pymes | Compras, inventario y ventas",
+      "description": "Compras, inventario, ventas y pagos en un solo lugar. Miel es el ERP simple para pymes. Comienza gratis.",
+      "ogTitle": "Miel — ERP simple para pymes",
+      "ogDescription": "Compras, inventario, ventas y pagos en un solo lugar. Comienza gratis."
+    },
+    "hero": {
+      "badge": "Comienza gratis",
+      "title": "Tus finanzas, dulces como la miel",
+      "subtitle": "Compras, inventario, ventas y pagos en un solo lugar. El ERP simple para pymes que no tienen tiempo de pelear con su software.",
+      "cta": "Crear cuenta gratis",
+      "how": "Ver cómo funciona",
+      "note": "Sin tarjeta de crédito · Configura tu empresa en minutos"
+    },
+    "benefits": {
+      "title": "Todo tu negocio, en una sola pantalla",
+      "subtitle": "Lo que hoy vive en hojas de cálculo y cuadernos, ordenado y al día.",
+      "inventory": {
+        "title": "Inventario en tiempo real",
+        "description": "Stock, kardex y alertas de mínimos siempre al día, por bodega o sucursal."
+      },
+      "trade": {
+        "title": "Compras y ventas claras",
+        "description": "Órdenes, recepciones y POS con cuentas por pagar y por cobrar al día."
+      },
+      "finance": {
+        "title": "Finanzas y dashboard",
+        "description": "P&L, flujo de caja y métricas gerenciales sin armar hojas de cálculo."
+      }
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "subtitle": "De cero a operar en tres pasos.",
+      "signup": {
+        "title": "Regístrate",
+        "description": "Crea tu cuenta con tu correo. Sin costo inicial."
+      },
+      "setup": {
+        "title": "Configura tu empresa",
+        "description": "Nombre, bodegas o sucursales y productos. Guiado, sin manuales."
+      },
+      "operate": {
+        "title": "Opera",
+        "description": "Compra, vende y cobra. El dashboard se arma solo."
+      }
+    },
+    "cta": {
+      "title": "Empieza hoy, totalmente gratis",
+      "subtitle": "Construye el futuro de tu negocio con el ERP simple que las pymes merecen.",
+      "button": "Crear cuenta gratis"
+    },
+    "footer": {
+      "tagline": "El ERP simple para pymes.",
+      "linksLabel": "Enlaces del sitio",
+      "productOf": "Un producto de"
+    },
+    "mockup": {
+      "title": "Resumen · Julio 2026",
+      "sales": "Ventas del mes",
+      "stock": "Ítems en stock",
+      "receivable": "Por cobrar",
+      "chart": "Gráfico de ventas de los últimos 12 meses"
+    }
   }
 }

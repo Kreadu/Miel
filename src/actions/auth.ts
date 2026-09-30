@@ -12,7 +12,7 @@ import {
 } from "@/lib/validation/auth";
 import { safeNext } from "@/lib/validation/safe-redirect";
 
-/** Estado para useActionState: null = sin submit todavía. */
+/** Estado para useActionState: null = sin submit todavía. `error`/`message` son claves de messages/*.json (E20). */
 export type AuthState =
   | { ok: false; error: string; email?: string }
   | { ok: true; message: string }
@@ -39,7 +39,7 @@ export async function signup(_prev: AuthState, formData: FormData): Promise<Auth
     console.error("signup:", error.code);
     return {
       ok: false,
-      error: "No se pudo completar el registro. Intenta de nuevo.",
+      error: "auth.errors.signupFailed",
       email: rawEmail(formData),
     };
   }
@@ -60,7 +60,7 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
     // Genérico a propósito: sin enumeración de usuarios (criterio 2).
-    return { ok: false, error: "Correo o contraseña incorrectos.", email: rawEmail(formData) };
+    return { ok: false, error: "auth.errors.invalidCredentials", email: rawEmail(formData) };
   }
 
   redirect(safeNext(formData.get("next")));
@@ -90,13 +90,13 @@ export async function requestPasswordReset(
     console.error("requestPasswordReset:", error.code);
     return {
       ok: false,
-      error: "No se pudo enviar el correo. Intenta de nuevo en unos minutos.",
+      error: "auth.errors.resetFailed",
       email: rawEmail(formData),
     };
   }
 
   // Mismo mensaje exista o no la cuenta: sin enumeración de usuarios.
-  return { ok: true, message: "Si el correo existe, enviamos un enlace de recuperación." };
+  return { ok: true, message: "auth.resetSent" };
 }
 
 export async function updatePassword(_prev: AuthState, formData: FormData): Promise<AuthState> {
@@ -109,7 +109,7 @@ export async function updatePassword(_prev: AuthState, formData: FormData): Prom
     console.error("updatePassword:", error.code);
     return {
       ok: false,
-      error: "No se pudo actualizar la contraseña. El enlace pudo expirar — solicita uno nuevo.",
+      error: "auth.errors.updateFailed",
     };
   }
 

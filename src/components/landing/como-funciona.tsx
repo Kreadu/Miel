@@ -1,24 +1,14 @@
 import { Building2, Rocket, UserPlus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 const pasos = [
-  {
-    icon: UserPlus,
-    titulo: "Regístrate",
-    descripcion: "Crea tu cuenta con tu correo. Sin costo inicial.",
-  },
-  {
-    icon: Building2,
-    titulo: "Configura tu empresa",
-    descripcion: "Nombre, bodegas o sucursales y productos. Guiado, sin manuales.",
-  },
-  {
-    icon: Rocket,
-    titulo: "Opera",
-    descripcion: "Compra, vende y cobra. El dashboard se arma solo.",
-  },
-];
+  { icon: UserPlus, key: "signup" },
+  { icon: Building2, key: "setup" },
+  { icon: Rocket, key: "operate" },
+] as const;
 
-export function ComoFunciona() {
+export async function ComoFunciona() {
+  const t = await getTranslations("landing.how");
   return (
     <section
       id="como-funciona"
@@ -26,16 +16,16 @@ export function ComoFunciona() {
     >
       <div className="flex flex-col gap-2 text-center" data-reveal>
         <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Cómo funciona
+          {t("title")}
         </h2>
         <p className="text-muted-foreground">
-          De cero a operar en tres pasos.
+          {t("subtitle")}
         </p>
       </div>
       <ol className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-        {pasos.map(({ icon: Icon, titulo, descripcion }, i) => (
+        {pasos.map(({ icon: Icon, key }, i) => (
           <li
-            key={titulo}
+            key={key}
             className="flex flex-col items-center gap-3 text-center"
             data-reveal
             data-reveal-delay={i + 1}
@@ -44,8 +34,8 @@ export function ComoFunciona() {
               {i + 1}
             </span>
             <Icon className="size-5 text-muted-foreground" aria-hidden="true" />
-            <h3 className="font-semibold tracking-tight">{titulo}</h3>
-            <p className="text-sm text-muted-foreground">{descripcion}</p>
+            <h3 className="font-semibold tracking-tight">{t(`${key}.title`)}</h3>
+            <p className="text-sm text-muted-foreground">{t(`${key}.description`)}</p>
           </li>
         ))}
       </ol>

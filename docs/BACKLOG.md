@@ -242,8 +242,18 @@ partida):**
 4. Mensajes de error de Server Actions/RPC (los `mapXError` de cada `actions/*.ts`) también
    necesitan traducirse — hoy son strings en español hardcodeados en el código, no datos.
 
-**Siguiente paso:** el humano decide cuándo dedicarle una sesión a esto; empieza por el ADR, no
-por código.
+**Estado (2026-09-30):** ADR-040. Orden decidido por el humano (uso diario); figuras de Colombia
+traducidas con su sigla.
+
+| ID | Módulo | Estado |
+|---|---|---|
+| S20-01 | 1 · Entrada: landing, acceso, empresa, invitación, modo tienda, marco, Inicio | implemented (specs/done/S20-01-idiomas-entrada.md) |
+| S20-02 | 2 · Vender (pedidos, carrito, clientes, caja, envíos, cobros) | todo |
+| S20-03 | 3 · Inventario (resto de pantallas; producto/catálogo ya en piloto) | todo |
+| S20-04 | 4 · Comprar | todo |
+| S20-05 | 5 · Gastos | todo |
+| S20-06 | 6 · Resultados (incluye respuesta de la IA en el idioma del usuario) | todo |
+| S20-07 | 7 · RRHH y nómina | todo |
 
 ## Épica E21 — RRHH: personal y nómina (motor copiado de Gestion-Future, ADR-036)
 

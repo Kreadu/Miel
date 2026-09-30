@@ -17,7 +17,7 @@ describe("onboardingSchema", () => {
     const result = onboardingSchema.safeParse({ ...base, name: "" });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe("El nombre de la empresa es obligatorio");
+      expect(result.error.issues[0].message).toBe("onboarding.errors.nameRequired");
     }
   });
 
@@ -54,7 +54,7 @@ describe("onboardingSchema", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        "Elige al menos un canal de venta: local físico o catálogo online",
+        "onboarding.errors.channelRequired",
       );
     }
   });

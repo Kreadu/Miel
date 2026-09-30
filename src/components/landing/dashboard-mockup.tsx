@@ -1,30 +1,32 @@
 import { TrendingUp } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const metricas = [
-  { label: "Ventas del mes", valor: "$18.240.000", delta: "+12%" },
-  { label: "Ítems en stock", valor: "1.284", delta: "+38" },
-  { label: "Por cobrar", valor: "$3.180.000", delta: "-8%" },
+  { key: "sales", valor: "$18.240.000", delta: "+12%" },
+  { key: "stock", valor: "1.284", delta: "+38" },
+  { key: "receivable", valor: "$3.180.000", delta: "-8%" },
 ];
 
 // ponytail: sparkline SVG estático server-rendered — recharts (~100 KB + hydration)
 // solo si el mockup llega a necesitar interactividad real.
 const barras = [28, 40, 34, 48, 44, 56, 52, 64, 58, 72, 68, 84];
 
-export function DashboardMockup() {
+export async function DashboardMockup() {
+  const t = await getTranslations("landing.mockup");
   return (
     <Card className="landing-tilt w-full max-w-2xl shadow-2xl">
       <CardHeader>
         <CardTitle className="text-sm font-normal text-muted-foreground">
-          Resumen · Julio 2026
+          {t("title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <dl className="grid grid-cols-3 gap-3 sm:gap-4">
-          {metricas.map(({ label, valor, delta }) => (
-            <div key={label} className="flex flex-col gap-1">
-              <dt className="truncate text-xs text-muted-foreground">{label}</dt>
+          {metricas.map(({ key, valor, delta }) => (
+            <div key={key} className="flex flex-col gap-1">
+              <dt className="truncate text-xs text-muted-foreground">{t(key)}</dt>
               <dd className="text-right text-sm font-medium tabular-nums sm:text-base">
                 {valor}
               </dd>
@@ -39,7 +41,7 @@ export function DashboardMockup() {
           viewBox="0 0 288 96"
           className="h-24 w-full text-primary"
           role="img"
-          aria-label="Gráfico de ventas de los últimos 12 meses"
+          aria-label={t("chart")}
         >
           {barras.map((altura, i) => (
             <rect

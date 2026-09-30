@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { Menu } from "lucide-react";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { logout } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 import { BackButton } from "./back-button";
-import { LanguageSwitcher } from "./language-switcher";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { SidebarNav } from "./sidebar-nav";
 import { StoreModeControls } from "./store-mode-controls";
 import { TenantSwitcher } from "./tenant-switcher";
@@ -23,6 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     data: { user },
   } = await supabase.auth.getUser();
   const locale = (await getLocale()) as Locale;
+  const t = await getTranslations("layout");
 
   // El anónimo ya lo corta el proxy; esto cubre membership perdida en caliente (caso borde).
   const { active, memberships } = await getActiveTenant();
@@ -35,7 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="flex flex-col gap-1">
         <BrandLink />
         <p className="truncate text-sm font-medium">{active.tenantName}</p>
-        <p className="text-xs text-muted-foreground capitalize">{active.role}</p>
+        <p className="text-xs text-muted-foreground">{t(`roles.${active.role}`)}</p>
       </div>
       {active.storeMode ? null : (
         <TenantSwitcher memberships={memberships} activeTenantId={active.tenantId} />
@@ -55,7 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {active.storeMode ? null : (
           <form action={logout}>
             <Button variant="outline" size="sm" type="submit" className="w-full">
-              Cerrar sesión
+              {t("logout")}
             </Button>
           </form>
         )}
@@ -71,11 +72,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="size-5" />
-              <span className="sr-only">Toggle navigation menu</span>
+              <span className="sr-only">{t("openMenu")}</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="flex w-[280px] flex-col gap-4 border-sidebar-border bg-sidebar p-4 text-sidebar-foreground">
-            <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+            <SheetTitle className="sr-only">{t("menuTitle")}</SheetTitle>
             {sidebarContent}
           </SheetContent>
         </Sheet>

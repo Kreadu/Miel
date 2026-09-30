@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { requestPasswordReset } from "@/actions/auth";
@@ -10,10 +11,12 @@ import { Label } from "@/components/ui/label";
 export function ForgotPasswordForm() {
   const [state, action, pending] = useActionState(requestPasswordReset, null);
 
+  const t = useTranslations();
+
   return (
     <form action={action} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="email">Correo electrónico</Label>
+        <Label htmlFor="email">{t("common.email")}</Label>
         <Input
           id="email"
           name="email"
@@ -25,16 +28,16 @@ export function ForgotPasswordForm() {
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
       {state?.ok ? (
         <p role="status" className="text-sm text-muted-foreground">
-          {state.message}
+          {t(state.message)}
         </p>
       ) : null}
       <Button type="submit" disabled={pending}>
-        {pending ? "Enviando…" : "Enviar enlace"}
+        {pending ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
       </Button>
     </form>
   );

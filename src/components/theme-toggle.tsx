@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
+  const t = useTranslations("common");
 
   // ponytail: sync icon after hydration; queueMicrotask avoids set-state-in-effect lint
   useEffect(() => {
@@ -23,7 +25,7 @@ export function ThemeToggle() {
   };
 
   return (
-    <Button variant="ghost" size="icon" aria-label="Cambiar tema" onClick={toggle}>
+    <Button variant="ghost" size="icon" aria-label={t("toggleTheme")} onClick={toggle}>
       {dark ? <Moon /> : <Sun />}
     </Button>
   );

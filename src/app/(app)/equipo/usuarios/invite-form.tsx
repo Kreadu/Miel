@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createInvitation } from "@/actions/invitations";
@@ -31,6 +32,8 @@ export function InviteForm({
   workerId?: string;
 }) {
   const [state, action, pending] = useActionState(createInvitation, null);
+  // E20: el error llega como clave; el resto del formulario se traduce con RRHH (módulo 7).
+  const tr = useTranslations();
   const [copied, setCopied] = useState(false);
 
   async function copyLink(link: string) {
@@ -77,7 +80,7 @@ export function InviteForm({
       </form>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {tr(state.error)}
         </p>
       ) : null}
       {state && state.ok ? (

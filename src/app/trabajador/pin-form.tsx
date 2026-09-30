@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { identifyWorker } from "@/actions/store";
@@ -11,14 +12,16 @@ import { Label } from "@/components/ui/label";
 export function PinForm() {
   const [state, action, pending] = useActionState(identifyWorker, null);
 
+  const t = useTranslations();
+
   return (
     <form action={action} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="username">Usuario</Label>
+        <Label htmlFor="username">{t("store.username")}</Label>
         <Input id="username" name="username" required maxLength={30} autoComplete="off" autoCapitalize="none" autoFocus />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="pin">Código de 4 dígitos</Label>
+        <Label htmlFor="pin">{t("store.pin")}</Label>
         <Input
           id="pin"
           name="pin"
@@ -32,11 +35,11 @@ export function PinForm() {
         />
       </div>
       <Button type="submit" disabled={pending}>
-        {pending ? "Verificando…" : "Entrar"}
+        {pending ? t("store.verifying") : t("store.enter")}
       </Button>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import {
   Card,
@@ -10,7 +11,10 @@ import {
 
 import { SignupForm } from "./signup-form";
 
-export const metadata = { title: "Crear cuenta · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("auth.signup");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function SignupPage({
   searchParams,
@@ -18,19 +22,20 @@ export default async function SignupPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
+  const t = await getTranslations("auth.signup");
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Crear cuenta</CardTitle>
-        <CardDescription>Regístrate con tu correo y una contraseña de al menos 8 caracteres.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <SignupForm next={next} />
         <p className="text-sm text-muted-foreground">
-          ¿Ya tienes cuenta?{" "}
+          {t("haveAccount")}{" "}
           <Link href="/login" className="text-primary underline-offset-4 hover:underline">
-            Inicia sesión
+            {t("loginLink")}
           </Link>
         </p>
       </CardContent>

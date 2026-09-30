@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import {
   Card,
   CardContent,
@@ -8,14 +10,18 @@ import {
 
 import { ResetPasswordForm } from "./reset-password-form";
 
-export const metadata = { title: "Contraseña nueva · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("auth.reset");
+  return { title: `${t("title")} · Miel` };
+}
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
+  const t = await getTranslations("auth.reset");
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Contraseña nueva</CardTitle>
-        <CardDescription>Fija la contraseña con la que entrarás de ahora en adelante.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <ResetPasswordForm />

@@ -12,9 +12,9 @@ export const invitationSchema = z
       .string()
       .trim()
       .toLowerCase()
-      .pipe(z.email({ error: "Correo electrónico inválido" })),
+      .pipe(z.email({ error: "auth.errors.emailInvalid" })),
     access: z.string().refine((v) => v === "admin" || v === "tienda" || uuid.safeParse(v).success, {
-      error: "Elige el acceso.",
+      error: "invitations.errors.accessRequired",
     }),
     worker_id: uuid.optional(),
   })

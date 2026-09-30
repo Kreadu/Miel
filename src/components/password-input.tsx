@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,8 @@ export function PasswordInput({
   ...props
 }: Omit<React.ComponentProps<"input">, "type">) {
   const [visible, setVisible] = React.useState(false);
-  const label = visible ? "Ocultar contraseña" : "Mostrar contraseña";
+  const t = useTranslations("common");
+  const label = visible ? t("hidePassword") : t("showPassword");
 
   return (
     <div className="relative">

@@ -74,5 +74,224 @@
     "quantity": "Quantité",
     "markupPercent": "% de marge",
     "weightKg": "Poids (kg)"
+  },
+  "common": {
+    "backHome": "Retour à l'accueil",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "errors": {
+      "noActiveTenant": "Impossible de déterminer l'entreprise active.",
+      "signInAgain": "Reconnectez-vous."
+    },
+    "toggleTheme": "Changer de thème"
+  },
+  "auth": {
+    "resetSent": "Si l'adresse existe, nous avons envoyé un lien de récupération.",
+    "errors": {
+      "emailInvalid": "Adresse e-mail invalide",
+      "passwordMin": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwordRequired": "Saisissez votre mot de passe",
+      "signupFailed": "L'inscription n'a pas pu aboutir. Réessayez.",
+      "invalidCredentials": "E-mail ou mot de passe incorrect.",
+      "resetFailed": "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes.",
+      "updateFailed": "Le mot de passe n'a pas pu être mis à jour. Le lien a peut-être expiré — demandez-en un nouveau."
+    },
+    "login": {
+      "title": "Se connecter",
+      "description": "Connectez-vous avec votre e-mail et votre mot de passe.",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "forgot": "Mot de passe oublié ?",
+      "createAccount": "Créer un compte",
+      "workerHint": "Vous êtes employé ? Connectez-vous sur l'ordinateur du magasin avec votre identifiant et votre code à 4 chiffres."
+    },
+    "signup": {
+      "title": "Créer un compte",
+      "description": "Inscrivez-vous avec votre e-mail et un mot de passe d'au moins 8 caractères.",
+      "submit": "Créer un compte",
+      "submitting": "Création du compte…",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "loginLink": "Se connecter"
+    },
+    "forgot": {
+      "title": "Récupérer le mot de passe",
+      "description": "Nous vous enverrons un lien pour définir un nouveau mot de passe.",
+      "linkInvalid": "Le lien est invalide, a expiré ou a déjà été utilisé. Demandez-en un nouveau.",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi…",
+      "backToLogin": "Retour à la connexion"
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "description": "Définissez le mot de passe que vous utiliserez désormais.",
+      "newPassword": "Nouveau mot de passe",
+      "submit": "Enregistrer et se connecter",
+      "submitting": "Enregistrement…"
+    }
+  },
+  "onboarding": {
+    "title": "Créez votre entreprise",
+    "description": "Vous devenez ainsi propriétaire de votre entreprise dans Miel.",
+    "logout": "Se déconnecter",
+    "name": "Nom de l'entreprise",
+    "nit": "N° fiscal (NIT, facultatif)",
+    "howSells": "Comment votre entreprise vend-elle ?",
+    "physical": "Magasin physique (caisse, succursale)",
+    "virtual": "Catalogue en ligne",
+    "pickOne": "Choisissez au moins une option.",
+    "submit": "Créer l'entreprise",
+    "submitting": "Création…",
+    "errors": {
+      "nameRequired": "Le nom de l'entreprise est obligatoire",
+      "channelRequired": "Choisissez au moins un canal de vente : magasin physique ou catalogue en ligne",
+      "alreadyMember": "Vous appartenez déjà à une entreprise dans Miel. Les entreprises ne se créent qu'à l'inscription.",
+      "failed": "L'entreprise n'a pas pu être créée. Réessayez."
+    }
+  },
+  "store": {
+    "mode": "Mode magasin",
+    "noWorker": "Aucun employé",
+    "changeWorker": "Changer d'employé",
+    "exit": "Quitter le mode magasin",
+    "activate": "Activer le mode magasin",
+    "pinTitle": "Connexion employé",
+    "pinDescription": "Saisissez votre identifiant et votre code pour commencer.",
+    "exitManager": "Quitter le mode magasin (responsable)",
+    "exitDescription": "Responsable uniquement : une fois sorti, cet appareil ne demande plus le code aux employés.",
+    "back": "Retour",
+    "username": "Identifiant",
+    "pin": "Code à 4 chiffres",
+    "verifying": "Vérification…",
+    "enter": "Entrer",
+    "accountPassword": "Mot de passe du compte du magasin",
+    "errors": {
+      "notConfigured": "MIEL_SESSION_SECRET n'est pas configuré sur le serveur.",
+      "ownerCannotActivate": "Le mode magasin s'active avec le compte du magasin (opérationnel), pas avec celui du propriétaire ou d'un administrateur.",
+      "usernameRequired": "Saisissez votre identifiant",
+      "pinFormat": "Le code comporte 4 chiffres",
+      "notStoreMode": "Cet appareil n'est pas en mode magasin.",
+      "tooManyAttempts": "Trop de tentatives. Attendez 15 minutes ou demandez de l'aide au responsable.",
+      "verifyFailed": "Vérification impossible. Réessayez.",
+      "invalidPin": "Identifiant ou code incorrect.",
+      "passwordRequired": "Saisissez le mot de passe du compte",
+      "wrongPassword": "Mot de passe incorrect."
+    }
+  },
+  "invitations": {
+    "metaTitle": "Invitation",
+    "title": "Invitation à une équipe",
+    "description": "Acceptez pour rejoindre l'entreprise qui vous a invité.",
+    "accept": "Accepter l'invitation et rejoindre",
+    "joining": "Connexion à l'équipe…",
+    "errors": {
+      "accessRequired": "Choisissez l'accès.",
+      "createFailed": "L'invitation n'a pas pu être créée. Réessayez.",
+      "invalidLink": "Lien d'invitation invalide.",
+      "invalid": "Cette invitation n'est pas valide ou a déjà été utilisée."
+    }
+  },
+  "layout": {
+    "logout": "Se déconnecter",
+    "openMenu": "Ouvrir le menu",
+    "menuTitle": "Menu de navigation",
+    "roles": {
+      "owner": "Propriétaire",
+      "admin": "Administrateur",
+      "member": "Opérationnel"
+    }
+  },
+  "home": {
+    "greeting": "Bon retour",
+    "modules": "Modules",
+    "summary": "Synthèse de gestion",
+    "metrics": {
+      "sales": "Ventes du mois",
+      "profit": "Bénéfice du mois",
+      "inventory": "Valeur du stock",
+      "receivable": "Créances clients",
+      "payable": "Dettes fournisseurs"
+    },
+    "insights": {
+      "topSold": "Top 10 des meilleures ventes",
+      "leastSold": "Top 10 des moins vendus",
+      "topMargin": "Top 10 des plus rentables",
+      "lowStock": "Alertes de stock minimum",
+      "noSales": "Aucune vente enregistrée pour l'instant.",
+      "noMargin": "Aucune vente rentable pour l'instant.",
+      "units": "{qty} u.",
+      "seeAll": "Tout voir",
+      "allGood": "Tout le stock est à un niveau optimal."
+    }
+  },
+  "landing": {
+    "login": "Se connecter",
+    "signup": "Créer un compte",
+    "benefitsLink": "Avantages",
+    "howLink": "Comment ça marche",
+    "meta": {
+      "title": "Miel — ERP simple pour PME | Achats, stock et ventes",
+      "description": "Achats, stock, ventes et paiements au même endroit. Miel est l'ERP simple pour les PME. Commencez gratuitement.",
+      "ogTitle": "Miel — ERP simple pour PME",
+      "ogDescription": "Achats, stock, ventes et paiements au même endroit. Commencez gratuitement."
+    },
+    "hero": {
+      "badge": "Commencez gratuitement",
+      "title": "Vos finances, douces comme le miel",
+      "subtitle": "Achats, stock, ventes et paiements au même endroit. L'ERP simple pour les PME qui n'ont pas le temps de se battre avec leur logiciel.",
+      "cta": "Créer un compte gratuit",
+      "how": "Voir comment ça marche",
+      "note": "Sans carte bancaire · Configurez votre entreprise en quelques minutes"
+    },
+    "benefits": {
+      "title": "Toute votre entreprise sur un seul écran",
+      "subtitle": "Ce qui vit aujourd'hui dans des tableurs et des cahiers, organisé et à jour.",
+      "inventory": {
+        "title": "Stock en temps réel",
+        "description": "Stock, fiche de stock et alertes de minimum toujours à jour, par entrepôt ou succursale."
+      },
+      "trade": {
+        "title": "Achats et ventes clairs",
+        "description": "Commandes, réceptions et caisse avec dettes et créances à jour."
+      },
+      "finance": {
+        "title": "Finances et tableau de bord",
+        "description": "Compte de résultat, trésorerie et indicateurs de gestion sans monter de tableurs."
+      }
+    },
+    "how": {
+      "title": "Comment ça marche",
+      "subtitle": "De zéro à opérationnel en trois étapes.",
+      "signup": {
+        "title": "Inscrivez-vous",
+        "description": "Créez votre compte avec votre e-mail. Sans frais initiaux."
+      },
+      "setup": {
+        "title": "Configurez votre entreprise",
+        "description": "Nom, entrepôts ou succursales et produits. Guidé, sans manuel."
+      },
+      "operate": {
+        "title": "Opérez",
+        "description": "Achetez, vendez et encaissez. Le tableau de bord se construit tout seul."
+      }
+    },
+    "cta": {
+      "title": "Commencez aujourd'hui, entièrement gratuit",
+      "subtitle": "Construisez l'avenir de votre entreprise avec l'ERP simple que les PME méritent.",
+      "button": "Créer un compte gratuit"
+    },
+    "footer": {
+      "tagline": "L'ERP simple pour les PME.",
+      "linksLabel": "Liens du site",
+      "productOf": "Un produit de"
+    },
+    "mockup": {
+      "title": "Synthèse · Juillet 2026",
+      "sales": "Ventes du mois",
+      "stock": "Articles en stock",
+      "receivable": "À encaisser",
+      "chart": "Graphique des ventes des 12 derniers mois"
+    }
   }
 }

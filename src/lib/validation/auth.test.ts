@@ -14,20 +14,20 @@ describe("signupSchema", () => {
     expect(signupSchema.safeParse(validCredentials).success).toBe(true);
   });
 
-  it("rechaza email malformado con mensaje en español", () => {
+  it("rechaza email malformado con clave de mensaje (E20)", () => {
     const result = signupSchema.safeParse({ ...validCredentials, email: "no-es-email" });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe("Correo electrónico inválido");
+      expect(result.error.issues[0].message).toBe("auth.errors.emailInvalid");
     }
   });
 
-  it("rechaza contraseña de menos de 8 caracteres con mensaje en español", () => {
+  it("rechaza contraseña de menos de 8 caracteres con clave de mensaje (E20)", () => {
     const result = signupSchema.safeParse({ ...validCredentials, password: "corta12" });
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        "La contraseña debe tener al menos 8 caracteres",
+        "auth.errors.passwordMin",
       );
     }
   });
@@ -62,12 +62,12 @@ describe("resetPasswordSchema", () => {
     expect(resetPasswordSchema.safeParse({ password: "nuevaClave9" }).success).toBe(true);
   });
 
-  it("rechaza contraseña corta con mensaje en español", () => {
+  it("rechaza contraseña corta con clave de mensaje (E20)", () => {
     const result = resetPasswordSchema.safeParse({ password: "corta" });
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        "La contraseña debe tener al menos 8 caracteres",
+        "auth.errors.passwordMin",
       );
     }
   });

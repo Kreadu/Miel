@@ -1,15 +1,17 @@
 import { z } from "zod";
 
-const email = z.email({ error: "Correo electrónico inválido" });
+// E20: los mensajes son claves de messages/*.json (auth.errors.*); el formulario los traduce.
+
+const email = z.email({ error: "auth.errors.emailInvalid" });
 const password = z
   .string()
-  .min(8, { error: "La contraseña debe tener al menos 8 caracteres" });
+  .min(8, { error: "auth.errors.passwordMin" });
 
 export const signupSchema = z.object({ email, password });
 
 export const loginSchema = z.object({
   email,
-  password: z.string().min(1, { error: "Ingresa tu contraseña" }),
+  password: z.string().min(1, { error: "auth.errors.passwordRequired" }),
 });
 
 export const forgotPasswordSchema = z.object({ email });

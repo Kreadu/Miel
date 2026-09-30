@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import {
   Card,
@@ -10,7 +11,10 @@ import {
 
 import { ForgotPasswordForm } from "./forgot-password-form";
 
-export const metadata = { title: "Recuperar contraseña · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("auth.forgot");
+  return { title: `${t("title")} · Miel` };
+}
 
 export default async function ForgotPasswordPage({
   searchParams,
@@ -18,23 +22,24 @@ export default async function ForgotPasswordPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const t = await getTranslations("auth.forgot");
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recuperar contraseña</CardTitle>
-        <CardDescription>Te enviaremos un enlace para fijar una contraseña nueva.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {error === "link-invalido" ? (
           <p role="alert" className="text-sm text-destructive">
-            El enlace es inválido, expiró o ya fue usado. Solicita uno nuevo.
+            {t("linkInvalid")}
           </p>
         ) : null}
         <ForgotPasswordForm />
         <p className="text-sm text-muted-foreground">
           <Link href="/login" className="text-primary underline-offset-4 hover:underline">
-            Volver a iniciar sesión
+            {t("backToLogin")}
           </Link>
         </p>
       </CardContent>

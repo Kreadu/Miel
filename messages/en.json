@@ -74,5 +74,224 @@
     "quantity": "Quantity",
     "markupPercent": "Markup %",
     "weightKg": "Weight (kg)"
+  },
+  "common": {
+    "backHome": "Back to home",
+    "email": "Email",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "errors": {
+      "noActiveTenant": "We couldn't determine the active company.",
+      "signInAgain": "Please sign in again."
+    },
+    "toggleTheme": "Toggle theme"
+  },
+  "auth": {
+    "resetSent": "If the email exists, we sent a recovery link.",
+    "errors": {
+      "emailInvalid": "Invalid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordRequired": "Enter your password",
+      "signupFailed": "We couldn't complete the sign-up. Please try again.",
+      "invalidCredentials": "Incorrect email or password.",
+      "resetFailed": "We couldn't send the email. Please try again in a few minutes.",
+      "updateFailed": "We couldn't update the password. The link may have expired — request a new one."
+    },
+    "login": {
+      "title": "Sign in",
+      "description": "Sign in with your email and password.",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "forgot": "Forgot your password?",
+      "createAccount": "Create account",
+      "workerHint": "Are you a worker? Sign in on the store computer with your username and 4-digit code."
+    },
+    "signup": {
+      "title": "Create account",
+      "description": "Sign up with your email and a password of at least 8 characters.",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "forgot": {
+      "title": "Recover password",
+      "description": "We'll send you a link to set a new password.",
+      "linkInvalid": "The link is invalid, expired or already used. Request a new one.",
+      "submit": "Send link",
+      "submitting": "Sending…",
+      "backToLogin": "Back to sign in"
+    },
+    "reset": {
+      "title": "New password",
+      "description": "Set the password you'll use from now on.",
+      "newPassword": "New password",
+      "submit": "Save and sign in",
+      "submitting": "Saving…"
+    }
+  },
+  "onboarding": {
+    "title": "Create your company",
+    "description": "This makes you the owner of your company in Miel.",
+    "logout": "Sign out",
+    "name": "Company name",
+    "nit": "Tax ID (NIT, optional)",
+    "howSells": "How does your company sell?",
+    "physical": "Physical store (till, branch)",
+    "virtual": "Online catalog",
+    "pickOne": "Choose at least one option.",
+    "submit": "Create company",
+    "submitting": "Creating…",
+    "errors": {
+      "nameRequired": "Company name is required",
+      "channelRequired": "Choose at least one sales channel: physical store or online catalog",
+      "alreadyMember": "You already belong to a company in Miel. Companies are created only when you sign up.",
+      "failed": "We couldn't create the company. Please try again."
+    }
+  },
+  "store": {
+    "mode": "Store mode",
+    "noWorker": "No worker",
+    "changeWorker": "Change worker",
+    "exit": "Exit store mode",
+    "activate": "Activate store mode",
+    "pinTitle": "Sign in as worker",
+    "pinDescription": "Enter your username and code to start.",
+    "exitManager": "Exit store mode (manager)",
+    "exitDescription": "Manager only: after exiting, this device stops asking workers for their code.",
+    "back": "Back",
+    "username": "Username",
+    "pin": "4-digit code",
+    "verifying": "Verifying…",
+    "enter": "Sign in",
+    "accountPassword": "Store account password",
+    "errors": {
+      "notConfigured": "MIEL_SESSION_SECRET is not configured on the server.",
+      "ownerCannotActivate": "Store mode is activated with the store (staff) account, not with the owner's or an administrator's.",
+      "usernameRequired": "Enter your username",
+      "pinFormat": "The code is 4 digits",
+      "notStoreMode": "This device is not in store mode.",
+      "tooManyAttempts": "Too many attempts. Wait 15 minutes or ask the manager for help.",
+      "verifyFailed": "We couldn't verify. Please try again.",
+      "invalidPin": "Incorrect username or code.",
+      "passwordRequired": "Enter the account password",
+      "wrongPassword": "Incorrect password."
+    }
+  },
+  "invitations": {
+    "metaTitle": "Invitation",
+    "title": "Team invitation",
+    "description": "Accept to join the company that invited you.",
+    "accept": "Accept invitation and join",
+    "joining": "Joining…",
+    "errors": {
+      "accessRequired": "Choose the access.",
+      "createFailed": "We couldn't create the invitation. Please try again.",
+      "invalidLink": "Invalid invitation link.",
+      "invalid": "This invitation is not valid or has already been used."
+    }
+  },
+  "layout": {
+    "logout": "Sign out",
+    "openMenu": "Open menu",
+    "menuTitle": "Navigation menu",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Administrator",
+      "member": "Staff"
+    }
+  },
+  "home": {
+    "greeting": "Welcome back",
+    "modules": "Modules",
+    "summary": "Management summary",
+    "metrics": {
+      "sales": "Sales this month",
+      "profit": "Profit this month",
+      "inventory": "Inventory value",
+      "receivable": "Accounts receivable",
+      "payable": "Accounts payable"
+    },
+    "insights": {
+      "topSold": "Top 10 best sellers",
+      "leastSold": "Top 10 least sold",
+      "topMargin": "Top 10 most profitable",
+      "lowStock": "Minimum stock alerts",
+      "noSales": "No sales recorded yet.",
+      "noMargin": "No profitable sales yet.",
+      "units": "{qty} units",
+      "seeAll": "See all",
+      "allGood": "All inventory at optimal levels."
+    }
+  },
+  "landing": {
+    "login": "Sign in",
+    "signup": "Create account",
+    "benefitsLink": "Benefits",
+    "howLink": "How it works",
+    "meta": {
+      "title": "Miel — Simple ERP for small businesses | Purchasing, inventory and sales",
+      "description": "Purchasing, inventory, sales and payments in one place. Miel is the simple ERP for small businesses. Start for free.",
+      "ogTitle": "Miel — Simple ERP for small businesses",
+      "ogDescription": "Purchasing, inventory, sales and payments in one place. Start for free."
+    },
+    "hero": {
+      "badge": "Start for free",
+      "title": "Your finances, sweet as honey",
+      "subtitle": "Purchasing, inventory, sales and payments in one place. The simple ERP for small businesses with no time to fight their software.",
+      "cta": "Create a free account",
+      "how": "See how it works",
+      "note": "No credit card · Set up your company in minutes"
+    },
+    "benefits": {
+      "title": "Your whole business on one screen",
+      "subtitle": "What lives today in spreadsheets and notebooks, organized and up to date.",
+      "inventory": {
+        "title": "Real-time inventory",
+        "description": "Stock, stock ledger and minimum-level alerts always up to date, by warehouse or branch."
+      },
+      "trade": {
+        "title": "Clear purchasing and sales",
+        "description": "Orders, receipts and POS with payables and receivables up to date."
+      },
+      "finance": {
+        "title": "Finance and dashboard",
+        "description": "P&L, cash flow and management metrics without building spreadsheets."
+      }
+    },
+    "how": {
+      "title": "How it works",
+      "subtitle": "From zero to running in three steps.",
+      "signup": {
+        "title": "Sign up",
+        "description": "Create your account with your email. No upfront cost."
+      },
+      "setup": {
+        "title": "Set up your company",
+        "description": "Name, warehouses or branches and products. Guided, no manuals."
+      },
+      "operate": {
+        "title": "Run it",
+        "description": "Buy, sell and collect. The dashboard builds itself."
+      }
+    },
+    "cta": {
+      "title": "Start today, completely free",
+      "subtitle": "Build the future of your business with the simple ERP small businesses deserve.",
+      "button": "Create a free account"
+    },
+    "footer": {
+      "tagline": "The simple ERP for small businesses.",
+      "linksLabel": "Site links",
+      "productOf": "A product of"
+    },
+    "mockup": {
+      "title": "Summary · July 2026",
+      "sales": "Sales this month",
+      "stock": "Items in stock",
+      "receivable": "Receivable",
+      "chart": "Sales chart for the last 12 months"
+    }
   }
 }

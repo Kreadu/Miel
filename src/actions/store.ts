@@ -36,20 +36,20 @@ async function currentSession(): Promise<StoreSession | null> {
  * dueño, un trabajador con conocimientos técnicos podría hacer por debajo lo que hace el dueño.
  */
 export async function activateStoreMode(): Promise<StoreState> {
-  if (secret().length < 32) return { ok: false, error: "Falta configurar MIEL_SESSION_SECRET en el servidor." };
+  if (secret().length < 32) return { ok: false, error: "store.errors.notConfigured" };
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
   if (active.accountRole !== "member") {
     return {
       ok: false,
-      error: "El modo tienda se activa con la cuenta de la tienda (operativa), no con la del dueño o un administrador.",
+      error: "store.errors.ownerCannotActivate",
     };
   }
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Inicia sesión de nuevo." };
+  if (!user) return { ok: false, error: "common.errors.signInAgain" };
 
   await writeSession({
     userId: user.id,
@@ -62,8 +62,8 @@ export async function activateStoreMode(): Promise<StoreState> {
 }
 
 const identifySchema = z.object({
-  username: z.string().trim().min(1, "Escribe tu usuario").max(30),
-  pin: z.string().regex(/^\d{4}$/, "El código son 4 números"),
+  username: z.string().trim().min(1, "store.errors.usernameRequired").max(30),
+  pin: z.string().regex(/^\d{4}$/, "store.errors.pinFormat"),
 });
 
 /** El trabajador se identifica con su usuario y código de 4 dígitos. */
@@ -73,7 +73,7 @@ export async function identifyWorker(_prev: StoreState, formData: FormData): Pro
 
   const session = await currentSession();
   const { active } = await getActiveTenant();
-  if (!session || !active?.storeMode) return { ok: false, error: "Este equipo no está en modo tienda." };
+  if (!session || !active?.storeMode) return { ok: false, error: "store.errors.notStoreMode" };
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("verify_worker_pin", {
@@ -83,13 +83,13 @@ export async function identifyWorker(_prev: StoreState, formData: FormData): Pro
   });
   if (error) {
     if (error.message.includes("locked")) {
-      return { ok: false, error: "Demasiados intentos. Espera 15 minutos o pide ayuda al encargado." };
+      return { ok: false, error: "store.errors.tooManyAttempts" };
     }
     console.error("identifyWorker:", error.code);
-    return { ok: false, error: "No se pudo verificar. Intenta de nuevo." };
+    return { ok: false, error: "store.errors.verifyFailed" };
   }
   const worker = data?.[0];
-  if (!worker) return { ok: false, error: "Usuario o código incorrectos." };
+  if (!worker) return { ok: false, error: "store.errors.invalidPin" };
 
   await writeSession({ ...session, workerId: worker.worker_id, workerExp: Date.now() + WORKER_HOURS * 60 * 60 * 1000 });
   redirect("/inicio");
@@ -102,7 +102,7 @@ export async function releaseWorker(): Promise<void> {
   redirect("/trabajador");
 }
 
-const exitSchema = z.object({ password: z.string().min(1, "Escribe la contraseña de la cuenta") });
+const exitSchema = z.object({ password: z.string().min(1, "store.errors.passwordRequired") });
 
 /**
  * Salir del modo tienda exige la contraseña de la cuenta: si no, cualquier trabajador podría
@@ -116,10 +116,10 @@ export async function exitStoreMode(_prev: StoreState, formData: FormData): Prom
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user?.email) return { ok: false, error: "Inicia sesión de nuevo." };
+  if (!user?.email) return { ok: false, error: "common.errors.signInAgain" };
 
   const { error } = await supabase.auth.signInWithPassword({ email: user.email, password: parsed.data.password });
-  if (error) return { ok: false, error: "Contraseña incorrecta." };
+  if (error) return { ok: false, error: "store.errors.wrongPassword" };
 
   (await cookies()).delete(STORE_COOKIE);
   redirect("/inicio");

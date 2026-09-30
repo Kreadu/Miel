@@ -69,7 +69,7 @@ describe("modo tienda (S21-03)", () => {
     supa.rpc.mockResolvedValueOnce({ data: [], error: null });
     expect(await identifyWorker(null, fd({ username: "ana", pin: "0000" }))).toEqual({
       ok: false,
-      error: "Usuario o código incorrectos.",
+      error: "store.errors.invalidPin",
     });
 
     supa.rpc.mockResolvedValueOnce({ data: [{ worker_id: "w-1", full_name: "Ana", modules: ["ventas"] }], error: null });
@@ -86,7 +86,7 @@ describe("modo tienda (S21-03)", () => {
 
     expect(await identifyWorker(null, fd({ username: "ana", pin: "1234" }))).toEqual({
       ok: false,
-      error: "Demasiados intentos. Espera 15 minutos o pide ayuda al encargado.",
+      error: "store.errors.tooManyAttempts",
     });
   });
 

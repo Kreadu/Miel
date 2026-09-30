@@ -29,7 +29,7 @@ export async function createInvitation(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -45,7 +45,7 @@ export async function createInvitation(
     .single();
   if (error) {
     console.error("createInvitation:", error.code);
-    return { ok: false, error: "No se pudo crear la invitación. Intenta de nuevo." };
+    return { ok: false, error: "invitations.errors.createFailed" };
   }
 
   const origin = (await headers()).get("origin");
@@ -84,7 +84,7 @@ export async function acceptInvitation(
   formData: FormData,
 ): Promise<InvitationState> {
   const parsed = acceptSchema.safeParse({ token: formData.get("token") });
-  if (!parsed.success) return { ok: false, error: "Enlace de invitación inválido." };
+  if (!parsed.success) return { ok: false, error: "invitations.errors.invalidLink" };
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("accept_invitation", {
@@ -93,7 +93,7 @@ export async function acceptInvitation(
   if (error) {
     console.error("acceptInvitation:", error.code);
     // Genérico a propósito: sin enumeración (vencida/usada/email ajeno se ven igual).
-    return { ok: false, error: "Esta invitación no es válida o ya fue usada." };
+    return { ok: false, error: "invitations.errors.invalid" };
   }
 
   await writeActiveTenantCookie(data);

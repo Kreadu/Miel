@@ -1,31 +1,39 @@
 import Link from "next/link";
 import { AlertTriangle, TrendingUp, TrendingDown, Package, CheckCircle2 } from "lucide-react";
 
+import { getTranslations } from "next-intl/server";
+
 import { createClient } from "@/lib/supabase/server";
 
-export async function DashboardInsights() {
+/** E20: filtro explícito de empresa — un dueño puede administrar varias. */
+export async function DashboardInsights({ tenantId }: { tenantId: string }) {
   const supabase = await createClient();
+  const t = await getTranslations("home.insights");
 
   // Consultamos en paralelo las vistas gerenciales
   const [topSoldRes, leastSoldRes, topMarginRes, lowStockRes] = await Promise.all([
     supabase
       .from("product_profitability")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("sold_qty", { ascending: false })
       .limit(10),
     supabase
       .from("product_profitability")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("sold_qty", { ascending: true })
       .limit(10),
     supabase
       .from("product_profitability")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("margin_percent", { ascending: false })
       .limit(10),
     supabase
       .from("low_stock_alerts")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("total_qty", { ascending: true }),
   ]);
 
@@ -40,10 +48,10 @@ export async function DashboardInsights() {
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Package className="size-4" aria-hidden="true" />
-          <h3 className="text-sm font-medium text-foreground">Top 10 más vendidos</h3>
+          <h3 className="text-sm font-medium text-foreground">{t("topSold")}</h3>
         </div>
         {topSold.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">Aún no hay ventas registradas.</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("noSales")}</p>
         ) : (
           <ul className="mt-2 flex flex-col gap-2">
             {topSold.map((product) => (
@@ -51,7 +59,7 @@ export async function DashboardInsights() {
                 <span className="truncate pr-2" title={product.name ?? undefined}>
                   {product.name}
                 </span>
-                <span className="shrink-0 font-medium tabular-nums">{product.sold_qty} und</span>
+                <span className="shrink-0 font-medium tabular-nums">{t("units", { qty: product.sold_qty ?? 0 })}</span>
               </li>
             ))}
           </ul>
@@ -62,10 +70,10 @@ export async function DashboardInsights() {
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
         <div className="flex items-center gap-2 text-muted-foreground">
           <TrendingDown className="size-4" aria-hidden="true" />
-          <h3 className="text-sm font-medium text-foreground">Top 10 menos vendidos</h3>
+          <h3 className="text-sm font-medium text-foreground">{t("leastSold")}</h3>
         </div>
         {leastSold.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">Aún no hay ventas registradas.</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("noSales")}</p>
         ) : (
           <ul className="mt-2 flex flex-col gap-2">
             {leastSold.map((product) => (
@@ -73,7 +81,7 @@ export async function DashboardInsights() {
                 <span className="truncate pr-2" title={product.name ?? undefined}>
                   {product.name}
                 </span>
-                <span className="shrink-0 font-medium tabular-nums">{product.sold_qty} und</span>
+                <span className="shrink-0 font-medium tabular-nums">{t("units", { qty: product.sold_qty ?? 0 })}</span>
               </li>
             ))}
           </ul>
@@ -84,10 +92,10 @@ export async function DashboardInsights() {
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
         <div className="flex items-center gap-2 text-muted-foreground">
           <TrendingUp className="size-4" aria-hidden="true" />
-          <h3 className="text-sm font-medium text-foreground">Top 10 más rentables</h3>
+          <h3 className="text-sm font-medium text-foreground">{t("topMargin")}</h3>
         </div>
         {topMargin.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">Aún no hay ventas rentables.</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("noMargin")}</p>
         ) : (
           <ul className="mt-2 flex flex-col gap-2">
             {topMargin.map((product) => (
@@ -107,18 +115,18 @@ export async function DashboardInsights() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
             <AlertTriangle className="size-4" aria-hidden="true" />
-            <h3 className="text-sm font-medium text-foreground">Alertas stock mínimo</h3>
+            <h3 className="text-sm font-medium text-foreground">{t("lowStock")}</h3>
           </div>
           {lowStock.length > 0 && (
             <Link href="/inventario/alertas" className="text-xs text-primary hover:underline">
-              Ver todas
+              {t("seeAll")}
             </Link>
           )}
         </div>
         {lowStock.length === 0 ? (
           <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
             <CheckCircle2 className="size-4" />
-            <span>Todo el inventario en nivel óptimo.</span>
+            <span>{t("allGood")}</span>
           </div>
         ) : (
           <ul className="mt-2 flex flex-col gap-2">

@@ -638,3 +638,15 @@ servidor con la sesión del usuario (RLS) y la empresa activa. Preguntas y respu
 (`--chart-*`, validada para daltonismo y contraste), única excepción al acento único de ADR-008.
 **Consecuencias:** costo por pregunta (centavos de dólar); los datos del rango salen hacia
 Anthropic al preguntar (se avisa en la pantalla). Historia: S22-03.
+
+## ADR-040 · 2026-09-30 · Idiomas: next-intl sin rutas por idioma, claves en las acciones
+**Contexto:** E20 pedía la app completa en español, inglés y francés; el piloto (menú, Catálogo)
+ya usaba `next-intl` sin ADR.
+**Decisión:** (1) `next-intl` con el idioma en la cookie `miel-locale` y sin prefijo `/[locale]`
+en las rutas (ningún enlace ni redirect cambia). (2) Mensajes en `messages/{es,en,fr}.json` por
+módulo; un test obliga a que los tres tengan las mismas claves. (3) Las Server Actions y los
+esquemas Zod devuelven **claves** de mensaje, no textos; el componente las traduce con
+`useTranslations()`. Así el servidor no depende del idioma y los tests comparan claves.
+(4) Traducción por módulo en orden de uso diario; figuras colombianas traducidas con su sigla.
+**Consecuencias:** mientras dure E20 conviven pantallas traducidas y en español. `formatMoney`
+y fechas siguen en formato colombiano (moneda COP) en todos los idiomas.

@@ -29,14 +29,17 @@ export async function createTenant(
   });
   if (error) {
     console.error("createTenant:", error.code);
-    // P0001 = regla de negocio de la RPC (p. ej. límite de un owner, ADR-026): mensaje apto
-    // para el usuario, sin internos. El resto queda genérico.
+    // P0001 = regla de negocio de la RPC (ADR-031): se traduce a una clave (E20). El resto, genérico.
+    const rule = error.code === "P0001" ? error.message : "";
     return {
       ok: false,
-      error:
-        error.code === "P0001"
-          ? error.message
-          : "No se pudo crear la empresa. Intenta de nuevo.",
+      error: rule.includes("Ya perteneces")
+        ? "onboarding.errors.alreadyMember"
+        : rule.includes("canal")
+          ? "onboarding.errors.channelRequired"
+          : rule.includes("nombre")
+            ? "onboarding.errors.nameRequired"
+            : "onboarding.errors.failed",
     };
   }
 
