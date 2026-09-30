@@ -1,12 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState, useTransition } from "react";
 
 import { deleteWorker, toggleWorkerActive, updateWorker } from "@/actions/workers";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format";
 import { formatDate } from "@/lib/format";
-import { COST_CLASSIFICATIONS, CONTRACT_TYPES, WORKER_TYPES } from "@/lib/rrhh/workers";
 
 import { WorkerAccess } from "./worker-access";
 import { type WorkerArea, WorkerFields, type WorkerValues } from "./worker-fields";
@@ -39,9 +39,10 @@ export function WorkerRow({
   }
   const [deleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const t = useTranslations();
 
   function handleDelete() {
-    if (!confirm(`¿Borrar a "${values.full_name}"? Esta acción no se puede deshacer.`)) return;
+    if (!confirm(t("rrhh.workers.deleteConfirm", { name: values.full_name }))) return;
     startDelete(async () => {
       const result = await deleteWorker(id);
       if (!result.ok) setDeleteError(result.error);
@@ -63,10 +64,10 @@ export function WorkerRow({
           />
           <div className="flex items-center gap-2">
             <Button type="submit" size="sm" disabled={pending}>
-              {pending ? "Guardando…" : "Guardar"}
+              {pending ? t("rrhh.common.saving") : t("rrhh.common.save")}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
-              Cancelar
+              {t("rrhh.common.cancel")}
             </Button>
             <Button
               type="button"
@@ -76,17 +77,17 @@ export function WorkerRow({
               disabled={deleting}
               onClick={handleDelete}
             >
-              {deleting ? "Borrando…" : "Borrar trabajador"}
+              {deleting ? t("rrhh.workers.deleting") : t("rrhh.workers.deleteWorker")}
             </Button>
           </div>
           {state && !state.ok ? (
             <p role="alert" className="text-xs text-destructive">
-              {state.error}
+              {t(state.error)}
             </p>
           ) : null}
           {deleteError ? (
             <p role="alert" className="text-xs text-destructive">
-              {deleteError}
+              {t(deleteError)}
             </p>
           ) : null}
         </form>
@@ -104,12 +105,19 @@ export function WorkerRow({
   }
 
   const category = categories.find((c) => c.id === values.category_id)?.name;
-  const access = [values.username ? "código" : null, values.user_id ? "correo" : null].filter(Boolean).join(" y ");
+  const access =
+    values.username && values.user_id
+      ? t("rrhh.workers.accessBoth")
+      : values.username
+        ? t("rrhh.workers.accessCode")
+        : values.user_id
+          ? t("rrhh.workers.accessEmail")
+          : null;
   const position = positions.find((p) => p.id === values.position_id)?.name;
   const pay =
     values.worker_type === "por_horas"
-      ? `Valor hora ${formatMoney(values.hourly_rate)}`
-      : `Salario ${formatMoney(values.salary)}`;
+      ? t("rrhh.workers.hourlyPay", { amount: formatMoney(values.hourly_rate) })
+      : t("rrhh.workers.salaryPay", { amount: formatMoney(values.salary) });
 
   return (
     <li className="flex flex-col gap-2 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between">
@@ -126,14 +134,12 @@ export function WorkerRow({
           {[
             position,
             area === "planta"
-              ? CONTRACT_TYPES[values.contract_type as keyof typeof CONTRACT_TYPES]
-              : WORKER_TYPES[values.worker_type as keyof typeof WORKER_TYPES],
+              ? t(`rrhh.contractTypes.${values.contract_type}`)
+              : t(`rrhh.workerTypes.${values.worker_type}`),
             pay,
-            values.worker_type === "temporal" && values.end_date ? `Hasta ${formatDate(values.end_date)}` : null,
-            values.cost_classification
-              ? COST_CLASSIFICATIONS[values.cost_classification as keyof typeof COST_CLASSIFICATIONS]
-              : null,
-            access ? `Entra con ${access}` : null,
+            values.worker_type === "temporal" && values.end_date ? t("rrhh.workers.until", { date: formatDate(values.end_date) }) : null,
+            values.cost_classification ? t(`rrhh.costClassifications.${values.cost_classification}`) : null,
+            access ? t("rrhh.workers.entersWith", { access }) : null,
           ]
             .filter(Boolean)
             .join(" · ")}
@@ -142,19 +148,19 @@ export function WorkerRow({
       <div className="flex items-center gap-1">
         {active ? (
           <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
-            Editar
+            {t("rrhh.common.edit")}
           </Button>
         ) : null}
         <form
           action={toggleWorkerActive}
           onSubmit={(e) => {
-            if (active && !confirm(`¿Retirar a "${values.full_name}"?`)) e.preventDefault();
+            if (active && !confirm(t("rrhh.workers.retireConfirm", { name: values.full_name }))) e.preventDefault();
           }}
         >
           <input type="hidden" name="id" value={id} />
           <input type="hidden" name="active" value={(!active).toString()} />
           <Button type="submit" variant="ghost" size="sm">
-            {active ? "Retirar" : "Reactivar"}
+            {active ? t("rrhh.workers.retire") : t("rrhh.workers.reactivate")}
           </Button>
         </form>
       </div>

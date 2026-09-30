@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { generateDian, updateSettlement } from "@/actions/payroll";
@@ -29,17 +30,9 @@ export type Settlement = {
   dianConsecutive: number | null;
 };
 
-const MONTHLY_FIELDS = [
-  { name: "days_worked", label: "Días trabajados" },
-  { name: "extra_diurna", label: "Horas extra diurnas" },
-  { name: "extra_nocturna", label: "Horas extra nocturnas" },
-  { name: "recargo_nocturno", label: "Horas recargo nocturno" },
-  { name: "horas_dominical_festivo", label: "Horas dominical o festivo" },
-] as const;
-const HOURLY_FIELDS = [
-  { name: "hours_worked", label: "Horas trabajadas en el período" },
-  { name: "weekly_hours", label: "Horas semanales pactadas" },
-] as const;
+// Etiquetas en `rrhh.payroll.fields.<name>`.
+const MONTHLY_FIELDS = ["days_worked", "extra_diurna", "extra_nocturna", "recargo_nocturno", "horas_dominical_festivo"] as const;
+const HOURLY_FIELDS = ["hours_worked", "weekly_hours"] as const;
 
 function Line({ label, value, strong }: { label: string; value: number | undefined; strong?: boolean }) {
   if (!value) return null;
@@ -56,6 +49,8 @@ export function SettlementRow({ s, editable }: { s: Settlement; editable: boolea
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(updateSettlement, null);
   const [dianState, dianAction, dianPending] = useActionState(generateDian, null);
+  const t = useTranslations();
+  const tp = useTranslations("rrhh.payroll");
   const hourly = s.workerType === "por_horas";
   const fields = hourly ? HOURLY_FIELDS : MONTHLY_FIELDS;
   const r = s.result;
@@ -77,7 +72,7 @@ export function SettlementRow({ s, editable }: { s: Settlement; editable: boolea
           {r.error ? <p className="mt-1 text-xs text-destructive">{r.error}</p> : null}
         </td>
         <td className="px-3 py-2.5 text-right tabular-nums">
-          {hourly ? `${s.hours_worked} h` : `${s.days_worked} días`}
+          {hourly ? tp("hoursShort", { value: s.hours_worked }) : tp("daysShort", { value: s.days_worked })}
         </td>
         <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(s.gross_earnings)}</td>
         <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(s.total_deductions)}</td>
@@ -94,13 +89,13 @@ export function SettlementRow({ s, editable }: { s: Settlement; editable: boolea
             <form action={dianAction}>
               <input type="hidden" name="settlement_id" value={s.id} />
               <Button type="submit" size="sm" variant="outline" disabled={dianPending || !!r.error}>
-                {dianPending ? "Generando…" : "Generar DIAN"}
+                {dianPending ? tp("generating") : tp("generateDian")}
               </Button>
             </form>
           )}
           {dianState && !dianState.ok ? (
             <p role="alert" className="mt-1 text-xs text-destructive">
-              {dianState.error}
+              {t(dianState.error)}
             </p>
           ) : null}
         </td>
@@ -111,21 +106,21 @@ export function SettlementRow({ s, editable }: { s: Settlement; editable: boolea
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <form action={action} className="flex flex-col gap-3">
                 <input type="hidden" name="id" value={s.id} />
-                <p className="text-sm font-medium">Novedades del período</p>
+                <p className="text-sm font-medium">{tp("novelties")}</p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {fields.map((f) => (
-                    <div key={f.name} className="flex flex-col gap-1.5">
-                      <Label htmlFor={`${s.id}-${f.name}`} className="text-xs">
-                        {f.label}
+                  {fields.map((name) => (
+                    <div key={name} className="flex flex-col gap-1.5">
+                      <Label htmlFor={`${s.id}-${name}`} className="text-xs">
+                        {tp(`fields.${name}`)}
                       </Label>
                       <Input
-                        id={`${s.id}-${f.name}`}
-                        name={f.name}
+                        id={`${s.id}-${name}`}
+                        name={name}
                         type="number"
                         min={0}
                         step="0.5"
                         disabled={locked}
-                        defaultValue={s[f.name]}
+                        defaultValue={s[name]}
                         className="text-right"
                       />
                     </div>
@@ -134,13 +129,13 @@ export function SettlementRow({ s, editable }: { s: Settlement; editable: boolea
                 {locked ? null : (
                   <div>
                     <Button type="submit" size="sm" disabled={pending}>
-                      {pending ? "Recalculando…" : "Guardar y recalcular"}
+                      {pending ? tp("recalculating") : tp("saveAndRecalculate")}
                     </Button>
                   </div>
                 )}
                 {state && !state.ok ? (
                   <p role="alert" className="text-xs text-destructive">
-                    {state.error}
+                    {t(state.error)}
                   </p>
                 ) : null}
               </form>
@@ -148,26 +143,26 @@ export function SettlementRow({ s, editable }: { s: Settlement; editable: boolea
               {r.error ? null : (
                 <div className="flex flex-col gap-3 text-sm">
                   <div className="flex flex-col gap-1">
-                    <p className="font-medium">Devengado</p>
-                    <Line label="Salario" value={r.baseSalaryEarned} />
-                    <Line label="Auxilio de transporte" value={r.earnedAuxTransporte} />
-                    <Line label="Horas extra y recargos" value={r.overtimeTotal} />
-                    <Line label="Licencias e incapacidades" value={r.leaveValue} />
-                    <Line label="Total devengado" value={r.grossEarnings} strong />
+                    <p className="font-medium">{tp("breakdown.earnings")}</p>
+                    <Line label={tp("breakdown.salary")} value={r.baseSalaryEarned} />
+                    <Line label={tp("breakdown.transport")} value={r.earnedAuxTransporte} />
+                    <Line label={tp("breakdown.overtime")} value={r.overtimeTotal} />
+                    <Line label={tp("breakdown.leaves")} value={r.leaveValue} />
+                    <Line label={tp("breakdown.totalEarnings")} value={r.grossEarnings} strong />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <p className="font-medium">Deducciones del trabajador</p>
-                    <Line label="Salud 4%" value={r.employeeDeductions?.health4pct} />
-                    <Line label="Pensión 4%" value={r.employeeDeductions?.pension4pct} />
-                    <Line label="Fondo de solidaridad" value={r.employeeDeductions?.fspValue} />
-                    <Line label="Retención en la fuente" value={r.employeeDeductions?.retencionFuente} />
-                    <Line label="Total deducciones" value={r.employeeDeductions?.totalDeductions} strong />
+                    <p className="font-medium">{tp("breakdown.deductions")}</p>
+                    <Line label={tp("breakdown.health")} value={r.employeeDeductions?.health4pct} />
+                    <Line label={tp("breakdown.pension")} value={r.employeeDeductions?.pension4pct} />
+                    <Line label={tp("breakdown.solidarity")} value={r.employeeDeductions?.fspValue} />
+                    <Line label={tp("breakdown.withholding")} value={r.employeeDeductions?.retencionFuente} />
+                    <Line label={tp("breakdown.totalDeductions")} value={r.employeeDeductions?.totalDeductions} strong />
                   </div>
-                  <Line label="Neto a pagar" value={r.netPay} strong />
+                  <Line label={tp("breakdown.net")} value={r.netPay} strong />
                   <div className="flex flex-col gap-1 text-muted-foreground">
-                    <p className="font-medium text-foreground">Costo para la empresa</p>
-                    <Line label="Aportes (salud, pensión, ARL, parafiscales)" value={r.employerContributions?.totalContributions} />
-                    <Line label="Provisiones (cesantías, prima, vacaciones)" value={r.provisions?.totalProvisions} />
+                    <p className="font-medium text-foreground">{tp("breakdown.companyCost")}</p>
+                    <Line label={tp("breakdown.contributions")} value={r.employerContributions?.totalContributions} />
+                    <Line label={tp("breakdown.provisions")} value={r.provisions?.totalProvisions} />
                   </div>
                   {r.complianceNotes?.length ? (
                     <ul className="list-disc pl-5 text-xs text-muted-foreground">

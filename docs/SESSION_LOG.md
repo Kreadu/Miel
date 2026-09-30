@@ -11,6 +11,21 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 9) · S20-07 — idiomas, módulo 7 (RRHH y nómina). E20 completa
+
+**Hecho:** S20-06 commiteado (`1ac1a7d`). Spec S20-07 aprobada. Traducidos es/en/fr: portada de
+RRHH, trabajadores y temporales (ficha, cargo/categoría rápidos, acceso con código/correo),
+cargos, categorías, licencias, usuarios con correo (incl. formulario de invitación), control de
+uso, nómina (períodos, liquidación por trabajador con desglose, datos DIAN). Listas de
+`lib/rrhh/workers.ts` pasan a claves; acciones y Zod de workers/payroll devuelven claves.
+Verificado: lint ✓, tsc ✓, `npm test` 445/445 ✓. Barrido final de la app: pendientes en BACKLOG
+(E20 → "Fuera de E20"). Sin verificar en navegador.
+
+**Siguiente paso:** el humano prueba la app en en/fr en el navegador. Pendientes que siguen:
+reconectar Vercel, llave de la IA, S24-01 (hoja técnica).
+
+---
+
 ## Sesión 2026-09-30 (cont. 8) · S20-06 — idiomas, módulo 6 (Resultados y Finanzas)
 
 **Hecho:** S20-05 commiteado (`6155a51`). Spec S20-06 aprobada. Traducidos es/en/fr: Resultados

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -6,7 +7,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { CategoryForm } from "./category-form";
 import { CategoryRow } from "./category-row";
 
-export const metadata = { title: "Categorías de trabajador · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("rrhh.categories");
+  return { title: `${t("title")} · Miel` };
+}
 
 /** S21-02: categorías de trabajador — cada una define qué módulos ve quien la tenga. */
 export default async function CategoriasTrabajadorPage() {
@@ -14,6 +18,7 @@ export default async function CategoriasTrabajadorPage() {
   if (!active || active.role === "member") notFound();
 
   const supabase = await createClient();
+  const t = await getTranslations("rrhh.categories");
   const [{ data: categories }, { data: workers }] = await Promise.all([
     supabase.from("worker_categories").select("id, name, modules").order("name"),
     supabase.from("workers").select("category_id").eq("active", true),
@@ -26,9 +31,9 @@ export default async function CategoriasTrabajadorPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Categorías de trabajador</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Cada categoría define qué partes de Miel ve el trabajador cuando entre con su código.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -48,7 +53,7 @@ export default async function CategoriasTrabajadorPage() {
         </ul>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no tienes categorías. Crea la primera, por ejemplo &quot;Vendedor&quot; con acceso a Vender.
+          {t("empty")}
         </p>
       )}
     </div>

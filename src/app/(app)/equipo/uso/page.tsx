@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ACTIVITY_LABEL, type ActivityAction } from "@/lib/activity/log";
 import { formatDateTime } from "@/lib/format";
 import { historyFilters, todayInBogota } from "@/lib/inventory-history";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-export const metadata = { title: "Control de uso · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("rrhh.usage");
+  return { title: `${t("title")} · Miel` };
+}
 
 // Radix no admite value="" en un <Select>; "all" no es uuid y se lee como "todos".
 const ALL = "all";
@@ -34,6 +37,7 @@ export default async function UsoPage({
   if (!active || active.role === "member") notFound();
 
   const params = await searchParams;
+  const t = await getTranslations("rrhh");
   const { from, to, warehouseId: workerId } = historyFilters(
     { desde: params.desde, hasta: params.hasta, bodega: params.trabajador },
     todayInBogota(),
@@ -66,29 +70,29 @@ export default async function UsoPage({
   return (
     <div className="flex max-w-4xl flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Control de uso</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("usage.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Quién entró con su código y qué hizo. Las acciones sin trabajador las hizo la cuenta misma.
+          {t("usage.subtitle")}
         </p>
       </div>
 
       <form method="get" className="grid grid-cols-1 items-end gap-3 rounded-lg border border-border bg-card p-4 shadow-xs sm:grid-cols-4">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="desde">Desde</Label>
+          <Label htmlFor="desde">{t("common.from")}</Label>
           <Input id="desde" name="desde" type="date" defaultValue={from} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="hasta">Hasta</Label>
+          <Label htmlFor="hasta">{t("common.to")}</Label>
           <Input id="hasta" name="hasta" type="date" defaultValue={to} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="trabajador">Trabajador</Label>
+          <Label htmlFor="trabajador">{t("common.worker")}</Label>
           <Select name="trabajador" defaultValue={worker?.id ?? ALL}>
             <SelectTrigger id="trabajador" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL}>Todos</SelectItem>
+              <SelectItem value={ALL}>{t("common.all")}</SelectItem>
               {(workers ?? []).map((w) => (
                 <SelectItem key={w.id} value={w.id}>
                   {w.full_name}
@@ -97,20 +101,20 @@ export default async function UsoPage({
             </SelectContent>
           </Select>
         </div>
-        <Button type="submit">Ver</Button>
+        <Button type="submit">{t("common.view")}</Button>
       </form>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-base font-semibold tracking-tight">Ingresos con código</h2>
+        <h2 className="text-base font-semibold tracking-tight">{t("usage.logins")}</h2>
         {loginRows && loginRows.length > 0 ? (
           <div className="overflow-x-auto rounded-lg border border-border bg-card">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="px-3 py-2 font-medium">Fecha y hora</th>
-                  <th className="px-3 py-2 font-medium">Usuario</th>
-                  <th className="px-3 py-2 font-medium">Trabajador</th>
-                  <th className="px-3 py-2 font-medium">Resultado</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.dateTime")}</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.username")}</th>
+                  <th className="px-3 py-2 font-medium">{t("common.worker")}</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.result")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,7 +124,7 @@ export default async function UsoPage({
                     <td className="px-3 py-2.5">{r.username}</td>
                     <td className="px-3 py-2.5">{r.workers?.full_name ?? "—"}</td>
                     <td className={`px-3 py-2.5 ${r.success ? "" : "font-medium text-destructive"}`}>
-                      {r.success ? "Entró" : "Código incorrecto"}
+                      {r.success ? t("usage.success") : t("usage.wrongCode")}
                     </td>
                   </tr>
                 ))}
@@ -129,30 +133,30 @@ export default async function UsoPage({
           </div>
         ) : (
           <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-            No hubo ingresos con código en esas fechas.
+            {t("usage.noLogins")}
           </p>
         )}
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-base font-semibold tracking-tight">Acciones importantes</h2>
+        <h2 className="text-base font-semibold tracking-tight">{t("usage.actions")}</h2>
         {actionRows && actionRows.length > 0 ? (
           <div className="overflow-x-auto rounded-lg border border-border bg-card">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="px-3 py-2 font-medium">Fecha y hora</th>
-                  <th className="px-3 py-2 font-medium">Quién</th>
-                  <th className="px-3 py-2 font-medium">Acción</th>
-                  <th className="px-3 py-2 font-medium">Detalle</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.dateTime")}</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.who")}</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.action")}</th>
+                  <th className="px-3 py-2 font-medium">{t("usage.detail")}</th>
                 </tr>
               </thead>
               <tbody>
                 {actionRows.map((r) => (
                   <tr key={r.id} className="border-b border-border last:border-0">
                     <td className="px-3 py-2.5 tabular-nums">{formatDateTime(r.created_at)}</td>
-                    <td className="px-3 py-2.5">{r.workers?.full_name ?? "La cuenta"}</td>
-                    <td className="px-3 py-2.5">{ACTIVITY_LABEL[r.action as ActivityAction] ?? r.action}</td>
+                    <td className="px-3 py-2.5">{r.workers?.full_name ?? t("usage.account")}</td>
+                    <td className="px-3 py-2.5">{t.has(`activity.${r.action}`) ? t(`activity.${r.action}`) : r.action}</td>
                     <td className="px-3 py-2.5 text-muted-foreground">{r.detail ?? "—"}</td>
                   </tr>
                 ))}
@@ -161,7 +165,7 @@ export default async function UsoPage({
           </div>
         ) : (
           <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-            No hubo acciones registradas en esas fechas.
+            {t("usage.noActions")}
           </p>
         )}
       </section>

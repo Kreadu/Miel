@@ -14,13 +14,6 @@ import {
   RiskClass,
 } from "./types/payroll";
 
-export const LEAVE_TYPES: Record<EmployeeLeaveType, string> = {
-  GENERAL_INCAPACITY: "Incapacidad general",
-  WORK_INCAPACITY: "Incapacidad laboral (ARL)",
-  MATERNITY_LEAVE: "Licencia de maternidad",
-  PATERNITY_LEAVE: "Licencia de paternidad",
-};
-
 export type LeaveRow = { type: string; start_date: string; end_date: string };
 
 /** Día anterior a una fecha ISO. */

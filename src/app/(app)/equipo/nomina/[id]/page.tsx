@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { closePeriod, deletePeriod, recalculatePeriod } from "@/actions/payroll";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 
 import { type Settlement, SettlementRow } from "./settlement-row";
 
-export const metadata = { title: "Período de nómina · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("rrhh.payroll");
+  return { title: `${t("title")} · Miel` };
+}
 
 /** S21-05: la nómina de un período — un renglón por trabajador, totales y acciones. */
 export default async function PeriodoNominaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,6 +22,7 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
   if (!active || active.role === "member") notFound();
 
   const supabase = await createClient();
+  const t = await getTranslations("rrhh");
   const { data: period } = await supabase
     .from("payroll_periods")
     .select(
@@ -72,10 +77,10 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">
-            Nómina {formatDate(period.period_start)} – {formatDate(period.period_end)}
+            {t("payroll.periodTitle", { from: formatDate(period.period_start), to: formatDate(period.period_end) })}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {editable ? "Abierta: puedes ajustar novedades y recalcular." : "Cerrada."}
+            {editable ? t("payroll.editable") : t("payroll.closedPeriod")}
           </p>
         </div>
         {editable ? (
@@ -83,18 +88,18 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
             <form action={recalculatePeriod}>
               <input type="hidden" name="period_id" value={period.id} />
               <Button type="submit" variant="outline">
-                Recalcular todo
+                {t("payroll.recalculateAll")}
               </Button>
             </form>
             <form action={closePeriod}>
               <input type="hidden" name="period_id" value={period.id} />
-              <Button type="submit">Cerrar período</Button>
+              <Button type="submit">{t("payroll.closePeriod")}</Button>
             </form>
             {anyGenerated ? null : (
               <form action={deletePeriod}>
                 <input type="hidden" name="period_id" value={period.id} />
                 <Button type="submit" variant="ghost">
-                  Borrar período
+                  {t("payroll.deletePeriod")}
                 </Button>
               </form>
             )}
@@ -104,18 +109,17 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
 
       {rows.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <h2 className="text-base font-semibold tracking-tight">Costo para la empresa</h2>
+          <h2 className="text-base font-semibold tracking-tight">{t("payroll.companyCost")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {(Object.keys(COST_CLASSIFICATIONS) as (keyof typeof COST_CLASSIFICATIONS)[]).map((k) => (
+            {COST_CLASSIFICATIONS.map((k) => (
               <div key={k} className="rounded-lg border border-border bg-card p-3">
-                <p className="text-xs text-muted-foreground">{COST_CLASSIFICATIONS[k]}</p>
+                <p className="text-xs text-muted-foreground">{t(`costClassifications.${k}`)}</p>
                 <p className="text-base font-semibold tabular-nums">{formatMoney(costByClass.get(k) ?? 0)}</p>
               </div>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Devengado + aportes + provisiones, según &quot;Su pago es&quot; de cada trabajador (sin
-            clasificar cuenta como gasto fijo). Entra a Finanzas al cerrar el período.
+            {t("payroll.companyCostHelp")}
           </p>
         </section>
       ) : null}
@@ -125,12 +129,12 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Trabajador</th>
-                <th className="px-3 py-2 text-right font-medium">Días / horas</th>
-                <th className="px-3 py-2 text-right font-medium">Devengado</th>
-                <th className="px-3 py-2 text-right font-medium">Deducciones</th>
-                <th className="px-3 py-2 text-right font-medium">Neto a pagar</th>
-                <th className="px-3 py-2 text-right font-medium">Nómina electrónica</th>
+                <th className="px-3 py-2 font-medium">{t("common.worker")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("payroll.daysHours")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("payroll.gross")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("payroll.deductions")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("payroll.net")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("payroll.electronic")}</th>
               </tr>
             </thead>
             <tbody>
@@ -141,7 +145,7 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
             <tfoot>
               <tr className="border-t border-border font-semibold">
                 <td className="px-3 py-2.5" colSpan={2}>
-                  Total
+                  {t("payroll.total")}
                 </td>
                 <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(total("gross_earnings"))}</td>
                 <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(total("total_deductions"))}</td>
@@ -153,7 +157,7 @@ export default async function PeriodoNominaPage({ params }: { params: Promise<{ 
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Nadie trabajó en este período. Revisa las fechas de ingreso de tus trabajadores.
+          {t("payroll.noOne")}
         </p>
       )}
     </div>

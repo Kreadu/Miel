@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { clearWorkerPinAccess, setWorkerPinAccess } from "@/actions/workers";
@@ -29,22 +30,24 @@ export function WorkerAccess({
   categories: { id: string; name: string }[];
 }) {
   const [state, action, pending] = useActionState(setWorkerPinAccess, null);
+  const t = useTranslations();
 
   return (
     <section className="mt-4 flex flex-col gap-4 border-t border-border pt-4">
-      <h3 className="text-sm font-medium text-muted-foreground">Acceso a Miel</h3>
+      <h3 className="text-sm font-medium text-muted-foreground">{t("rrhh.workers.access.title")}</h3>
 
       <div className="flex flex-col gap-3">
         <p className="text-sm">
-          <strong className="font-medium">Con código</strong>{" "}
+          <strong className="font-medium">{t("rrhh.workers.access.withCode")}</strong>{" "}
           <span className="text-muted-foreground">
-            (en el equipo de la tienda){username ? ` · usuario: ${username}` : " · sin código"}
+            {t("rrhh.workers.access.withCodeWhere")}
+            {username ? t("rrhh.workers.access.username", { username }) : t("rrhh.workers.access.noCode")}
           </span>
         </p>
         <form action={action} className="grid grid-cols-1 items-end gap-3 sm:grid-cols-4">
           <input type="hidden" name="worker_id" value={workerId} />
           <div className="flex flex-col gap-2">
-            <Label htmlFor={`${workerId}-username`}>Usuario</Label>
+            <Label htmlFor={`${workerId}-username`}>{t("rrhh.workers.access.usernameLabel")}</Label>
             <Input
               id={`${workerId}-username`}
               name="username"
@@ -56,7 +59,7 @@ export function WorkerAccess({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor={`${workerId}-pin`}>Código (4 números)</Label>
+            <Label htmlFor={`${workerId}-pin`}>{t("rrhh.workers.access.pin")}</Label>
             <Input
               id={`${workerId}-pin`}
               name="pin"
@@ -69,7 +72,7 @@ export function WorkerAccess({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor={`${workerId}-pin-confirm`}>Repite el código</Label>
+            <Label htmlFor={`${workerId}-pin-confirm`}>{t("rrhh.workers.access.pinConfirm")}</Label>
             <Input
               id={`${workerId}-pin-confirm`}
               name="pin_confirm"
@@ -82,20 +85,20 @@ export function WorkerAccess({
             />
           </div>
           <Button type="submit" size="sm" disabled={pending}>
-            {pending ? "Guardando…" : username ? "Cambiar código" : "Dar acceso con código"}
+            {pending ? t("rrhh.common.saving") : username ? t("rrhh.workers.access.changeCode") : t("rrhh.workers.access.giveCode")}
           </Button>
         </form>
         {state && !state.ok ? (
           <p role="alert" className="text-xs text-destructive">
-            {state.error}
+            {t(state.error)}
           </p>
         ) : null}
-        {state?.ok ? <p className="text-xs text-muted-foreground">Acceso guardado.</p> : null}
+        {state?.ok ? <p className="text-xs text-muted-foreground">{t("rrhh.workers.access.saved")}</p> : null}
         {username ? (
           <form action={clearWorkerPinAccess}>
             <input type="hidden" name="worker_id" value={workerId} />
             <Button type="submit" variant="ghost" size="sm">
-              Quitar código
+              {t("rrhh.workers.access.removeCode")}
             </Button>
           </form>
         ) : null}
@@ -103,9 +106,10 @@ export function WorkerAccess({
 
       <div className="flex flex-col gap-3">
         <p className="text-sm">
-          <strong className="font-medium">Con correo</strong>{" "}
+          <strong className="font-medium">{t("rrhh.workers.access.withEmail")}</strong>{" "}
           <span className="text-muted-foreground">
-            (desde cualquier lugar){hasEmailAccount ? " · ya tiene cuenta con correo" : ""}
+            {t("rrhh.workers.access.withEmailWhere")}
+            {hasEmailAccount ? t("rrhh.workers.access.hasEmail") : ""}
           </span>
         </p>
         {hasEmailAccount ? null : (

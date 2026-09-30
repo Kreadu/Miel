@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createWorker } from "@/actions/workers";
@@ -22,6 +23,7 @@ export function WorkerForm({
 }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(createWorker, null);
+  const t = useTranslations();
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
@@ -32,7 +34,7 @@ export function WorkerForm({
     return (
       <div>
         <Button onClick={() => setOpen(true)}>
-          {area === "planta" ? "+ Agregar trabajador" : "+ Agregar trabajador temporal o por horas"}
+          {area === "planta" ? t("rrhh.workers.add") : t("rrhh.workers.addTemporary")}
         </Button>
       </div>
     );
@@ -49,15 +51,15 @@ export function WorkerForm({
       />
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Guardando…" : "Guardar trabajador"}
+          {pending ? t("rrhh.common.saving") : t("rrhh.workers.saveWorker")}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-          Cancelar
+          {t("rrhh.common.cancel")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

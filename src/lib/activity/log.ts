@@ -11,17 +11,6 @@ export type ActivityAction =
   | "purchase_received"
   | "stock_adjusted";
 
-export const ACTIVITY_LABEL: Record<ActivityAction, string> = {
-  sale_created: "Creó un pedido",
-  sale_confirmed: "Generó una boleta",
-  sale_cancelled: "Anuló una venta",
-  payment_registered: "Registró un cobro",
-  cash_opened: "Abrió caja",
-  cash_closed: "Cerró caja",
-  purchase_received: "Recibió una compra",
-  stock_adjusted: "Ajustó stock",
-};
-
 /**
  * S21-04: deja constancia de una acción importante y de quién la hizo (en el modo tienda, el
  * trabajador identificado con su código). Nunca lanza: si el registro falla, la operación ya

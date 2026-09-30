@@ -64,7 +64,7 @@ describe("createWorker (S21-02)", () => {
 
     expect(await createWorker(null, formData(base))).toEqual({
       ok: false,
-      error: "Ya existe un trabajador con ese documento.",
+      error: "workers.errors.duplicateDoc",
     });
   });
 });
@@ -193,7 +193,7 @@ describe("acceso con código (S21-03)", () => {
 
     expect(await setWorkerPinAccess(null, formData({ worker_id: W, username: "ana", pin: "1234", pin_confirm: "1234" }))).toEqual({
       ok: false,
-      error: "Ese usuario ya lo tiene otro trabajador.",
+      error: "workers.errors.usernameTaken",
     });
   });
 });

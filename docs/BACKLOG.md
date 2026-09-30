@@ -253,7 +253,16 @@ traducidas con su sigla.
 | S20-04 | 4 · Comprar | implemented (specs/done/S20-04-idiomas-comprar.md) |
 | S20-05 | 5 · Gastos | implemented (specs/done/S20-05-idiomas-gastos.md) |
 | S20-06 | 6 · Resultados (incluye respuesta de la IA en el idioma del usuario) | implemented (specs/done/S20-06-idiomas-resultados.md) |
-| S20-07 | 7 · RRHH y nómina | todo |
+| S20-07 | 7 · RRHH y nómina | implemented (specs/done/S20-07-idiomas-rrhh.md) |
+
+**E20 completa (2026-09-30).** Fuera de E20, sin traducir (anotado en el barrido final de S20-07):
+- `/produccion` (oculta desde S23-01): `produccion/page.tsx` y `production-form.tsx`, y
+  `actions/production.ts`. Traducir cuando Producción vuelva.
+- Mensajes del motor de nómina (errores de liquidación y `complianceNotes`), guardados en
+  `payroll_settlements.result`: se muestran en español. El XML DIAN va en español por norma.
+- `src/app/opengraph-image.tsx` (texto de la imagen para redes): solo español.
+- Algunos `z.enum`/`z.uuid()` sin mensaje propio (campos ocultos o selects) devolverían el
+  mensaje genérico de Zod en inglés si alguien manipula el formulario; bajo impacto.
 
 ## Épica E21 — RRHH: personal y nómina (motor copiado de Gestion-Future, ADR-036)
 

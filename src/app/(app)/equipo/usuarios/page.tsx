@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -7,13 +8,9 @@ import { revokeInvitation } from "@/actions/invitations";
 
 import { InviteForm } from "./invite-form";
 
-export const metadata = { title: "Usuarios con correo · Miel" };
-
-const ROLE_LABEL: Record<string, string> = { owner: "Dueño", admin: "Administrador", member: "Cuenta de la tienda" };
-
-/** S21-03: el acceso se muestra como rol o, si tiene, su categoría. */
-function accessLabel(role: string, categoryName: string | null | undefined): string {
-  return role === "member" && categoryName ? `Categoría: ${categoryName}` : (ROLE_LABEL[role] ?? role);
+export async function generateMetadata() {
+  const t = await getTranslations("rrhh.users");
+  return { title: `${t("title")} · Miel` };
 }
 
 export default async function UsuariosPage() {
@@ -23,6 +20,14 @@ export default async function UsuariosPage() {
   if (!active || active.role === "member") notFound();
 
   const supabase = await createClient();
+  const t = await getTranslations("rrhh.users");
+  // S21-03: el acceso se muestra como rol o, si tiene, su categoría.
+  const accessLabel = (role: string, categoryName: string | null | undefined) =>
+    role === "member" && categoryName
+      ? t("categoryAccess", { name: categoryName })
+      : t.has(`roles.${role}`)
+        ? t(`roles.${role}`)
+        : role;
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -45,27 +50,23 @@ export default async function UsuariosPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Usuarios con correo</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Quienes entran con correo y contraseña. Los trabajadores con usuario y código de 4 dígitos se
-          manejan desde su ficha.
+          {t("subtitle")}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          <strong className="font-medium text-foreground">Equipo de la tienda:</strong> invita un correo de
-          la tienda con acceso &quot;Cuenta de la tienda&quot;. Al entrar con esa cuenta en el
-          computador de la tienda, aprieta &quot;Activar modo tienda&quot;: desde ahí cada trabajador
-          entra con su usuario y código.
+          <strong className="font-medium text-foreground">{t("storeTitle")}</strong> {t("storeHelp")}
         </p>
       </div>
 
       <InviteForm categories={categories ?? []} />
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted-foreground">Miembros</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">{t("members")}</h2>
         <ul className="flex flex-col divide-y divide-border rounded-lg border border-border bg-card">
           {(members ?? []).map((m) => (
             <li key={m.user_id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-              <span>{m.user_id === user?.id ? "Tú" : "Miembro"}</span>
+              <span>{m.user_id === user?.id ? t("you") : t("member")}</span>
               <span className="text-muted-foreground">{accessLabel(m.role, m.worker_categories?.name)}</span>
             </li>
           ))}
@@ -73,7 +74,7 @@ export default async function UsuariosPage() {
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted-foreground">Invitaciones pendientes</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">{t("pending")}</h2>
         {pending && pending.length > 0 ? (
           <ul className="flex flex-col divide-y divide-border rounded-lg border border-border bg-card">
             {pending.map((inv) => (
@@ -87,7 +88,7 @@ export default async function UsuariosPage() {
                 <form action={revokeInvitation}>
                   <input type="hidden" name="id" value={inv.id} />
                   <Button type="submit" variant="ghost" size="sm">
-                    Revocar
+                    {t("revoke")}
                   </Button>
                 </form>
               </li>
@@ -95,7 +96,7 @@ export default async function UsuariosPage() {
           </ul>
         ) : (
           <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-            Aún no has invitado a nadie.
+            {t("noInvites")}
           </p>
         )}
       </section>

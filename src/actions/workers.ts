@@ -26,8 +26,8 @@ function readCategory(formData: FormData) {
 }
 
 function mapCategoryError(code: string | undefined): string {
-  if (code === "23505") return "Ya existe una categoría con ese nombre.";
-  return "No se pudo guardar la categoría. Intenta de nuevo.";
+  if (code === "23505") return "expenses.errors.duplicateCategory";
+  return "workers.errors.categorySaveFailed";
 }
 
 /** S21-02: solo owner/admin (RLS de worker_categories). */
@@ -36,7 +36,7 @@ export async function createWorkerCategory(_prev: WorkerState, formData: FormDat
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.from("worker_categories").insert({
@@ -87,7 +87,7 @@ export async function quickCreateWorkerCategory(input: {
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -115,8 +115,8 @@ export async function deleteWorkerCategory(formData: FormData): Promise<void> {
 // ---------- Cargos (S21-02c) ----------
 
 function mapPositionError(code: string | undefined): string {
-  if (code === "23505") return "Ya existe un cargo con ese nombre.";
-  return "No se pudo guardar el cargo. Intenta de nuevo.";
+  if (code === "23505") return "workers.errors.duplicatePosition";
+  return "workers.errors.positionSaveFailed";
 }
 
 export async function createWorkerPosition(_prev: WorkerState, formData: FormData): Promise<WorkerState> {
@@ -162,7 +162,7 @@ export async function quickCreateWorkerPosition(name: string): Promise<QuickPosi
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -243,11 +243,11 @@ function toColumns(d: z.infer<typeof workerSchema>) {
 }
 
 function mapWorkerError(code: string | undefined, message?: string): string {
-  if (code === "23505") return "Ya existe un trabajador con ese documento.";
-  if (message?.includes("category_invalid")) return "Elige una categoría válida.";
-  if (message?.includes("position_invalid")) return "Elige un cargo válido.";
-  if (message?.includes("warehouse_invalid")) return "Elige una bodega o sucursal válida.";
-  return "No se pudo guardar el trabajador. Intenta de nuevo.";
+  if (code === "23505") return "workers.errors.duplicateDoc";
+  if (message?.includes("category_invalid")) return "workers.errors.categoryInvalid";
+  if (message?.includes("position_invalid")) return "workers.errors.positionInvalid";
+  if (message?.includes("warehouse_invalid")) return "purchases.errors.warehouseInvalid";
+  return "workers.errors.saveFailed";
 }
 
 /** S21-02: solo owner/admin (RLS de workers; hay salario y datos personales). */
@@ -256,7 +256,7 @@ export async function createWorker(_prev: WorkerState, formData: FormData): Prom
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -303,13 +303,13 @@ export async function toggleWorkerActive(formData: FormData): Promise<void> {
 /** S21-02b: borrar trabajador (solo owner/admin por RLS). 0 filas = sin permiso o ya no existe. */
 export async function deleteWorker(id: string): Promise<{ ok: true } | { ok: false; error: string }> {
   const parsed = z.uuid().safeParse(id);
-  if (!parsed.success) return { ok: false, error: "Trabajador inválido." };
+  if (!parsed.success) return { ok: false, error: "workers.errors.workerInvalid" };
 
   const supabase = await createClient();
   const { data, error } = await supabase.from("workers").delete().eq("id", parsed.data).select("id");
   if (error || !data?.length) {
     if (error) console.error("deleteWorker:", error.code);
-    return { ok: false, error: "No se pudo borrar el trabajador." };
+    return { ok: false, error: "workers.errors.deleteFailed" };
   }
   revalidateRrhh();
   return { ok: true };
@@ -324,11 +324,11 @@ const pinAccessSchema = z
       .string()
       .trim()
       .toLowerCase()
-      .regex(/^[a-z0-9._-]{3,30}$/, "El usuario: 3 a 30 letras sin tildes, números, punto, guion o guion bajo"),
-    pin: z.string().regex(/^\d{4}$/, "El código son 4 números"),
+      .regex(/^[a-z0-9._-]{3,30}$/, "workers.errors.usernameFormat"),
+    pin: z.string().regex(/^\d{4}$/, "store.errors.pinFormat"),
     pin_confirm: z.string(),
   })
-  .refine((d) => d.pin === d.pin_confirm, { message: "Los dos códigos no coinciden.", path: ["pin_confirm"] });
+  .refine((d) => d.pin === d.pin_confirm, { message: "workers.errors.pinMismatch", path: ["pin_confirm"] });
 
 /** Asigna (o cambia) usuario y código. El código se guarda solo como hash, en la BD. */
 export async function setWorkerPinAccess(_prev: WorkerState, formData: FormData): Promise<WorkerState> {
@@ -347,9 +347,9 @@ export async function setWorkerPinAccess(_prev: WorkerState, formData: FormData)
     p_pin: parsed.data.pin,
   });
   if (error) {
-    if (error.code === "23505") return { ok: false, error: "Ese usuario ya lo tiene otro trabajador." };
+    if (error.code === "23505") return { ok: false, error: "workers.errors.usernameTaken" };
     console.error("setWorkerPinAccess:", error.code);
-    return { ok: false, error: "No se pudo guardar el acceso. Intenta de nuevo." };
+    return { ok: false, error: "workers.errors.accessSaveFailed" };
   }
   revalidateRrhh();
   return { ok: true };

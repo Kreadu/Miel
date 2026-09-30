@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -6,7 +7,10 @@ import { getActiveTenant } from "@/lib/tenant/server";
 import { PositionForm } from "./position-form";
 import { PositionRow } from "./position-row";
 
-export const metadata = { title: "Cargos · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("rrhh.positions");
+  return { title: `${t("title")} · Miel` };
+}
 
 /** S21-02c: cargos de la empresa (se eligen en la ficha del trabajador). */
 export default async function CargosPage() {
@@ -14,6 +18,7 @@ export default async function CargosPage() {
   if (!active || active.role === "member") notFound();
 
   const supabase = await createClient();
+  const t = await getTranslations("rrhh.positions");
   const [{ data: positions }, { data: workers }] = await Promise.all([
     supabase.from("worker_positions").select("id, name").order("name"),
     supabase.from("workers").select("position_id").eq("active", true),
@@ -26,8 +31,8 @@ export default async function CargosPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Cargos</h1>
-        <p className="text-sm text-muted-foreground">Los cargos que usas en la ficha de cada trabajador.</p>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <PositionForm />
@@ -40,7 +45,7 @@ export default async function CargosPage() {
         </ul>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no tienes cargos. Crea el primero, por ejemplo &quot;Cajero&quot;.
+          {t("empty")}
         </p>
       )}
     </div>

@@ -83,7 +83,7 @@ export async function createLeave(_prev: PayrollState, formData: FormData): Prom
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const active = await tenantOrError();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase.from("worker_leaves").insert({
@@ -96,7 +96,7 @@ export async function createLeave(_prev: PayrollState, formData: FormData): Prom
   });
   if (error) {
     console.error("createLeave:", error.code);
-    return { ok: false, error: "No se pudo guardar la licencia. Intenta de nuevo." };
+    return { ok: false, error: "payroll.errors.leaveSaveFailed" };
   }
   revalidatePayroll();
   return { ok: true };
@@ -130,7 +130,7 @@ export async function saveDianSettings(_prev: PayrollState, formData: FormData):
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const active = await tenantOrError();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const d = parsed.data;
@@ -151,7 +151,7 @@ export async function saveDianSettings(_prev: PayrollState, formData: FormData):
   });
   if (error) {
     console.error("saveDianSettings:", error.code);
-    return { ok: false, error: "No se pudieron guardar los datos DIAN. Intenta de nuevo." };
+    return { ok: false, error: "payroll.errors.dianSaveFailed" };
   }
   revalidatePayroll();
   return { ok: true };
@@ -173,7 +173,7 @@ export async function createPayrollPeriod(_prev: PayrollState, formData: FormDat
   const period = { start: parsed.data.period_start, end: parsed.data.period_end };
 
   const active = await tenantOrError();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data: workers } = await supabase
@@ -212,8 +212,8 @@ export async function createPayrollPeriod(_prev: PayrollState, formData: FormDat
   });
   if (error || !periodId) {
     console.error("createPayrollPeriod:", error?.code, error?.message);
-    if (error?.code === "23505") return { ok: false, error: "Ya existe un período con esas fechas." };
-    return { ok: false, error: "No se pudo crear el período. Intenta de nuevo." };
+    if (error?.code === "23505") return { ok: false, error: "payroll.errors.duplicatePeriod" };
+    return { ok: false, error: "payroll.errors.periodCreateFailed" };
   }
   revalidatePayroll();
   redirect(`/equipo/nomina/${periodId}`);
@@ -245,10 +245,10 @@ export async function updateSettlement(_prev: PayrollState, formData: FormData):
     .select(`tenant_id, period_id, dian_status, workers(${WORKER_COLUMNS})`)
     .eq("id", id)
     .maybeSingle();
-  if (!s || !s.workers) return { ok: false, error: "No se encontró la liquidación." };
-  if (s.dian_status === "generated") return { ok: false, error: "Ya se generó la nómina electrónica de este trabajador." };
+  if (!s || !s.workers) return { ok: false, error: "payroll.errors.settlementNotFound" };
+  if (s.dian_status === "generated") return { ok: false, error: "payroll.errors.alreadyGenerated" };
   const period = await loadPeriod(supabase, s.period_id);
-  if (!period || period.status !== "draft") return { ok: false, error: "El período está cerrado." };
+  if (!period || period.status !== "draft") return { ok: false, error: "payroll.errors.periodClosed" };
 
   const [leavesMap, employer] = await Promise.all([
     leavesByWorker(supabase, [s.workers.id]),
@@ -268,7 +268,7 @@ export async function updateSettlement(_prev: PayrollState, formData: FormData):
     .eq("id", id);
   if (error) {
     console.error("updateSettlement:", error.code);
-    return { ok: false, error: "No se pudo recalcular. Intenta de nuevo." };
+    return { ok: false, error: "payroll.errors.recalcFailed" };
   }
   revalidatePayroll();
   return { ok: true };
@@ -360,7 +360,7 @@ export async function deletePeriod(formData: FormData): Promise<void> {
 /** Genera el XML de nómina electrónica (con CUNE y consecutivo) de un trabajador. */
 export async function generateDian(_prev: PayrollState, formData: FormData): Promise<PayrollState> {
   const parsedId = z.uuid().safeParse(formData.get("settlement_id"));
-  if (!parsedId.success) return { ok: false, error: "Liquidación inválida." };
+  if (!parsedId.success) return { ok: false, error: "payroll.errors.settlementInvalid" };
 
   const supabase = await createClient();
   const { data: s } = await supabase
@@ -368,10 +368,10 @@ export async function generateDian(_prev: PayrollState, formData: FormData): Pro
     .select(`id, tenant_id, dian_status, result, workers(${WORKER_COLUMNS})`)
     .eq("id", parsedId.data)
     .maybeSingle();
-  if (!s || !s.workers) return { ok: false, error: "No se encontró la liquidación." };
-  if (s.dian_status === "generated") return { ok: false, error: "Ya se generó." };
+  if (!s || !s.workers) return { ok: false, error: "payroll.errors.settlementNotFound" };
+  if (s.dian_status === "generated") return { ok: false, error: "payroll.errors.alreadyGenerated" };
   const result = s.result as unknown as ColombiaPayrollResult & { error?: string };
-  if (result.error || !result.netPay) return { ok: false, error: "Primero liquida bien a este trabajador." };
+  if (result.error || !result.netPay) return { ok: false, error: "payroll.errors.liquidateFirst" };
 
   const extra = dianEmployeeExtra(s.workers);
   if (!extra.ok) return extra;
@@ -381,14 +381,14 @@ export async function generateDian(_prev: PayrollState, formData: FormData): Pro
     .select("*")
     .eq("tenant_id", s.tenant_id)
     .maybeSingle();
-  if (!settings) return { ok: false, error: "Primero completa los datos DIAN de la empresa (botón Datos DIAN)." };
+  if (!settings) return { ok: false, error: "payroll.errors.dianSettingsMissing" };
 
   const { data: consecutive, error: counterError } = await supabase.rpc("next_dian_consecutive", {
     p_tenant_id: s.tenant_id,
   });
   if (counterError || !consecutive) {
     console.error("generateDian counter:", counterError?.code);
-    return { ok: false, error: "No se pudo obtener el consecutivo. Intenta de nuevo." };
+    return { ok: false, error: "payroll.errors.sequenceFailed" };
   }
 
   const xml = await DianNominaXmlService.generateDSPNE(
@@ -422,7 +422,7 @@ export async function generateDian(_prev: PayrollState, formData: FormData): Pro
     .eq("id", s.id);
   if (error) {
     console.error("generateDian:", error.code);
-    return { ok: false, error: "No se pudo guardar la nómina electrónica. Intenta de nuevo." };
+    return { ok: false, error: "payroll.errors.dianGenerateFailed" };
   }
   revalidatePayroll();
   return { ok: true };

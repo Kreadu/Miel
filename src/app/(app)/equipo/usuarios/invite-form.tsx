@@ -32,8 +32,8 @@ export function InviteForm({
   workerId?: string;
 }) {
   const [state, action, pending] = useActionState(createInvitation, null);
-  // E20: el error llega como clave; el resto del formulario se traduce con RRHH (módulo 7).
   const tr = useTranslations();
+  const t = useTranslations("rrhh.invite");
   const [copied, setCopied] = useState(false);
 
   async function copyLink(link: string) {
@@ -47,7 +47,7 @@ export function InviteForm({
       <form action={action} className="flex flex-col gap-3 sm:flex-row sm:items-end">
         {workerId ? <input type="hidden" name="worker_id" value={workerId} /> : null}
         <div className="flex flex-1 flex-col gap-2">
-          <Label htmlFor="email">Correo del invitado</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input
             id="email"
             name="email"
@@ -58,24 +58,24 @@ export function InviteForm({
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="access">Acceso</Label>
+          <Label htmlFor="access">{t("access")}</Label>
           <Select name="access" defaultValue={defaultAccess ?? "admin"}>
             <SelectTrigger id="access" className="w-full sm:w-56">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="admin">Administrador (ve todo)</SelectItem>
-              <SelectItem value="tienda">Cuenta de la tienda (modo tienda)</SelectItem>
+              <SelectItem value="admin">{t("admin")}</SelectItem>
+              <SelectItem value="tienda">{t("store")}</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
-                  Categoría: {c.name}
+                  {t("category", { name: c.name })}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Invitando…" : "Invitar"}
+          {pending ? t("inviting") : t("invite")}
         </Button>
       </form>
       {state && !state.ok ? (
@@ -87,7 +87,7 @@ export function InviteForm({
         <div className="flex items-center gap-2 rounded-md border border-border bg-muted/50 p-2.5">
           <code className="flex-1 truncate text-xs text-muted-foreground">{state.link}</code>
           <Button type="button" variant="outline" size="sm" onClick={() => copyLink(state.link)}>
-            {copied ? "Copiado" : "Copiar enlace"}
+            {copied ? t("copied") : t("copyLink")}
           </Button>
         </div>
       ) : null}

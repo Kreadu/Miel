@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createWorkerCategory } from "@/actions/workers";
@@ -10,6 +11,7 @@ import { CategoryFields } from "./category-fields";
 export function CategoryForm() {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(createWorkerCategory, null);
+  const t = useTranslations();
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
@@ -19,7 +21,7 @@ export function CategoryForm() {
   if (!open) {
     return (
       <div>
-        <Button onClick={() => setOpen(true)}>+ Crear categoría</Button>
+        <Button onClick={() => setOpen(true)}>{t("rrhh.categories.add")}</Button>
       </div>
     );
   }
@@ -29,15 +31,15 @@ export function CategoryForm() {
       <CategoryFields idPrefix="new" />
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Creando…" : "Crear categoría"}
+          {pending ? t("rrhh.common.creating") : t("rrhh.categories.create")}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-          Cancelar
+          {t("rrhh.common.cancel")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

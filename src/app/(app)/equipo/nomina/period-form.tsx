@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createPayrollPeriod } from "@/actions/payroll";
@@ -11,11 +12,12 @@ import { Label } from "@/components/ui/label";
 export function PeriodForm({ defaultStart, defaultEnd }: { defaultStart: string; defaultEnd: string }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(createPayrollPeriod, null);
+  const t = useTranslations();
 
   if (!open) {
     return (
       <div>
-        <Button onClick={() => setOpen(true)}>+ Nuevo período de nómina</Button>
+        <Button onClick={() => setOpen(true)}>{t("rrhh.payroll.newPeriod")}</Button>
       </div>
     );
   }
@@ -24,29 +26,28 @@ export function PeriodForm({ defaultStart, defaultEnd }: { defaultStart: string;
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:max-w-md">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="period-start">Desde</Label>
+          <Label htmlFor="period-start">{t("rrhh.common.from")}</Label>
           <Input id="period-start" name="period_start" type="date" required defaultValue={defaultStart} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="period-end">Hasta</Label>
+          <Label htmlFor="period-end">{t("rrhh.common.to")}</Label>
           <Input id="period-end" name="period_end" type="date" required defaultValue={defaultEnd} />
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        Se liquida a todos los trabajadores activos (menos prestación de servicios), con sus licencias.
-        Después puedes ajustar días, horas extra y horas trabajadas.
+        {t("rrhh.payroll.periodHelp")}
       </p>
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Liquidando…" : "Crear y liquidar"}
+          {pending ? t("rrhh.payroll.liquidating") : t("rrhh.payroll.createAndLiquidate")}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-          Cancelar
+          {t("rrhh.common.cancel")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

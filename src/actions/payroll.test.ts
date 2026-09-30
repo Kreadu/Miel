@@ -101,7 +101,7 @@ describe("generateDian (S21-05)", () => {
 
     expect(r).toEqual({
       ok: false,
-      error: "Primero completa los datos DIAN de la empresa (botón Datos DIAN).",
+      error: "payroll.errors.dianSettingsMissing",
     });
     expect(rpc).not.toHaveBeenCalled();
   });

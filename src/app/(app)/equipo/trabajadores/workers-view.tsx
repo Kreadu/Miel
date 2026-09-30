@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -21,6 +22,7 @@ export async function WorkersView({ area, title }: { area: WorkerArea; title: st
   if (!active || active.role === "member") notFound();
 
   const supabase = await createClient();
+  const t = await getTranslations("rrhh.workers");
   const [{ data: workers }, { data: categories }, { data: positions }, { data: warehouses }] =
     await Promise.all([
       supabase
@@ -65,7 +67,7 @@ export async function WorkersView({ area, title }: { area: WorkerArea; title: st
         </ul>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aún no hay trabajadores aquí. Agrega el primero con el botón de arriba.
+          {t("empty")}
         </p>
       )}
     </div>

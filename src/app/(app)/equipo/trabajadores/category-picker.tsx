@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
 import { quickCreateWorkerCategory } from "@/actions/workers";
@@ -48,6 +49,7 @@ export function WorkerCategoryPicker({
   const [modules, setModules] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const t = useTranslations();
 
   const options = [...categories, ...created.filter((c) => !categories.some((x) => x.id === c.id))];
 
@@ -69,14 +71,14 @@ export function WorkerCategoryPicker({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>Categoría (qué ve en Miel)</Label>
+      <Label htmlFor={id}>{t("rrhh.workers.categoryPicker.label")}</Label>
       <div className="flex items-center gap-2">
         <Select name="category_id" value={value} onValueChange={setValue}>
           <SelectTrigger id={id} className="w-full min-w-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={NONE}>Sin categoría</SelectItem>
+            <SelectItem value={NONE}>{t("rrhh.workers.categoryPicker.none")}</SelectItem>
             {options.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.name}
@@ -86,20 +88,20 @@ export function WorkerCategoryPicker({
         </Select>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button type="button" variant="outline" size="icon" aria-label="Crear categoría">
+            <Button type="button" variant="outline" size="icon" aria-label={t("rrhh.workers.categoryPicker.create")}>
               <Plus className="size-4" />
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Nueva categoría de trabajador</DialogTitle>
+              <DialogTitle>{t("rrhh.workers.categoryPicker.new")}</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor={`${id}-new-name`}>Nombre</Label>
+                <Label htmlFor={`${id}-new-name`}>{t("rrhh.common.name")}</Label>
                 <Input
                   id={`${id}-new-name`}
-                  placeholder="Ej. Vendedor"
+                  placeholder={t("rrhh.common.categoryPlaceholder")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   maxLength={60}
@@ -107,7 +109,7 @@ export function WorkerCategoryPicker({
                 />
               </div>
               <fieldset className="flex flex-col gap-2">
-                <legend className="mb-2 text-sm font-medium">Qué puede ver</legend>
+                <legend className="mb-2 text-sm font-medium">{t("rrhh.common.whatCanSee")}</legend>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {CATEGORY_MODULES.map((m) => (
                     <label key={m.id} className="flex items-center gap-2 text-sm">
@@ -121,21 +123,21 @@ export function WorkerCategoryPicker({
                         }
                         className="h-4 w-4 accent-primary"
                       />
-                      {m.label}
+                      {t(`rrhh.modules.${m.id}`)}
                     </label>
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Gastos y RRHH son solo para administradores (invítalos por correo como Administrador).
+                  {t("rrhh.common.adminOnlyModules")}
                 </p>
               </fieldset>
               {error ? (
                 <p role="alert" className="text-sm text-destructive">
-                  {error}
+                  {t(error)}
                 </p>
               ) : null}
               <Button type="button" onClick={handleCreate} disabled={pending || !name.trim()}>
-                {pending ? "Creando…" : "Crear categoría"}
+                {pending ? t("rrhh.common.creating") : t("rrhh.workers.categoryPicker.create")}
               </Button>
             </div>
           </DialogContent>

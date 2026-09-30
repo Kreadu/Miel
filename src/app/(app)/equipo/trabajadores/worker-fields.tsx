@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { COST_CLASSIFICATIONS, CONTRACT_TYPES, DOC_TYPES, WORK_SCHEDULES, WORKER_TYPES } from "@/lib/rrhh/workers";
+import { COST_CLASSIFICATIONS, CONTRACT_TYPES, DOC_TYPES, WORK_SCHEDULES } from "@/lib/rrhh/workers";
 
 import { WorkerCategoryPicker } from "./category-picker";
 import { PositionPicker } from "./position-picker";
@@ -88,8 +89,6 @@ function Choice({
   );
 }
 
-const toOptions = (o: Record<string, string>) => Object.entries(o).map(([value, label]) => ({ value, label }));
-
 /** Área de RRHH: planta (Trabajadores) o temporales y por horas. */
 export type WorkerArea = "planta" | "temporales";
 
@@ -114,6 +113,9 @@ export function WorkerFields({
   warehouses: Option[];
 }) {
   const id = (f: string) => `${idPrefix}-${f}`;
+  const t = useTranslations("rrhh");
+  const toOptions = (keys: readonly string[], ns: string) => keys.map((value) => ({ value, label: t(`${ns}.${value}`) }));
+  const f = (name: string) => t(`workers.fields.${name}`);
   const [workerType, setWorkerType] = useState(
     values?.worker_type ?? (area === "planta" ? "planta" : "temporal"),
   );
@@ -121,34 +123,34 @@ export function WorkerFields({
   return (
     <div className="flex flex-col gap-6">
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-2">Identificación</h3>
+        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-2">{t("workers.sections.identification")}</h3>
         <div className="sm:col-span-2">
-          <Field id={id("full_name")} label="Nombre completo">
+          <Field id={id("full_name")} label={f("full_name")}>
             <Input id={id("full_name")} name="full_name" required maxLength={120} defaultValue={values?.full_name} />
           </Field>
         </div>
-        <Field id={id("doc_type")} label="Tipo de documento">
-          <Choice id={id("doc_type")} name="doc_type" value={values?.doc_type ?? "cc"} options={toOptions(DOC_TYPES)} />
+        <Field id={id("doc_type")} label={f("doc_type")}>
+          <Choice id={id("doc_type")} name="doc_type" value={values?.doc_type ?? "cc"} options={toOptions(DOC_TYPES, "docTypes")} />
         </Field>
-        <Field id={id("doc_number")} label="Número de documento">
+        <Field id={id("doc_number")} label={f("doc_number")}>
           <Input id={id("doc_number")} name="doc_number" required maxLength={30} defaultValue={values?.doc_number} />
         </Field>
       </section>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-2">Trabajo</h3>
+        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-2">{t("workers.sections.work")}</h3>
         {area === "planta" ? (
           <input type="hidden" name="worker_type" value="planta" />
         ) : (
           <div className="sm:col-span-2">
-            <Field id={id("worker_type")} label="Tipo de trabajador">
+            <Field id={id("worker_type")} label={f("worker_type")}>
               <Select name="worker_type" value={workerType} onValueChange={setWorkerType}>
                 <SelectTrigger id={id("worker_type")} className="w-full sm:w-64">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="temporal">{WORKER_TYPES.temporal}</SelectItem>
-                  <SelectItem value="por_horas">{WORKER_TYPES.por_horas}</SelectItem>
+                  <SelectItem value="temporal">{t("workerTypes.temporal")}</SelectItem>
+                  <SelectItem value="por_horas">{t("workerTypes.por_horas")}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -164,24 +166,24 @@ export function WorkerFields({
           positions={positions}
           defaultValue={values?.position_id ?? ""}
         />
-        <Field id={id("contract_type")} label="Tipo de contrato">
+        <Field id={id("contract_type")} label={f("contract_type")}>
           <Choice
             id={id("contract_type")}
             name="contract_type"
             value={values?.contract_type ?? "indefinido"}
-            options={toOptions(CONTRACT_TYPES)}
+            options={toOptions(CONTRACT_TYPES, "contractTypes")}
           />
         </Field>
-        <Field id={id("work_schedule")} label="Jornada">
+        <Field id={id("work_schedule")} label={f("work_schedule")}>
           <Choice
             id={id("work_schedule")}
             name="work_schedule"
             value={values?.work_schedule ?? "completa"}
-            options={toOptions(WORK_SCHEDULES)}
+            options={toOptions(WORK_SCHEDULES, "schedules")}
           />
         </Field>
         {hourly ? (
-          <Field id={id("hourly_rate")} label="Valor hora">
+          <Field id={id("hourly_rate")} label={f("hourly_rate")}>
             <Input
               id={id("hourly_rate")}
               name="hourly_rate"
@@ -193,7 +195,7 @@ export function WorkerFields({
             />
           </Field>
         ) : (
-          <Field id={id("salary")} label="Salario mensual">
+          <Field id={id("salary")} label={f("salary")}>
             <Input
               id={id("salary")}
               name="salary"
@@ -205,30 +207,30 @@ export function WorkerFields({
             />
           </Field>
         )}
-        <Field id={id("hire_date")} label="Fecha de ingreso">
+        <Field id={id("hire_date")} label={f("hire_date")}>
           <Input id={id("hire_date")} name="hire_date" type="date" defaultValue={values?.hire_date ?? ""} />
         </Field>
         {workerType === "temporal" ? (
-          <Field id={id("end_date")} label="Fecha de término">
+          <Field id={id("end_date")} label={f("end_date")}>
             <Input id={id("end_date")} name="end_date" type="date" defaultValue={values?.end_date ?? ""} />
           </Field>
         ) : null}
-        <Field id={id("cost_classification")} label="Su pago es (para finanzas)">
+        <Field id={id("cost_classification")} label={f("cost_classification")}>
           <Choice
             id={id("cost_classification")}
             name="cost_classification"
             value={values?.cost_classification ?? ""}
-            none="Sin clasificar"
-            options={toOptions(COST_CLASSIFICATIONS)}
+            none={f("unclassified")}
+            options={toOptions(COST_CLASSIFICATIONS, "costClassifications")}
           />
         </Field>
         <div>
-          <Field id={id("warehouse_id")} label="Bodega o sucursal donde trabaja">
+          <Field id={id("warehouse_id")} label={f("warehouse_id")}>
             <Choice
               id={id("warehouse_id")}
               name="warehouse_id"
               value={values?.warehouse_id ?? ""}
-              none="Sin asignar"
+              none={f("unassigned")}
               options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
             />
           </Field>
@@ -236,14 +238,14 @@ export function WorkerFields({
       </section>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-3">Seguridad social</h3>
-        <Field id={id("eps")} label="EPS">
+        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-3">{t("workers.sections.socialSecurity")}</h3>
+        <Field id={id("eps")} label={f("eps")}>
           <Input id={id("eps")} name="eps" maxLength={80} defaultValue={values?.eps ?? ""} />
         </Field>
-        <Field id={id("pension_fund")} label="Fondo de pensión">
+        <Field id={id("pension_fund")} label={f("pension_fund")}>
           <Input id={id("pension_fund")} name="pension_fund" maxLength={80} defaultValue={values?.pension_fund ?? ""} />
         </Field>
-        <Field id={id("arl_risk_class")} label="Clase de riesgo ARL (1-5)">
+        <Field id={id("arl_risk_class")} label={f("arl_risk_class")}>
           <Input
             id={id("arl_risk_class")}
             name="arl_risk_class"
@@ -257,19 +259,19 @@ export function WorkerFields({
       </section>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-2">Contacto</h3>
-        <Field id={id("phone")} label="Teléfono">
+        <h3 className="text-sm font-medium text-muted-foreground sm:col-span-2">{t("workers.sections.contact")}</h3>
+        <Field id={id("phone")} label={f("phone")}>
           <Input id={id("phone")} name="phone" type="tel" maxLength={30} defaultValue={values?.phone ?? ""} />
         </Field>
-        <Field id={id("email")} label="Correo">
+        <Field id={id("email")} label={f("email")}>
           <Input id={id("email")} name="email" type="email" maxLength={160} defaultValue={values?.email ?? ""} />
         </Field>
         <div className="sm:col-span-2">
-          <Field id={id("address")} label="Dirección">
+          <Field id={id("address")} label={f("address")}>
             <Input id={id("address")} name="address" maxLength={200} defaultValue={values?.address ?? ""} />
           </Field>
         </div>
-        <Field id={id("emergency_contact_name")} label="Persona de contacto de urgencia">
+        <Field id={id("emergency_contact_name")} label={f("emergency_contact_name")}>
           <Input
             id={id("emergency_contact_name")}
             name="emergency_contact_name"
@@ -277,7 +279,7 @@ export function WorkerFields({
             defaultValue={values?.emergency_contact_name ?? ""}
           />
         </Field>
-        <Field id={id("emergency_phone")} label="Teléfono de urgencia">
+        <Field id={id("emergency_phone")} label={f("emergency_phone")}>
           <Input
             id={id("emergency_phone")}
             name="emergency_phone"
