@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
+import { formatDate, formatMoney } from "@/lib/format";
 import { isPendingSale } from "@/lib/sales/pending";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CatalogPedidoCart } from "./catalog-pedido-cart";
+import { MarkInvoiceIssuedButton } from "./mark-invoice-issued-button";
 import { SaleRow } from "./sale-row";
 
 export async function generateMetadata() {
@@ -24,7 +26,8 @@ export default async function PedidosPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const [salesRes, customersRes, warehousesRes, mySessionRes, ratesRes] = await Promise.all([
+  const canManage = active.role !== "member";
+  const [salesRes, customersRes, warehousesRes, mySessionRes, ratesRes, defaultWarehouseRes, invoicesRes] = await Promise.all([
     supabase
       .from("sales")
       .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, customers(name), customer_payments(amount)")
@@ -44,7 +47,23 @@ export default async function PedidosPage() {
       .from("shipping_rates")
       .select("id, name, base_price, price_per_kg, price_per_km")
       .order("name"),
+    // S18-06: bodega preseleccionada (la del trabajador identificado, si no la principal).
+    supabase.rpc("default_sale_warehouse", {
+      p_tenant_id: active.tenantId,
+      p_worker_id: active.worker?.id,
+    }),
+    // S18-06: facturas cobradas que el dueño aún debe emitir en su sistema de facturación.
+    canManage
+      ? supabase
+          .from("sales")
+          .select("id, total, receipt_number, issued_at, customers(name, doc_type, doc_number)")
+          .eq("document_type", "factura")
+          .is("invoice_issued_at", null)
+          .neq("status", "cancelled")
+          .order("issued_at", { ascending: true })
+      : Promise.resolve({ data: [] }),
   ]);
+  const invoices = invoicesRes.data ?? [];
   const cashOpen = mySessionRes.data != null;
 
   // S19-36: Pedidos = hoja de venta + pedidos por completar. Lo terminado (entregado y pagado,
@@ -88,7 +107,38 @@ export default async function PedidosPage() {
         tenantId={active.tenantId}
         customers={customers}
         rates={ratesRes.data ?? []}
+        warehouses={warehouses}
+        defaultWarehouseId={defaultWarehouseRes.data ?? null}
       />
+
+      {invoices.length > 0 ? (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-base font-semibold tracking-tight">{t("invoicesPending")}</h2>
+          <p className="text-sm text-muted-foreground">{t("invoicesHelp")}</p>
+          <ul className="flex flex-col divide-y divide-border rounded-lg border border-border bg-card">
+            {invoices.map((inv) => (
+              <li key={inv.id} className="flex flex-col gap-2 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-medium">
+                    {inv.customers?.name ?? "—"}
+                    {inv.customers?.doc_number ? (
+                      <span className="font-normal text-muted-foreground">
+                        {" "}
+                        · {inv.customers.doc_type?.toUpperCase()} {inv.customers.doc_number}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {inv.receipt_number !== null ? `${t("receipt", { number: inv.receipt_number })} · ` : ""}
+                    {inv.issued_at ? formatDate(inv.issued_at) : ""} · {formatMoney(inv.total)}
+                  </span>
+                </div>
+                <MarkInvoiceIssuedButton saleId={inv.id} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <h2 className="text-base font-semibold tracking-tight">{t("pending")}</h2>
       {sales.length > 0 ? (
@@ -121,7 +171,7 @@ export default async function PedidosPage() {
                     paymentMethod: s.payment_method,
                   }}
                   warehouses={warehouses}
-                  canCancel={active.role !== "member"}
+                  canCancel={canManage}
                 />
               ))}
             </tbody>

@@ -91,3 +91,91 @@ describe("confirmSale — caja cerrada (S19-22)", () => {
     });
   });
 });
+
+describe("checkoutCounterSale — cobrar y entregar (S18-06)", () => {
+  const WH = "33333333-3333-4333-8333-333333333333";
+  const CUSTOMER = "44444444-4444-4444-8444-444444444444";
+  const base = { items, payment_method: "card", warehouse_id: WH, document_type: "boleta", customer_id: "__counter__" };
+
+  it("mostrador: manda todo a la RPC atómica con el cliente genérico", async () => {
+    rpcResult.current = { error: null };
+    rpcSpy.mockClear();
+    const { checkoutCounterSale } = await import("./sales");
+
+    expect(await checkoutCounterSale(null, formData(base))).toEqual({ ok: true });
+    expect(rpcSpy).toHaveBeenCalledWith(
+      "checkout_counter_sale",
+      expect.objectContaining({
+        p_tenant_id: "t-1",
+        p_customer_id: "generic-1",
+        p_payment_method: "card",
+        p_warehouse_id: WH,
+        p_document_type: "boleta",
+      }),
+    );
+  });
+
+  it("sin forma de pago: error sin llamar a la BD", async () => {
+    rpcSpy.mockClear();
+    const { checkoutCounterSale } = await import("./sales");
+
+    expect(await checkoutCounterSale(null, formData({ ...base, payment_method: "" }))).toEqual({
+      ok: false,
+      error: "sales.errors.paymentMethodRequired",
+    });
+    expect(rpcSpy).not.toHaveBeenCalled();
+  });
+
+  it("sin bodega válida: error sin llamar a la BD", async () => {
+    rpcSpy.mockClear();
+    const { checkoutCounterSale } = await import("./sales");
+
+    expect(await checkoutCounterSale(null, formData({ ...base, warehouse_id: "" }))).toEqual({
+      ok: false,
+      error: "sales.errors.warehouseInvalid",
+    });
+    expect(rpcSpy).not.toHaveBeenCalled();
+  });
+
+  it("factura sin cliente elegido: pide un cliente identificado", async () => {
+    rpcSpy.mockClear();
+    const { checkoutCounterSale } = await import("./sales");
+
+    expect(await checkoutCounterSale(null, formData({ ...base, document_type: "factura" }))).toEqual({
+      ok: false,
+      error: "sales.errors.invoiceCustomerRequired",
+    });
+    expect(rpcSpy).not.toHaveBeenCalled();
+  });
+
+  it("factura: la BD rechaza un cliente sin documento", async () => {
+    rpcResult.current = { error: { code: "P0001", message: "invoice_customer_required" } };
+    const { checkoutCounterSale } = await import("./sales");
+
+    expect(
+      await checkoutCounterSale(null, formData({ ...base, document_type: "factura", customer_id: CUSTOMER })),
+    ).toEqual({ ok: false, error: "sales.errors.invoiceCustomerRequired" });
+  });
+
+  it("caja cerrada: pide abrir la caja", async () => {
+    rpcResult.current = { error: { code: "P0001", message: "cash_session_required" } };
+    const { checkoutCounterSale } = await import("./sales");
+
+    expect(await checkoutCounterSale(null, formData(base))).toEqual({
+      ok: false,
+      error: "sales.errors.cashSessionRequired",
+    });
+  });
+});
+
+describe("markInvoiceIssued (S18-06)", () => {
+  it("un operativo no puede: clave de permiso", async () => {
+    rpcResult.current = { error: { code: "P0001", message: "permission_denied" } };
+    const { markInvoiceIssued } = await import("./sales");
+
+    expect(await markInvoiceIssued("55555555-5555-4555-8555-555555555555")).toEqual({
+      ok: false,
+      error: "common.errors.permissionDenied",
+    });
+  });
+});

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 
 import { refreshCartProductData } from "@/actions/catalog";
-import { createSale } from "@/actions/sales";
+import { checkoutCounterSale, createSale } from "@/actions/sales";
 import { DEFAULT_TAX_COUNTRY_LABEL } from "@/lib/validation/catalog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { formatMoney } from "@/lib/format";
 import { saleLine } from "@/lib/sales/line";
-import { PAYMENT_METHODS } from "@/lib/validation/sales";
+import { DOCUMENT_TYPES, PAYMENT_METHODS } from "@/lib/validation/sales";
 
 import { useCatalogCart } from "../use-catalog-cart";
 import { DeliverySection, type Rate } from "./delivery-section";
@@ -35,14 +35,22 @@ export function CatalogPedidoCart({
   tenantId,
   customers,
   rates,
+  warehouses,
+  defaultWarehouseId,
 }: {
   tenantId: string;
   customers: { id: string; name: string }[];
   /** S19-35: transportes de Vender → Envíos. */
   rates: Rate[];
+  /** S18-06: bodegas para "Cobrar y entregar"; viene marcada la del trabajador o la principal. */
+  warehouses: { id: string; name: string }[];
+  defaultWarehouseId: string | null;
 }) {
   const { lines, updateQty, updateLineData, removeItem, clear } = useCatalogCart(tenantId);
   const [state, formAction, pending] = useActionState(createSale, null);
+  // S18-06: venta de mostrador en un paso (crea, boleta, cobro total y entrega).
+  const [checkoutState, checkoutAction, checkoutPending] = useActionState(checkoutCounterSale, null);
+  const [paymentMethod, setPaymentMethod] = useState("");
   const t = useTranslations();
 
   // S19-11: reconcilia precio/descuento/IVA del carrito contra la BD una vez al entrar (no en
@@ -76,6 +84,15 @@ export function CatalogPedidoCart({
     setSeenState(state);
     if (state?.ok) clear();
   }
+  const [seenCheckout, setSeenCheckout] = useState(checkoutState);
+  if (checkoutState !== seenCheckout) {
+    setSeenCheckout(checkoutState);
+    if (checkoutState?.ok) clear();
+  }
+  // El error que se muestra es el del último botón usado.
+  const [lastAction, setLastAction] = useState<"order" | "checkout">("order");
+  const shownState = lastAction === "checkout" ? checkoutState : state;
+  const busy = pending || checkoutPending;
   // Carrito vacío (confirmado, vaciado o sin ítems): la sección de entrega se desmonta, así que
   // su resumen también se limpia (ajuste de estado en render, sin efecto).
   if (lines.length === 0 && delivery.method !== null) setDelivery({ method: null, cost: 0 });
@@ -181,7 +198,7 @@ export function CatalogPedidoCart({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="payment_method">{t("sales.cart.paymentMethod")}</Label>
-          <Select name="payment_method">
+          <Select name="payment_method" value={paymentMethod} onValueChange={setPaymentMethod}>
             <SelectTrigger id="payment_method" className="w-full">
               <SelectValue placeholder={t("sales.cart.noChoice")} />
             </SelectTrigger>
@@ -210,15 +227,65 @@ export function CatalogPedidoCart({
             </SelectContent>
           </Select>
         </div>
+        {delivery.method === "pickup" ? (
+          <>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="warehouse_id">{t("sales.cart.warehouse")}</Label>
+              <Select name="warehouse_id" defaultValue={defaultWarehouseId ?? undefined}>
+                <SelectTrigger id="warehouse_id" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {warehouses.map((w) => (
+                    <SelectItem key={w.id} value={w.id}>
+                      {w.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="document_type">{t("sales.cart.document")}</Label>
+              <Select name="document_type" defaultValue="boleta">
+                <SelectTrigger id="document_type" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DOCUMENT_TYPES.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {t(`sales.cart.documentTypes.${d}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">{t("sales.cart.invoiceHint")}</p>
+            </div>
+          </>
+        ) : null}
         <div className="flex flex-col gap-2 sm:col-span-2">
           <Label htmlFor="note">{t("sales.cart.note")}</Label>
           <Input id="note" name="note" maxLength={500} />
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button type="submit" disabled={pending || !delivery.method}>
-          {pending ? t("sales.cart.creating") : t("sales.cart.submit")}
+      <div className="flex flex-wrap items-center gap-2">
+        {delivery.method === "pickup" ? (
+          <Button
+            type="submit"
+            formAction={checkoutAction}
+            onClick={() => setLastAction("checkout")}
+            disabled={busy || !paymentMethod}
+          >
+            {checkoutPending ? t("sales.cart.charging") : t("sales.cart.checkout")}
+          </Button>
+        ) : null}
+        <Button
+          type="submit"
+          variant={delivery.method === "pickup" ? "outline" : "default"}
+          onClick={() => setLastAction("order")}
+          disabled={busy || !delivery.method}
+        >
+          {pending ? t("sales.cart.creating") : t("sales.cart.saveAsOrder")}
         </Button>
         <Button type="button" variant="ghost" onClick={clear}>
           {t("sales.cart.clear")}
@@ -227,9 +294,12 @@ export function CatalogPedidoCart({
           <Link href="/ventas/catalogo">{t("sales.cart.keepBrowsing")}</Link>
         </Button>
       </div>
-      {state && !state.ok ? (
+      {delivery.method === "pickup" && !paymentMethod ? (
+        <p className="text-xs text-muted-foreground">{t("sales.cart.paymentRequiredHint")}</p>
+      ) : null}
+      {shownState && !shownState.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {t(state.error)}
+          {t(shownState.error)}
         </p>
       ) : null}
     </form>

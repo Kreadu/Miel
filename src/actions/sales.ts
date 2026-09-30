@@ -7,7 +7,7 @@ import { logActivity } from "@/lib/activity/log";
 import { getOrCreateGenericCustomerId } from "@/lib/customers/generic";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
-import { saleSchema } from "@/lib/validation/sales";
+import { checkoutSchema, saleSchema } from "@/lib/validation/sales";
 
 export type SaleState = { ok: false; error: string } | { ok: true } | null;
 
@@ -29,24 +29,35 @@ function mapSaleError(message: string | undefined): string {
   if (message?.includes("shipping_rate_invalid")) return "sales.errors.shippingRateInvalid";
   if (message?.includes("shipping_km_invalid")) return "sales.errors.kmRequired";
   if (message?.includes("shipping_cost_invalid")) return "sales.errors.shippingCostInvalid";
+  // S18-06: errores de confirmar/cobrar dentro de checkout_counter_sale.
+  if (message?.includes("payment_method_required")) return "sales.errors.paymentMethodRequired";
+  if (message?.includes("invoice_customer_required")) return "sales.errors.invoiceCustomerRequired";
+  if (message?.includes("cash_session_required")) return "sales.errors.cashSessionRequired";
+  if (message?.includes("stock_insufficient")) return "sales.errors.stockInsufficient";
+  if (message?.includes("warehouse_invalid")) return "sales.errors.warehouseInvalid";
   return "sales.errors.saveFailed";
+}
+
+/** Lee el formulario del carrito: sentinel de mostrador → vacío, `items` en JSON. */
+function readCartForm(formData: FormData): Record<string, unknown> | null {
+  const raw: Record<string, unknown> = Object.fromEntries(formData);
+  if (raw.customer_id === NO_CUSTOMER_SENTINEL) raw.customer_id = "";
+  // S19-35: un número vacío del form es "no vino" (z.coerce convertiría "" en 0).
+  for (const key of ["shipping_km", "shipping_cost"]) if (raw[key] === "") raw[key] = undefined;
+  try {
+    raw.items = JSON.parse(typeof raw.items === "string" ? raw.items : "[]");
+  } catch {
+    return null;
+  }
+  return raw;
 }
 
 /** Cualquier miembro del tenant activo crea ventas (create_sale lo valida igual: pertenencia, no rol admin). */
 export async function createSale(_prev: SaleState, formData: FormData): Promise<SaleState> {
-  const raw: Record<string, FormDataEntryValue | undefined> = Object.fromEntries(formData);
-  if (raw.customer_id === NO_CUSTOMER_SENTINEL) raw.customer_id = "";
-  // S19-35: un número vacío del form es "no vino" (z.coerce convertiría "" en 0).
-  for (const key of ["shipping_km", "shipping_cost"]) if (raw[key] === "") raw[key] = undefined;
-  const itemsRaw = typeof raw.items === "string" ? raw.items : "[]";
-  let items: unknown;
-  try {
-    items = JSON.parse(itemsRaw);
-  } catch {
-    return { ok: false, error: "sales.errors.itemsInvalid" };
-  }
+  const raw = readCartForm(formData);
+  if (!raw) return { ok: false, error: "sales.errors.itemsInvalid" };
 
-  const parsed = saleSchema.safeParse({ ...raw, items });
+  const parsed = saleSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
@@ -175,5 +186,65 @@ export async function cancelSale(saleId: string): Promise<SaleState> {
   await logActivity("sale_cancelled", { entityId: id.data });
   revalidatePath(SALES_PATH);
   revalidatePath("/ventas/clientes", "layout");
+  return { ok: true };
+}
+
+/**
+ * S18-06: venta de mostrador en un paso — crea, genera la boleta (stock + caja), cobra el total
+ * con la forma de pago elegida y la deja entregada, todo en `checkout_counter_sale` (atómica).
+ * Factura: exige un cliente identificado; queda "por emitir" (Miel no emite DIAN, S25-01).
+ */
+export async function checkoutCounterSale(_prev: SaleState, formData: FormData): Promise<SaleState> {
+  const raw = readCartForm(formData);
+  if (!raw) return { ok: false, error: "sales.errors.itemsInvalid" };
+
+  const parsed = checkoutSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+  const data = parsed.data;
+  if (data.document_type === "factura" && !data.customer_id) {
+    return { ok: false, error: "sales.errors.invoiceCustomerRequired" };
+  }
+
+  const { active } = await getActiveTenant();
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
+
+  const supabase = await createClient();
+  const customerId = data.customer_id || (await getOrCreateGenericCustomerId(supabase, active.tenantId));
+  if (!customerId) return { ok: false, error: "sales.errors.saveFailed" };
+
+  const { data: saleId, error } = await supabase.rpc("checkout_counter_sale", {
+    p_tenant_id: active.tenantId,
+    p_items: data.items,
+    p_customer_id: customerId,
+    p_payment_method: data.payment_method,
+    p_warehouse_id: data.warehouse_id,
+    p_document_type: data.document_type,
+    p_note: data.note || undefined,
+  });
+  if (error) {
+    console.error("checkoutCounterSale:", error.code, error.message);
+    return { ok: false, error: mapSaleError(error.message) };
+  }
+
+  await logActivity("sale_confirmed", { entityId: saleId ?? undefined });
+  await logActivity("payment_registered", { entityId: saleId ?? undefined, detail: data.payment_method });
+  revalidatePath(SALES_PATH);
+  revalidatePath("/ventas/caja");
+  return { ok: true };
+}
+
+/** S18-06: el dueño emitió la factura en su sistema de facturación (owner/admin; la RPC lo valida). */
+export async function markInvoiceIssued(saleId: string): Promise<SaleState> {
+  const id = z.uuid().safeParse(saleId);
+  if (!id.success) return { ok: false, error: "sales.errors.saleInvalid" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("mark_invoice_issued", { p_sale_id: id.data });
+  if (error) {
+    console.error("markInvoiceIssued:", error.code, error.message);
+    if (error.message.includes("permission_denied")) return { ok: false, error: "common.errors.permissionDenied" };
+    return { ok: false, error: "sales.errors.invoiceMarkFailed" };
+  }
+  revalidatePath(SALES_PATH);
   return { ok: true };
 }

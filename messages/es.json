@@ -388,7 +388,11 @@
       "collect": "Cobrar",
       "cancelSale": "Anular venta",
       "cancelling": "Anulando…",
-      "cancelConfirm": "¿Anular esta venta? El stock vuelve al inventario y los cobros se registran como devolución."
+      "cancelConfirm": "¿Anular esta venta? El stock vuelve al inventario y los cobros se registran como devolución.",
+      "invoicesPending": "Facturas por emitir",
+      "invoicesHelp": "Ventas cobradas con factura. Emítelas en tu sistema de facturación y márcalas aquí.",
+      "markIssued": "Marcar emitida",
+      "marking": "Marcando…"
     },
     "cart": {
       "title": "Pedido armado desde el catálogo",
@@ -405,9 +409,19 @@
       "counter": "Mostrador / sin cliente",
       "note": "Nota (opcional)",
       "creating": "Creando…",
-      "submit": "Confirmar pedido",
       "clear": "Vaciar carrito",
-      "keepBrowsing": "Seguir viendo el catálogo"
+      "keepBrowsing": "Seguir viendo el catálogo",
+      "warehouse": "Sale de",
+      "document": "Comprobante",
+      "documentTypes": {
+        "boleta": "Boleta",
+        "factura": "Factura"
+      },
+      "invoiceHint": "La factura exige un cliente con documento. Miel la deja por emitir: emítela en tu sistema de facturación.",
+      "checkout": "Cobrar y entregar",
+      "charging": "Cobrando…",
+      "saveAsOrder": "Guardar como pedido",
+      "paymentRequiredHint": "Elige la forma de pago para cobrar."
     },
     "deliverySection": {
       "title": "Forma de entrega",
@@ -445,7 +459,11 @@
       "cancelAdminOnly": "Solo un administrador puede anular ventas.",
       "alreadyCancelled": "La venta ya estaba anulada.",
       "cancelCashRequired": "Abre tu caja para devolver el efectivo de esta venta.",
-      "cancelFailed": "No se pudo anular la venta. Intenta de nuevo."
+      "cancelFailed": "No se pudo anular la venta. Intenta de nuevo.",
+      "paymentMethodRequired": "Elige la forma de pago para cobrar.",
+      "invoiceCustomerRequired": "Para factura elige un cliente con tipo y número de documento.",
+      "documentTypeInvalid": "Elige boleta o factura.",
+      "invoiceMarkFailed": "No se pudo marcar la factura. Intenta de nuevo."
     }
   },
   "customers": {

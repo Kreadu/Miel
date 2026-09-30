@@ -1343,7 +1343,9 @@ export type Database = {
           customer_id: string | null
           delivered_at: string | null
           delivery_method: string | null
+          document_type: string
           id: string
+          invoice_issued_at: string | null
           issued_at: string | null
           note: string | null
           payment_method: string | null
@@ -1367,7 +1369,9 @@ export type Database = {
           customer_id?: string | null
           delivered_at?: string | null
           delivery_method?: string | null
+          document_type?: string
           id?: string
+          invoice_issued_at?: string | null
           issued_at?: string | null
           note?: string | null
           payment_method?: string | null
@@ -1391,7 +1395,9 @@ export type Database = {
           customer_id?: string | null
           delivered_at?: string | null
           delivery_method?: string | null
+          document_type?: string
           id?: string
+          invoice_issued_at?: string | null
           issued_at?: string | null
           note?: string | null
           payment_method?: string | null
@@ -2625,6 +2631,18 @@ export type Database = {
       }
       cancel_purchase: { Args: { p_purchase_id: string }; Returns: undefined }
       cancel_sale: { Args: { p_sale_id: string }; Returns: undefined }
+      checkout_counter_sale: {
+        Args: {
+          p_customer_id: string
+          p_document_type?: string
+          p_items: Json
+          p_note?: string
+          p_payment_method: string
+          p_tenant_id: string
+          p_warehouse_id: string
+        }
+        Returns: string
+      }
       clear_worker_pin: {
         Args: { p_worker_id: string }
         Returns: undefined
@@ -2694,6 +2712,10 @@ export type Database = {
         }
         Returns: string
       }
+      default_sale_warehouse: {
+        Args: { p_tenant_id: string; p_worker_id?: string }
+        Returns: string
+      }
       inventory_history: {
         Args: {
           p_from: string
@@ -2717,6 +2739,7 @@ export type Database = {
         Args: { p_purchase_id: string }
         Returns: undefined
       }
+      mark_invoice_issued: { Args: { p_sale_id: string }; Returns: undefined }
       mark_sale_delivered: { Args: { p_sale_id: string }; Returns: undefined }
       mark_sale_shipped: {
         Args: { p_sale_id: string; p_shipping_address: string }

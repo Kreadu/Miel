@@ -36,3 +36,15 @@ export const saleSchema = z
       }
     }
   });
+
+export const DOCUMENT_TYPES = ["boleta", "factura"] as const;
+
+/** S18-06: venta de mostrador en un paso — exige forma de pago y bodega; cobra el total. */
+export const checkoutSchema = z.object({
+  customer_id: z.uuid("sales.errors.customerInvalid").optional().or(z.literal("")),
+  items: z.array(saleItemSchema).min(1, "sales.errors.itemsRequired"),
+  note: z.string().trim().max(500, "common.errors.noteTooLong").optional().or(z.literal("")),
+  payment_method: z.enum(PAYMENT_METHODS, { error: "sales.errors.paymentMethodRequired" }),
+  warehouse_id: z.uuid("sales.errors.warehouseInvalid"),
+  document_type: z.enum(DOCUMENT_TYPES, { error: "sales.errors.documentTypeInvalid" }).default("boleta"),
+});

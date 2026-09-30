@@ -388,7 +388,11 @@
       "collect": "Encaisser",
       "cancelSale": "Annuler la vente",
       "cancelling": "Annulation…",
-      "cancelConfirm": "Annuler cette vente ? Le stock retourne à l’inventaire et les encaissements sont enregistrés comme remboursement."
+      "cancelConfirm": "Annuler cette vente ? Le stock retourne à l’inventaire et les encaissements sont enregistrés comme remboursement.",
+      "invoicesPending": "Factures à émettre",
+      "invoicesHelp": "Ventes encaissées avec facture. Émettez-les dans votre logiciel de facturation et marquez-les ici.",
+      "markIssued": "Marquer émise",
+      "marking": "Enregistrement…"
     },
     "cart": {
       "title": "Commande créée depuis le catalogue",
@@ -405,9 +409,19 @@
       "counter": "Comptoir / sans client",
       "note": "Note (facultatif)",
       "creating": "Création…",
-      "submit": "Confirmer la commande",
       "clear": "Vider le panier",
-      "keepBrowsing": "Continuer à parcourir le catalogue"
+      "keepBrowsing": "Continuer à parcourir le catalogue",
+      "warehouse": "Sort de",
+      "document": "Justificatif",
+      "documentTypes": {
+        "boleta": "Ticket (boleta)",
+        "factura": "Facture (factura)"
+      },
+      "invoiceHint": "La facture exige un client avec pièce d’identité. Miel la laisse à émettre : émettez-la dans votre logiciel de facturation.",
+      "checkout": "Encaisser et remettre",
+      "charging": "Encaissement…",
+      "saveAsOrder": "Enregistrer comme commande",
+      "paymentRequiredHint": "Choisissez le moyen de paiement pour encaisser."
     },
     "deliverySection": {
       "title": "Mode de livraison",
@@ -445,7 +459,11 @@
       "cancelAdminOnly": "Seul un administrateur peut annuler des ventes.",
       "alreadyCancelled": "La vente était déjà annulée.",
       "cancelCashRequired": "Ouvrez votre caisse pour rembourser les espèces de cette vente.",
-      "cancelFailed": "Impossible d’annuler la vente. Réessayez."
+      "cancelFailed": "Impossible d’annuler la vente. Réessayez.",
+      "paymentMethodRequired": "Choisissez le moyen de paiement pour encaisser.",
+      "invoiceCustomerRequired": "Pour une facture, choisissez un client avec type et numéro de pièce d’identité.",
+      "documentTypeInvalid": "Choisissez ticket ou facture.",
+      "invoiceMarkFailed": "Impossible de marquer la facture. Réessayez."
     }
   },
   "customers": {

@@ -11,6 +11,22 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 10) · S18-06 — cobrar y entregar en un paso + boleta/factura
+
+**Hecho:** ADR-041 (sin Vercel; servidor central; llave IA al instalar). Estudiado el flujo de
+Pedidos (4 pasos, forma de pago pedida dos veces). Spec S18-06 aprobada con decisiones del
+humano: cobro por el total, solo "Retiro en tienda", bodega preseleccionada (la del trabajador o
+la principal) y cambiable, comprobante boleta/factura (factura = cliente identificado, queda "por
+emitir"; DIAN real en S25-01, E25 nueva). Migración `20260930180000_cobrar-y-entregar.sql`
+(3 RPCs + 2 columnas), pgTAP de 24 pruebas, acción `checkoutCounterSale`/`markInvoiceIssued`,
+carrito con "Cobrar y entregar", sección "Facturas por emitir". Verificado: lint ✓, tsc ✓,
+`npm test` 452/452 ✓. **Sin correr:** pgTAP y migración (sin Docker/Supabase CLI), navegador.
+
+**Pendiente del humano:** pegar la migración en el SQL editor del cloud y correr el pgTAP;
+probar en el navegador (abrir caja → catálogo → carrito con Retiro en tienda → Cobrar y entregar).
+
+---
+
 ## Sesión 2026-09-30 (cont. 9) · S20-07 — idiomas, módulo 7 (RRHH y nómina). E20 completa
 
 **Hecho:** S20-06 commiteado (`1ac1a7d`). Spec S20-07 aprobada. Traducidos es/en/fr: portada de

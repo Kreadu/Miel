@@ -172,6 +172,7 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S18-03 | Como dueño quiero que Ventas tenga solo 4 accesos (Clientes, Sucursal, Cuentas por cobrar, Inicio) y que Pedidos/Caja/Punto de Venta queden agrupados dentro de "Sucursal" | `ventas/page.tsx` reducido a 4 links; nueva `ventas/sucursal/page.tsx` con los 3 accesos que salieron de la raíz (mismas URLs, sin cambios internos) | S18-01 | done | specs/done/S18-03-agrupar-sucursal-en-ventas.md |
 | S18-04 | Como dueño quiero que Ventas no tenga botón "Inicio" (ya se vuelve por el logo del sidebar) | `ventas/page.tsx` queda con 3 accesos: Clientes, Sucursal, Cuentas por cobrar | S18-03 | done | specs/done/S18-04-quitar-inicio-de-ventas.md |
 | S18-05 | Como dueño quiero deshacer la agrupación "Sucursal": Pedidos/Caja/POS vuelven a ser accesos directos en Ventas | `ventas/page.tsx` con Pedidos/Caja/POS de vuelta en la raíz (gateados por `sellsPhysical`); se borra `ventas/sucursal/page.tsx` | S18-04, S19-01 | done | specs/done/S18-05-revertir-agrupacion-sucursal.md |
+| S18-06 | Como vendedor quiero cobrar y entregar una venta de mostrador en un solo paso desde el carrito | RPC `checkout_counter_sale` atómica (crear + confirmar + cobrar total + entregar); bodega preseleccionada (la del trabajador o la principal) y cambiable; solo con "Retiro en tienda" | S19-35, S23-01 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S18-06-cobrar-y-entregar.md |
 
 ## Épica E19 — Canal de venta física y/o virtual (combinables)
 
@@ -311,6 +312,12 @@ Producción queda oculta y fuera de alcance.
 equipos— necesita datos distintos y el dueño suele tenerla del proveedor). **Pendiente decidir:**
 (1) quién la ve — hoy solo interno (no hay catálogo público); (2) todos los inventarios o solo
 productos de venta (vehículos/maquinaria también sirven: manual o ficha del equipo).
+
+## Épica E25 — Facturación electrónica DIAN (pedido del humano 2026-09-30, sin fecha)
+
+| ID | Historia | Estado |
+|---|---|---|
+| S25-01 | Emitir factura electrónica y documento equivalente POS validados por la DIAN desde Miel (resolución de numeración, proveedor tecnológico o software propio habilitado, firma, envío y CUFE/CUDE). Reutilizar lo aprendido en la nómina electrónica (S21-05). Mientras no exista, S18-06 deja las facturas "por emitir". | todo |
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración

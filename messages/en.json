@@ -388,7 +388,11 @@
       "collect": "Collect",
       "cancelSale": "Cancel sale",
       "cancelling": "Cancelling…",
-      "cancelConfirm": "Cancel this sale? Stock returns to inventory and payments are recorded as refunds."
+      "cancelConfirm": "Cancel this sale? Stock returns to inventory and payments are recorded as refunds.",
+      "invoicesPending": "Invoices to issue",
+      "invoicesHelp": "Sales paid with an invoice. Issue them in your invoicing system and mark them here.",
+      "markIssued": "Mark issued",
+      "marking": "Marking…"
     },
     "cart": {
       "title": "Order built from the catalog",
@@ -405,9 +409,19 @@
       "counter": "Walk-in / no customer",
       "note": "Note (optional)",
       "creating": "Creating…",
-      "submit": "Confirm order",
       "clear": "Empty cart",
-      "keepBrowsing": "Keep browsing the catalog"
+      "keepBrowsing": "Keep browsing the catalog",
+      "warehouse": "Ships from",
+      "document": "Receipt type",
+      "documentTypes": {
+        "boleta": "Receipt (boleta)",
+        "factura": "Invoice (factura)"
+      },
+      "invoiceHint": "An invoice requires a customer with an ID. Miel leaves it pending: issue it in your invoicing system.",
+      "checkout": "Charge and hand over",
+      "charging": "Charging…",
+      "saveAsOrder": "Save as order",
+      "paymentRequiredHint": "Choose the payment method to charge."
     },
     "deliverySection": {
       "title": "Delivery method",
@@ -445,7 +459,11 @@
       "cancelAdminOnly": "Only an administrator can cancel sales.",
       "alreadyCancelled": "The sale was already cancelled.",
       "cancelCashRequired": "Open your cash register to refund the cash for this sale.",
-      "cancelFailed": "Could not cancel the sale. Try again."
+      "cancelFailed": "Could not cancel the sale. Try again.",
+      "paymentMethodRequired": "Choose the payment method to charge.",
+      "invoiceCustomerRequired": "For an invoice, choose a customer with ID type and number.",
+      "documentTypeInvalid": "Choose receipt or invoice.",
+      "invoiceMarkFailed": "Could not mark the invoice. Try again."
     }
   },
   "customers": {
