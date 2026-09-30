@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, Clock, HandCoins, HeartPulse, Mail, Tags, UserRound } from "lucide-react";
+import { Activity, BriefcaseBusiness, Clock, HandCoins, HeartPulse, Mail, Tags, UserRound } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -50,6 +50,10 @@ export default async function EquipoPage() {
           <Link href="/equipo/categorias" className={LINK_CLASS}>
             <Tags className="mr-2 h-4 w-4" />
             Categorías de trabajador
+          </Link>
+          <Link href="/equipo/uso" className={LINK_CLASS}>
+            <Activity className="mr-2 h-4 w-4" />
+            Control de uso
           </Link>
           <Link href="/equipo/usuarios" className={LINK_CLASS}>
             <Mail className="mr-2 h-4 w-4" />

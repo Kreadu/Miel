@@ -6,7 +6,7 @@ import { deleteWorker, toggleWorkerActive, updateWorker } from "@/actions/worker
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format";
 import { formatDate } from "@/lib/format";
-import { CONTRACT_TYPES, WORKER_TYPES } from "@/lib/rrhh/workers";
+import { COST_CLASSIFICATIONS, CONTRACT_TYPES, WORKER_TYPES } from "@/lib/rrhh/workers";
 
 import { WorkerAccess } from "./worker-access";
 import { type WorkerArea, WorkerFields, type WorkerValues } from "./worker-fields";
@@ -130,6 +130,9 @@ export function WorkerRow({
               : WORKER_TYPES[values.worker_type as keyof typeof WORKER_TYPES],
             pay,
             values.worker_type === "temporal" && values.end_date ? `Hasta ${formatDate(values.end_date)}` : null,
+            values.cost_classification
+              ? COST_CLASSIFICATIONS[values.cost_classification as keyof typeof COST_CLASSIFICATIONS]
+              : null,
             access ? `Entra con ${access}` : null,
           ]
             .filter(Boolean)

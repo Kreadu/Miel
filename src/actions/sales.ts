@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logActivity } from "@/lib/activity/log";
 import { getOrCreateGenericCustomerId } from "@/lib/customers/generic";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -59,7 +60,7 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
   const customerId =
     parsed.data.customer_id || (await getOrCreateGenericCustomerId(supabase, active.tenantId));
 
-  const { error } = await supabase.rpc("create_sale", {
+  const { data: saleId, error } = await supabase.rpc("create_sale", {
     p_tenant_id: active.tenantId,
     p_items: parsed.data.items,
     p_customer_id: customerId || undefined,
@@ -76,6 +77,7 @@ export async function createSale(_prev: SaleState, formData: FormData): Promise<
     return { ok: false, error: mapSaleError(error.message) };
   }
 
+  await logActivity("sale_created", { entityId: saleId ?? undefined });
   revalidatePath(SALES_PATH);
   return { ok: true };
 }
@@ -105,6 +107,7 @@ export async function confirmSale(saleId: string, warehouseId: string): Promise<
     return { ok: false, error: "No se pudo confirmar la venta. Intenta de nuevo." };
   }
 
+  await logActivity("sale_confirmed", { entityId: saleId });
   revalidatePath(SALES_PATH);
   return { ok: true };
 }

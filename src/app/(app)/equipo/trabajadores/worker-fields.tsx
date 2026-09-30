@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CONTRACT_TYPES, DOC_TYPES, WORK_SCHEDULES, WORKER_TYPES } from "@/lib/rrhh/workers";
+import { COST_CLASSIFICATIONS, CONTRACT_TYPES, DOC_TYPES, WORK_SCHEDULES, WORKER_TYPES } from "@/lib/rrhh/workers";
 
 import { WorkerCategoryPicker } from "./category-picker";
 import { PositionPicker } from "./position-picker";
@@ -41,6 +41,7 @@ export type WorkerValues = {
   emergency_phone: string | null;
   warehouse_id: string | null;
   category_id: string | null;
+  cost_classification?: string | null;
   /** S21-03: acceso a Miel (solo lectura aquí; se cambia en "Acceso a Miel"). */
   username?: string | null;
   user_id?: string | null;
@@ -212,7 +213,16 @@ export function WorkerFields({
             <Input id={id("end_date")} name="end_date" type="date" defaultValue={values?.end_date ?? ""} />
           </Field>
         ) : null}
-        <div className="sm:col-span-2">
+        <Field id={id("cost_classification")} label="Su pago es (para finanzas)">
+          <Choice
+            id={id("cost_classification")}
+            name="cost_classification"
+            value={values?.cost_classification ?? ""}
+            none="Sin clasificar"
+            options={toOptions(COST_CLASSIFICATIONS)}
+          />
+        </Field>
+        <div>
           <Field id={id("warehouse_id")} label="Bodega o sucursal donde trabaja">
             <Choice
               id={id("warehouse_id")}

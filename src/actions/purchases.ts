@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logActivity } from "@/lib/activity/log";
 import { createClient } from "@/lib/supabase/server";
 import { purchaseSchema, updatePurchaseSchema } from "@/lib/validation/purchases";
 
@@ -100,6 +101,7 @@ export async function receivePurchase(purchaseId: string, warehouseId: string): 
     return { ok: false, error: mapPurchaseError(error.message) };
   }
 
+  await logActivity("purchase_received", { entityId: parsed.data.purchaseId });
   revalidatePath(PURCHASES_PATH);
   return { ok: true };
 }

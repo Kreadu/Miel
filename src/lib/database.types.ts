@@ -34,6 +34,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          actor_user_id: string
+          created_at: string
+          detail: string | null
+          entity_id: string | null
+          id: string
+          tenant_id: string
+          worker_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string
+          created_at?: string
+          detail?: string | null
+          entity_id?: string | null
+          id?: string
+          tenant_id: string
+          worker_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string
+          created_at?: string
+          detail?: string | null
+          entity_id?: string | null
+          id?: string
+          tenant_id?: string
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cash_sessions: {
         Row: {
           closed_at: string | null
@@ -1942,6 +1983,7 @@ export type Database = {
           arl_risk_class: number | null
           category_id: string | null
           contract_type: string
+          cost_classification: string | null
           created_at: string
           created_by: string
           doc_number: string
@@ -1974,6 +2016,7 @@ export type Database = {
           arl_risk_class?: number | null
           category_id?: string | null
           contract_type?: string
+          cost_classification?: string | null
           created_at?: string
           created_by?: string
           doc_number: string
@@ -2006,6 +2049,7 @@ export type Database = {
           arl_risk_class?: number | null
           category_id?: string | null
           contract_type?: string
+          cost_classification?: string | null
           created_at?: string
           created_by?: string
           doc_number?: string

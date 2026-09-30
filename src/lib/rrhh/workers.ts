@@ -39,5 +39,13 @@ export const WORKER_TYPES = {
   por_horas: "Por horas",
 } as const;
 
+/** S21-04: para finanzas, el pago del trabajador es gasto o costo (de producción/venta), fijo o variable. */
+export const COST_CLASSIFICATIONS = {
+  gasto_fijo: "Gasto fijo",
+  gasto_variable: "Gasto variable",
+  costo_fijo: "Costo fijo",
+  costo_variable: "Costo variable",
+} as const;
+
 export const keysOf = <T extends Record<string, string>>(o: T) =>
   Object.keys(o) as [keyof T & string, ...(keyof T & string)[]];

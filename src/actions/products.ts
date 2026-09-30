@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logActivity } from "@/lib/activity/log";
 import { ASSET_FIELDS, inventoryById, resolveKind } from "@/lib/inventories";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -108,11 +109,14 @@ async function saveStockLevels(
   levels: { warehouse_id: string; qty: number }[],
 ): Promise<boolean> {
   if (levels.length === 0) return true;
-  const { error } = await supabase.rpc("set_product_stock", {
+  const { data: changed, error } = await supabase.rpc("set_product_stock", {
     p_product_id: productId,
     p_levels: levels,
   });
   if (error) console.error("saveStockLevels:", error.code, error.message);
+  else if (changed) {
+    await logActivity("stock_adjusted", { entityId: productId, detail: `${changed} bodega(s) ajustada(s)` });
+  }
   return !error;
 }
 

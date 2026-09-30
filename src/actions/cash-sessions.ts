@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logActivity } from "@/lib/activity/log";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { closeCashSessionSchema, openCashSessionSchema } from "@/lib/validation/cash-sessions";
@@ -41,6 +42,7 @@ export async function openCashSession(
     return { ok: false, error: mapCashSessionError(error.message) };
   }
 
+  await logActivity("cash_opened", { detail: `Base ${parsed.data.opening_amount}` });
   revalidatePath(CASH_PATH);
   return { ok: true };
 }
@@ -64,6 +66,7 @@ export async function closeCashSession(
     return { ok: false, error: mapCashSessionError(error.message) };
   }
 
+  await logActivity("cash_closed", { detail: `Contado ${parsed.data.counted_amount}` });
   revalidatePath(CASH_PATH);
   return { ok: true };
 }

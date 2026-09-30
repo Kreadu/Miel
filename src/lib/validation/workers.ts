@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  COST_CLASSIFICATIONS,
   CONTRACT_TYPES,
   DOC_TYPES,
   WORK_SCHEDULES,
@@ -61,6 +62,11 @@ export const workerSchema = z.object({
     .optional()
     .transform((v) => v || null),
   address: optionalText(200),
+  // S21-04: su pago es gasto o costo, fijo o variable (para finanzas).
+  cost_classification: z
+    .union([z.literal(""), z.enum(keysOf(COST_CLASSIFICATIONS))])
+    .optional()
+    .transform((v) => v || null),
   emergency_contact_name: optionalText(120),
   emergency_phone: optionalText(30),
   warehouse_id: z.uuid().optional().or(z.literal("")),

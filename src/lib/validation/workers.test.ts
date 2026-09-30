@@ -66,10 +66,20 @@ describe("workerSchema (S21-02)", () => {
   });
 });
 
+describe("clasificación de costo del trabajador (S21-04)", () => {
+  const base = { full_name: "Ana", doc_number: "1" };
+  it("acepta gasto o costo, fijo o variable; vacío → null", () => {
+    const r = workerSchema.safeParse({ ...base, cost_classification: "costo_variable" });
+    expect(r.success && r.data.cost_classification).toBe("costo_variable");
+    const empty = workerSchema.safeParse({ ...base, cost_classification: "" });
+    expect(empty.success && empty.data.cost_classification).toBeNull();
+    expect(workerSchema.safeParse({ ...base, cost_classification: "inversion" }).success).toBe(false);
+  });
+});
+
 describe("workerPositionSchema (S21-02c)", () => {
   it("acepta un cargo y rechaza vacío", () => {
     expect(workerPositionSchema.safeParse({ name: "Cajero" }).success).toBe(true);
     expect(workerPositionSchema.safeParse({ name: " " }).success).toBe(false);
   });
 });
-

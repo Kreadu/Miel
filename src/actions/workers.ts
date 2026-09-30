@@ -200,6 +200,7 @@ const WORKER_FIELDS = [
   "address",
   "emergency_contact_name",
   "emergency_phone",
+  "cost_classification",
   "warehouse_id",
   "category_id",
 ] as const;
@@ -235,6 +236,7 @@ function toColumns(d: z.infer<typeof workerSchema>) {
     address: d.address,
     emergency_contact_name: d.emergency_contact_name,
     emergency_phone: d.emergency_phone,
+    cost_classification: d.cost_classification,
     warehouse_id: d.warehouse_id || null,
     category_id: d.category_id || null,
   };

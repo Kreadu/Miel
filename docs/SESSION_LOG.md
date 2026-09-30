@@ -11,6 +11,16 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-29 (cont. 19) · S21-04 — control de uso + clasificación de costo
+
+**Hecho:** migración `20260929205403`; `logActivity` en pedido, boleta, cobro, abrir/cerrar caja,
+compra recibida y ajuste de stock; `/equipo/uso`; "Su pago es" en la ficha del trabajador.
+Verificado: lint ✓, tsc ✓, tests ✓, build ✓. Sin correr: pgTAP, navegador.
+
+**Pendiente:** humano pega la migración; commit + push.
+
+---
+
 ## Sesión 2026-09-29 (cont. 18) · S21-03 — acceso de trabajadores (correo + modo tienda)
 
 **Hecho:** el humano eligió correo + modo tienda con código (sin tocar `auth.users`). Migración

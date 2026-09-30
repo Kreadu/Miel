@@ -26,7 +26,7 @@ export async function WorkersView({ area, title }: { area: WorkerArea; title: st
       supabase
         .from("workers")
         .select(
-          "id, active, full_name, doc_type, doc_number, position_id, hire_date, worker_type, end_date, hourly_rate, contract_type, salary, work_schedule, eps, pension_fund, arl_risk_class, phone, email, address, emergency_contact_name, emergency_phone, warehouse_id, category_id, username, user_id",
+          "id, active, full_name, doc_type, doc_number, position_id, hire_date, worker_type, end_date, hourly_rate, contract_type, salary, work_schedule, eps, pension_fund, arl_risk_class, phone, email, address, emergency_contact_name, emergency_phone, warehouse_id, category_id, username, user_id, cost_classification",
         )
         .in("worker_type", AREA_TYPES[area])
         .order("active", { ascending: false })

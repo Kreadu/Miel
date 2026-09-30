@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logActivity } from "@/lib/activity/log";
 import { createClient } from "@/lib/supabase/server";
 import { customerPaymentSchema } from "@/lib/validation/customer-payments";
 
@@ -43,6 +44,10 @@ export async function registerCustomerPayment(
     return { ok: false, error: mapCustomerPaymentError(error.message) };
   }
 
+  await logActivity("payment_registered", {
+    entityId: parsed.data.sale_id || undefined,
+    detail: `${parsed.data.amount} (${parsed.data.method})`,
+  });
   revalidatePath(SALES_PATH);
   return { ok: true };
 }

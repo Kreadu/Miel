@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logActivity } from "@/lib/activity/log";
 import { createClient } from "@/lib/supabase/server";
 import { stockMovementSchema } from "@/lib/validation/stock";
 
@@ -39,6 +40,7 @@ export async function registerManualMovement(
     return { ok: false, error: "Error al registrar el movimiento. Intenta de nuevo." };
   }
 
+  await logActivity("stock_adjusted", { entityId: parsed.data.product_id, detail: `${parsed.data.kind} ${parsed.data.qty}` });
   revalidatePath(STOCK_PATH);
   return { ok: true };
 }
