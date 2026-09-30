@@ -11,7 +11,7 @@ const optionalText = (max: number) =>
   z
     .string()
     .trim()
-    .max(max, "Texto muy largo")
+    .max(max, "common.errors.textTooLong")
     .optional()
     .transform((v) => v || null);
 
@@ -20,28 +20,28 @@ const optionalText = (max: number) =>
  * genera solo. El stock no se carga acá: viene de los movimientos de cada bodega o sucursal.
  */
 export const productSchema = z.object({
-  sku: z.string().trim().max(60, "SKU muy largo").optional(),
-  name: z.string().trim().min(1, "El nombre es obligatorio").max(120, "Nombre muy largo"),
-  description: z.string().trim().max(500, "Descripción muy larga").optional(),
-  unit: z.string().trim().min(1, "La unidad es obligatoria").max(30, "Unidad muy larga"),
+  sku: z.string().trim().max(60, "products.errors.skuTooLong").optional(),
+  name: z.string().trim().min(1, "common.errors.nameRequired").max(120, "common.errors.nameTooLong"),
+  description: z.string().trim().max(500, "products.errors.descriptionTooLong").optional(),
+  unit: z.string().trim().min(1, "products.errors.unitRequired").max(30, "products.errors.unitTooLong"),
   kind: z.enum(PRODUCT_KINDS),
-  cost: z.coerce.number().nonnegative("El costo no puede ser negativo"),
-  price: z.coerce.number().nonnegative("El precio no puede ser negativo"),
+  cost: z.coerce.number().nonnegative("products.errors.costNegative"),
+  price: z.coerce.number().nonnegative("products.errors.priceNegative"),
   tax_rate: z.coerce
     .number()
-    .min(0, "El IVA debe estar entre 0 y 100")
-    .max(100, "El IVA debe estar entre 0 y 100"),
+    .min(0, "products.errors.taxRange")
+    .max(100, "products.errors.taxRange"),
   // S19-32: se edita solo en Inventario; en Vender no viene en el form y no se toca.
-  min_stock: z.coerce.number().nonnegative("El stock mínimo no puede ser negativo").optional(),
+  min_stock: z.coerce.number().nonnegative("products.errors.minStockNegative").optional(),
   discount_percent: z.coerce
     .number()
-    .min(0, "El descuento debe estar entre 0 y 100")
-    .max(100, "El descuento debe estar entre 0 y 100")
+    .min(0, "products.errors.discountRange")
+    .max(100, "products.errors.discountRange")
     .default(0),
   sales_channel: z.enum(SALES_CHANNELS).default("both"),
-  category_id: z.uuid("Categoría inválida").optional().or(z.literal("")),
+  category_id: z.uuid("catalog.errors.categoryInvalid").optional().or(z.literal("")),
   // S19-35: peso en kg, para cotizar el envío por transporte.
-  weight_kg: z.coerce.number().nonnegative("El peso no puede ser negativo").optional(),
+  weight_kg: z.coerce.number().nonnegative("products.errors.weightNegative").optional(),
   // S19-26: inventario al que pertenece + datos de vehículos/mobiliario/herramientas.
   inventory: z.enum(INVENTORY_IDS).default("productos"),
   plate: optionalText(20),
@@ -50,11 +50,11 @@ export const productSchema = z.object({
   color: optionalText(40),
   serial_number: optionalText(80),
   vehicle_year: z
-    .union([z.literal(""), z.coerce.number().int("Año inválido").min(1900, "Año inválido").max(2100, "Año inválido")])
+    .union([z.literal(""), z.coerce.number().int("products.errors.yearInvalid").min(1900, "products.errors.yearInvalid").max(2100, "products.errors.yearInvalid")])
     .optional()
     .transform((v) => (v === "" || v === undefined ? null : v)),
   purchase_date: z
-    .union([z.literal(""), z.iso.date("Fecha de compra inválida")])
+    .union([z.literal(""), z.iso.date("products.errors.purchaseDateInvalid")])
     .optional()
     .transform((v) => v || null),
 });
@@ -62,7 +62,7 @@ export const productSchema = z.object({
 /** S19-32: cantidad objetivo por bodega o sucursal (campos `stock__<warehouseId>` del form). */
 export const stockLevelsSchema = z.array(
   z.object({
-    warehouse_id: z.uuid("Bodega o sucursal inválida"),
-    qty: z.coerce.number().nonnegative("El stock no puede ser negativo"),
+    warehouse_id: z.uuid("stock.errors.warehouseInvalid"),
+    qty: z.coerce.number().nonnegative("products.errors.stockNegative"),
   }),
 );

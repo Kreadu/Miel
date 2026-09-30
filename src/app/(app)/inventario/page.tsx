@@ -11,11 +11,16 @@ import {
   Warehouse,
   Wrench,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
 import { INVENTORIES, type InventoryId, inventoryPath } from "@/lib/inventories";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
-export const metadata = { title: "Inventario · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("inventory");
+  return { title: `${t("title")} · Miel` };
+}
 
 const INVENTORY_ICON: Record<InventoryId, typeof PackageOpen> = {
   productos: PackageOpen,
@@ -30,6 +35,7 @@ const INVENTORY_ICON: Record<InventoryId, typeof PackageOpen> = {
 export default async function InventarioPage() {
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations("inventory");
 
   const supabase = await createClient();
   // S19-34: la tabla de stock se mudó al "Historial" de cada inventario.
@@ -52,9 +58,9 @@ export default async function InventarioPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Inventario</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Entra a cada inventario para crear, editar o eliminar lo que tienes.
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -64,7 +70,7 @@ export default async function InventarioPage() {
               className="inline-flex h-9 items-center justify-center rounded-md bg-destructive/10 px-4 text-sm font-medium text-destructive shadow-sm hover:bg-destructive/20"
             >
               <AlertTriangle className="mr-2 h-4 w-4" />
-              Alertas stock mínimo ({alertProductIds.size})
+              {t("alertsCount", { count: alertProductIds.size })}
             </Link>
           ) : (
             <Link
@@ -72,7 +78,7 @@ export default async function InventarioPage() {
               className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
             >
               <AlertTriangle className="mr-2 h-4 w-4" />
-              Alertas stock mínimo
+              {t("alerts")}
             </Link>
           )}
           <Link
@@ -80,7 +86,7 @@ export default async function InventarioPage() {
             className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
           >
             <Warehouse className="mr-2 h-4 w-4" />
-            Bodegas o sucursales
+            {t("warehouses")}
           </Link>
         </div>
       </div>
@@ -101,9 +107,9 @@ export default async function InventarioPage() {
             >
               <Icon className="size-5 shrink-0" />
               <div className="flex min-w-0 flex-col">
-                <span className="text-sm font-medium">{inv.title}</span>
+                <span className="text-sm font-medium">{t(`types.${inv.id}.title`)}</span>
                 <span className={`text-xs ${i === 0 ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                  {countByInventory.get(inv.id) ?? 0} ítems
+                  {t("items", { count: countByInventory.get(inv.id) ?? 0 })}
                 </span>
               </div>
             </Link>

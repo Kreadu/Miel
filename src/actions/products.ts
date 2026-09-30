@@ -25,11 +25,11 @@ function revalidateProductPaths() {
 }
 
 function mapProductError(code: string | undefined, message?: string): string {
-  if (code === "23505") return "Ya existe un producto con ese SKU.";
+  if (code === "23505") return "products.errors.duplicateSku";
   if (message?.includes("category_inventory_mismatch")) {
-    return "Esa categoría es de otro inventario. Elige una de este inventario.";
+    return "products.errors.categoryMismatch";
   }
-  return "No se pudo guardar el producto. Intenta de nuevo.";
+  return "products.errors.saveFailed";
 }
 
 /** SKU vacío en el formulario → se genera solo (el humano puede escribir el suyo). */
@@ -138,10 +138,10 @@ async function uploadPhotoIfPresent(
   if (!(photo instanceof File) || photo.size === 0) return { ok: true, url: null };
 
   if (!ALLOWED_PHOTO_TYPES.includes(photo.type as (typeof ALLOWED_PHOTO_TYPES)[number])) {
-    return { ok: false, error: "La foto debe ser JPG, PNG o WEBP." };
+    return { ok: false, error: "products.errors.photoType" };
   }
   if (photo.size > MAX_PHOTO_BYTES) {
-    return { ok: false, error: "La foto no puede pesar más de 5 MB." };
+    return { ok: false, error: "products.errors.photoSize" };
   }
 
   const path = `${tenantId}/${crypto.randomUUID()}.${extensionFor(photo.type)}`;
@@ -150,7 +150,7 @@ async function uploadPhotoIfPresent(
     .upload(path, photo, { contentType: photo.type });
   if (error) {
     console.error("uploadPhotoIfPresent:", error.message);
-    return { ok: false, error: "No se pudo subir la foto. Intenta de nuevo." };
+    return { ok: false, error: "products.errors.photoUpload" };
   }
 
   return { ok: true, url: supabase.storage.from("product-photos").getPublicUrl(path).data.publicUrl };
@@ -170,7 +170,7 @@ export async function createProduct(
   if (!levels.success) return { ok: false, error: levels.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
@@ -207,7 +207,7 @@ export async function updateProduct(
   if (!levels.success) return { ok: false, error: levels.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const upload = await uploadPhotoIfPresent(supabase, active.tenantId, formData);
@@ -228,7 +228,7 @@ export async function updateProduct(
   if (!stockSaved) {
     return {
       ok: false,
-      error: "Se guardó el producto, pero no se pudo actualizar el stock. Intenta de nuevo.",
+      error: "products.errors.stockUpdateFailed",
     };
   }
   return { ok: true };

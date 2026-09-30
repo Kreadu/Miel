@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, Plus } from "lucide-react";
@@ -41,6 +42,7 @@ export function RecipeForm({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const t = useTranslations();
 
   const handleAdd = () => {
     setItems([...items, { component_product_id: "", qty: 1 }]);
@@ -61,14 +63,14 @@ export function RecipeForm({
     setError(null);
     
     if (items.some((i) => !i.component_product_id)) {
-      setError("Por favor selecciona un insumo en todas las filas.");
+      setError("recipes.errors.selectAll");
       return;
     }
 
     startTransition(async () => {
       const result = await saveRecipe(productId, items);
       if (!result.success) {
-        setError(result.message || "Error al guardar la receta");
+        setError(result.message || "recipes.errors.saveFailed");
       } else {
         router.push("/inventario/productos");
       }
@@ -80,14 +82,14 @@ export function RecipeForm({
       <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-xs">
         {items.length === 0 ? (
           <div className="p-8 text-center text-sm text-muted-foreground">
-            No hay insumos en esta receta. Haz clic en &quot;Añadir insumo&quot; para empezar.
+            {t("recipes.empty")}
           </div>
         ) : (
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
-                <th className="px-4 py-3 font-medium">Insumo</th>
-                <th className="px-4 py-3 font-medium text-right w-40">Cantidad</th>
+                <th className="px-4 py-3 font-medium">{t("recipes.component")}</th>
+                <th className="px-4 py-3 font-medium text-right w-40">{t("recipes.qty")}</th>
                 <th className="px-4 py-3 w-16"></th>
               </tr>
             </thead>
@@ -102,7 +104,7 @@ export function RecipeForm({
                         onValueChange={(val) => handleChange(idx, "component_product_id", val)}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar insumo..." />
+                          <SelectValue placeholder={t("recipes.componentPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           {availableComponents.map((c) => (
@@ -151,13 +153,13 @@ export function RecipeForm({
       <div className="flex items-center justify-between">
         <Button type="button" variant="outline" onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
-          Añadir insumo
+          {t("recipes.add")}
         </Button>
 
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          {error && <span className="text-sm text-destructive mr-2">{error}</span>}
+          {error && <span className="text-sm text-destructive mr-2">{t(error)}</span>}
           <Button type="submit" disabled={pending}>
-            {pending ? "Guardando..." : "Guardar receta"}
+            {pending ? t("recipes.saving") : t("recipes.save")}
           </Button>
         </div>
       </div>

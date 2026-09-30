@@ -5,7 +5,7 @@ const optionalText = (max: number) =>
   z
     .string()
     .trim()
-    .max(max, "Texto muy largo")
+    .max(max, "common.errors.textTooLong")
     .optional()
     .transform((v) => v || null);
 
@@ -20,7 +20,7 @@ export const WAREHOUSE_DETAIL_FIELDS = [
 ] as const;
 
 export const warehouseSchema = z.object({
-  name: z.string().trim().min(1, "El nombre es obligatorio").max(120, "Nombre muy largo"),
+  name: z.string().trim().min(1, "common.errors.nameRequired").max(120, "common.errors.nameTooLong"),
   // S19-18: ubicación y contacto de la bodega o sucursal (todos opcionales).
   address: optionalText(200),
   department: optionalText(80),

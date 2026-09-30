@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { inventoryBySlug } from "@/lib/inventories";
 
@@ -27,5 +28,7 @@ export default async function InventarioTipoPage({
 
 export async function generateMetadata({ params }: { params: Promise<{ inventario: string }> }) {
   const { inventario } = await params;
-  return { title: `${inventoryBySlug(inventario)?.title ?? "Inventario"} · Miel` };
+  const t = await getTranslations("inventory");
+  const inv = inventoryBySlug(inventario);
+  return { title: `${inv ? t(`types.${inv.id}.title`) : t("title")} · Miel` };
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
@@ -8,7 +9,10 @@ import { Button } from "@/components/ui/button";
 
 import { RecipeForm } from "./recipe-form";
 
-export const metadata = { title: "Receta · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("catalog");
+  return { title: `${t("recipe")} · Miel` };
+}
 
 interface RecetaPageProps {
   params: Promise<{ id: string }>;
@@ -29,6 +33,7 @@ export default async function RecetaPage({ params }: RecetaPageProps) {
     .single();
 
   if (!product || product.kind !== "finished") notFound();
+  const t = await getTranslations("recipes");
 
   // 2. Get recipe items
   const { data: recipeItems } = await supabase
@@ -50,10 +55,10 @@ export default async function RecetaPage({ params }: RecetaPageProps) {
         <Button asChild variant="ghost" size="sm" className="-ml-2 mb-2 text-muted-foreground hover:text-foreground">
           <Link href="/inventario/productos">
             <ChevronLeft className="mr-1 h-4 w-4" />
-            Volver a productos
+            {t("back")}
           </Link>
         </Button>
-        <h1 className="text-xl font-semibold tracking-tight">Receta: {product.name}</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title", { name: product.name ?? "" })}</h1>
         <p className="text-sm text-muted-foreground">{active.tenantName}</p>
       </div>
 

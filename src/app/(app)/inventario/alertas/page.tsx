@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { INVENTORIES, inventoryBySlug } from "@/lib/inventories";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { type AlertItem, AlertsList } from "./alerts-list";
 
-export const metadata = { title: "Alertas stock mínimo · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("inventory");
+  return { title: `${t("alerts")} · Miel` };
+}
 
 export default async function AlertasStockPage({
   searchParams,
@@ -16,6 +20,7 @@ export default async function AlertasStockPage({
 }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations("inventory");
   // S19-29: un botón por inventario; dentro, solo sus ítems bajo el mínimo.
   const { inventario } = await searchParams;
   const selected = inventario ? inventoryBySlug(inventario) : undefined;
@@ -63,7 +68,7 @@ export default async function AlertasStockPage({
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-destructive flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Alertas stock mínimo
+            {t("alerts")}
           </h1>
           <p className="text-sm text-muted-foreground">{active.tenantName}</p>
         </div>
@@ -73,7 +78,7 @@ export default async function AlertasStockPage({
             className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a Inventario
+            {t("alertsPage.back")}
           </Link>
         </div>
       </div>
@@ -90,7 +95,7 @@ export default async function AlertasStockPage({
                 isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-muted/50"
               }`}
             >
-              <span className="font-medium">{inv.title}</span>
+              <span className="font-medium">{t(`types.${inv.id}.title`)}</span>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs tabular-nums ${
                   count > 0 ? "bg-destructive text-destructive-foreground" : "bg-muted text-muted-foreground"
@@ -105,15 +110,13 @@ export default async function AlertasStockPage({
 
       {!selected ? (
         <p className="rounded-lg border border-dashed border-border bg-muted/20 p-8 text-center text-sm text-muted-foreground">
-          {allAlerts.length > 0
-            ? "Elige un inventario para ver lo que está bajo su stock mínimo y crear la orden de compra."
-            : "Nada llegó a su stock mínimo en ningún inventario. Todo está en orden."}
+          {allAlerts.length > 0 ? t("alertsPage.chooseInventory") : t("alertsPage.allGood")}
         </p>
       ) : alertList.length > 0 ? (
         <AlertsList key={selected.id} items={alertList} canManage={active.role !== "member"} />
       ) : (
         <p className="rounded-lg border border-dashed border-border bg-muted/20 p-8 text-center text-sm text-muted-foreground">
-          Nada en {selected.title} está bajo su stock mínimo.
+          {t("alertsPage.noneIn", { inventory: t(`types.${selected.id}.title`) })}
         </p>
       )}
     </div>

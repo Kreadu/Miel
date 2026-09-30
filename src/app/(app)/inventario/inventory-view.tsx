@@ -32,6 +32,8 @@ export async function InventoryView({
   const { active } = await getActiveTenant();
   if (!active) notFound();
   const t = await getTranslations("catalog");
+  const ti = await getTranslations("inventory");
+  const addLabel = ti(`types.${inventory.id}.add`);
 
   const canManage = active.role !== "member";
 
@@ -54,7 +56,7 @@ export async function InventoryView({
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">{inventory.title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{ti(`types.${inventory.id}.title`)}</h1>
           <p className="text-sm text-muted-foreground">{active.tenantName}</p>
         </div>
         {canManage ? (
@@ -68,7 +70,7 @@ export async function InventoryView({
               mode="inventory"
               warehouses={warehouses}
               inventory={inventory.id}
-              label={inventory.addLabel}
+              label={addLabel}
               categories={categories}
             />
           </div>
@@ -103,8 +105,8 @@ export async function InventoryView({
           {categoria
             ? t("emptyCategory")
             : canManage
-              ? `Aún no hay nada en este inventario. Usa "${inventory.addLabel}".`
-              : "Aún no hay nada en este inventario."}
+              ? ti("emptyManage", { add: addLabel })
+              : ti("emptyPublic")}
         </p>
       )}
 

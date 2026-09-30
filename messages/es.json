@@ -93,8 +93,15 @@
       "currencyUnsupported": "Moneda no soportada.",
       "rateFailed": "No se pudo obtener la tasa de cambio.",
       "currencyUnavailable": "Moneda no disponible.",
-      "rateOffline": "No se pudo obtener la tasa de cambio. Revisa tu conexión."
-    }
+      "rateOffline": "No se pudo obtener la tasa de cambio. Revisa tu conexión.",
+      "duplicateCategory": "Ya existe una categoría con ese nombre en este inventario.",
+      "inventoryInvalid": "Inventario inválido.",
+      "createCategoryFailed": "No se pudo crear la categoría. Intenta de nuevo.",
+      "categoryInvalid": "Categoría inválida.",
+      "renameFailed": "No se pudo renombrar la categoría. Intenta de nuevo.",
+      "deleteFailed": "No se pudo eliminar la categoría. Intenta de nuevo."
+    },
+    "deleteConfirm": "¿Eliminar «{name}»?"
   },
   "common": {
     "backHome": "Volver al inicio",
@@ -108,7 +115,9 @@
       "permissionDenied": "No tienes permiso para esta operación.",
       "noteTooLong": "Nota muy larga",
       "nameTooLong": "Nombre muy largo",
-      "unknown": "Error desconocido"
+      "unknown": "Error desconocido",
+      "textTooLong": "Texto muy largo",
+      "nameRequired": "El nombre es obligatorio"
     },
     "toggleTheme": "Cambiar tema"
   },
@@ -607,6 +616,218 @@
       "saveFailed": "No se pudo guardar el transporte. Intenta de nuevo.",
       "nameRequired": "El nombre es obligatorio",
       "amountNegative": "Los valores no pueden ser negativos"
+    }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "subtitle": "Entra a cada inventario para crear, editar o eliminar lo que tienes.",
+    "alerts": "Alertas stock mínimo",
+    "alertsCount": "Alertas stock mínimo ({count})",
+    "warehouses": "Bodegas o sucursales",
+    "items": "{count} ítems",
+    "types": {
+      "productos": {
+        "title": "Inventario de productos",
+        "add": "Generar producto"
+      },
+      "materias_primas": {
+        "title": "Inventario de materias primas",
+        "add": "Agregar materia prima"
+      },
+      "articulos_oficina": {
+        "title": "Inventario de artículos de oficina",
+        "add": "Agregar artículo de oficina"
+      },
+      "mobiliario": {
+        "title": "Inventario de mobiliario y equipos",
+        "add": "Agregar mobiliario o equipo"
+      },
+      "vehiculos": {
+        "title": "Inventario de vehículos",
+        "add": "Agregar vehículo"
+      },
+      "herramientas": {
+        "title": "Inventario de herramientas y maquinaria",
+        "add": "Agregar herramienta o máquina"
+      },
+      "aseo": {
+        "title": "Inventario de aseo y limpieza",
+        "add": "Agregar artículo de aseo"
+      }
+    },
+    "emptyManage": "Aún no hay nada en este inventario. Usa «{add}».",
+    "emptyPublic": "Aún no hay nada en este inventario.",
+    "archived": "Eliminados",
+    "reactivate": "Reactivar",
+    "history": {
+      "open": "Historial",
+      "title": "Historial",
+      "close": "Cerrar",
+      "from": "Desde",
+      "to": "Hasta",
+      "warehouse": "Bodega o sucursal",
+      "all": "Todas",
+      "view": "Ver",
+      "code": "Código",
+      "product": "Producto",
+      "stock": "Stock",
+      "cost": "Coste",
+      "markup": "% de venta",
+      "saleValue": "Valor venta",
+      "viewKardex": "Ver kardex",
+      "totalSaleValue": "Total valor venta",
+      "empty": "No hubo movimientos en ese rango de fechas."
+    },
+    "alertsPage": {
+      "back": "Volver a Inventario",
+      "chooseInventory": "Elige un inventario para ver lo que está bajo su stock mínimo y crear la orden de compra.",
+      "allGood": "Nada llegó a su stock mínimo en ningún inventario. Todo está en orden.",
+      "noneIn": "Nada en {inventory} está bajo su stock mínimo.",
+      "addAll": "Agregar todos",
+      "createPurchase": "Crear orden de compra ({count})",
+      "noPhoto": "Sin foto",
+      "ofMinimum": "de mínimo {min} {unit}",
+      "added": "Agregado ✓ (quitar)",
+      "addToPurchase": "Agregar a orden de compra"
+    },
+    "kardex": {
+      "title": "Kardex histórico",
+      "unknownWarehouse": "Bodega o sucursal desconocida",
+      "movement": "Movimiento",
+      "transaction": "Transacción",
+      "balance": "Saldo acumulado",
+      "date": "Fecha",
+      "type": "Tipo",
+      "ref": "Ref",
+      "qty": "Cant.",
+      "unitCost": "C. unit.",
+      "total": "Total",
+      "avgCost": "Costo prom.",
+      "totalValue": "Valor total",
+      "manual": "Manual",
+      "empty": "No hay movimientos registrados para este producto en esta bodega o sucursal.",
+      "kind": {
+        "in": "Entrada",
+        "out": "Salida",
+        "adjust": "Ajuste",
+        "production_in": "Prod. entrada",
+        "production_out": "Prod. salida"
+      }
+    }
+  },
+  "stock": {
+    "open": "+ Registrar movimiento de stock",
+    "title": "Registrar movimiento de stock",
+    "help": "Para un producto que ya existe. Si aún no lo creaste, hazlo en Productos.",
+    "product": "Producto",
+    "productPlaceholder": "Selecciona un producto",
+    "warehouse": "Bodega o sucursal",
+    "warehousePlaceholder": "Selecciona una bodega o sucursal",
+    "kind": "Tipo de movimiento",
+    "kinds": {
+      "in": "Entrada",
+      "out": "Salida",
+      "adjust": "Ajuste"
+    },
+    "qty": {
+      "in": "Cantidad (entrada)",
+      "out": "Cantidad (salida)",
+      "adjust": "Cantidad (ajuste +/-)"
+    },
+    "negativeHint": "Usa un número negativo para descontar.",
+    "unitCost": "Costo unitario",
+    "saving": "Guardando…",
+    "save": "Guardar movimiento",
+    "errors": {
+      "insufficient": "No hay stock suficiente en esa bodega o sucursal.",
+      "permissionDenied": "No tienes permiso sobre este producto o esta bodega o sucursal.",
+      "failed": "Error al registrar el movimiento. Intenta de nuevo.",
+      "productInvalid": "Selecciona un producto válido.",
+      "warehouseInvalid": "Selecciona una bodega o sucursal válida.",
+      "kindInvalid": "Tipo de movimiento inválido.",
+      "qtyZero": "La cantidad no puede ser cero.",
+      "qtyPositive": "La cantidad debe ser positiva para este tipo de movimiento."
+    }
+  },
+  "warehouses": {
+    "title": "Bodegas o sucursales",
+    "others": "Otras bodegas o sucursales",
+    "emptyManage": "Aún no tienes otras bodegas o sucursales. Crea una con el botón de arriba.",
+    "emptyPublic": "No hay otras bodegas o sucursales registradas.",
+    "principalTitle": "Bodega o sucursal principal",
+    "principal": "Principal",
+    "saving": "Guardando…",
+    "saveChanges": "Guardar cambios",
+    "saved": "Guardado.",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "add": "+ Crear bodega o sucursal",
+    "new": "Nueva bodega o sucursal",
+    "creating": "Creando…",
+    "create": "Crear bodega o sucursal",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "reactivate": "Reactivar",
+    "deleted": "Eliminada",
+    "deleteConfirm": "¿Eliminar «{name}»?",
+    "name": "Nombre de la bodega o sucursal",
+    "fields": {
+      "address": "Dirección",
+      "department": "Departamento",
+      "city": "Ciudad",
+      "country": "País",
+      "postal_code": "Código postal",
+      "phone": "Teléfono",
+      "whatsapp": "WhatsApp"
+    },
+    "tel": "Tel. {phone}",
+    "errors": {
+      "createFailed": "No se pudo crear la bodega o sucursal. Intenta de nuevo.",
+      "updateFailed": "No se pudo actualizar la bodega o sucursal. Intenta de nuevo."
+    }
+  },
+  "recipes": {
+    "title": "Receta: {name}",
+    "back": "Volver a productos",
+    "empty": "No hay insumos en esta receta. Haz clic en «Añadir insumo» para empezar.",
+    "component": "Insumo",
+    "qty": "Cantidad",
+    "componentPlaceholder": "Seleccionar insumo...",
+    "add": "Añadir insumo",
+    "saving": "Guardando…",
+    "save": "Guardar receta",
+    "errors": {
+      "selectAll": "Selecciona un insumo en todas las filas.",
+      "checkData": "Por favor revisa los datos.",
+      "saveFailed": "Error al guardar la receta. Intenta de nuevo.",
+      "notFinished": "Solo los productos terminados pueden tener receta.",
+      "qtyPositive": "Las cantidades deben ser mayores a cero.",
+      "tenantMismatch": "Todos los componentes deben pertenecer a tu empresa.",
+      "componentsRequired": "La receta debe tener al menos un componente."
+    }
+  },
+  "products": {
+    "errors": {
+      "duplicateSku": "Ya existe un producto con ese SKU.",
+      "categoryMismatch": "Esa categoría es de otro inventario. Elige una de este inventario.",
+      "saveFailed": "No se pudo guardar el producto. Intenta de nuevo.",
+      "photoType": "La foto debe ser JPG, PNG o WEBP.",
+      "photoSize": "La foto no puede pesar más de 5 MB.",
+      "photoUpload": "No se pudo subir la foto. Intenta de nuevo.",
+      "stockUpdateFailed": "Se guardó el producto, pero no se pudo actualizar el stock. Intenta de nuevo.",
+      "skuTooLong": "SKU muy largo",
+      "descriptionTooLong": "Descripción muy larga",
+      "unitRequired": "La unidad es obligatoria",
+      "unitTooLong": "Unidad muy larga",
+      "costNegative": "El costo no puede ser negativo",
+      "priceNegative": "El precio no puede ser negativo",
+      "taxRange": "El IVA debe estar entre 0 y 100",
+      "minStockNegative": "El stock mínimo no puede ser negativo",
+      "discountRange": "El descuento debe estar entre 0 y 100",
+      "weightNegative": "El peso no puede ser negativo",
+      "yearInvalid": "Año inválido",
+      "purchaseDateInvalid": "Fecha de compra inválida",
+      "stockNegative": "El stock no puede ser negativo"
     }
   }
 }

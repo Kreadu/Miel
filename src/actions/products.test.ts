@@ -159,7 +159,7 @@ describe("createProduct — formulario único (S19-24)", () => {
 
     expect(await createProduct(null, formData(baseFields))).toEqual({
       ok: false,
-      error: "Ya existe un producto con ese SKU.",
+      error: "products.errors.duplicateSku",
     });
   });
 
@@ -239,7 +239,7 @@ describe("stock por bodega y stock mínimo (S19-32)", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Se guardó el producto, pero no se pudo actualizar el stock. Intenta de nuevo.",
+      error: "products.errors.stockUpdateFailed",
     });
   });
 });

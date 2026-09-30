@@ -93,8 +93,15 @@
       "currencyUnsupported": "Unsupported currency.",
       "rateFailed": "Could not get the exchange rate.",
       "currencyUnavailable": "Currency not available.",
-      "rateOffline": "Could not get the exchange rate. Check your connection."
-    }
+      "rateOffline": "Could not get the exchange rate. Check your connection.",
+      "duplicateCategory": "A category with that name already exists in this inventory.",
+      "inventoryInvalid": "Invalid inventory.",
+      "createCategoryFailed": "Could not create the category. Try again.",
+      "categoryInvalid": "Invalid category.",
+      "renameFailed": "Could not rename the category. Try again.",
+      "deleteFailed": "Could not delete the category. Try again."
+    },
+    "deleteConfirm": "Delete “{name}”?"
   },
   "common": {
     "backHome": "Back to home",
@@ -108,7 +115,9 @@
       "permissionDenied": "You don't have permission for this action.",
       "noteTooLong": "Note is too long",
       "nameTooLong": "Name is too long",
-      "unknown": "Unknown error"
+      "unknown": "Unknown error",
+      "textTooLong": "Text is too long",
+      "nameRequired": "Name is required"
     },
     "toggleTheme": "Toggle theme"
   },
@@ -607,6 +616,218 @@
       "saveFailed": "Could not save the carrier. Try again.",
       "nameRequired": "Name is required",
       "amountNegative": "Rates cannot be negative"
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "subtitle": "Open each inventory to create, edit or delete what you have.",
+    "alerts": "Minimum stock alerts",
+    "alertsCount": "Minimum stock alerts ({count})",
+    "warehouses": "Warehouses or branches",
+    "items": "{count} items",
+    "types": {
+      "productos": {
+        "title": "Product inventory",
+        "add": "Create product"
+      },
+      "materias_primas": {
+        "title": "Raw materials inventory",
+        "add": "Add raw material"
+      },
+      "articulos_oficina": {
+        "title": "Office supplies inventory",
+        "add": "Add office supply"
+      },
+      "mobiliario": {
+        "title": "Furniture and equipment inventory",
+        "add": "Add furniture or equipment"
+      },
+      "vehiculos": {
+        "title": "Vehicle inventory",
+        "add": "Add vehicle"
+      },
+      "herramientas": {
+        "title": "Tools and machinery inventory",
+        "add": "Add tool or machine"
+      },
+      "aseo": {
+        "title": "Cleaning supplies inventory",
+        "add": "Add cleaning supply"
+      }
+    },
+    "emptyManage": "Nothing in this inventory yet. Use “{add}”.",
+    "emptyPublic": "Nothing in this inventory yet.",
+    "archived": "Deleted",
+    "reactivate": "Reactivate",
+    "history": {
+      "open": "History",
+      "title": "History",
+      "close": "Close",
+      "from": "From",
+      "to": "To",
+      "warehouse": "Warehouse or branch",
+      "all": "All",
+      "view": "View",
+      "code": "Code",
+      "product": "Product",
+      "stock": "Stock",
+      "cost": "Cost",
+      "markup": "Markup %",
+      "saleValue": "Sale value",
+      "viewKardex": "View stock ledger (kardex)",
+      "totalSaleValue": "Total sale value",
+      "empty": "There were no movements in that date range."
+    },
+    "alertsPage": {
+      "back": "Back to Inventory",
+      "chooseInventory": "Choose an inventory to see what is below minimum stock and create the purchase order.",
+      "allGood": "Nothing has reached its minimum stock in any inventory. All good.",
+      "noneIn": "Nothing in {inventory} is below minimum stock.",
+      "addAll": "Add all",
+      "createPurchase": "Create purchase order ({count})",
+      "noPhoto": "No photo",
+      "ofMinimum": "of minimum {min} {unit}",
+      "added": "Added ✓ (remove)",
+      "addToPurchase": "Add to purchase order"
+    },
+    "kardex": {
+      "title": "Stock ledger (kardex)",
+      "unknownWarehouse": "Unknown warehouse or branch",
+      "movement": "Movement",
+      "transaction": "Transaction",
+      "balance": "Running balance",
+      "date": "Date",
+      "type": "Type",
+      "ref": "Ref",
+      "qty": "Qty",
+      "unitCost": "Unit cost",
+      "total": "Total",
+      "avgCost": "Avg. cost",
+      "totalValue": "Total value",
+      "manual": "Manual",
+      "empty": "No movements recorded for this product in this warehouse or branch.",
+      "kind": {
+        "in": "In",
+        "out": "Out",
+        "adjust": "Adjustment",
+        "production_in": "Prod. in",
+        "production_out": "Prod. out"
+      }
+    }
+  },
+  "stock": {
+    "open": "+ Record stock movement",
+    "title": "Record stock movement",
+    "help": "For an existing product. If you haven't created it yet, do it in Products.",
+    "product": "Product",
+    "productPlaceholder": "Select a product",
+    "warehouse": "Warehouse or branch",
+    "warehousePlaceholder": "Select a warehouse or branch",
+    "kind": "Movement type",
+    "kinds": {
+      "in": "In",
+      "out": "Out",
+      "adjust": "Adjustment"
+    },
+    "qty": {
+      "in": "Quantity (in)",
+      "out": "Quantity (out)",
+      "adjust": "Quantity (adjustment +/-)"
+    },
+    "negativeHint": "Use a negative number to subtract.",
+    "unitCost": "Unit cost",
+    "saving": "Saving…",
+    "save": "Save movement",
+    "errors": {
+      "insufficient": "Not enough stock in that warehouse or branch.",
+      "permissionDenied": "You don't have permission for this product or this warehouse or branch.",
+      "failed": "Could not record the movement. Try again.",
+      "productInvalid": "Select a valid product.",
+      "warehouseInvalid": "Select a valid warehouse or branch.",
+      "kindInvalid": "Invalid movement type.",
+      "qtyZero": "Quantity cannot be zero.",
+      "qtyPositive": "Quantity must be positive for this movement type."
+    }
+  },
+  "warehouses": {
+    "title": "Warehouses or branches",
+    "others": "Other warehouses or branches",
+    "emptyManage": "You have no other warehouses or branches yet. Create one with the button above.",
+    "emptyPublic": "No other warehouses or branches registered.",
+    "principalTitle": "Main warehouse or branch",
+    "principal": "Main",
+    "saving": "Saving…",
+    "saveChanges": "Save changes",
+    "saved": "Saved.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "+ Create warehouse or branch",
+    "new": "New warehouse or branch",
+    "creating": "Creating…",
+    "create": "Create warehouse or branch",
+    "edit": "Edit",
+    "delete": "Delete",
+    "reactivate": "Reactivate",
+    "deleted": "Deleted",
+    "deleteConfirm": "Delete “{name}”?",
+    "name": "Warehouse or branch name",
+    "fields": {
+      "address": "Address",
+      "department": "Department (state)",
+      "city": "City",
+      "country": "Country",
+      "postal_code": "Postal code",
+      "phone": "Phone",
+      "whatsapp": "WhatsApp"
+    },
+    "tel": "Tel. {phone}",
+    "errors": {
+      "createFailed": "Could not create the warehouse or branch. Try again.",
+      "updateFailed": "Could not update the warehouse or branch. Try again."
+    }
+  },
+  "recipes": {
+    "title": "Recipe: {name}",
+    "back": "Back to products",
+    "empty": "This recipe has no inputs. Click “Add input” to start.",
+    "component": "Input",
+    "qty": "Quantity",
+    "componentPlaceholder": "Select input...",
+    "add": "Add input",
+    "saving": "Saving…",
+    "save": "Save recipe",
+    "errors": {
+      "selectAll": "Select an input in every row.",
+      "checkData": "Please check the data.",
+      "saveFailed": "Could not save the recipe. Try again.",
+      "notFinished": "Only finished products can have a recipe.",
+      "qtyPositive": "Quantities must be greater than zero.",
+      "tenantMismatch": "All inputs must belong to your company.",
+      "componentsRequired": "The recipe must have at least one input."
+    }
+  },
+  "products": {
+    "errors": {
+      "duplicateSku": "A product with that SKU already exists.",
+      "categoryMismatch": "That category belongs to another inventory. Choose one from this inventory.",
+      "saveFailed": "Could not save the product. Try again.",
+      "photoType": "The photo must be JPG, PNG or WEBP.",
+      "photoSize": "The photo cannot be larger than 5 MB.",
+      "photoUpload": "Could not upload the photo. Try again.",
+      "stockUpdateFailed": "The product was saved, but the stock could not be updated. Try again.",
+      "skuTooLong": "SKU is too long",
+      "descriptionTooLong": "Description is too long",
+      "unitRequired": "Unit is required",
+      "unitTooLong": "Unit is too long",
+      "costNegative": "Cost cannot be negative",
+      "priceNegative": "Price cannot be negative",
+      "taxRange": "VAT (IVA) must be between 0 and 100",
+      "minStockNegative": "Minimum stock cannot be negative",
+      "discountRange": "Discount must be between 0 and 100",
+      "weightNegative": "Weight cannot be negative",
+      "yearInvalid": "Invalid year",
+      "purchaseDateInvalid": "Invalid purchase date",
+      "stockNegative": "Stock cannot be negative"
     }
   }
 }

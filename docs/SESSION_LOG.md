@@ -11,6 +11,19 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 5) · S20-03 — idiomas, módulo 3 (Inventario)
+
+**Hecho:** S20-02 commiteado por el humano (`21b43cf`). Spec S20-03 aprobada. Traducidos es/en/fr:
+portada de Inventario, vista de cada inventario (títulos y botón de alta por tipo), historial,
+movimiento de stock, kardex, alertas de stock mínimo, bodegas o sucursales, receta, eliminados;
+errores de categorías y del editor de producto. Acciones `products/stock/warehouses/catalog/recipes`
+y sus Zod devuelven claves. `INVENTORIES` sin `title`/`addLabel` (ahora en mensajes). Verificado:
+lint ✓, tsc ✓, `npm test` 441/441 ✓. Sin verificar en navegador (requiere sesión del humano).
+
+**Siguiente paso:** S20-04 (Comprar), mismo patrón.
+
+---
+
 ## Sesión 2026-09-30 (cont. 4) · S20-02 — idiomas, módulo 2 (Vender)
 
 **Hecho:** S20-01 commiteado por el humano (`2cac51b`). Spec S20-02 aprobada. Traducidos es/en/fr:

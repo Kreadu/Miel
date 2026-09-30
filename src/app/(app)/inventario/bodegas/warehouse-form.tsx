@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { createWarehouse } from "@/actions/warehouses";
@@ -11,6 +12,7 @@ import { WarehouseFields } from "./warehouse-fields";
 export function WarehouseForm() {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(createWarehouse, null);
+  const t = useTranslations();
   // Ajuste de estado durante el render (patrón de WarehouseRow): al ver un éxito nuevo, cierra.
   // El form se desmonta al cerrar, así la próxima vez abre vacío.
   const [seenState, setSeenState] = useState(state);
@@ -22,7 +24,7 @@ export function WarehouseForm() {
   if (!open) {
     return (
       <div>
-        <Button onClick={() => setOpen(true)}>+ Crear bodega o sucursal</Button>
+        <Button onClick={() => setOpen(true)}>{t("warehouses.add")}</Button>
       </div>
     );
   }
@@ -32,19 +34,19 @@ export function WarehouseForm() {
       action={action}
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
     >
-      <h2 className="text-base font-semibold tracking-tight">Nueva bodega o sucursal</h2>
+      <h2 className="text-base font-semibold tracking-tight">{t("warehouses.new")}</h2>
       <WarehouseFields idPrefix="new" />
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Creando…" : "Crear bodega o sucursal"}
+          {pending ? t("warehouses.creating") : t("warehouses.create")}
         </Button>
         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-          Cancelar
+          {t("warehouses.cancel")}
         </Button>
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

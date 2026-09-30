@@ -31,6 +31,7 @@ export function ProductEditor({
   onDone: () => void;
 }) {
   const t = useTranslations("catalog");
+  const tr = useTranslations();
   const [state, formAction, pending] = useActionState(product ? updateProduct : createProduct, null);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function ProductEditor({
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {tr(state.error)}
         </p>
       ) : null}
     </form>

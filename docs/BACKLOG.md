@@ -249,7 +249,7 @@ traducidas con su sigla.
 |---|---|---|
 | S20-01 | 1 · Entrada: landing, acceso, empresa, invitación, modo tienda, marco, Inicio | implemented (specs/done/S20-01-idiomas-entrada.md) |
 | S20-02 | 2 · Vender (pedidos, carrito, clientes, caja, envíos, cobros) | implemented (specs/done/S20-02-idiomas-vender.md) |
-| S20-03 | 3 · Inventario (resto de pantallas; producto/catálogo ya en piloto) | todo |
+| S20-03 | 3 · Inventario (resto de pantallas; producto/catálogo ya en piloto) | implemented (specs/done/S20-03-idiomas-inventario.md) |
 | S20-04 | 4 · Comprar | todo |
 | S20-05 | 5 · Gastos | todo |
 | S20-06 | 6 · Resultados (incluye respuesta de la IA en el idioma del usuario) | todo |
@@ -291,6 +291,17 @@ Producción queda oculta y fuera de alcance.
 |---|---|---|---|---|---|
 | S23-01 | Como dueño quiero que costos, precios, IVA, nómina y resultados den cifras correctas | IVA fuera del costo; costo promedio único; precio desde el producto; redondeo por línea; envío como ingreso; 114-1 + PILA; renta estimada; anular venta (ADR-038) | S22-02 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S23-01-cuentas-correctas.md |
 | S23-02 | Informe de IVA del mes (generado − descontable) | Pendiente de priorizar | S23-01 | todo | — |
+
+## Épica E24 — Hoja técnica por producto (pedido del humano 2026-09-30, después de E20)
+
+| ID | Historia | Estado |
+|---|---|---|
+| S24-01 | Hoja técnica (PDF) opcional por producto: subir/reemplazar/quitar en la edición; botón "Hoja técnica" en la ficha (Catálogo e Inventario) solo si existe. Archivo privado por tenant (como las fotos), límite ~10 MB. | todo |
+
+**Propuesta (no aprobada aún):** PDF subido y no campos estructurados (cada rubro —repuestos, café,
+equipos— necesita datos distintos y el dueño suele tenerla del proveedor). **Pendiente decidir:**
+(1) quién la ve — hoy solo interno (no hay catálogo público); (2) todos los inventarios o solo
+productos de venta (vehículos/maquinaria también sirven: manual o ficha del equipo).
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración

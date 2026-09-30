@@ -44,7 +44,7 @@ describe("createCategory (S19-16)", () => {
 
     expect(await createCategory("Endulzantes", "productos")).toEqual({
       ok: false,
-      error: "Ya existe una categoría con ese nombre en este inventario.",
+      error: "catalog.errors.duplicateCategory",
     });
   });
 
@@ -106,7 +106,7 @@ describe("renameCategory / deleteCategory (S19-21)", () => {
 
     expect(await renameCategory(id, "Dulces")).toEqual({
       ok: false,
-      error: "Ya existe una categoría con ese nombre en este inventario.",
+      error: "catalog.errors.duplicateCategory",
     });
   });
 

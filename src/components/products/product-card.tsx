@@ -159,7 +159,7 @@ export function ProductCard({
               <form
                 action={toggleProductActive}
                 onSubmit={(e) => {
-                  if (!confirm(`¿Eliminar "${product.name}"?`)) e.preventDefault();
+                  if (!confirm(t("deleteConfirm", { name: product.name }))) e.preventDefault();
                 }}
               >
                 <input type="hidden" name="id" value={product.id} />

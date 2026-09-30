@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney as baseFormatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { StockMovementForm } from "../../stock-movement-form";
 
-export const metadata = { title: "Kardex · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("inventory.kardex");
+  return { title: `${t("title")} · Miel` };
+}
 
 interface KardexPageProps {
   params: { productId: string };
@@ -17,6 +21,7 @@ interface KardexPageProps {
 export default async function KardexPage({ params, searchParams }: KardexPageProps) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const t = await getTranslations("inventory.kardex");
 
   const productId = params.productId;
   const warehouseId = searchParams.warehouse_id;
@@ -55,16 +60,7 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
 
   const isMember = active.role === "member";
 
-  const getKindLabel = (kind: string) => {
-    switch (kind) {
-      case "in": return "Entrada";
-      case "out": return "Salida";
-      case "adjust": return "Ajuste";
-      case "production_in": return "Prod. Entrada";
-      case "production_out": return "Prod. Salida";
-      default: return kind;
-    }
-  };
+  const getKindLabel = (kind: string) => (t.has(`kind.${kind}`) ? t(`kind.${kind}`) : kind);
 
   const getKindColor = (kind: string) => {
     if (kind.includes("in") && kind !== "production_out") return "text-emerald-600 font-medium";
@@ -87,10 +83,10 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
             <Link href="/inventario" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h1 className="text-xl font-semibold tracking-tight">Kardex Histórico</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            {product.name} ({product.sku}) · {warehouse?.name ?? "Bodega o sucursal desconocida"}
+            {product.name} ({product.sku}) · {warehouse?.name ?? t("unknownWarehouse")}
           </p>
         </div>
         {!isMember && (
@@ -103,27 +99,27 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
           <thead>
             <tr className="border-b border-border bg-muted/30">
               <th colSpan={3} className="px-3 py-2 text-center border-r border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Movimiento
+                {t("movement")}
               </th>
               <th colSpan={!isMember ? 3 : 1} className="px-3 py-2 text-center border-r border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Transacción
+                {t("transaction")}
               </th>
               <th colSpan={!isMember ? 3 : 1} className="px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Saldo Acumulado
+                {t("balance")}
               </th>
             </tr>
             <tr className="border-b border-border text-xs text-muted-foreground">
-              <th className="px-3 py-2 font-medium">Fecha</th>
-              <th className="px-3 py-2 font-medium">Tipo</th>
-              <th className="px-3 py-2 font-medium border-r border-border">Ref</th>
+              <th className="px-3 py-2 font-medium">{t("date")}</th>
+              <th className="px-3 py-2 font-medium">{t("type")}</th>
+              <th className="px-3 py-2 font-medium border-r border-border">{t("ref")}</th>
               
-              <th className="px-3 py-2 text-right font-medium">Cant.</th>
-              {!isMember && <th className="px-3 py-2 text-right font-medium">C. Unit.</th>}
-              {!isMember && <th className="px-3 py-2 text-right font-medium border-r border-border">Total</th>}
+              <th className="px-3 py-2 text-right font-medium">{t("qty")}</th>
+              {!isMember && <th className="px-3 py-2 text-right font-medium">{t("unitCost")}</th>}
+              {!isMember && <th className="px-3 py-2 text-right font-medium border-r border-border">{t("total")}</th>}
               
-              <th className="px-3 py-2 text-right font-medium">Cant.</th>
-              {!isMember && <th className="px-3 py-2 text-right font-medium">Costo Prom.</th>}
-              {!isMember && <th className="px-3 py-2 text-right font-medium">Valor Total</th>}
+              <th className="px-3 py-2 text-right font-medium">{t("qty")}</th>
+              {!isMember && <th className="px-3 py-2 text-right font-medium">{t("avgCost")}</th>}
+              {!isMember && <th className="px-3 py-2 text-right font-medium">{t("totalValue")}</th>}
             </tr>
           </thead>
           <tbody>
@@ -137,7 +133,7 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
                     {getKindLabel(row.kind || '')}
                   </td>
                   <td className="px-3 py-3 text-sm text-muted-foreground border-r border-border">
-                    {row.ref_type === 'manual' ? 'Manual' : row.ref_type} {row.ref_id ? `#${row.ref_id}` : ''}
+                    {row.ref_type === 'manual' ? t("manual") : row.ref_type} {row.ref_id ? `#${row.ref_id}` : ''}
                   </td>
                   
                   <td className={`px-3 py-3 text-sm text-right font-medium ${(row.qty || 0) > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
@@ -160,7 +156,7 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
             ) : (
               <tr>
                 <td colSpan={isMember ? 5 : 9} className="px-3 py-8 text-center text-sm text-muted-foreground">
-                  No hay movimientos registrados para este producto en esta bodega o sucursal.
+                  {t("empty")}
                 </td>
               </tr>
             )}

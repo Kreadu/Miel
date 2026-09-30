@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { updateWarehouse } from "@/actions/warehouses";
@@ -21,6 +22,7 @@ export function PrincipalForm({
   canManage: boolean;
 }) {
   const [state, action, pending] = useActionState(updateWarehouse, null);
+  const t = useTranslations();
 
   return (
     <form
@@ -28,9 +30,9 @@ export function PrincipalForm({
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
     >
       <div className="flex items-center gap-2">
-        <h2 className="text-base font-semibold tracking-tight">Bodega o sucursal principal</h2>
+        <h2 className="text-base font-semibold tracking-tight">{t("warehouses.principalTitle")}</h2>
         <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-          Principal
+          {t("warehouses.principal")}
         </span>
       </div>
       <input type="hidden" name="id" value={id} />
@@ -40,14 +42,14 @@ export function PrincipalForm({
       {canManage ? (
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={pending}>
-            {pending ? "Guardando…" : "Guardar cambios"}
+            {pending ? t("warehouses.saving") : t("warehouses.saveChanges")}
           </Button>
-          {state?.ok ? <span className="text-sm text-muted-foreground">Guardado.</span> : null}
+          {state?.ok ? <span className="text-sm text-muted-foreground">{t("warehouses.saved")}</span> : null}
         </div>
       ) : null}
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error}
+          {t(state.error)}
         </p>
       ) : null}
     </form>

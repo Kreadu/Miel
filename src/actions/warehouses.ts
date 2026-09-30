@@ -41,7 +41,7 @@ export async function createWarehouse(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -49,7 +49,7 @@ export async function createWarehouse(
     .insert({ tenant_id: active.tenantId, ...toColumns(parsed.data) });
   if (error) {
     console.error("createWarehouse:", error.code);
-    return { ok: false, error: "No se pudo crear la bodega o sucursal. Intenta de nuevo." };
+    return { ok: false, error: "warehouses.errors.createFailed" };
   }
 
   revalidatePath(WAREHOUSES_PATH);
@@ -72,7 +72,7 @@ export async function updateWarehouse(
     .eq("id", parsed.data.id);
   if (error) {
     console.error("updateWarehouse:", error.code);
-    return { ok: false, error: "No se pudo actualizar la bodega o sucursal. Intenta de nuevo." };
+    return { ok: false, error: "warehouses.errors.updateFailed" };
   }
 
   revalidatePath(WAREHOUSES_PATH);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import type { Warehouse } from "@/components/products/types";
 import { Button } from "@/components/ui/button";
@@ -40,11 +41,12 @@ export async function InventoryHistory({
   currency: string;
   params: HistoryParams;
 }) {
+  const t = await getTranslations("inventory.history");
   if (params.historial !== "1") {
     return (
       <div>
         <Button asChild variant="outline">
-          <Link href={`${basePath}?historial=1`}>Historial</Link>
+          <Link href={`${basePath}?historial=1`}>{t("open")}</Link>
         </Button>
       </div>
     );
@@ -66,30 +68,30 @@ export async function InventoryHistory({
   return (
     <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-base font-semibold tracking-tight">Historial</h2>
+        <h2 className="text-base font-semibold tracking-tight">{t("title")}</h2>
         <Button asChild variant="ghost" size="sm">
-          <Link href={basePath}>Cerrar</Link>
+          <Link href={basePath}>{t("close")}</Link>
         </Button>
       </div>
 
       <form method="get" action={basePath} className="grid grid-cols-1 items-end gap-3 sm:grid-cols-4">
         <input type="hidden" name="historial" value="1" />
         <div className="flex flex-col gap-2">
-          <Label htmlFor="desde">Desde</Label>
+          <Label htmlFor="desde">{t("from")}</Label>
           <Input id="desde" name="desde" type="date" defaultValue={from} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="hasta">Hasta</Label>
+          <Label htmlFor="hasta">{t("to")}</Label>
           <Input id="hasta" name="hasta" type="date" defaultValue={to} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="bodega">Bodega o sucursal</Label>
+          <Label htmlFor="bodega">{t("warehouse")}</Label>
           <Select name="bodega" defaultValue={warehouseId ?? ALL_WAREHOUSES}>
             <SelectTrigger id="bodega" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_WAREHOUSES}>Todas</SelectItem>
+              <SelectItem value={ALL_WAREHOUSES}>{t("all")}</SelectItem>
               {warehouses.map((w) => (
                 <SelectItem key={w.id} value={w.id}>
                   {w.name}
@@ -98,7 +100,7 @@ export async function InventoryHistory({
             </SelectContent>
           </Select>
         </div>
-        <Button type="submit">Ver</Button>
+        <Button type="submit">{t("view")}</Button>
       </form>
 
       {list.length > 0 ? (
@@ -106,13 +108,13 @@ export async function InventoryHistory({
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Bodega o sucursal</th>
-                <th className="px-3 py-2 font-medium">Código</th>
-                <th className="px-3 py-2 font-medium">Producto</th>
-                <th className="px-3 py-2 text-right font-medium">Stock</th>
-                <th className="px-3 py-2 text-right font-medium">Coste</th>
-                <th className="px-3 py-2 text-right font-medium">% de venta</th>
-                <th className="px-3 py-2 text-right font-medium">Valor venta</th>
+                <th className="px-3 py-2 font-medium">{t("warehouse")}</th>
+                <th className="px-3 py-2 font-medium">{t("code")}</th>
+                <th className="px-3 py-2 font-medium">{t("product")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("stock")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("cost")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("markup")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("saleValue")}</th>
               </tr>
             </thead>
             <tbody>
@@ -130,7 +132,7 @@ export async function InventoryHistory({
                       <Link
                         href={`/inventario/kardex/${r.product_id}?warehouse_id=${r.warehouse_id}`}
                         className="underline-offset-4 hover:underline"
-                        title="Ver kardex"
+                        title={t("viewKardex")}
                       >
                         {r.product_name}
                       </Link>
@@ -156,7 +158,7 @@ export async function InventoryHistory({
               <tfoot>
                 <tr className="border-t border-border font-semibold">
                   <td className="px-3 py-2.5" colSpan={6}>
-                    Total valor venta
+                    {t("totalSaleValue")}
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(totalSale, currency)}</td>
                 </tr>
@@ -166,7 +168,7 @@ export async function InventoryHistory({
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-          No hubo movimientos en ese rango de fechas.
+          {t("empty")}
         </p>
       )}
     </section>

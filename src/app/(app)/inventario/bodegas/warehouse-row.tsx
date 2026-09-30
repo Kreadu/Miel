@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { toggleWarehouseActive, updateWarehouse } from "@/actions/warehouses";
@@ -20,6 +21,7 @@ export function WarehouseRow({
 }) {
   const [editing, setEditing] = useState(false);
   const [state, action, pending] = useActionState(updateWarehouse, null);
+  const t = useTranslations();
   // Ajuste de estado durante el render (patrón oficial de React, no un efecto): al ver un
   // `state` de éxito nuevo, cierra el modo edición.
   const [seenState, setSeenState] = useState(state);
@@ -36,15 +38,15 @@ export function WarehouseRow({
           <WarehouseFields idPrefix={id} values={details} />
           <div className="flex items-center gap-2">
             <Button type="submit" size="sm" disabled={pending}>
-              {pending ? "Guardando…" : "Guardar"}
+              {pending ? t("warehouses.saving") : t("warehouses.save")}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
-              Cancelar
+              {t("warehouses.cancel")}
             </Button>
           </div>
           {state && !state.ok ? (
             <p role="alert" className="text-xs text-destructive">
-              {state.error}
+              {t(state.error)}
             </p>
           ) : null}
         </form>
@@ -52,7 +54,7 @@ export function WarehouseRow({
     );
   }
 
-  const summary = warehouseSummary(details);
+  const summary = warehouseSummary(details, (phone) => t("warehouses.tel", { phone }));
 
   return (
     <li className="flex flex-col gap-2 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between">
@@ -65,24 +67,24 @@ export function WarehouseRow({
       {canManage ? (
         <div className="flex items-center gap-1">
           <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
-            Editar
+            {t("warehouses.edit")}
           </Button>
           {/* S19-25: "Eliminar" es borrado lógico (active=false): el kardex referencia la bodega. */}
           <form
             action={toggleWarehouseActive}
             onSubmit={(e) => {
-              if (active && !confirm(`¿Eliminar "${details.name}"?`)) e.preventDefault();
+              if (active && !confirm(t("warehouses.deleteConfirm", { name: details.name }))) e.preventDefault();
             }}
           >
             <input type="hidden" name="id" value={id} />
             <input type="hidden" name="active" value={(!active).toString()} />
             <Button type="submit" variant="ghost" size="sm">
-              {active ? "Eliminar" : "Reactivar"}
+              {active ? t("warehouses.delete") : t("warehouses.reactivate")}
             </Button>
           </form>
         </div>
       ) : (
-        !active && <span className="text-xs text-muted-foreground">Eliminada</span>
+        !active && <span className="text-xs text-muted-foreground">{t("warehouses.deleted")}</span>
       )}
     </li>
   );

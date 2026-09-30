@@ -31,9 +31,6 @@ export type InventoryConfig = {
   id: InventoryId;
   /** Segmento de URL bajo /inventario. */
   slug: string;
-  title: string;
-  /** Texto del botón de alta. */
-  addLabel: string;
   /** Se vende: precio, descuento, IVA, canal, tipo terminado/reventa, Catálogo y receta. */
   sellable: boolean;
   /** kind fijo para inventarios que no se venden (null = se elige terminado/reventa). */
@@ -47,8 +44,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "productos",
     slug: "productos",
-    title: "Inventario de productos",
-    addLabel: "Generar producto",
     sellable: true,
     fixedKind: null,
     assetFields: [],
@@ -56,8 +51,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "materias_primas",
     slug: "materias-primas",
-    title: "Inventario de materias primas",
-    addLabel: "Agregar materia prima",
     sellable: false,
     fixedKind: "raw",
     assetFields: [],
@@ -65,8 +58,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "articulos_oficina",
     slug: "articulos-oficina",
-    title: "Inventario de artículos de oficina",
-    addLabel: "Agregar artículo de oficina",
     sellable: false,
     fixedKind: "other",
     assetFields: [],
@@ -74,8 +65,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "mobiliario",
     slug: "mobiliario",
-    title: "Inventario de mobiliario y equipos",
-    addLabel: "Agregar mobiliario o equipo",
     sellable: false,
     fixedKind: "other",
     assetFields: ASSET_BASIC,
@@ -83,8 +72,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "vehiculos",
     slug: "vehiculos",
-    title: "Inventario de vehículos",
-    addLabel: "Agregar vehículo",
     sellable: false,
     fixedKind: "other",
     assetFields: ASSET_FIELDS,
@@ -92,8 +79,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "herramientas",
     slug: "herramientas",
-    title: "Inventario de herramientas y maquinaria",
-    addLabel: "Agregar herramienta o máquina",
     sellable: false,
     fixedKind: "other",
     assetFields: ASSET_BASIC,
@@ -101,8 +86,6 @@ export const INVENTORIES: readonly InventoryConfig[] = [
   {
     id: "aseo",
     slug: "aseo",
-    title: "Inventario de aseo y limpieza",
-    addLabel: "Agregar artículo de aseo",
     sellable: false,
     fixedKind: "other",
     assetFields: [],

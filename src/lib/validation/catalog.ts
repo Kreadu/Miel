@@ -3,7 +3,7 @@ import { z } from "zod";
 export const SALES_CHANNELS = ["online", "in_store", "both"] as const;
 
 export const categorySchema = z.object({
-  name: z.string().trim().min(1, "El nombre es obligatorio").max(60, "Nombre muy largo"),
+  name: z.string().trim().min(1, "common.errors.nameRequired").max(60, "common.errors.nameTooLong"),
 });
 
 export const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;

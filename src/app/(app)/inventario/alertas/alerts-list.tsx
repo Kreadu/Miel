@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ export type AlertItem = {
  */
 export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage: boolean }) {
   const [selected, setSelected] = useState<string[]>([]);
+  const t = useTranslations("inventory.alertsPage");
 
   function toggle(id: string) {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -38,12 +40,12 @@ export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage
             size="sm"
             onClick={() => setSelected(items.map((i) => i.productId))}
           >
-            Agregar todos
+            {t("addAll")}
           </Button>
           {selected.length > 0 ? (
             <Button asChild size="sm">
               <Link href={`/compras?reponer=${selected.join(",")}`}>
-                Crear orden de compra ({selected.length})
+                {t("createPurchase", { count: selected.length })}
               </Link>
             </Button>
           ) : null}
@@ -65,7 +67,7 @@ export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage
                   <Image src={item.photoUrl} alt={item.name} fill unoptimized className="object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                    Sin foto
+                    {t("noPhoto")}
                   </div>
                 )}
               </div>
@@ -77,7 +79,7 @@ export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage
                     {item.totalQty.toLocaleString("es-CO")}
                   </span>{" "}
                   <span className="text-muted-foreground">
-                    de mínimo {item.minStock.toLocaleString("es-CO")} {item.unit}
+                    {t("ofMinimum", { min: item.minStock.toLocaleString("es-CO"), unit: item.unit })}
                   </span>
                 </p>
                 {canManage ? (
@@ -88,7 +90,7 @@ export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage
                     className="mt-2"
                     onClick={() => toggle(item.productId)}
                   >
-                    {isSelected ? "Agregado ✓ (quitar)" : "Agregar a orden de compra"}
+                    {isSelected ? t("added") : t("addToPurchase")}
                   </Button>
                 ) : null}
               </div>

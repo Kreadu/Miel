@@ -18,7 +18,7 @@ describe("stockMovementSchema", () => {
     const parsed = stockMovementSchema.safeParse(invalid);
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
-      expect(parsed.error.issues[0].message).toBe("La cantidad no puede ser cero.");
+      expect(parsed.error.issues[0].message).toBe("stock.errors.qtyZero");
     }
   });
 
@@ -27,7 +27,7 @@ describe("stockMovementSchema", () => {
     const parsed = stockMovementSchema.safeParse(invalid);
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
-      expect(parsed.error.issues[0].message).toBe("La cantidad debe ser positiva para este tipo de movimiento.");
+      expect(parsed.error.issues[0].message).toBe("stock.errors.qtyPositive");
     }
   });
 

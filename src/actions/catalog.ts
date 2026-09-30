@@ -18,7 +18,7 @@ function revalidateCategoryPaths() {
   revalidatePath("/inventario", "layout");
 }
 
-const DUPLICATE_CATEGORY = "Ya existe una categoría con ese nombre en este inventario.";
+const DUPLICATE_CATEGORY = "catalog.errors.duplicateCategory";
 const inventorySchema = z.enum(INVENTORY_IDS);
 
 /**
@@ -29,10 +29,10 @@ export async function createCategory(name: string, inventory: string): Promise<C
   const parsed = categorySchema.safeParse({ name });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
   const parsedInventory = inventorySchema.safeParse(inventory);
-  if (!parsedInventory.success) return { ok: false, error: "Inventario inválido." };
+  if (!parsedInventory.success) return { ok: false, error: "catalog.errors.inventoryInvalid" };
 
   const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "No se pudo determinar la empresa activa." };
+  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -43,7 +43,7 @@ export async function createCategory(name: string, inventory: string): Promise<C
   if (error || !data) {
     if (error?.code === "23505") return { ok: false, error: DUPLICATE_CATEGORY };
     console.error("createCategory:", error?.code);
-    return { ok: false, error: "No se pudo crear la categoría. Intenta de nuevo." };
+    return { ok: false, error: "catalog.errors.createCategoryFailed" };
   }
 
   revalidateCategoryPaths();
@@ -58,7 +58,7 @@ const categoryIdSchema = z.uuid();
 export async function renameCategory(id: string, name: string): Promise<CategoryMutationResult> {
   const parsedId = categoryIdSchema.safeParse(id);
   const parsed = categorySchema.safeParse({ name });
-  if (!parsedId.success) return { ok: false, error: "Categoría inválida." };
+  if (!parsedId.success) return { ok: false, error: "catalog.errors.categoryInvalid" };
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   const supabase = await createClient();
@@ -70,9 +70,9 @@ export async function renameCategory(id: string, name: string): Promise<Category
   if (error) {
     if (error.code === "23505") return { ok: false, error: DUPLICATE_CATEGORY };
     console.error("renameCategory:", error.code);
-    return { ok: false, error: "No se pudo renombrar la categoría. Intenta de nuevo." };
+    return { ok: false, error: "catalog.errors.renameFailed" };
   }
-  if (!data?.length) return { ok: false, error: "No se pudo renombrar la categoría." };
+  if (!data?.length) return { ok: false, error: "catalog.errors.renameFailed" };
 
   revalidateCategoryPaths();
   return { ok: true };
@@ -81,7 +81,7 @@ export async function renameCategory(id: string, name: string): Promise<Category
 /** S19-21: eliminar categoría — sus productos quedan sin categoría (`on delete set null`). */
 export async function deleteCategory(id: string): Promise<CategoryMutationResult> {
   const parsedId = categoryIdSchema.safeParse(id);
-  if (!parsedId.success) return { ok: false, error: "Categoría inválida." };
+  if (!parsedId.success) return { ok: false, error: "catalog.errors.categoryInvalid" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -91,9 +91,9 @@ export async function deleteCategory(id: string): Promise<CategoryMutationResult
     .select("id");
   if (error) {
     console.error("deleteCategory:", error.code);
-    return { ok: false, error: "No se pudo eliminar la categoría. Intenta de nuevo." };
+    return { ok: false, error: "catalog.errors.deleteFailed" };
   }
-  if (!data?.length) return { ok: false, error: "No se pudo eliminar la categoría." };
+  if (!data?.length) return { ok: false, error: "catalog.errors.deleteFailed" };
 
   revalidateCategoryPaths();
   return { ok: true };

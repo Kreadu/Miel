@@ -93,8 +93,15 @@
       "currencyUnsupported": "Devise non prise en charge.",
       "rateFailed": "Impossible d’obtenir le taux de change.",
       "currencyUnavailable": "Devise non disponible.",
-      "rateOffline": "Impossible d’obtenir le taux de change. Vérifiez votre connexion."
-    }
+      "rateOffline": "Impossible d’obtenir le taux de change. Vérifiez votre connexion.",
+      "duplicateCategory": "Une catégorie portant ce nom existe déjà dans cet inventaire.",
+      "inventoryInvalid": "Inventaire non valide.",
+      "createCategoryFailed": "Impossible de créer la catégorie. Réessayez.",
+      "categoryInvalid": "Catégorie non valide.",
+      "renameFailed": "Impossible de renommer la catégorie. Réessayez.",
+      "deleteFailed": "Impossible de supprimer la catégorie. Réessayez."
+    },
+    "deleteConfirm": "Supprimer « {name} » ?"
   },
   "common": {
     "backHome": "Retour à l'accueil",
@@ -108,7 +115,9 @@
       "permissionDenied": "Vous n’avez pas l’autorisation pour cette opération.",
       "noteTooLong": "Note trop longue",
       "nameTooLong": "Nom trop long",
-      "unknown": "Erreur inconnue"
+      "unknown": "Erreur inconnue",
+      "textTooLong": "Texte trop long",
+      "nameRequired": "Le nom est obligatoire"
     },
     "toggleTheme": "Changer de thème"
   },
@@ -607,6 +616,218 @@
       "saveFailed": "Impossible d’enregistrer le transporteur. Réessayez.",
       "nameRequired": "Le nom est obligatoire",
       "amountNegative": "Les tarifs ne peuvent pas être négatifs"
+    }
+  },
+  "inventory": {
+    "title": "Inventaire",
+    "subtitle": "Ouvrez chaque inventaire pour créer, modifier ou supprimer ce que vous avez.",
+    "alerts": "Alertes de stock minimum",
+    "alertsCount": "Alertes de stock minimum ({count})",
+    "warehouses": "Entrepôts ou points de vente",
+    "items": "{count} articles",
+    "types": {
+      "productos": {
+        "title": "Inventaire des produits",
+        "add": "Créer un produit"
+      },
+      "materias_primas": {
+        "title": "Inventaire des matières premières",
+        "add": "Ajouter une matière première"
+      },
+      "articulos_oficina": {
+        "title": "Inventaire des fournitures de bureau",
+        "add": "Ajouter une fourniture de bureau"
+      },
+      "mobiliario": {
+        "title": "Inventaire du mobilier et des équipements",
+        "add": "Ajouter un meuble ou un équipement"
+      },
+      "vehiculos": {
+        "title": "Inventaire des véhicules",
+        "add": "Ajouter un véhicule"
+      },
+      "herramientas": {
+        "title": "Inventaire des outils et machines",
+        "add": "Ajouter un outil ou une machine"
+      },
+      "aseo": {
+        "title": "Inventaire des produits d’entretien",
+        "add": "Ajouter un produit d’entretien"
+      }
+    },
+    "emptyManage": "Rien dans cet inventaire pour le moment. Utilisez « {add} ».",
+    "emptyPublic": "Rien dans cet inventaire pour le moment.",
+    "archived": "Supprimés",
+    "reactivate": "Réactiver",
+    "history": {
+      "open": "Historique",
+      "title": "Historique",
+      "close": "Fermer",
+      "from": "Du",
+      "to": "Au",
+      "warehouse": "Entrepôt ou point de vente",
+      "all": "Tous",
+      "view": "Voir",
+      "code": "Code",
+      "product": "Produit",
+      "stock": "Stock",
+      "cost": "Coût",
+      "markup": "% de marge",
+      "saleValue": "Valeur de vente",
+      "viewKardex": "Voir la fiche de stock (kardex)",
+      "totalSaleValue": "Valeur de vente totale",
+      "empty": "Aucun mouvement sur cette période."
+    },
+    "alertsPage": {
+      "back": "Retour à l’inventaire",
+      "chooseInventory": "Choisissez un inventaire pour voir ce qui est sous le stock minimum et créer le bon de commande.",
+      "allGood": "Rien n’a atteint son stock minimum dans aucun inventaire. Tout est en ordre.",
+      "noneIn": "Rien dans {inventory} n’est sous le stock minimum.",
+      "addAll": "Tout ajouter",
+      "createPurchase": "Créer le bon de commande ({count})",
+      "noPhoto": "Pas de photo",
+      "ofMinimum": "sur un minimum de {min} {unit}",
+      "added": "Ajouté ✓ (retirer)",
+      "addToPurchase": "Ajouter au bon de commande"
+    },
+    "kardex": {
+      "title": "Fiche de stock (kardex)",
+      "unknownWarehouse": "Entrepôt ou point de vente inconnu",
+      "movement": "Mouvement",
+      "transaction": "Transaction",
+      "balance": "Solde cumulé",
+      "date": "Date",
+      "type": "Type",
+      "ref": "Réf.",
+      "qty": "Qté",
+      "unitCost": "Coût unit.",
+      "total": "Total",
+      "avgCost": "Coût moyen",
+      "totalValue": "Valeur totale",
+      "manual": "Manuel",
+      "empty": "Aucun mouvement enregistré pour ce produit dans cet entrepôt ou point de vente.",
+      "kind": {
+        "in": "Entrée",
+        "out": "Sortie",
+        "adjust": "Ajustement",
+        "production_in": "Entrée prod.",
+        "production_out": "Sortie prod."
+      }
+    }
+  },
+  "stock": {
+    "open": "+ Enregistrer un mouvement de stock",
+    "title": "Enregistrer un mouvement de stock",
+    "help": "Pour un produit existant. S’il n’existe pas encore, créez-le dans Produits.",
+    "product": "Produit",
+    "productPlaceholder": "Sélectionnez un produit",
+    "warehouse": "Entrepôt ou point de vente",
+    "warehousePlaceholder": "Sélectionnez un entrepôt ou point de vente",
+    "kind": "Type de mouvement",
+    "kinds": {
+      "in": "Entrée",
+      "out": "Sortie",
+      "adjust": "Ajustement"
+    },
+    "qty": {
+      "in": "Quantité (entrée)",
+      "out": "Quantité (sortie)",
+      "adjust": "Quantité (ajustement +/-)"
+    },
+    "negativeHint": "Utilisez un nombre négatif pour retirer.",
+    "unitCost": "Coût unitaire",
+    "saving": "Enregistrement…",
+    "save": "Enregistrer le mouvement",
+    "errors": {
+      "insufficient": "Stock insuffisant dans cet entrepôt ou point de vente.",
+      "permissionDenied": "Vous n’avez pas l’autorisation sur ce produit ou cet entrepôt ou point de vente.",
+      "failed": "Impossible d’enregistrer le mouvement. Réessayez.",
+      "productInvalid": "Sélectionnez un produit valide.",
+      "warehouseInvalid": "Sélectionnez un entrepôt ou point de vente valide.",
+      "kindInvalid": "Type de mouvement non valide.",
+      "qtyZero": "La quantité ne peut pas être zéro.",
+      "qtyPositive": "La quantité doit être positive pour ce type de mouvement."
+    }
+  },
+  "warehouses": {
+    "title": "Entrepôts ou points de vente",
+    "others": "Autres entrepôts ou points de vente",
+    "emptyManage": "Vous n’avez pas encore d’autres entrepôts ou points de vente. Créez-en un avec le bouton ci-dessus.",
+    "emptyPublic": "Aucun autre entrepôt ou point de vente enregistré.",
+    "principalTitle": "Entrepôt ou point de vente principal",
+    "principal": "Principal",
+    "saving": "Enregistrement…",
+    "saveChanges": "Enregistrer les modifications",
+    "saved": "Enregistré.",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "add": "+ Créer un entrepôt ou point de vente",
+    "new": "Nouvel entrepôt ou point de vente",
+    "creating": "Création…",
+    "create": "Créer l’entrepôt ou point de vente",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "reactivate": "Réactiver",
+    "deleted": "Supprimé",
+    "deleteConfirm": "Supprimer « {name} » ?",
+    "name": "Nom de l’entrepôt ou point de vente",
+    "fields": {
+      "address": "Adresse",
+      "department": "Département",
+      "city": "Ville",
+      "country": "Pays",
+      "postal_code": "Code postal",
+      "phone": "Téléphone",
+      "whatsapp": "WhatsApp"
+    },
+    "tel": "Tél. {phone}",
+    "errors": {
+      "createFailed": "Impossible de créer l’entrepôt ou point de vente. Réessayez.",
+      "updateFailed": "Impossible de mettre à jour l’entrepôt ou point de vente. Réessayez."
+    }
+  },
+  "recipes": {
+    "title": "Recette : {name}",
+    "back": "Retour aux produits",
+    "empty": "Cette recette n’a aucun intrant. Cliquez sur « Ajouter un intrant » pour commencer.",
+    "component": "Intrant",
+    "qty": "Quantité",
+    "componentPlaceholder": "Sélectionner un intrant...",
+    "add": "Ajouter un intrant",
+    "saving": "Enregistrement…",
+    "save": "Enregistrer la recette",
+    "errors": {
+      "selectAll": "Sélectionnez un intrant sur chaque ligne.",
+      "checkData": "Veuillez vérifier les données.",
+      "saveFailed": "Impossible d’enregistrer la recette. Réessayez.",
+      "notFinished": "Seuls les produits finis peuvent avoir une recette.",
+      "qtyPositive": "Les quantités doivent être supérieures à zéro.",
+      "tenantMismatch": "Tous les intrants doivent appartenir à votre entreprise.",
+      "componentsRequired": "La recette doit avoir au moins un intrant."
+    }
+  },
+  "products": {
+    "errors": {
+      "duplicateSku": "Un produit avec ce SKU existe déjà.",
+      "categoryMismatch": "Cette catégorie appartient à un autre inventaire. Choisissez-en une de cet inventaire.",
+      "saveFailed": "Impossible d’enregistrer le produit. Réessayez.",
+      "photoType": "La photo doit être au format JPG, PNG ou WEBP.",
+      "photoSize": "La photo ne peut pas dépasser 5 Mo.",
+      "photoUpload": "Impossible de téléverser la photo. Réessayez.",
+      "stockUpdateFailed": "Le produit a été enregistré, mais le stock n’a pas pu être mis à jour. Réessayez.",
+      "skuTooLong": "SKU trop long",
+      "descriptionTooLong": "Description trop longue",
+      "unitRequired": "L’unité est obligatoire",
+      "unitTooLong": "Unité trop longue",
+      "costNegative": "Le coût ne peut pas être négatif",
+      "priceNegative": "Le prix ne peut pas être négatif",
+      "taxRange": "La TVA (IVA) doit être comprise entre 0 et 100",
+      "minStockNegative": "Le stock minimum ne peut pas être négatif",
+      "discountRange": "La remise doit être comprise entre 0 et 100",
+      "weightNegative": "Le poids ne peut pas être négatif",
+      "yearInvalid": "Année non valide",
+      "purchaseDateInvalid": "Date d’achat non valide",
+      "stockNegative": "Le stock ne peut pas être négatif"
     }
   }
 }

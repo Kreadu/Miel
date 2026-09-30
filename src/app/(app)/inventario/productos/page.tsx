@@ -1,8 +1,13 @@
+import { getTranslations } from "next-intl/server";
+
 import { INVENTORIES } from "@/lib/inventories";
 
 import { InventoryView } from "../inventory-view";
 
-export const metadata = { title: "Inventario de productos · Miel" };
+export async function generateMetadata() {
+  const t = await getTranslations("inventory.types.productos");
+  return { title: `${t("title")} · Miel` };
+}
 
 /** Ruta estática propia (tiene /[id]/receta debajo); la vista es la misma de todo inventario. */
 export default async function ProductosPage({

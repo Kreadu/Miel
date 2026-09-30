@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { registerManualMovement } from "@/actions/stock";
 import { Button } from "@/components/ui/button";
@@ -36,8 +37,7 @@ export function StockMovementForm({
   const [selectedWarehouseId, setSelectedWarehouseId] = useState("");
   const qtyNum = Number(qty);
   const showCost = kind === "in" || (kind === "adjust" && !(qtyNum < 0));
-  const qtyLabel =
-    kind === "in" ? "Cantidad (Entrada)" : kind === "out" ? "Cantidad (Salida)" : "Cantidad (Ajuste +/-)";
+  const t = useTranslations();
 
   // React 19 resetea el <form> (incluida la selección visual del Select de Radix) tras CADA
   // envío, éxito o error. En error queremos que el usuario recupere justo lo que tenía para
@@ -75,7 +75,7 @@ export function StockMovementForm({
   if (!open) {
     return (
       <Button variant="outline" onClick={() => setOpen(true)}>
-        + Registrar movimiento de stock
+        {t("stock.open")}
       </Button>
     );
   }
@@ -89,7 +89,7 @@ export function StockMovementForm({
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4"
     >
       <div className="flex justify-between items-center">
-        <h3 className="font-medium">Registrar movimiento de stock</h3>
+        <h3 className="font-medium">{t("stock.title")}</h3>
         {!productId && (
           <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
             X
@@ -98,7 +98,7 @@ export function StockMovementForm({
       </div>
       {!productId && (
         <p className="text-xs text-muted-foreground -mt-2">
-          Para un producto que ya existe. Si aún no lo creaste, hazlo en Productos.
+          {t("stock.help")}
         </p>
       )}
 
@@ -107,13 +107,13 @@ export function StockMovementForm({
           <input type="hidden" name="product_id" value={productId} />
         ) : (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="product_id">Producto</Label>
+            <Label htmlFor="product_id">{t("stock.product")}</Label>
             {/* Sin `name` en el Select: su input nativo oculto se pierde en el reset que React 19
                 hace del <form> tras cada envío (éxito o error). El hidden input de abajo, ligado
                 a value={selectedProductId}, es inmune a ese reset (S13-03) y es lo que viaja. */}
             <Select value={selectedProductId} onValueChange={setSelectedProductId}>
               <SelectTrigger id="product_id">
-                <SelectValue placeholder="Selecciona un producto" />
+                <SelectValue placeholder={t("stock.productPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {products?.map((p) => (
@@ -131,10 +131,10 @@ export function StockMovementForm({
           <input type="hidden" name="warehouse_id" value={warehouseId} />
         ) : (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="warehouse_id">Bodega o sucursal</Label>
+            <Label htmlFor="warehouse_id">{t("stock.warehouse")}</Label>
             <Select value={selectedWarehouseId} onValueChange={setSelectedWarehouseId}>
               <SelectTrigger id="warehouse_id">
-                <SelectValue placeholder="Selecciona una bodega o sucursal" />
+                <SelectValue placeholder={t("stock.warehousePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {warehouses?.map((w) => (
@@ -149,7 +149,7 @@ export function StockMovementForm({
         )}
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="kind">Tipo de movimiento</Label>
+          <Label htmlFor="kind">{t("stock.kind")}</Label>
           <Select
             value={kind}
             onValueChange={(value) => {
@@ -162,16 +162,16 @@ export function StockMovementForm({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="in">Entrada</SelectItem>
-              <SelectItem value="out">Salida</SelectItem>
-              <SelectItem value="adjust">Ajuste</SelectItem>
+              <SelectItem value="in">{t("stock.kinds.in")}</SelectItem>
+              <SelectItem value="out">{t("stock.kinds.out")}</SelectItem>
+              <SelectItem value="adjust">{t("stock.kinds.adjust")}</SelectItem>
             </SelectContent>
           </Select>
           <input type="hidden" name="kind" value={kind} />
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="qty">{qtyLabel}</Label>
+          <Label htmlFor="qty">{t(`stock.qty.${kind}`)}</Label>
           <Input
             id="qty"
             name="qty"
@@ -183,13 +183,13 @@ export function StockMovementForm({
             onChange={(e) => setQty(e.target.value)}
           />
           {kind === "adjust" && (
-            <p className="text-xs text-muted-foreground">Usa un número negativo para descontar.</p>
+            <p className="text-xs text-muted-foreground">{t("stock.negativeHint")}</p>
           )}
         </div>
 
         {showCost && (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="unit_cost">Costo unitario</Label>
+            <Label htmlFor="unit_cost">{t("stock.unitCost")}</Label>
             <Input id="unit_cost" name="unit_cost" type="number" min="0" step="0.01" required defaultValue={100} />
           </div>
         )}
@@ -197,9 +197,9 @@ export function StockMovementForm({
 
       <div className="flex items-center gap-2 mt-2">
         <Button type="submit" disabled={pending}>
-          {pending ? "Guardando..." : "Guardar movimiento"}
+          {pending ? t("stock.saving") : t("stock.save")}
         </Button>
-        {state && !state.ok ? <span className="text-sm text-destructive">{state.error}</span> : null}
+        {state && !state.ok ? <span className="text-sm text-destructive">{t(state.error)}</span> : null}
       </div>
     </form>
   );

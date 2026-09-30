@@ -11,7 +11,7 @@ export async function saveRecipe(productId: string, rawData: unknown) {
     return {
       success: false as const,
       errors: result.error.flatten().fieldErrors,
-      message: "Por favor revisa los datos.",
+      message: "recipes.errors.checkData",
     };
   }
 
@@ -22,15 +22,15 @@ export async function saveRecipe(productId: string, rawData: unknown) {
   });
 
   if (error) {
-    let general = "Error al guardar la receta. Intenta de nuevo.";
+    let general = "recipes.errors.saveFailed";
     if (error.message.includes("product_not_finished")) {
-      general = "Solo los productos terminados pueden tener receta.";
+      general = "recipes.errors.notFinished";
     } else if (error.message.includes("recipe_qty_invalid")) {
-      general = "Las cantidades deben ser mayores a cero.";
+      general = "recipes.errors.qtyPositive";
     } else if (error.message.includes("permission_denied")) {
-      general = "No tienes permisos para modificar recetas.";
+      general = "common.errors.permissionDenied";
     } else if (error.message.includes("component_tenant_mismatch")) {
-      general = "Todos los componentes deben pertenecer a tu empresa.";
+      general = "recipes.errors.tenantMismatch";
     }
 
     return {

@@ -38,6 +38,7 @@ export function CategoryManager({
   onCreated?: (category: Category) => void;
 }) {
   const t = useTranslations("catalog");
+  const tr = useTranslations();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +91,7 @@ export function CategoryManager({
             </div>
             {error ? (
               <p role="alert" className="text-sm text-destructive">
-                {error}
+                {tr(error)}
               </p>
             ) : null}
           </div>
@@ -112,6 +113,7 @@ export function CategoryManager({
 
 function CategoryItem({ category }: { category: Category }) {
   const t = useTranslations("catalog");
+  const tr = useTranslations();
   const [mode, setMode] = useState<"view" | "edit" | "confirmDelete">("view");
   const [name, setName] = useState(category.name);
   const [error, setError] = useState<string | null>(null);
@@ -210,7 +212,7 @@ function CategoryItem({ category }: { category: Category }) {
       )}
       {error ? (
         <p role="alert" className="text-xs text-destructive">
-          {error}
+          {tr(error)}
         </p>
       ) : null}
     </li>
