@@ -830,7 +830,6 @@
     "principalTitle": "Main warehouse or branch",
     "principal": "Main",
     "saving": "Saving…",
-    "saveChanges": "Save changes",
     "saved": "Saved.",
     "save": "Save",
     "cancel": "Cancel",
@@ -839,10 +838,7 @@
     "creating": "Creating…",
     "create": "Create warehouse or branch",
     "edit": "Edit",
-    "delete": "Delete",
     "reactivate": "Reactivate",
-    "deleted": "Deleted",
-    "deleteConfirm": "Delete “{name}”?",
     "name": "Warehouse or branch name",
     "fields": {
       "address": "Address",
@@ -860,7 +856,12 @@
     },
     "lendsStock": "Lends stock to complete sales",
     "lendsStockHelp": "If another warehouse doesn't have enough, the sale can be completed with products from this one.",
-    "lendsStockTag": "Lends stock to complete sales"
+    "lendsStockTag": "Lends stock to complete sales",
+    "principalCannotRetire": "The main warehouse cannot be retired.",
+    "retire": "Retire",
+    "retired": "Retired",
+    "retireConfirm": "Retire “{name}”? It can no longer be used for sales. You can reactivate it later.",
+    "retireConfirmWithStock": "“{name}” has {units} units in stock; they will keep counting in inventory until you move them. Retire it anyway?"
   },
   "recipes": {
     "title": "Recipe: {name}",

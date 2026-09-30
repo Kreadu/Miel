@@ -830,7 +830,6 @@
     "principalTitle": "Bodega o sucursal principal",
     "principal": "Principal",
     "saving": "Guardando…",
-    "saveChanges": "Guardar cambios",
     "saved": "Guardado.",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -839,10 +838,7 @@
     "creating": "Creando…",
     "create": "Crear bodega o sucursal",
     "edit": "Editar",
-    "delete": "Eliminar",
     "reactivate": "Reactivar",
-    "deleted": "Eliminada",
-    "deleteConfirm": "¿Eliminar «{name}»?",
     "name": "Nombre de la bodega o sucursal",
     "fields": {
       "address": "Dirección",
@@ -860,7 +856,12 @@
     },
     "lendsStock": "Presta stock para completar ventas",
     "lendsStockHelp": "Si otra bodega no tiene suficiente, se podrá completar la venta con productos de esta.",
-    "lendsStockTag": "Presta stock para completar ventas"
+    "lendsStockTag": "Presta stock para completar ventas",
+    "principalCannotRetire": "La bodega principal no se puede dar de baja.",
+    "retire": "Dar de baja",
+    "retired": "Dada de baja",
+    "retireConfirm": "¿Dar de baja «{name}»? Ya no se podrá usar para vender. Puedes reactivarla después.",
+    "retireConfirmWithStock": "«{name}» tiene {units} unidades en stock; seguirán contando en el inventario hasta que las muevas. ¿Darla de baja igual?"
   },
   "recipes": {
     "title": "Receta: {name}",

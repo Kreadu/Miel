@@ -13,11 +13,14 @@ export function WarehouseRow({
   active,
   canManage,
   details,
+  stockUnits,
 }: {
   id: string;
   active: boolean;
   canManage: boolean;
   details: WarehouseDetails;
+  /** S19-38: unidades en stock, para avisar al darla de baja. */
+  stockUnits: number;
 }) {
   const [editing, setEditing] = useState(false);
   const [state, action, pending] = useActionState(updateWarehouse, null);
@@ -70,22 +73,26 @@ export function WarehouseRow({
           <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
             {t("warehouses.edit")}
           </Button>
-          {/* S19-25: "Eliminar" es borrado lógico (active=false): el kardex referencia la bodega. */}
+          {/* S19-25/S19-38: "Dar de baja" es borrado lógico (active=false): el kardex referencia la bodega. */}
           <form
             action={toggleWarehouseActive}
             onSubmit={(e) => {
-              if (active && !confirm(t("warehouses.deleteConfirm", { name: details.name }))) e.preventDefault();
+              const message =
+                stockUnits > 0
+                  ? t("warehouses.retireConfirmWithStock", { name: details.name, units: stockUnits })
+                  : t("warehouses.retireConfirm", { name: details.name });
+              if (active && !confirm(message)) e.preventDefault();
             }}
           >
             <input type="hidden" name="id" value={id} />
             <input type="hidden" name="active" value={(!active).toString()} />
-            <Button type="submit" variant="ghost" size="sm">
-              {active ? t("warehouses.delete") : t("warehouses.reactivate")}
+            <Button type="submit" variant="ghost" size="sm" className={active ? "text-destructive" : ""}>
+              {active ? t("warehouses.retire") : t("warehouses.reactivate")}
             </Button>
           </form>
         </div>
       ) : (
-        !active && <span className="text-xs text-muted-foreground">{t("warehouses.deleted")}</span>
+        !active && <span className="text-xs text-muted-foreground">{t("warehouses.retired")}</span>
       )}
     </li>
   );

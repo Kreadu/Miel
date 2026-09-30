@@ -219,6 +219,8 @@ ciclo: que un negocio real pueda operar sin trabarse — estas 4 historias van p
 | S19-35 | Como dueño quiero elegir la forma de entrega en el pedido (retiro, envío gratis, acordado, transporte por peso y km) antes del pago | `shipping_rates` + `/ventas/envios`; `products.weight_kg`; `create_sale` calcula el envío; carrito con sección de entrega y total con envío | S19-06, S19-08 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-35-formas-de-entrega.md |
 | S19-36 | Como dueño quiero que Pedidos sea la hoja de venta: sin pedido manual, con botón "Crear cliente", solo pedidos por completar, y el historial de compras en la hoja del cliente | Se borra `SaleForm`; `isPendingSale` filtra Pedidos; tabla "Historial de compras" en `/ventas/clientes/[id]`; Catálogo siempre visible en Vender; e2e paso 7 vía catálogo | S19-35 | done (sin migración) | — (reorganización de UI con tests, sin spec) |
 | S19-37 | Como dueño quiero Comprar como hoja de compra: proveedor con +, líneas con foto y costos con IVA, costo con IVA como costo del producto, e historial con fechas y proveedor | `receive_purchase` fija `products.cost` = costo con IVA; `/compras` con formulario, órdenes por recibir e Historial; `quickCreateSupplier` | S19-27, S19-34 | implemented (código); **migración sin aplicar al cloud, pgTAP sin correr** | specs/done/S19-37-hoja-de-compra.md |
+| S19-38 | Como dueño quiero ver cada bodega en modo lectura, cambiarla solo con "Editar" y poder darla de baja | Principal y otras: lectura → Editar → Guardar/Cancelar; "Eliminar" → "Dar de baja" con confirmación (avisa stock); la principal no se da de baja | S19-25, S18-10 | implemented | specs/done/S19-38-bodegas-ver-editar-y-dar-de-baja.md |
+| S19-39 | Como dueño quiero trasladar stock entre bodegas en un solo paso (sale de A y entra a B) | Sugerido 2026-09-30 al dar de baja bodegas con stock: cuando exista, dar de baja con stock pasa de aviso a bloqueo "traslada primero" | S19-38 | spec-ready | specs/S19-39-traslado-entre-bodegas.md |
 
 ## Épica E20 — Internacionalización (español/inglés/francés), TODA la app
 
@@ -333,7 +335,7 @@ PDF con `@react-pdf/renderer` (ADR al implementar S26-03).
 
 | ID | Historia | Estado |
 |---|---|---|
-| S26-01 | Página "Mi empresa" (logo, dirección, teléfono, correo) y "Tu nombre" de cada usuario | todo |
+| S26-01 | Página "Mi empresa" (logo, dirección, teléfono, correo) y "Tu nombre" de cada usuario | approved (specs/S26-01-mi-empresa-y-tu-nombre.md) |
 | S26-02 | Aprobadores marcados por el dueño; número OC-0001; "Pendiente de aprobación" → "Aprobar" (quién y cuándo); solo aprobadas se envían/ordenan | todo |
 | S26-03 | PDF de la orden (logo, empresa, proveedor, detalle, pedida/aprobada/enviada por + fecha); descargar y enviar por WhatsApp (celular adjunta; computador abre chat) | todo |
 | S26-04 | Enviar la orden por correo con el PDF adjunto (cuando esté en el servidor central) | todo |

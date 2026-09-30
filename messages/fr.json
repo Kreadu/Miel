@@ -830,7 +830,6 @@
     "principalTitle": "Entrepôt ou point de vente principal",
     "principal": "Principal",
     "saving": "Enregistrement…",
-    "saveChanges": "Enregistrer les modifications",
     "saved": "Enregistré.",
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -839,10 +838,7 @@
     "creating": "Création…",
     "create": "Créer l’entrepôt ou point de vente",
     "edit": "Modifier",
-    "delete": "Supprimer",
     "reactivate": "Réactiver",
-    "deleted": "Supprimé",
-    "deleteConfirm": "Supprimer « {name} » ?",
     "name": "Nom de l’entrepôt ou point de vente",
     "fields": {
       "address": "Adresse",
@@ -860,7 +856,12 @@
     },
     "lendsStock": "Prête du stock pour compléter les ventes",
     "lendsStockHelp": "Si un autre entrepôt n’a pas assez, la vente pourra être complétée avec les produits de celui-ci.",
-    "lendsStockTag": "Prête du stock pour compléter les ventes"
+    "lendsStockTag": "Prête du stock pour compléter les ventes",
+    "principalCannotRetire": "L’entrepôt principal ne peut pas être désactivé.",
+    "retire": "Désactiver",
+    "retired": "Désactivé",
+    "retireConfirm": "Désactiver « {name} » ? Il ne pourra plus servir aux ventes. Vous pourrez le réactiver.",
+    "retireConfirmWithStock": "« {name} » a {units} unités en stock ; elles continueront à compter dans l’inventaire jusqu’à ce que vous les déplaciez. Le désactiver quand même ?"
   },
   "recipes": {
     "title": "Recette : {name}",

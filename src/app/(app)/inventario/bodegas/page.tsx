@@ -21,12 +21,21 @@ export default async function BodegasPage() {
   const t = await getTranslations("warehouses");
 
   const supabase = await createClient();
-  const { data: warehouses } = await supabase
-    .from("warehouses")
-    .select(
-      "id, name, active, is_default, lends_stock, address, department, city, country, postal_code, phone, whatsapp",
-    )
-    .order("name", { ascending: true });
+  const [{ data: warehouses }, { data: stockRows }] = await Promise.all([
+    supabase
+      .from("warehouses")
+      .select(
+        "id, name, active, is_default, lends_stock, address, department, city, country, postal_code, phone, whatsapp",
+      )
+      .eq("tenant_id", active.tenantId)
+      .order("name", { ascending: true }),
+    // S19-38: unidades por bodega, para avisar al darla de baja.
+    supabase.from("current_stock").select("warehouse_id, total_qty").eq("tenant_id", active.tenantId),
+  ]);
+  const unitsByWarehouse = new Map<string, number>();
+  for (const r of stockRows ?? []) {
+    if (r.warehouse_id) unitsByWarehouse.set(r.warehouse_id, (unitsByWarehouse.get(r.warehouse_id) ?? 0) + Number(r.total_qty ?? 0));
+  }
 
   // S19-25: la principal arriba con todos sus datos; el resto, en la lista de abajo.
   const principal = warehouses?.find((w) => w.is_default);
@@ -56,6 +65,7 @@ export default async function BodegasPage() {
                 active={w.active}
                 canManage={canManage}
                 details={w}
+                stockUnits={unitsByWarehouse.get(w.id) ?? 0}
               />
             ))}
           </ul>

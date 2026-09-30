@@ -11,6 +11,18 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-09-30 (cont. 13) · S19-38 bodegas (hecha); S26-01 y S19-39 pendientes
+
+**Hecho:** S18-10 rehecho (asignar por bodega + Aceptar; "Permitir que preste"). E26 anotada.
+S19-38 implementada (bodegas en modo lectura → Editar → Guardar/Cancelar; "Dar de baja" con aviso
+de stock; la principal no se da de baja). `npm test` 470/470 ✓, lint ✓, tsc ✓. Sin commitear.
+
+**Siguiente paso:** (1) el humano aprueba la spec S19-39 (traslado entre bodegas, pedida por él);
+(2) S26-01 (Mi empresa + Tu nombre) está **aprobada y sin empezar**.
+Migraciones pendientes de aplicar: S18-06, S18-08, S18-10 (en ese orden).
+
+---
+
 ## Sesión 2026-09-30 (cont. 12) · S18-10 — completar una venta desde otra bodega
 
 **Hecho:** S18-08 commiteado y subido (`a8ca562`). S18-10 aprobada (se pregunta cada vez; vale
