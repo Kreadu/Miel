@@ -236,7 +236,9 @@
       "member": "Operativo"
     },
     "myProfile": "Mi perfil",
-    "myCompany": "Mi empresa"
+    "myCompany": "Mi empresa",
+    "stockAlert": "{count, plural, one {# producto agotado o bajo el mínimo} other {# productos agotados o bajo el mínimo}}",
+    "stockAlertAction": "Ver y pedir"
   },
   "home": {
     "greeting": "Hola de nuevo",
@@ -489,6 +491,26 @@
       "change": "cambiar",
       "fromWarehouse": "{qty} de {warehouse}",
       "tooMany": "Máximo {max} desde esta bodega."
+    },
+    "history": {
+      "open": "Historial",
+      "title": "Historial de pedidos",
+      "close": "Cerrar",
+      "from": "Desde",
+      "to": "Hasta",
+      "status": "Estado",
+      "view": "Ver",
+      "receipt": "Boleta",
+      "document": "Comprobante",
+      "collected": "Cobrado",
+      "totals": "Total del rango (sin anuladas)",
+      "empty": "No hay pedidos en ese rango de fechas.",
+      "filters": {
+        "all": "Todos",
+        "pending": "Por completar",
+        "delivered": "Entregados",
+        "cancelled": "Anulados"
+      }
     }
   },
   "customers": {
@@ -613,14 +635,20 @@
       "refundFailed": "No se pudo hacer la devolución. Intenta de nuevo."
     },
     "movements": {
-      "title": "Movimientos de mi turno",
-      "readOnly": "Cobros y devoluciones de este turno. No se pueden modificar.",
+      "readOnly": "Cobros y devoluciones. No se pueden modificar.",
       "time": "Hora",
       "customer": "Cliente",
       "receipt": "Boleta",
       "method": "Forma de pago",
       "amount": "Monto",
-      "empty": "Aún no hay cobros en este turno."
+      "empty": "No hay cobros en esas fechas.",
+      "today": "Movimientos de hoy",
+      "range": "Movimientos del {from} al {to}",
+      "from": "Desde",
+      "to": "Hasta",
+      "view": "Ver",
+      "backToToday": "Volver a hoy",
+      "who": "Quién cobró"
     },
     "refund": {
       "title": "Devolver una venta",
@@ -763,7 +791,8 @@
       "noPhoto": "Sin foto",
       "ofMinimum": "de mínimo {min} {unit}",
       "added": "Agregado ✓ (quitar)",
-      "addToPurchase": "Agregar a orden de compra"
+      "addToPurchase": "Agregar a orden de compra",
+      "outOfStock": "Agotado"
     },
     "kardex": {
       "title": "Kardex histórico",

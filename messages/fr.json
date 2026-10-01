@@ -236,7 +236,9 @@
       "member": "Opérationnel"
     },
     "myProfile": "Mon profil",
-    "myCompany": "Mon entreprise"
+    "myCompany": "Mon entreprise",
+    "stockAlert": "{count, plural, one {# produit en rupture ou sous le minimum} other {# produits en rupture ou sous le minimum}}",
+    "stockAlertAction": "Voir et commander"
   },
   "home": {
     "greeting": "Bon retour",
@@ -489,6 +491,26 @@
       "change": "modifier",
       "fromWarehouse": "{qty} de {warehouse}",
       "tooMany": "Maximum {max} depuis cet entrepôt."
+    },
+    "history": {
+      "open": "Historique",
+      "title": "Historique des commandes",
+      "close": "Fermer",
+      "from": "Du",
+      "to": "Au",
+      "status": "Statut",
+      "view": "Voir",
+      "receipt": "Ticket",
+      "document": "Justificatif",
+      "collected": "Encaissé",
+      "totals": "Total de la période (hors annulées)",
+      "empty": "Aucune commande sur cette période.",
+      "filters": {
+        "all": "Tous",
+        "pending": "À compléter",
+        "delivered": "Livrées",
+        "cancelled": "Annulées"
+      }
     }
   },
   "customers": {
@@ -613,14 +635,20 @@
       "refundFailed": "Impossible de faire le remboursement. Réessayez."
     },
     "movements": {
-      "title": "Mouvements de mon service",
-      "readOnly": "Encaissements et remboursements de ce service. Ils ne peuvent pas être modifiés.",
+      "readOnly": "Encaissements et remboursements. Ils ne peuvent pas être modifiés.",
       "time": "Heure",
       "customer": "Client",
       "receipt": "Ticket",
       "method": "Moyen de paiement",
       "amount": "Montant",
-      "empty": "Aucun encaissement pour ce service."
+      "empty": "Aucun encaissement à ces dates.",
+      "today": "Mouvements d’aujourd’hui",
+      "range": "Mouvements du {from} au {to}",
+      "from": "Du",
+      "to": "Au",
+      "view": "Voir",
+      "backToToday": "Revenir à aujourd’hui",
+      "who": "Encaissé par"
     },
     "refund": {
       "title": "Rembourser une vente",
@@ -763,7 +791,8 @@
       "noPhoto": "Pas de photo",
       "ofMinimum": "sur un minimum de {min} {unit}",
       "added": "Ajouté ✓ (retirer)",
-      "addToPurchase": "Ajouter au bon de commande"
+      "addToPurchase": "Ajouter au bon de commande",
+      "outOfStock": "En rupture"
     },
     "kardex": {
       "title": "Fiche de stock (kardex)",

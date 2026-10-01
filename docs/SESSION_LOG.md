@@ -27,8 +27,13 @@ S19-39 aprobada e implementada (traslado entre bodegas; con stock no se da de ba
 S18-11 (historial de pedidos por fechas), S18-12 (Caja por día/rango + productos vendidos),
 S26-05 (logo de la empresa en lugar del de Miel).
 
-**Siguiente paso:** el humano aprueba el plan de S19-40, S18-11, S18-12, S26-05; luego S26-02.
-Migraciones pendientes de aplicar, en orden: S18-06, S18-08, S18-10, S26-01, S19-39.
+Aprobados e implementados: S19-40 (agotados en alertas + aviso rojo en la app; migración
+`20260930250000_alerta-de-agotados.sql`), S26-05 (logo de la empresa en el menú), S18-11
+(historial de pedidos con fechas y estado), S18-12 (Caja: hoy por defecto, rango, productos por
+cobro, quién cobró). `npm test` 485/485 ✓, lint ✓, tsc ✓. Sin verificar en navegador.
+
+**Siguiente paso:** S26-02 (aprobadores de órdenes de compra).
+Migraciones pendientes de aplicar, en orden: S18-06, S18-08, S18-10, S26-01, S19-39, S19-40.
 
 ---
 

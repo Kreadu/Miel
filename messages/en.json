@@ -236,7 +236,9 @@
       "member": "Staff"
     },
     "myProfile": "My profile",
-    "myCompany": "My company"
+    "myCompany": "My company",
+    "stockAlert": "{count, plural, one {# product out of stock or below minimum} other {# products out of stock or below minimum}}",
+    "stockAlertAction": "View and order"
   },
   "home": {
     "greeting": "Welcome back",
@@ -489,6 +491,26 @@
       "change": "change",
       "fromWarehouse": "{qty} from {warehouse}",
       "tooMany": "At most {max} from this warehouse."
+    },
+    "history": {
+      "open": "History",
+      "title": "Order history",
+      "close": "Close",
+      "from": "From",
+      "to": "To",
+      "status": "Status",
+      "view": "View",
+      "receipt": "Receipt",
+      "document": "Receipt type",
+      "collected": "Collected",
+      "totals": "Range total (excluding cancelled)",
+      "empty": "No orders in that date range.",
+      "filters": {
+        "all": "All",
+        "pending": "To complete",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      }
     }
   },
   "customers": {
@@ -613,14 +635,20 @@
       "refundFailed": "Could not make the refund. Try again."
     },
     "movements": {
-      "title": "My shift's transactions",
-      "readOnly": "Payments and refunds in this shift. They cannot be changed.",
+      "readOnly": "Payments and refunds. They cannot be changed.",
       "time": "Time",
       "customer": "Customer",
       "receipt": "Receipt",
       "method": "Payment method",
       "amount": "Amount",
-      "empty": "No payments in this shift yet."
+      "empty": "No payments on those dates.",
+      "today": "Today's transactions",
+      "range": "Transactions from {from} to {to}",
+      "from": "From",
+      "to": "To",
+      "view": "View",
+      "backToToday": "Back to today",
+      "who": "Charged by"
     },
     "refund": {
       "title": "Refund a sale",
@@ -763,7 +791,8 @@
       "noPhoto": "No photo",
       "ofMinimum": "of minimum {min} {unit}",
       "added": "Added ✓ (remove)",
-      "addToPurchase": "Add to purchase order"
+      "addToPurchase": "Add to purchase order",
+      "outOfStock": "Out of stock"
     },
     "kardex": {
       "title": "Stock ledger (kardex)",

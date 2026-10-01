@@ -2436,6 +2436,7 @@ export type Database = {
         Row: {
           min_stock: number | null
           name: string | null
+          out_of_stock: boolean | null
           product_id: string | null
           sku: string | null
           tenant_id: string | null

@@ -28,7 +28,8 @@ export default async function AlertasStockPage({
   const supabase = await createClient();
   const { data: alerts, error } = await supabase
     .from("low_stock_alerts")
-    .select("product_id, sku, name, min_stock, total_qty")
+    .select("product_id, sku, name, min_stock, total_qty, out_of_stock")
+    .eq("tenant_id", active.tenantId)
     .order("name");
 
   if (error) {
@@ -55,6 +56,7 @@ export default async function AlertasStockPage({
         photoUrl: d?.photo_url ?? null,
         minStock: Number(a.min_stock ?? 0),
         totalQty: Number(a.total_qty ?? 0),
+        outOfStock: Boolean(a.out_of_stock),
       };
     });
 

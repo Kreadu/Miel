@@ -15,6 +15,8 @@ export type AlertItem = {
   photoUrl: string | null;
   minStock: number;
   totalQty: number;
+  /** S19-40: agotado (llegó a 0), aunque su mínimo sea 0. */
+  outOfStock: boolean;
 };
 
 /**
@@ -74,14 +76,20 @@ export function AlertsList({ items, canManage }: { items: AlertItem[]; canManage
               <div className="flex flex-col gap-1 p-3">
                 <p className="text-sm font-medium">{item.name}</p>
                 <p className="text-xs text-muted-foreground">{item.sku}</p>
-                <p className="text-sm">
-                  <span className="font-semibold tabular-nums text-destructive">
-                    {item.totalQty.toLocaleString("es-CO")}
-                  </span>{" "}
-                  <span className="text-muted-foreground">
-                    {t("ofMinimum", { min: item.minStock.toLocaleString("es-CO"), unit: item.unit })}
-                  </span>
-                </p>
+                {item.outOfStock ? (
+                  <p className="w-fit rounded-sm bg-destructive px-2 py-0.5 text-xs font-semibold text-destructive-foreground">
+                    {t("outOfStock")}
+                  </p>
+                ) : (
+                  <p className="text-sm">
+                    <span className="font-semibold tabular-nums text-destructive">
+                      {item.totalQty.toLocaleString("es-CO")}
+                    </span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("ofMinimum", { min: item.minStock.toLocaleString("es-CO"), unit: item.unit })}
+                    </span>
+                  </p>
+                )}
                 {canManage ? (
                   <Button
                     type="button"

@@ -10,6 +10,7 @@ import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CatalogPedidoCart } from "./catalog-pedido-cart";
 import { MarkInvoiceIssuedButton } from "./mark-invoice-issued-button";
+import { SalesHistory, type SalesHistoryParams } from "./sales-history";
 import type { StockMap } from "./allocation-picker";
 import { SaleRow } from "./sale-row";
 
@@ -18,7 +19,7 @@ export async function generateMetadata() {
   return { title: `${t("title")} · Miel` };
 }
 
-export default async function PedidosPage() {
+export default async function PedidosPage({ searchParams }: { searchParams: Promise<SalesHistoryParams> }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
   const t = await getTranslations("sales.orders");
@@ -209,6 +210,8 @@ export default async function PedidosPage() {
           {t("empty")}
         </p>
       )}
+
+      <SalesHistory tenantId={active.tenantId} params={await searchParams} />
     </div>
   );
 }

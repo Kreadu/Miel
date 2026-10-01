@@ -3,6 +3,8 @@ import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatDateTime, formatMoney as money } from "@/lib/format";
+import { cashRange } from "@/lib/cash/range";
+import { todayInBogota } from "@/lib/inventory-history";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CloseSessionForm } from "./close-session-form";
@@ -14,7 +16,7 @@ export async function generateMetadata() {
   return { title: `${t("title")} · Miel` };
 }
 
-export default async function CajaPage({ searchParams }: { searchParams: Promise<{ boleta?: string }> }) {
+export default async function CajaPage({ searchParams }: { searchParams: Promise<{ boleta?: string; desde?: string; hasta?: string }> }) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
 
@@ -26,7 +28,11 @@ export default async function CajaPage({ searchParams }: { searchParams: Promise
   const t = await getTranslations("cash");
   const tAll = await getTranslations();
   const canManage = active.role !== "member";
-  const receiptNumber = Number((await searchParams).boleta) || null;
+  const params = await searchParams;
+  const receiptNumber = Number(params.boleta) || null;
+  // S18-12: movimientos y turnos del día; con fechas, del rango (hora de Bogotá).
+  const today = todayInBogota();
+  const { from, to } = cashRange(params, today);
 
   const [mySessionRes, summaryRes] = await Promise.all([
     supabase
@@ -40,6 +46,8 @@ export default async function CajaPage({ searchParams }: { searchParams: Promise
       .from("cash_session_summary")
       .select("*")
       .eq("tenant_id", active.tenantId)
+      .gte("opened_at", `${from}T00:00:00-05:00`)
+      .lte("opened_at", `${to}T23:59:59.999-05:00`)
       .order("opened_at", { ascending: false }),
   ]);
 
@@ -48,13 +56,19 @@ export default async function CajaPage({ searchParams }: { searchParams: Promise
 
   // S18-08: movimientos de mi turno (cobros y devoluciones), solo lectura.
   const [movementsRes, refundSaleRes] = await Promise.all([
-    mySession
-      ? supabase
-          .from("customer_payments")
-          .select("id, amount, method, paid_at, note, customers(name), sales(receipt_number)")
-          .eq("cash_session_id", mySession.id)
-          .order("paid_at", { ascending: false })
-      : Promise.resolve({ data: [] }),
+    // S18-12: por defecto lo de hoy; con fechas, el rango. Un operativo ve solo sus cobros.
+    (() => {
+      let q = supabase
+        .from("customer_payments")
+        .select("id, amount, method, paid_at, note, created_by, customers(name), sales(receipt_number, sale_items(qty, products(name)))")
+        .eq("tenant_id", active.tenantId)
+        .gte("paid_at", `${from}T00:00:00-05:00`)
+        .lte("paid_at", `${to}T23:59:59.999-05:00`)
+        .order("paid_at", { ascending: false })
+        .limit(500);
+      if (!canManage) q = q.eq("created_by", user.id);
+      return q;
+    })(),
     canManage && receiptNumber
       ? supabase
           .from("sales")
@@ -70,6 +84,11 @@ export default async function CajaPage({ searchParams }: { searchParams: Promise
     return acc;
   }, {});
   const refundSaleRow = refundSaleRes.data;
+  // Quién cobró (dueño/admin): el nombre de "Mi perfil" (S26-01).
+  const { data: members } = canManage
+    ? await supabase.from("memberships").select("user_id, display_name").eq("tenant_id", active.tenantId)
+    : { data: [] };
+  const namesByUser = new Map((members ?? []).filter((m) => m.display_name).map((m) => [m.user_id, m.display_name!]));
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,63 +111,96 @@ export default async function CajaPage({ searchParams }: { searchParams: Promise
           </p>
           <CloseSessionForm sessionId={mySession.id} />
 
-          <section className="flex flex-col gap-2">
-            <h2 className="text-base font-semibold tracking-tight">{t("movements.title")}</h2>
-            <p className="text-xs text-muted-foreground">{t("movements.readOnly")}</p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {(["cash", "card", "transfer", "other"] as const).map((m) => (
-                <div key={m} className="rounded-lg border border-border bg-card p-3">
-                  <p className="text-xs text-muted-foreground">{tAll(`sales.paymentMethod.${m}`)}</p>
-                  <p className="text-base font-semibold tabular-nums">${money(byMethod[m] ?? 0)}</p>
-                </div>
-              ))}
-            </div>
-            {movements.length > 0 ? (
-              <div className="overflow-x-auto rounded-lg border border-border bg-card">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-border text-xs text-muted-foreground">
-                      <th className="px-3 py-2 font-medium">{t("movements.time")}</th>
-                      <th className="px-3 py-2 font-medium">{t("movements.customer")}</th>
-                      <th className="px-3 py-2 font-medium">{t("movements.receipt")}</th>
-                      <th className="px-3 py-2 font-medium">{t("movements.method")}</th>
-                      <th className="px-3 py-2 text-right font-medium">{t("movements.amount")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {movements.map((m) => (
-                      <tr key={m.id} className="border-b border-border last:border-0">
-                        <td className="px-3 py-2 tabular-nums">{formatDateTime(m.paid_at)}</td>
-                        <td className="px-3 py-2">
-                          {m.customers?.name ?? "—"}
-                          {Number(m.amount) < 0 && m.note ? (
-                            <span className="block text-xs text-destructive">{m.note}</span>
-                          ) : null}
-                        </td>
-                        <td className="px-3 py-2 tabular-nums">
-                          {m.sales?.receipt_number ? `#${m.sales.receipt_number}` : "—"}
-                        </td>
-                        <td className="px-3 py-2">{tAll(`sales.paymentMethod.${m.method}`)}</td>
-                        <td
-                          className={`px-3 py-2 text-right tabular-nums ${Number(m.amount) < 0 ? "text-destructive" : ""}`}
-                        >
-                          ${money(Number(m.amount))}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-                {t("movements.empty")}
-              </p>
-            )}
-          </section>
         </div>
       ) : (
         <OpenSessionForm />
       )}
+
+      <section className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-base font-semibold tracking-tight">
+            {from === to && from === today ? t("movements.today") : t("movements.range", { from, to })}
+          </h2>
+          <p className="text-xs text-muted-foreground">{t("movements.readOnly")}</p>
+        </div>
+        <form method="get" className="flex flex-wrap items-end gap-2">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="desde" className="text-xs font-medium">{t("movements.from")}</label>
+            <input id="desde" name="desde" type="date" defaultValue={from} className="flex h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="hasta" className="text-xs font-medium">{t("movements.to")}</label>
+            <input id="hasta" name="hasta" type="date" defaultValue={to} className="flex h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm" />
+          </div>
+          <button type="submit" className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent">
+            {t("movements.view")}
+          </button>
+          {from !== today || to !== today ? (
+            <a href="/ventas/caja" className="inline-flex h-9 items-center text-sm underline underline-offset-4">
+              {t("movements.backToToday")}
+            </a>
+          ) : null}
+        </form>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {(["cash", "card", "transfer", "other"] as const).map((m) => (
+            <div key={m} className="rounded-lg border border-border bg-card p-3">
+              <p className="text-xs text-muted-foreground">{tAll(`sales.paymentMethod.${m}`)}</p>
+              <p className="text-base font-semibold tabular-nums">${money(byMethod[m] ?? 0)}</p>
+            </div>
+          ))}
+        </div>
+        {movements.length > 0 ? (
+          <div className="overflow-x-auto rounded-lg border border-border bg-card">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-border text-xs text-muted-foreground">
+                  <th className="px-3 py-2 font-medium">{t("movements.time")}</th>
+                  <th className="px-3 py-2 font-medium">{t("movements.customer")}</th>
+                  <th className="px-3 py-2 font-medium">{t("movements.receipt")}</th>
+                  <th className="px-3 py-2 font-medium">{t("movements.method")}</th>
+                  {canManage ? <th className="px-3 py-2 font-medium">{t("movements.who")}</th> : null}
+                  <th className="px-3 py-2 text-right font-medium">{t("movements.amount")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {movements.map((m) => {
+                  const lines = (m.sales?.sale_items ?? [])
+                    .map((it) => `${Number(it.qty).toLocaleString("es-CO")} × ${it.products?.name ?? "—"}`)
+                    .join(", ");
+                  return (
+                    <tr key={m.id} className="border-b border-border align-top last:border-0">
+                      <td className="px-3 py-2 tabular-nums">{formatDateTime(m.paid_at)}</td>
+                      <td className="px-3 py-2">
+                        {m.customers?.name ?? "—"}
+                        {lines ? <span className="block text-xs text-muted-foreground">{lines}</span> : null}
+                        {Number(m.amount) < 0 && m.note ? (
+                          <span className="block text-xs text-destructive">{m.note}</span>
+                        ) : null}
+                      </td>
+                      <td className="px-3 py-2 tabular-nums">
+                        {m.sales?.receipt_number ? `#${m.sales.receipt_number}` : "—"}
+                      </td>
+                      <td className="px-3 py-2">{tAll(`sales.paymentMethod.${m.method}`)}</td>
+                      {canManage ? (
+                        <td className="px-3 py-2 text-muted-foreground">
+                          {m.created_by === user.id ? t("you") : (namesByUser.get(m.created_by) ?? t("otherUser"))}
+                        </td>
+                      ) : null}
+                      <td className={`px-3 py-2 text-right tabular-nums ${Number(m.amount) < 0 ? "text-destructive" : ""}`}>
+                        ${money(Number(m.amount))}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+            {t("movements.empty")}
+          </p>
+        )}
+      </section>
 
       {canManage ? (
         <section className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs">

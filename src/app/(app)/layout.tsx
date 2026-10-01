@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Menu } from "lucide-react";
+import { AlertTriangle, Menu } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { logout } from "@/actions/auth";
@@ -32,6 +32,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // S21-03: en el equipo de la tienda, nadie usa Miel sin identificarse con su código.
   if (active.needsWorker) redirect("/trabajador");
 
+  // S19-40: aviso de agotados o bajo el mínimo, para quien compra (dueño/admin o módulo Comprar).
+  const seesPurchases = active.modules === null || active.modules.includes("compras");
+  const { count: stockAlerts } = seesPurchases
+    ? await supabase
+        .from("low_stock_alerts")
+        .select("product_id", { count: "exact", head: true })
+        .eq("tenant_id", active.tenantId)
+    : { count: 0 };
+
+  // S26-05: logo de la empresa en lugar del de Miel (si lo subió en "Mi empresa").
+  const { data: company } = await supabase.from("tenants").select("logo_url").eq("id", active.tenantId).maybeSingle();
+
   // S26-01: nombre de la cuenta en esta empresa (o el correo si aún no lo puso).
   const { data: me } = active.storeMode
     ? { data: null }
@@ -45,7 +57,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const sidebarContent = (
     <>
       <div className="flex flex-col gap-1">
-        <BrandLink />
+        <BrandLink logoUrl={company?.logo_url} companyName={active.tenantName} />
         <p className="truncate text-sm font-medium">{active.tenantName}</p>
         <p className="text-xs text-muted-foreground">{t(`roles.${active.role}`)}</p>
       </div>
@@ -93,7 +105,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-svh flex-col md:flex-row">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 md:hidden">
-        <BrandLink />
+        <BrandLink logoUrl={company?.logo_url} companyName={active.tenantName} />
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
@@ -119,6 +131,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               /inicio, y con un solo hijo real justify-between no lo empuja a la derecha. */}
           <LanguageSwitcher currentLocale={locale} />
         </div>
+        {stockAlerts ? (
+          <Link
+            href="/inventario/alertas"
+            className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/15"
+          >
+            <AlertTriangle className="size-5 shrink-0" aria-hidden />
+            <span className="flex-1">{t("stockAlert", { count: stockAlerts })}</span>
+            <span className="underline underline-offset-4">{t("stockAlertAction")}</span>
+          </Link>
+        ) : null}
         {children}
       </main>
     </div>
