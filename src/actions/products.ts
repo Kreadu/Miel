@@ -21,7 +21,7 @@ type Supabase = Awaited<ReturnType<typeof createClient>>;
 function revalidateProductPaths() {
   // "layout" cubre /inventario y todos sus inventarios (/inventario/<tipo>).
   revalidatePath("/inventario", "layout");
-  revalidatePath("/ventas/catalogo");
+  revalidatePath("/ventas");
 }
 
 function mapProductError(code: string | undefined, message?: string): string {

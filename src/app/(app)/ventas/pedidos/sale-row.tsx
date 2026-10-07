@@ -31,7 +31,7 @@ export async function SaleRow({
     shippingAddress: string | null;
     paymentMethod: string | null;
     /** S27-02: pedido que llegó de la tienda en línea. */
-    store: { phone: string | null; payment: string | null; shippingToConfirm: boolean } | null;
+    store: { phone: string | null; payment: string | null; shippingToConfirm: boolean; proofAt: string | null } | null;
     items: AllocationItem[];
   };
   warehouses: AllocationWarehouse[];
@@ -54,6 +54,11 @@ export async function SaleRow({
             {sale.store.phone ? <a className="underline" href={`tel:${sale.store.phone}`}>{sale.store.phone}</a> : null}
             {sale.store.payment ? <span>{t("orders.prefersPayment", { method: t(`orders.storePayments.${sale.store.payment}`) })}</span> : null}
             {sale.store.shippingToConfirm ? <span>{t("orders.shippingToConfirm")}</span> : null}
+            {sale.store.proofAt ? (
+              <a className="font-medium text-foreground underline" href={`/ventas/pedidos/comprobante/${sale.id}`} target="_blank" rel="noopener">
+                {t("orders.viewProof")}
+              </a>
+            ) : null}
           </div>
         ) : null}
       </td>

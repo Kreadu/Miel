@@ -338,7 +338,7 @@ export function CatalogPedidoCart({
           {t("sales.cart.clear")}
         </Button>
         <Button asChild variant="ghost" type="button">
-          <Link href="/ventas/catalogo">{t("sales.cart.keepBrowsing")}</Link>
+          <Link href="/ventas">{t("sales.cart.keepBrowsing")}</Link>
         </Button>
       </div>
       {delivery.method === "pickup" && !paymentMethod ? (

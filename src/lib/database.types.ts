@@ -1394,6 +1394,10 @@ export type Database = {
       }
       sales: {
         Row: {
+          payment_proof_at: string | null
+          payment_proof_count: number
+          payment_proof_path: string | null
+          public_token: string | null
           source: string
           store_payment: string | null
           cash_session_id: string | null
@@ -1425,6 +1429,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          payment_proof_at?: string | null
+          payment_proof_count?: number
+          payment_proof_path?: string | null
+          public_token?: string | null
           source?: string
           store_payment?: string | null
           cash_session_id?: string | null
@@ -1456,6 +1464,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          payment_proof_at?: string | null
+          payment_proof_count?: number
+          payment_proof_path?: string | null
+          public_token?: string | null
           source?: string
           store_payment?: string | null
           cash_session_id?: string | null
@@ -1890,6 +1902,12 @@ export type Database = {
       }
       tenants: {
         Row: {
+          store_bank_info: string | null
+          store_cash_on_delivery: boolean
+          store_daviplata: string | null
+          store_nequi: string | null
+          store_pay_in_store: boolean
+          store_payment_qr_url: string | null
           store_color: string | null
           store_enabled: boolean
           store_slug: string | null
@@ -1909,6 +1927,12 @@ export type Database = {
           sells_virtual: boolean
         }
         Insert: {
+          store_bank_info?: string | null
+          store_cash_on_delivery?: boolean
+          store_daviplata?: string | null
+          store_nequi?: string | null
+          store_pay_in_store?: boolean
+          store_payment_qr_url?: string | null
           store_color?: string | null
           store_enabled?: boolean
           store_slug?: string | null
@@ -1928,6 +1952,12 @@ export type Database = {
           sells_virtual?: boolean
         }
         Update: {
+          store_bank_info?: string | null
+          store_cash_on_delivery?: boolean
+          store_daviplata?: string | null
+          store_nequi?: string | null
+          store_pay_in_store?: boolean
+          store_payment_qr_url?: string | null
           store_color?: string | null
           store_enabled?: boolean
           store_slug?: string | null
@@ -2947,9 +2977,14 @@ export type Database = {
           email: string | null
           logo_url: string | null
           name: string
+          payments: Json
           phone: string | null
           store_color: string | null
         }[]
+      }
+      attach_payment_proof: {
+        Args: { p_path: string; p_token: string }
+        Returns: undefined
       }
       place_store_order: {
         Args: {
@@ -2961,7 +2996,7 @@ export type Database = {
           p_payment: string
           p_slug: string
         }
-        Returns: { order_code: string; total: number }[]
+        Returns: { order_code: string; token: string; total: number }[]
       }
       set_purchase_approver: {
         Args: { p_membership_id: string; p_value: boolean }

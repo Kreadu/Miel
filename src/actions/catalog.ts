@@ -14,7 +14,7 @@ export type CategoryResult =
 
 /** S19-24/S19-26: las categorías se gestionan y se ven en Catálogo y en todos los inventarios. */
 function revalidateCategoryPaths() {
-  revalidatePath("/ventas/catalogo");
+  revalidatePath("/ventas");
   revalidatePath("/inventario", "layout");
 }
 

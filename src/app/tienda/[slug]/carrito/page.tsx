@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { loadStore } from "@/lib/store/load";
+import { parseStorePayments } from "@/lib/store/payments";
 
 import { storeMetadata } from "../metadata";
 import { StoreShell } from "../store-shell";
@@ -30,6 +31,7 @@ export default async function CartPage({ params }: Props) {
         currency={store.info.currency}
         storeName={store.info.name}
         storePhone={store.info.phone}
+        payments={parseStorePayments(store.info.payments)}
       />
     </StoreShell>
   );

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 const rpcResult: { current: { data: unknown; error: { message: string } | null } } = {
-  current: { data: [{ order_code: "ABCD1234", total: 26420 }], error: null },
+  current: { data: [{ order_code: "ABCD1234", total: 26420, token: "tok" }], error: null },
 };
 const rpc = vi.fn(async () => rpcResult.current);
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn(async () => ({ rpc })) }));
@@ -28,13 +28,13 @@ function fd(fields: Record<string, string>) {
 
 describe("placeStoreOrder (S27-02)", () => {
   it("envía solo id y cantidad (nunca precios) y devuelve el código", async () => {
-    rpcResult.current = { data: [{ order_code: "ABCD1234", total: 26420 }], error: null };
+    rpcResult.current = { data: [{ order_code: "ABCD1234", total: 26420, token: "tok" }], error: null };
     rpc.mockClear();
     const { placeStoreOrder } = await import("./store-order");
 
     const res = await placeStoreOrder(null, fd({ items: JSON.stringify([{ product_id: P1, qty: 2, unit_price: 1 }]) }));
 
-    expect(res).toEqual({ ok: true, code: "ABCD1234", total: 26420 });
+    expect(res).toEqual({ ok: true, code: "ABCD1234", total: 26420, token: "tok" });
     expect(rpc).toHaveBeenCalledWith("place_store_order", {
       p_slug: "dulce",
       p_customer: { name: "Luis", phone: "310 555 0001", email: null },

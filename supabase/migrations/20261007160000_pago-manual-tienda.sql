@@ -1,10 +1,3 @@
--- Miel · migraciones pendientes en Supabase cloud (armado 2026-10-07, 4.ª tanda).
--- Pegar completo en el SQL Editor y ejecutar una sola vez (va en una transacción).
--- Contiene: S27-03 pago manual de la tienda (formas de pago, comprobantes). (S27-02 ya se aplicó.)
--- OJO: hasta aplicarla, Pedidos sale vacío y la tienda/Mi empresa fallan (leen columnas nuevas).
-
-begin;
-
 -- S27-03 — Pago manual de la tienda (ADR-044): la empresa configura sus formas de pago (Nequi,
 -- Daviplata, cuenta, QR, contra entrega, pagar al recoger); la tienda ofrece solo esas; cada
 -- pedido de la tienda tiene un token secreto con el que el cliente sube su comprobante a un bucket
@@ -291,5 +284,3 @@ create policy "payment_proofs_tenant_read" on storage.objects for select to auth
         and s.tenant_id in (select public.user_tenant_ids())
     )
   );
-
-commit;

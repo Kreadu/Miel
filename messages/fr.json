@@ -248,7 +248,8 @@
       "slugReserved": "Cette adresse est réservée. Choisissez-en une autre.",
       "slugTaken": "Une autre entreprise utilise déjà cette adresse. Choisissez-en une autre.",
       "colorInvalid": "La couleur n'est pas valide.",
-      "saveFailed": "Impossible d'enregistrer la boutique. Réessayez."
+      "saveFailed": "Impossible d'enregistrer la boutique. Réessayez.",
+      "walletInvalid": "Le numéro doit comporter de 7 à 15 chiffres."
     },
     "cart": {
       "title": "Votre panier",
@@ -307,6 +308,42 @@
         "tooMany": "Nous avons déjà reçu vos commandes ; attendez quelques minutes avant d’en passer une autre.",
         "storeUnavailable": "La boutique n'est pas disponible pour le moment.",
         "failed": "Nous n'avons pas pu envoyer votre commande. Réessayez."
+      },
+      "noPayments": "Cette boutique n'a pas encore de moyen de paiement pour ce mode de livraison."
+    },
+    "payments": {
+      "title": "Moyens de paiement",
+      "subtitle": "Ce que vous remplissez ici est ce que vos clients voient en commandant. Ce qui reste vide n'est pas proposé.",
+      "nequi": "Numéro Nequi",
+      "daviplata": "Numéro Daviplata",
+      "bank": "Compte bancaire pour les virements",
+      "bankPlaceholder": "Banque, type de compte, numéro et titulaire",
+      "qr": "QR de paiement (Bre-B, Nequi ou banque)",
+      "removeQr": "Retirer le QR",
+      "qrHelp": "JPG, PNG ou WEBP, 2 Mo max. Vos clients le voient après la commande."
+    },
+    "proof": {
+      "howTo": {
+        "nequi": "Envoyez {amount} par Nequi à ce numéro :",
+        "daviplata": "Envoyez {amount} par Daviplata à ce numéro :",
+        "transfer": "Virez {amount} sur ce compte :"
+      },
+      "offline": {
+        "cash_on_delivery": "Vous payez {amount} à la réception de votre commande.",
+        "in_store": "Vous payez {amount} au retrait de votre commande."
+      },
+      "reference": "Indiquez la référence #{code} dans la description du paiement.",
+      "qrAlt": "Code QR pour payer",
+      "upload": "Déjà payé ? Envoyez votre justificatif",
+      "help": "Photo ou PDF du reçu, 5 Mo max.",
+      "send": "Envoyer le justificatif",
+      "sending": "Envoi…",
+      "sent": "Justificatif envoyé. La boutique le vérifiera et confirmera votre commande.",
+      "errors": {
+        "invalid": "Nous n'avons pas pu recevoir le justificatif pour cette commande.",
+        "fileRequired": "Choisissez la photo ou le PDF du reçu.",
+        "fileType": "Seules les photos (JPG, PNG, WEBP) ou les PDF sont acceptés.",
+        "fileSize": "Le fichier dépasse 5 Mo."
       }
     }
   },
@@ -504,7 +541,8 @@
         "transfer": "virement",
         "cash_on_delivery": "paiement à la livraison",
         "in_store": "paiement au retrait"
-      }
+      },
+      "viewProof": "Justificatif reçu · Voir"
     },
     "cart": {
       "title": "Commande créée depuis le catalogue",

@@ -9,6 +9,8 @@ insert into auth.users (id, email) values
 insert into public.tenants (id, name, store_enabled, store_slug) values
   ('10000000-0000-0000-0000-000000027201', 'Dulce', true, 'dulce'),
   ('10000000-0000-0000-0000-000000027202', 'Apagada', false, 'apagada');
+-- S27-03: Nequi solo se ofrece si la empresa puso su número.
+update public.tenants set store_nequi = '3001234567' where id = '10000000-0000-0000-0000-000000027201';
 insert into public.memberships (user_id, tenant_id, role, created_by) values
   ('00000000-0000-0000-0000-000000027201', '10000000-0000-0000-0000-000000027201', 'owner',
    '00000000-0000-0000-0000-000000027201');

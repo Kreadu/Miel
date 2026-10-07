@@ -11,6 +11,30 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-07 (cont. 4) · fix carrito de Pedidos + S27-03 pago manual
+
+**Hecho:** migración S27-02 aplicada por el humano (verificado) y commit `904fe41`. Corregido el
+error de React "Cannot update a component while rendering a different component" en
+`catalog-pedido-cart.tsx` (de S18-10): vaciar el carrito compartido pasó a `useEffect`; el aviso de
+la boleta se mantiene. **Sin verificar en navegador.** S27-03 aprobada (G1–G6) e implementada: Mi
+empresa → Formas de pago (Nequi, Daviplata, cuenta, QR, contra entrega, al recoger); la tienda
+ofrece solo eso; tras el pedido, instrucciones con valor y referencia, QR y subida del comprobante
+(bucket privado, llave secreta por pedido); en Pedidos "Comprobante recibido · Ver". lint, tsc,
+`npm test` 571/571, `next build` ✓; pgTAP S27-03 20/20 solo en PGlite.
+
+**Pendiente del humano:** aplicar `_pendientes-cloud.sql` (S27-03) **ya**: hasta entonces Pedidos,
+la tienda y Mi empresa fallan. Configurar las formas de pago, hacer un pedido con Nequi y subir un
+comprobante desde el celular (prueba las políticas de Storage). Commit sugerido:
+`feat(S27-03): formas de pago de la tienda y comprobante del cliente`.
+
+**Después (mismo día):** S27-03 aplicada en el cloud (verificado). S19-41 a pedido del humano: el
+Catálogo pasó a ser una sección de Vender (debajo del texto guía, título "Catálogo"); se quitó el
+botón; `/ventas/catalogo` redirige a `/ventas`. lint, tsc, `npm test` ✓; sin revisión visual.
+
+**Siguiente paso:** S27-04 (seguimiento por enlace + aviso de pedido nuevo), luego S27-07 (servidor).
+
+---
+
 ## Sesión 2026-10-07 (cont. 3) · S27-02 — carrito y pedido de la tienda
 
 **Hecho:** S8-03 descartada por el humano (prioriza la tienda). Migración de S27-01 aplicada en el

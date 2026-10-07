@@ -248,7 +248,8 @@
       "slugReserved": "That address is reserved. Choose another.",
       "slugTaken": "Another company already uses that address. Choose another.",
       "colorInvalid": "The color is not valid.",
-      "saveFailed": "Could not save the store. Try again."
+      "saveFailed": "Could not save the store. Try again.",
+      "walletInvalid": "The number must have 7 to 15 digits."
     },
     "cart": {
       "title": "Your cart",
@@ -307,6 +308,42 @@
         "tooMany": "We already received your orders; please wait a few minutes before placing another.",
         "storeUnavailable": "The store is not available right now.",
         "failed": "We could not send your order. Try again."
+      },
+      "noPayments": "This store has no payment methods for this delivery option yet."
+    },
+    "payments": {
+      "title": "Payment methods",
+      "subtitle": "What you fill in here is what your customers see when ordering. Anything left empty is not offered.",
+      "nequi": "Nequi number",
+      "daviplata": "Daviplata number",
+      "bank": "Bank account for transfers",
+      "bankPlaceholder": "Bank, account type, number and holder",
+      "qr": "Payment QR (Bre-B, Nequi or your bank)",
+      "removeQr": "Remove QR",
+      "qrHelp": "JPG, PNG or WEBP, up to 2 MB. Customers see it after placing the order."
+    },
+    "proof": {
+      "howTo": {
+        "nequi": "Send {amount} via Nequi to this number:",
+        "daviplata": "Send {amount} via Daviplata to this number:",
+        "transfer": "Transfer {amount} to this account:"
+      },
+      "offline": {
+        "cash_on_delivery": "You pay {amount} when you receive your order.",
+        "in_store": "You pay {amount} when you pick up your order."
+      },
+      "reference": "Write the reference #{code} in the payment description.",
+      "qrAlt": "QR code to pay",
+      "upload": "Already paid? Upload your proof",
+      "help": "Photo or PDF of the receipt, up to 5 MB.",
+      "send": "Send proof",
+      "sending": "Sending…",
+      "sent": "Proof sent. The store will check it and confirm your order.",
+      "errors": {
+        "invalid": "We could not receive the proof for this order.",
+        "fileRequired": "Choose the photo or PDF of the receipt.",
+        "fileType": "Only photos (JPG, PNG, WEBP) or PDF are accepted.",
+        "fileSize": "The file is larger than 5 MB."
       }
     }
   },
@@ -504,7 +541,8 @@
         "transfer": "bank transfer",
         "cash_on_delivery": "cash on delivery",
         "in_store": "payment at pickup"
-      }
+      },
+      "viewProof": "Payment proof received · View"
     },
     "cart": {
       "title": "Order built from the catalog",

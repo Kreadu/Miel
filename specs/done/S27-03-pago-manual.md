@@ -1,7 +1,7 @@
 ---
 id: S27-03
 titulo: Tienda en línea — pago manual (instrucciones y comprobante)
-estado: draft
+estado: implemented
 depende_de: [S27-02]
 ---
 
@@ -69,7 +69,7 @@ empresa ve en Pedidos antes de registrar el cobro. Es la v1 de pagos acordada; W
 5. En 375px las instrucciones, el QR (como máximo 240px) y la subida caben sin scroll horizontal.
 
 ## Modelo de datos y migraciones
-Migración `…_pago-manual-tienda.sql` (después de la de S27-02):
+Migración `20261007160000_pago-manual-tienda.sql` (después de la de S27-02):
 ```sql
 alter table tenants add column store_nequi text, add column store_daviplata text,
   add column store_bank_info text, add column store_payment_qr_url text,
@@ -130,3 +130,11 @@ comprobante real (regla 9).
 
 ## Historial
 - 2026-10-07 · creada (draft) con supuestos G1–G6 pendientes de confirmar.
+- 2026-10-07 · aprobada por el humano con G1–G6 tal cual.
+- 2026-10-07 · implementada. Cada comprobante es un archivo nuevo en `<token>/<uuid>.<ext>` (solo
+  insert en Storage; el pedido apunta al último). "Ver comprobante" = ruta
+  `/ventas/pedidos/comprobante/[id]` → enlace firmado de 5 min. QR en el bucket público
+  `company-logos`. El test de S27-02 ahora configura Nequi en su tienda (Nequi solo se ofrece con
+  número). pgTAP 20/20 (+ S27-01 25/25 y S27-02 26/26) en PGlite; lint, tsc, `npm test` 571/571,
+  `next build` ✓. **Falta:** aplicar la migración, probar una subida real (las políticas de Storage
+  no corren en PGlite) y ver el flujo en el celular.

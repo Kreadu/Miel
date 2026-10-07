@@ -1,19 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Landmark, ShoppingBag, ShoppingCart, Truck, Users, Wallet } from "lucide-react";
+import { Landmark, ShoppingCart, Truck, Users, Wallet } from "lucide-react";
 
 import { getTranslations } from "next-intl/server";
 
 import { getActiveTenant } from "@/lib/tenant/server";
+
+import { CatalogSection } from "./catalogo/catalog-section";
 
 export async function generateMetadata() {
   const t = await getTranslations("sales");
   return { title: `${t("title")} · Miel` };
 }
 
-export default async function VentasPage() {
+export default async function VentasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string }>;
+}) {
   const { active } = await getActiveTenant();
   if (!active) notFound();
+  const { categoria } = await searchParams;
   const t = await getTranslations("sales");
 
   return (
@@ -57,14 +64,6 @@ export default async function VentasPage() {
             <Truck className="mr-2 h-4 w-4" />
             {t("links.shipping")}
           </Link>
-          {/* S19-36: la venta se arma desde el Catálogo, así que se muestra siempre. */}
-          <Link
-            href="/ventas/catalogo"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80"
-          >
-            <ShoppingBag className="mr-2 h-4 w-4" />
-            {t("links.catalog")}
-          </Link>
           {active.role !== "member" && (
             <Link
               href="/ventas/cuentas-por-cobrar"
@@ -76,11 +75,9 @@ export default async function VentasPage() {
           )}
         </div>
       </div>
-      <div className="rounded-lg border border-dashed border-border p-8 text-center">
-        <p className="text-sm text-muted-foreground">
-          {t("hint")}
-        </p>
-      </div>
+      <p className="text-sm text-muted-foreground">{t("hint")}</p>
+      {/* S19-41: el Catálogo vive aquí (antes era una página aparte con su propio botón). */}
+      <CatalogSection active={active} categoria={categoria} />
     </div>
   );
 }

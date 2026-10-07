@@ -248,7 +248,8 @@
       "slugReserved": "Esa dirección está reservada. Elige otra.",
       "slugTaken": "Esa dirección ya la usa otra empresa. Elige otra.",
       "colorInvalid": "El color no es válido.",
-      "saveFailed": "No se pudo guardar la tienda. Intenta de nuevo."
+      "saveFailed": "No se pudo guardar la tienda. Intenta de nuevo.",
+      "walletInvalid": "El número debe tener de 7 a 15 dígitos."
     },
     "cart": {
       "title": "Tu carrito",
@@ -307,6 +308,42 @@
         "tooMany": "Ya recibimos tus pedidos; espera unos minutos antes de hacer otro.",
         "storeUnavailable": "La tienda no está disponible en este momento.",
         "failed": "No pudimos enviar tu pedido. Intenta de nuevo."
+      },
+      "noPayments": "Esta tienda todavía no tiene formas de pago para esta entrega."
+    },
+    "payments": {
+      "title": "Formas de pago",
+      "subtitle": "Lo que llenes aquí es lo que tus clientes ven al pedir. Lo que dejes vacío no se ofrece.",
+      "nequi": "Número de Nequi",
+      "daviplata": "Número de Daviplata",
+      "bank": "Cuenta bancaria para transferencias",
+      "bankPlaceholder": "Banco, tipo de cuenta, número y titular",
+      "qr": "QR de pago (Bre-B, Nequi o del banco)",
+      "removeQr": "Quitar QR",
+      "qrHelp": "JPG, PNG o WEBP, máximo 2 MB. Tus clientes lo verán al terminar el pedido."
+    },
+    "proof": {
+      "howTo": {
+        "nequi": "Envía {amount} por Nequi a este número:",
+        "daviplata": "Envía {amount} por Daviplata a este número:",
+        "transfer": "Transfiere {amount} a esta cuenta:"
+      },
+      "offline": {
+        "cash_on_delivery": "Pagas {amount} cuando recibas tu pedido.",
+        "in_store": "Pagas {amount} cuando recojas tu pedido."
+      },
+      "reference": "En la descripción del pago escribe la referencia #{code}.",
+      "qrAlt": "Código QR para pagar",
+      "upload": "¿Ya pagaste? Sube tu comprobante",
+      "help": "Foto o PDF del comprobante, máximo 5 MB.",
+      "send": "Enviar comprobante",
+      "sending": "Enviando…",
+      "sent": "Comprobante enviado. La tienda lo revisará y confirmará tu pedido.",
+      "errors": {
+        "invalid": "No pudimos recibir el comprobante para este pedido.",
+        "fileRequired": "Elige la foto o el PDF del comprobante.",
+        "fileType": "Solo se aceptan fotos (JPG, PNG, WEBP) o PDF.",
+        "fileSize": "El archivo pesa más de 5 MB."
       }
     }
   },
@@ -504,7 +541,8 @@
         "transfer": "transferencia",
         "cash_on_delivery": "contra entrega",
         "in_store": "pago al recoger"
-      }
+      },
+      "viewProof": "Comprobante recibido · Ver"
     },
     "cart": {
       "title": "Pedido armado desde el catálogo",

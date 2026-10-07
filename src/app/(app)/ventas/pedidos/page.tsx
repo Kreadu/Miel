@@ -32,7 +32,7 @@ export default async function PedidosPage({ searchParams }: { searchParams: Prom
   const [salesRes, customersRes, warehousesRes, mySessionRes, ratesRes, defaultWarehouseRes, invoicesRes] = await Promise.all([
     supabase
       .from("sales")
-      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, source, store_payment, delivery_method, customers(name, phone), customer_payments(amount), sale_items(product_id, qty, products(name))")
+      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, source, store_payment, delivery_method, payment_proof_at, customers(name, phone), customer_payments(amount), sale_items(product_id, qty, products(name))")
       .eq("tenant_id", active.tenantId)
       .order("created_at", { ascending: false }),
     supabase.from("customers").select("id, name").eq("tenant_id", active.tenantId).eq("active", true).order("name"),
@@ -102,7 +102,7 @@ export default async function PedidosPage({ searchParams }: { searchParams: Prom
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="outline">
-            <Link href="/ventas/catalogo">{t("goToCatalog")}</Link>
+            <Link href="/ventas">{t("goToCatalog")}</Link>
           </Button>
           <Button asChild variant="outline">
             <Link href="/ventas/clientes">{t("createCustomer")}</Link>
@@ -192,7 +192,12 @@ export default async function PedidosPage({ searchParams }: { searchParams: Prom
                     paymentMethod: s.payment_method,
                     store:
                       s.source === "store"
-                        ? { phone: s.customers?.phone ?? null, payment: s.store_payment, shippingToConfirm: s.delivery_method === "agreed" }
+                        ? {
+                            phone: s.customers?.phone ?? null,
+                            payment: s.store_payment,
+                            shippingToConfirm: s.delivery_method === "agreed",
+                            proofAt: s.payment_proof_at,
+                          }
                         : null,
                     items: s.sale_items.map((it) => ({
                       productId: it.product_id,

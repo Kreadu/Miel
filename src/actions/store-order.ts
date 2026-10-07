@@ -6,7 +6,7 @@ import { MAX_QTY } from "@/lib/store/cart";
 import { createClient } from "@/lib/supabase/server";
 
 export type StoreOrderState =
-  | { ok: true; code: string; total: number }
+  | { ok: true; code: string; total: number; token: string | null }
   | { ok: false; error: string; product?: string }
   | null;
 
@@ -46,7 +46,7 @@ const orderSchema = z
 export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData): Promise<StoreOrderState> {
   const get = (k: string) => formData.get(k)?.toString() ?? "";
   // Campo trampa: un humano no lo ve; un bot lo llena. Se responde igual, sin crear nada.
-  if (get("website") !== "") return { ok: true, code: "--------", total: 0 };
+  if (get("website") !== "") return { ok: true, code: "--------", total: 0, token: null };
 
   let items: unknown;
   try {
@@ -90,5 +90,5 @@ export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData
     console.error("placeStoreOrder:", message);
     return { ok: false, error: `${E}.failed` };
   }
-  return { ok: true, code: data[0].order_code, total: Number(data[0].total) };
+  return { ok: true, code: data[0].order_code, total: Number(data[0].total), token: data[0].token };
 }

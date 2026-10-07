@@ -11,12 +11,13 @@ import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/currency";
 import { cartTotal, MAX_QTY, setCartQty } from "@/lib/store/cart";
 import type { StoreProduct } from "@/lib/store/load";
+import { offeredPayments, type StorePaymentMethod, type StorePayments } from "@/lib/store/payments";
 import { storePrice } from "@/lib/store/price";
 import { whatsappUrl } from "@/lib/purchases/whatsapp";
 
 import { useCart } from "../use-cart";
+import { PaymentInstructions } from "./payment-instructions";
 
-const PAYMENTS = ["nequi", "daviplata", "transfer", "cash_on_delivery", "in_store"] as const;
 const BUTTON =
   "flex h-11 w-full items-center justify-center rounded-md bg-(--store) px-4 text-sm font-semibold text-(--store-fg) transition-opacity hover:opacity-90 disabled:opacity-50";
 
@@ -27,18 +28,23 @@ export function CartView({
   currency,
   storeName,
   storePhone,
+  payments,
 }: {
   slug: string;
   products: StoreProduct[];
   currency: string;
   storeName: string;
   storePhone: string | null;
+  payments: StorePayments;
 }) {
   const t = useTranslations("onlineStore");
   const { cart, update } = useCart(slug);
   const [state, action, pending] = useActionState(placeStoreOrder, null);
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
-  const [payment, setPayment] = useState<(typeof PAYMENTS)[number]>("nequi");
+  const offered = offeredPayments(payments, delivery);
+  const [chosen, setChosen] = useState<StorePaymentMethod | null>(null);
+  // Lo elegido, si sigue ofrecido para esta entrega; si no, el primero disponible.
+  const payment = chosen && offered.includes(chosen) ? chosen : (offered[0] ?? null);
 
   // Pedido hecho: el carrito queda vacío (el resumen lo muestra la respuesta).
   useEffect(() => {
@@ -56,6 +62,16 @@ export function CartView({
           <span className="text-lg font-semibold tabular-nums">#{state.code}</span>
           <span className="block text-sm tabular-nums">{t("order.total", { total: formatMoney(state.total, currency) })}</span>
         </p>
+        {payment ? (
+          <PaymentInstructions
+            method={payment}
+            payments={payments}
+            code={state.code}
+            total={state.total}
+            currency={currency}
+            token={state.token}
+          />
+        ) : null}
         {storePhone ? (
           <div className="flex w-full flex-col gap-2">
             <a className={BUTTON} href={whatsappUrl(storePhone, message)} target="_blank" rel="noopener">
@@ -179,10 +195,7 @@ export function CartView({
                 name="delivery"
                 value={d}
                 checked={delivery === d}
-                onChange={() => {
-                  setDelivery(d);
-                  if (d === "delivery" && payment === "in_store") setPayment("nequi");
-                }}
+                onChange={() => setDelivery(d)}
                 className="h-4 w-4 accent-(--store)"
               />
               {t(`order.deliveries.${d}`)}
@@ -199,14 +212,15 @@ export function CartView({
 
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-sm font-medium">{t("order.payment")}</legend>
-          {PAYMENTS.filter((p) => p !== "in_store" || delivery === "pickup").map((p) => (
+          {offered.length === 0 ? <p className="text-sm text-destructive">{t("order.noPayments")}</p> : null}
+          {offered.map((p) => (
             <label key={p} className="flex min-h-10 items-center gap-2 text-sm">
               <input
                 type="radio"
                 name="payment"
                 value={p}
                 checked={payment === p}
-                onChange={() => setPayment(p)}
+                onChange={() => setChosen(p)}
                 className="h-4 w-4 accent-(--store)"
               />
               {t(`order.payments.${p}`)}
@@ -230,7 +244,7 @@ export function CartView({
             {t(state.error.replace(/^onlineStore\./, ""), { product: state.product ?? "" })}
           </p>
         ) : null}
-        <button type="submit" disabled={pending} className={BUTTON}>
+        <button type="submit" disabled={pending || !payment} className={BUTTON}>
           {pending ? t("order.sending") : t("order.submit")}
         </button>
       </form>

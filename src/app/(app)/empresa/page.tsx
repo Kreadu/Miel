@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CompanyForm } from "./company-form";
+import { StorePaymentsForm } from "./store-payments-form";
 import { StoreSettingsForm } from "./store-settings-form";
 
 export async function generateMetadata() {
@@ -21,7 +22,7 @@ export default async function EmpresaPage() {
   const supabase = await createClient();
   const { data: company } = await supabase
     .from("tenants")
-    .select("name, nit, address, city, phone, email, logo_url, store_enabled, store_slug, store_color")
+    .select("name, nit, address, city, phone, email, logo_url, store_enabled, store_slug, store_color, store_nequi, store_daviplata, store_bank_info, store_payment_qr_url, store_cash_on_delivery, store_pay_in_store")
     .eq("id", active.tenantId)
     .maybeSingle();
   if (!company) notFound();
@@ -34,6 +35,7 @@ export default async function EmpresaPage() {
       </div>
       <CompanyForm values={company} />
       <StoreSettingsForm values={company} />
+      <StorePaymentsForm values={company} />
     </div>
   );
 }
