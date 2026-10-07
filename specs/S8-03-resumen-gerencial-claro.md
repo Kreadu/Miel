@@ -1,7 +1,7 @@
 ---
 id: S8-03
 titulo: Resumen gerencial claro (período visible, mes anterior, rankings recientes)
-estado: draft
+estado: descartada
 depende_de: [S8-01, S8-02]
 ---
 
@@ -88,3 +88,4 @@ El humano corre el pgTAP y revisa Inicio a 375px (regla 9).
 
 ## Historial
 - 2026-10-07 · creada (draft) con supuestos D1–D3 pendientes de confirmar.
+- 2026-10-07 · descartada por el humano (se prioriza la tienda en línea, E27).

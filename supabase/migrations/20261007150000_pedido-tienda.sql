@@ -1,10 +1,3 @@
--- Miel · migraciones pendientes en Supabase cloud (armado 2026-10-07, 3.ª tanda).
--- Pegar completo en el SQL Editor y ejecutar una sola vez (va en una transacción).
--- Contiene: S27-02 pedido desde la tienda. (S27-01 ya se aplicó.)
--- OJO: hasta aplicarla, Vender → Pedidos sale vacío (lee columnas nuevas).
-
-begin;
-
 -- S27-02 — Pedido desde la tienda en línea (ADR-044): el visitante anónimo arma su carrito y
 -- place_store_order crea, de forma atómica, el cliente (si es nuevo) y un pedido en borrador
 -- (source='store') que la empresa confirma en Vender → Pedidos. Precios siempre de la BD.
@@ -186,5 +179,3 @@ $$;
 
 revoke all on function public.place_store_order(text, jsonb, jsonb, text, text, text, text) from public;
 grant execute on function public.place_store_order(text, jsonb, jsonb, text, text, text, text) to anon, authenticated;
-
-commit;

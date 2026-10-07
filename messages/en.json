@@ -249,6 +249,65 @@
       "slugTaken": "Another company already uses that address. Choose another.",
       "colorInvalid": "The color is not valid.",
       "saveFailed": "Could not save the store. Try again."
+    },
+    "cart": {
+      "title": "Your cart",
+      "open": "Cart ({count} items)",
+      "add": "Add",
+      "addMore": "In cart ({qty}) · +1",
+      "empty": "Your cart is empty.",
+      "keepShopping": "Keep shopping",
+      "someGone": "Some products are no longer available and were left out of the total.",
+      "less": "Remove one {name}",
+      "more": "Add one {name}",
+      "remove": "Remove {name} from cart",
+      "estimatedTotal": "Estimated total",
+      "totalNote": "VAT included. The store confirms the final total (and shipping, if any)."
+    },
+    "order": {
+      "title": "Your details",
+      "name": "Name",
+      "phone": "Mobile phone",
+      "email": "Email (optional)",
+      "delivery": "Delivery",
+      "deliveries": {
+        "pickup": "Pick up at the store",
+        "delivery": "Home delivery"
+      },
+      "address": "Delivery address",
+      "shippingNote": "The store will confirm the shipping cost.",
+      "payment": "How do you want to pay?",
+      "payments": {
+        "nequi": "Nequi",
+        "daviplata": "Daviplata",
+        "transfer": "Bank transfer",
+        "cash_on_delivery": "Cash on delivery",
+        "in_store": "Pay at pickup"
+      },
+      "note": "Note (optional)",
+      "submit": "Place order",
+      "sending": "Sending…",
+      "successTitle": "Order received!",
+      "successText": "{name} will contact you to confirm your order and payment.",
+      "code": "Your order code",
+      "total": "Total: {total}",
+      "writeWhatsapp": "Message on WhatsApp",
+      "call": "Call {phone}",
+      "whatsappText": "Hi {name}, I placed order #{code} in your online store.",
+      "errors": {
+        "nameRequired": "Enter your name (2 to 80 characters).",
+        "phoneInvalid": "Enter a valid mobile number.",
+        "emailInvalid": "The email is not valid.",
+        "deliveryInvalid": "Choose how to receive your order.",
+        "paymentInvalid": "Choose a valid payment method.",
+        "addressRequired": "Enter the delivery address.",
+        "cartEmpty": "Your cart is empty.",
+        "qtyInvalid": "Each product allows 1 to 99 units.",
+        "productUnavailable": "\"{product}\" is no longer available. Remove it from your cart to continue.",
+        "tooMany": "We already received your orders; please wait a few minutes before placing another.",
+        "storeUnavailable": "The store is not available right now.",
+        "failed": "We could not send your order. Try again."
+      }
     }
   },
   "invitations": {
@@ -435,7 +494,17 @@
       "changeMethod": "change payment method",
       "howPays": "How is it paid?",
       "amount": "Amount",
-      "refundInCash": "Paid: refund from Cash register"
+      "refundInCash": "Paid: refund from Cash register",
+      "fromStore": "Online store",
+      "prefersPayment": "Wants to pay with {method}",
+      "shippingToConfirm": "Shipping to confirm",
+      "storePayments": {
+        "nequi": "Nequi",
+        "daviplata": "Daviplata",
+        "transfer": "bank transfer",
+        "cash_on_delivery": "cash on delivery",
+        "in_store": "payment at pickup"
+      }
     },
     "cart": {
       "title": "Order built from the catalog",

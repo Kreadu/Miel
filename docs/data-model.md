@@ -161,3 +161,6 @@ fijo no registrado o con desviación del monto).
 ## Tienda en línea (E27)
 - `tenants` + `store_enabled`, `store_slug` (único; formato y reservadas por CHECK), `store_color`
   (hex). Público solo por `store_info(slug)` y `store_catalog(slug)` (ADR-044, S27-01).
+- `sales.source` (`internal`|`store`) y `sales.store_payment` (pago preferido del cliente de la tienda);
+  `created_by` admite vacío en `sales` y `customers` (lo que llega de la tienda). Pedido anónimo solo por
+  `place_store_order` (S27-02).

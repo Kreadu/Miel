@@ -20,3 +20,4 @@ export const loadStore = cache(async (slug: string) => {
 });
 
 export type StoreProduct = NonNullable<Awaited<ReturnType<typeof loadStore>>>["products"][number];
+export type StoreInfo = NonNullable<Awaited<ReturnType<typeof loadStore>>>["info"];

@@ -7,11 +7,15 @@ import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { formatMoney } from "@/lib/currency";
 import type { StoreProduct } from "@/lib/store/load";
+import { addToCart, MAX_QTY } from "@/lib/store/cart";
 import { storePrice } from "@/lib/store/price";
 
+import { useCart } from "./use-cart";
+
 // ponytail: filtra en el cliente; paginar en la BD cuando una tienda pase de ~500 productos.
-export function StoreCatalog({ products, currency }: { products: StoreProduct[]; currency: string }) {
+export function StoreCatalog({ slug, products, currency }: { slug: string; products: StoreProduct[]; currency: string }) {
   const t = useTranslations("onlineStore");
+  const { cart, update } = useCart(slug);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
 
@@ -94,6 +98,16 @@ export function StoreCatalog({ products, currency }: { products: StoreProduct[];
                   <span className={`text-xs ${p.available ? "text-success" : "text-muted-foreground"}`}>
                     {p.available ? t("available") : t("soldOut")}
                   </span>
+                  {p.available ? (
+                    <button
+                      type="button"
+                      disabled={(cart[p.product_id] ?? 0) >= MAX_QTY}
+                      onClick={() => update((c) => addToCart(c, p.product_id))}
+                      className="mt-2 h-10 rounded-md bg-(--store) px-3 text-sm font-medium text-(--store-fg) transition-opacity hover:opacity-90 disabled:opacity-50"
+                    >
+                      {cart[p.product_id] ? t("cart.addMore", { qty: cart[p.product_id] }) : t("cart.add")}
+                    </button>
+                  ) : null}
                 </div>
               </li>
             );

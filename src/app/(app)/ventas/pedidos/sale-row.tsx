@@ -30,6 +30,8 @@ export async function SaleRow({
     createdAt: string;
     shippingAddress: string | null;
     paymentMethod: string | null;
+    /** S27-02: pedido que llegó de la tienda en línea. */
+    store: { phone: string | null; payment: string | null; shippingToConfirm: boolean } | null;
     items: AllocationItem[];
   };
   warehouses: AllocationWarehouse[];
@@ -44,7 +46,17 @@ export async function SaleRow({
 
   return (
     <tr className="border-b border-border text-sm last:border-0">
-      <td className="px-3 py-2.5">{sale.customerName ?? t("orders.counter")}</td>
+      <td className="px-3 py-2.5">
+        <div>{sale.customerName ?? t("orders.counter")}</div>
+        {sale.store ? (
+          <div className="mt-0.5 flex flex-col text-xs text-muted-foreground">
+            <span className="w-fit rounded-sm bg-primary/10 px-1.5 py-0.5 font-medium text-foreground">{t("orders.fromStore")}</span>
+            {sale.store.phone ? <a className="underline" href={`tel:${sale.store.phone}`}>{sale.store.phone}</a> : null}
+            {sale.store.payment ? <span>{t("orders.prefersPayment", { method: t(`orders.storePayments.${sale.store.payment}`) })}</span> : null}
+            {sale.store.shippingToConfirm ? <span>{t("orders.shippingToConfirm")}</span> : null}
+          </div>
+        ) : null}
+      </td>
       <td className="px-3 py-2.5 text-muted-foreground">
         <div>{t.has(`status.${sale.status}`) ? t(`status.${sale.status}`) : sale.status}</div>
         {sale.receiptNumber !== null && (

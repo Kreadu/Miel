@@ -96,24 +96,30 @@ export function CatalogPedidoCart({
     method: null,
     cost: 0,
   });
-  const [seenState, setSeenState] = useState(state);
-  if (state !== seenState) {
-    setSeenState(state);
+  // El carrito es un store compartido (useSyncExternalStore): vaciarlo notifica a otros
+  // componentes, así que va en un efecto y no durante el render (React lo prohíbe).
+  useEffect(() => {
     if (state?.ok) clear();
-  }
+  }, [state, clear]);
   const [seenCheckout, setSeenCheckout] = useState(checkoutState);
   // S18-10: tras cobrar y entregar, pantalla limpia y un aviso con la boleta.
   const [done, setDone] = useState<number | null>(null);
-  if (lines.length > 0 && done !== null) setDone(null);
+  // El aviso se va cuando se empieza otra venta (vuelve a haber ítems en el carrito).
+  const [doneLines, setDoneLines] = useState(0);
+  if (done !== null && lines.length > doneLines) setDone(null);
   if (checkoutState !== seenCheckout) {
     setSeenCheckout(checkoutState);
     if (checkoutState?.ok) {
-      clear();
       setPaymentMethod("");
       setAlloc(EMPTY_ALLOCATION);
       setDone(checkoutState.receiptNumber ?? 0);
+      setDoneLines(lines.length);
     }
   }
+  useEffect(() => {
+    if (checkoutState?.ok) clear();
+  }, [checkoutState, clear]);
+  if (done !== null && lines.length === 0 && doneLines !== 0) setDoneLines(0);
   // El error que se muestra es el del último botón usado.
   const [lastAction, setLastAction] = useState<"order" | "checkout">("order");
   const shownState = lastAction === "checkout" ? checkoutState : state;

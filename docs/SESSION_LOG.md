@@ -11,6 +11,25 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-07 (cont. 3) · S27-02 — carrito y pedido de la tienda
+
+**Hecho:** S8-03 descartada por el humano (prioriza la tienda). Migración de S27-01 aplicada en el
+cloud (verificado). S27-02 aprobada (F1–F7) e implementada: "Agregar" en el catálogo, carrito con
+contador, `/tienda/<direccion>/carrito` con datos del cliente, entrega (recoger o envío a
+confirmar) y pago preferido (Nequi, Daviplata, transferencia, contra entrega, al recoger); pedido
+en borrador `source='store'` vía `place_store_order` (anon; precios de la BD, límites por teléfono
+y tienda, campo trampa). En Pedidos, marca "Tienda en línea" con teléfono y pago preferido.
+lint, tsc, `npm test` 555/555, `next build` ✓; pgTAP 26/26 solo en PGlite.
+
+**Pendiente del humano:** aplicar `supabase/migrations/_pendientes-cloud.sql` (S27-02) **ya**:
+hasta entonces Vender → Pedidos sale vacío. Activar la tienda y hacer un pedido de prueba desde el
+celular. Commit sugerido: `feat(S27-02): carrito y pedido como invitado en la tienda en línea`.
+
+**Siguiente paso:** S27-03 (pago manual con instrucciones y comprobante), S27-04 (seguimiento y
+aviso), S27-07 (servidor y dominio para salir a internet).
+
+---
+
 ## Sesión 2026-10-07 (cont. 2) · S8-03 (spec) y S27-01 — tienda pública
 
 **Hecho:** primera tanda de migraciones (S19-39, S19-40, S26-02, S26-03) aplicada por el humano y

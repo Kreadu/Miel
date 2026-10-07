@@ -347,7 +347,7 @@ export type Database = {
           active: boolean
           address: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           doc_number: string | null
           doc_type: string | null
           email: string | null
@@ -363,7 +363,7 @@ export type Database = {
           active?: boolean
           address?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           doc_number?: string | null
           doc_type?: string | null
           email?: string | null
@@ -379,7 +379,7 @@ export type Database = {
           active?: boolean
           address?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           doc_number?: string | null
           doc_type?: string | null
           email?: string | null
@@ -1394,9 +1394,11 @@ export type Database = {
       }
       sales: {
         Row: {
+          source: string
+          store_payment: string | null
           cash_session_id: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           customer_id: string | null
           delivered_at: string | null
           delivery_method: string | null
@@ -1423,9 +1425,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          source?: string
+          store_payment?: string | null
           cash_session_id?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           customer_id?: string | null
           delivered_at?: string | null
           delivery_method?: string | null
@@ -1452,9 +1456,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          source?: string
+          store_payment?: string | null
           cash_session_id?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           customer_id?: string | null
           delivered_at?: string | null
           delivery_method?: string | null
@@ -2944,6 +2950,18 @@ export type Database = {
           phone: string | null
           store_color: string | null
         }[]
+      }
+      place_store_order: {
+        Args: {
+          p_address?: string
+          p_customer: Json
+          p_delivery: string
+          p_items: Json
+          p_note?: string
+          p_payment: string
+          p_slug: string
+        }
+        Returns: { order_code: string; total: number }[]
       }
       set_purchase_approver: {
         Args: { p_membership_id: string; p_value: boolean }

@@ -82,7 +82,7 @@ historia; aquí va el resumen y el grafo de dependencias.
 |---|---|---|---|---|---|
 | S8-01 | Como gerente quiero un dashboard con ventas del mes, utilidad, valor de inventario, CxC y CxP para decidir informado | tarjetas resumen con métricas agregadas y enlace a la página Finanzas (sin gráficas profundas); consultas eficientes | S2-04, S4-02, S7-02 | done | specs/done/S8-01-dashboard-gerencial.md |
 | S8-02 | Como gerente quiero top de productos vendidos y más rentables, y alertas de stock, en el dashboard para actuar rápido | top 10 vendidos y por margen; menos vendidos; alertas bajo mínimo; enlaces a módulos | S8-01 | done | specs/done/S8-02-dashboard-top-alertas.md |
-| S8-03 | Como dueño quiero que el resumen de Inicio diga de qué período es cada cifra, compare con el mes anterior y muestre rankings recientes, para no leer un $0 engañoso a principio de mes | período en tarjetas, mes anterior en Ventas/Utilidad, rankings de 30 días con no vendidos | S8-01, S8-02 | spec-ready (specs/S8-03-resumen-gerencial-claro.md) | — |
+| S8-03 | Como dueño quiero que el resumen de Inicio diga de qué período es cada cifra, compare con el mes anterior y muestre rankings recientes, para no leer un $0 engañoso a principio de mes | período en tarjetas, mes anterior en Ventas/Utilidad, rankings de 30 días con no vendidos | S8-01, S8-02 | descartada por el humano 2026-10-07 (prioriza la tienda E27) | — |
 
 ## Épica E9 — Hardening y beta (Sprint 9)
 
@@ -361,8 +361,8 @@ prueba en `/tienda/<empresa>`.
 | ID | Historia | Estado |
 |---|---|---|
 | S27-01 | Tienda pública: el dueño la activa (dirección `<empresa>`, colores); catálogo público marca blanca con fotos, precio, descuento, categorías y disponible/agotado; instalable (PWA con el logo de la empresa) | implemented (código; migración sin aplicar — specs/done/S27-01-tienda-publica-catalogo.md) |
-| S27-02 | Carrito y pedido como invitado: datos de entrega (envío o recoger), forma de pago manual; el pedido entra a Miel como pedido pendiente; protección anti-abuso | todo |
-| S27-03 | Pago manual: instrucciones (número/QR Nequi o Daviplata, cuenta bancaria) configurables; el cliente sube el comprobante; el negocio confirma el pago en Miel (entra a la caja/cobros) | todo |
+| S27-02 | Carrito y pedido como invitado: datos de entrega (envío o recoger), forma de pago manual; el pedido entra a Miel como pedido pendiente; protección anti-abuso | implemented (código; migración sin aplicar — specs/done/S27-02-carrito-y-pedido.md) |
+| S27-03 | Pago manual: instrucciones (número/QR Nequi o Daviplata, cuenta bancaria) configurables; el cliente sube el comprobante; el negocio confirma el pago en Miel (entra a la caja/cobros) | spec-ready (specs/S27-03-pago-manual.md) |
 | S27-04 | Seguimiento del pedido por enlace secreto (estado, pago, envío) y aviso al negocio de pedido nuevo | todo |
 | S27-05 | Wompi: Nequi automático, PSE y tarjeta con confirmación por webhook (ADR) | todo |
 | S27-06 | Dominio propio de la empresa (tienda.miempresa.com) | todo |

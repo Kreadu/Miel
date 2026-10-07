@@ -249,6 +249,65 @@
       "slugTaken": "Une autre entreprise utilise déjà cette adresse. Choisissez-en une autre.",
       "colorInvalid": "La couleur n'est pas valide.",
       "saveFailed": "Impossible d'enregistrer la boutique. Réessayez."
+    },
+    "cart": {
+      "title": "Votre panier",
+      "open": "Panier ({count} articles)",
+      "add": "Ajouter",
+      "addMore": "Dans le panier ({qty}) · +1",
+      "empty": "Votre panier est vide.",
+      "keepShopping": "Continuer mes achats",
+      "someGone": "Certains produits ne sont plus disponibles et ont été retirés du total.",
+      "less": "Retirer un {name}",
+      "more": "Ajouter un {name}",
+      "remove": "Retirer {name} du panier",
+      "estimatedTotal": "Total estimé",
+      "totalNote": "TVA incluse. La boutique confirme le total final (et la livraison, le cas échéant)."
+    },
+    "order": {
+      "title": "Vos coordonnées",
+      "name": "Nom",
+      "phone": "Téléphone mobile",
+      "email": "E-mail (facultatif)",
+      "delivery": "Livraison",
+      "deliveries": {
+        "pickup": "Retrait en boutique",
+        "delivery": "Livraison à domicile"
+      },
+      "address": "Adresse de livraison",
+      "shippingNote": "La boutique vous confirmera le coût de la livraison.",
+      "payment": "Comment souhaitez-vous payer ?",
+      "payments": {
+        "nequi": "Nequi",
+        "daviplata": "Daviplata",
+        "transfer": "Virement bancaire",
+        "cash_on_delivery": "Paiement à la livraison",
+        "in_store": "Payer au retrait"
+      },
+      "note": "Note (facultatif)",
+      "submit": "Passer la commande",
+      "sending": "Envoi…",
+      "successTitle": "Commande reçue !",
+      "successText": "{name} vous contactera pour confirmer votre commande et le paiement.",
+      "code": "Code de votre commande",
+      "total": "Total : {total}",
+      "writeWhatsapp": "Écrire sur WhatsApp",
+      "call": "Appeler le {phone}",
+      "whatsappText": "Bonjour {name}, j’ai passé la commande #{code} sur votre boutique en ligne.",
+      "errors": {
+        "nameRequired": "Indiquez votre nom (2 à 80 caractères).",
+        "phoneInvalid": "Indiquez un numéro de mobile valide.",
+        "emailInvalid": "L'e-mail n'est pas valide.",
+        "deliveryInvalid": "Choisissez comment recevoir votre commande.",
+        "paymentInvalid": "Choisissez un mode de paiement valide.",
+        "addressRequired": "Indiquez l'adresse de livraison.",
+        "cartEmpty": "Votre panier est vide.",
+        "qtyInvalid": "Chaque produit accepte de 1 à 99 unités.",
+        "productUnavailable": "« {product} » n’est plus disponible. Retirez-le du panier pour continuer.",
+        "tooMany": "Nous avons déjà reçu vos commandes ; attendez quelques minutes avant d’en passer une autre.",
+        "storeUnavailable": "La boutique n'est pas disponible pour le moment.",
+        "failed": "Nous n'avons pas pu envoyer votre commande. Réessayez."
+      }
     }
   },
   "invitations": {
@@ -435,7 +494,17 @@
       "changeMethod": "changer de moyen de paiement",
       "howPays": "Comment paie-t-il ?",
       "amount": "Montant",
-      "refundInCash": "Encaissée : rembourser depuis la Caisse"
+      "refundInCash": "Encaissée : rembourser depuis la Caisse",
+      "fromStore": "Boutique en ligne",
+      "prefersPayment": "Souhaite payer par {method}",
+      "shippingToConfirm": "Livraison à confirmer",
+      "storePayments": {
+        "nequi": "Nequi",
+        "daviplata": "Daviplata",
+        "transfer": "virement",
+        "cash_on_delivery": "paiement à la livraison",
+        "in_store": "paiement au retrait"
+      }
     },
     "cart": {
       "title": "Commande créée depuis le catalogue",
