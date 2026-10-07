@@ -34,12 +34,12 @@ export default async function ComprasPage({
   const fromAlerts = parseProductIds(reponer);
 
   const supabase = await createClient();
-  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes, alertsRes] =
+  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes, alertsRes, approverRes] =
     await Promise.all([
       supabase
         .from("purchases")
         .select(
-          "id, status, total, issued_at, created_at, note, supplier_id, suppliers(name), purchase_items(id, qty, unit_cost, tax_rate, product_id, products(sku, name))",
+          "id, number, status, total, issued_at, created_at, note, supplier_id, requested_by_name, requested_at, approved_by_name, approved_at, suppliers(name, phone), purchase_items(id, qty, unit_cost, tax_rate, product_id, products(sku, name))",
         )
         // S19-37: a la vista solo las órdenes por recibir; el resto está en el Historial.
         .in("status", ["draft", "ordered"])
@@ -58,7 +58,10 @@ export default async function ComprasPage({
             .select("product_id, min_stock, total_qty")
             .in("product_id", fromAlerts)
         : Promise.resolve({ data: [] }),
+      // S26-02: dueño o admin marcado como aprobador.
+      supabase.rpc("user_can_approve_purchases", { p_tenant_id: active.tenantId }),
     ]);
+  const canApprove = approverRes.data === true;
 
   const purchases = purchasesRes.data ?? [];
   const suppliers = suppliersRes.data ?? [];
@@ -141,6 +144,7 @@ export default async function ComprasPage({
             products={products}
             suggestedBySupplier={suggestedBySupplier}
             initialItems={initialItems}
+            canApprove={canApprove}
           />
         )
       ) : null}
@@ -163,14 +167,21 @@ export default async function ComprasPage({
                 <PurchaseRow
                   key={p.id}
                   canManage={canManage}
+                  canApprove={canApprove}
                   warehouses={warehouses}
                   purchase={{
                     id: p.id,
+                    number: p.number,
                     supplierName: p.suppliers?.name ?? "—",
+                    supplierPhone: p.suppliers?.phone ?? null,
                     status: p.status,
                     total: p.total,
                     issuedAt: p.issued_at,
                     createdAt: p.created_at,
+                    requestedByName: p.requested_by_name,
+                    requestedAt: p.requested_at,
+                    approvedByName: p.approved_by_name,
+                    approvedAt: p.approved_at,
                     items: p.purchase_items.map((it) => ({
                       id: it.id,
                       productName: it.products?.name ?? "—",

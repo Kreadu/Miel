@@ -977,7 +977,9 @@
       "draft": "Brouillon",
       "ordered": "Commandée",
       "received": "Reçue",
-      "cancelled": "Annulée"
+      "cancelled": "Annulée",
+      "pending": "En attente d'approbation",
+      "approved": "Approuvée"
     },
     "cancelConfirm": "Annuler ce bon de commande ?",
     "cancel": "Annuler",
@@ -1046,8 +1048,48 @@
       "notUpdatable": "Cette commande ne peut plus être modifiée.",
       "statusInvalid": "Statut de commande non valide.",
       "saveFailed": "Impossible d’enregistrer le bon de commande. Réessayez.",
-      "purchaseInvalid": "Commande non valide."
-    }
+      "purchaseInvalid": "Commande non valide.",
+      "approvalRequired": "La commande doit être approuvée avant d'être passée.",
+      "displayNameRequired": "Indiquez votre nom dans Mon profil pour demander ou approuver des commandes.",
+      "notPending": "La commande n'est plus en attente d'approbation.",
+      "approverInvalid": "Seul un administrateur peut approuver les commandes, et le propriétaire ne peut pas être retiré.",
+      "hasPayments": "La commande a déjà des paiements au fournisseur et ne peut pas être modifiée."
+    },
+    "number": "N°",
+    "approve": "Approuver",
+    "requestedBy": "Demandée par {name} · {date}",
+    "approvedBy": "Approuvée par {name} · {date}",
+    "goToProfile": "Aller à Mon profil",
+    "approval": {
+      "approver": "Approuve les bons de commande",
+      "approverHint": "Le propriétaire approuve toujours."
+    },
+    "pdf": {
+      "title": "Bon de commande",
+      "date": "Date",
+      "supplier": "Fournisseur",
+      "sku": "SKU",
+      "product": "Produit",
+      "qty": "Qté",
+      "unitCost": "Coût unit.",
+      "taxPercent": "TVA %",
+      "lineTotal": "Total",
+      "subtotal": "Sous-total",
+      "tax": "TVA",
+      "total": "Total",
+      "note": "Note",
+      "draft": "BROUILLON — non approuvé",
+      "requestedBy": "Demandée par",
+      "approvedBy": "Approuvée par",
+      "orderedBy": "Envoyée par"
+    },
+    "pdfButton": "PDF",
+    "pdfLabel": "Télécharger le PDF de {number}",
+    "whatsapp": "WhatsApp",
+    "whatsappLabel": "Envoyer {number} par WhatsApp",
+    "whatsappText": "Bonjour, voici le bon de commande {number} pour {total}. Le PDF est en pièce jointe.",
+    "whatsappFailed": "Impossible de préparer le PDF. Réessayez.",
+    "shareNow": "Partager"
   },
   "suppliers": {
     "title": "Fournisseurs",

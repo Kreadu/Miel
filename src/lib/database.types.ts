@@ -644,6 +644,7 @@ export type Database = {
       }
       memberships: {
         Row: {
+          can_approve_purchases: boolean
           category_id: string | null
           created_at: string
           created_by: string
@@ -654,6 +655,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          can_approve_purchases?: boolean
           category_id?: string | null
           created_at?: string
           created_by?: string
@@ -664,6 +666,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          can_approve_purchases?: boolean
           category_id?: string | null
           created_at?: string
           created_by?: string
@@ -1038,14 +1041,51 @@ export type Database = {
           },
         ]
       }
+      purchase_counters: {
+        Row: {
+          last_no: number
+          tenant_id: string
+        }
+        Insert: {
+          last_no?: number
+          tenant_id: string
+        }
+        Update: {
+          last_no?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_counters_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "dashboard_metrics"
+            referencedColumns: ["tenant_id"]
+          },
+          {
+            foreignKeyName: "purchase_counters_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchases: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_by_name: string | null
           created_at: string
           created_by: string
           id: string
           issued_at: string | null
           note: string | null
+          number: number
+          ordered_by_name: string | null
           received_at: string | null
+          requested_at: string | null
+          requested_by_name: string | null
           status: string
           subtotal: number
           supplier_id: string
@@ -1055,12 +1095,19 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_by_name?: string | null
           created_at?: string
           created_by?: string
           id?: string
           issued_at?: string | null
           note?: string | null
+          number?: number
+          ordered_by_name?: string | null
           received_at?: string | null
+          requested_at?: string | null
+          requested_by_name?: string | null
           status?: string
           subtotal?: number
           supplier_id: string
@@ -1070,12 +1117,19 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_by_name?: string | null
           created_at?: string
           created_by?: string
           id?: string
           issued_at?: string | null
           note?: string | null
+          number?: number
+          ordered_by_name?: string | null
           received_at?: string | null
+          requested_at?: string | null
+          requested_by_name?: string | null
           status?: string
           subtotal?: number
           supplier_id?: string
@@ -2771,6 +2825,7 @@ export type Database = {
           warehouse_name: string
         }[]
       }
+      approve_purchase: { Args: { p_purchase_id: string }; Returns: undefined }
       mark_purchase_ordered: {
         Args: { p_purchase_id: string }
         Returns: undefined
@@ -2849,6 +2904,14 @@ export type Database = {
       set_product_stock: {
         Args: { p_levels: Json; p_product_id: string }
         Returns: number
+      }
+      user_can_approve_purchases: {
+        Args: { p_tenant_id: string }
+        Returns: boolean
+      }
+      set_purchase_approver: {
+        Args: { p_membership_id: string; p_value: boolean }
+        Returns: undefined
       }
       set_my_display_name: {
         Args: { p_name: string; p_tenant_id: string }

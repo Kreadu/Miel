@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
+import { purchaseNumber } from "@/lib/purchases/approval";
 
 export async function generateMetadata() {
   const t = await getTranslations("suppliers.account");
@@ -39,7 +40,7 @@ export default async function SupplierAccountPage({ params }: PageProps) {
 
   const [supplierRes, purchasesRes, paymentsRes] = await Promise.all([
     supabase.from("suppliers").select("name, nit").eq("id", id).single(),
-    supabase.from("purchases").select("id, status, total, created_at").eq("supplier_id", id).in("status", ["ordered", "received"]),
+    supabase.from("purchases").select("id, number, status, total, created_at").eq("supplier_id", id).in("status", ["ordered", "received"]),
     supabase.from("supplier_payments").select("id, amount, method, note, paid_at, purchase_id").eq("supplier_id", id)
   ]);
 
@@ -59,7 +60,7 @@ export default async function SupplierAccountPage({ params }: PageProps) {
       id: p.id,
       date: new Date(p.created_at),
       type: "purchase",
-      description: ta("purchase"),
+      description: `${ta("purchase")} ${purchaseNumber(p.number)}`,
       debit: Number(p.total),
       credit: 0,
       status: p.status

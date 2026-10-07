@@ -42,6 +42,9 @@ insert into public.products (id, tenant_id, sku, name, cost, price, created_by) 
   ('30000000-0000-0000-0000-00000000fff1', '10000000-0000-0000-0000-00000000fff1',
    'SKU-B1', 'Producto B1', 100, 200, '00000000-0000-0000-0000-00000000fff1');
 
+-- S26-02: crear/editar órdenes firma con "Tu nombre".
+update public.memberships set display_name = 'Dueño' where user_id = '00000000-0000-0000-0000-00000000eee1';
+
 -- === Simular al owner del tenant A ===
 set local role authenticated;
 set local "request.jwt.claims" to

@@ -126,3 +126,71 @@ describe("updatePurchase", () => {
     });
   });
 });
+
+describe("S26-02 — aprobación", () => {
+  const purchaseId = "9b8b443a-a9c4-47c9-980f-cd90d14bda41";
+  const membershipId = "c5dc9a28-e7fd-4777-b12d-fddbe4e7efe3";
+
+  it("approvePurchase invoca approve_purchase y revalida", async () => {
+    clientState.current = mockSupabase({ error: null });
+    const { approvePurchase } = await import("./purchases");
+
+    const result = await approvePurchase(purchaseId);
+
+    expect(clientState.current.rpc).toHaveBeenCalledWith("approve_purchase", { p_purchase_id: purchaseId });
+    expect(result).toEqual({ ok: true });
+    expect(revalidatePath).toHaveBeenCalledWith("/compras");
+  });
+
+  it("approvePurchase rechaza un id inválido sin llamar a la BD", async () => {
+    clientState.current = mockSupabase({ error: null });
+    const { approvePurchase } = await import("./purchases");
+
+    expect(await approvePurchase("x")).toEqual({ ok: false, error: "purchases.errors.purchaseInvalid" });
+    expect(clientState.current.rpc).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["approval_required", "purchases.errors.approvalRequired"],
+    ["display_name_required", "purchases.errors.displayNameRequired"],
+    ["purchase_not_pending", "purchases.errors.notPending"],
+    ["purchase_has_payments", "purchases.errors.hasPayments"],
+  ])("%s mapea a %s", async (message, key) => {
+    clientState.current = mockSupabase({ error: { message } });
+    const { approvePurchase } = await import("./purchases");
+
+    expect(await approvePurchase(purchaseId)).toEqual({ ok: false, error: key });
+  });
+
+  it("markPurchaseOrdered sin aprobación devuelve approvalRequired", async () => {
+    clientState.current = mockSupabase({ error: { message: "approval_required" } });
+    const { markPurchaseOrdered } = await import("./purchases");
+    const fd = new FormData();
+    fd.set("id", purchaseId);
+
+    expect(await markPurchaseOrdered(null, fd)).toEqual({ ok: false, error: "purchases.errors.approvalRequired" });
+  });
+
+  it("setPurchaseApprover invoca set_purchase_approver con el booleano", async () => {
+    clientState.current = mockSupabase({ error: null });
+    const { setPurchaseApprover } = await import("./purchases");
+
+    expect(await setPurchaseApprover(membershipId, true)).toEqual({ ok: true });
+    expect(clientState.current.rpc).toHaveBeenCalledWith("set_purchase_approver", {
+      p_membership_id: membershipId,
+      p_value: true,
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/equipo/usuarios");
+  });
+
+  it("setPurchaseApprover: approver_invalid y entrada inválida", async () => {
+    clientState.current = mockSupabase({ error: { message: "approver_invalid" } });
+    const { setPurchaseApprover } = await import("./purchases");
+
+    expect(await setPurchaseApprover(membershipId, true)).toEqual({
+      ok: false,
+      error: "purchases.errors.approverInvalid",
+    });
+    expect(await setPurchaseApprover("x", true)).toEqual({ ok: false, error: "purchases.errors.approverInvalid" });
+  });
+});

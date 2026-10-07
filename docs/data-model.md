@@ -49,6 +49,10 @@ rentabilidad, CxC/CxP).
 - `suppliers` — name, nit, email, phone, address
 - `purchases` — supplier_id, status ('draft'|'ordered'|'received'|'cancelled'),
   issued_at, received_at, subtotal, tax, total (calculados en RPC)
+  + `number` (consecutivo por empresa, OC-0001, vía `purchase_counters`), firmas
+  `requested_by_name/requested_at` y `approved_by/approved_by_name/approved_at` (S26-02, ADR-042).
+  Borrador sin `approved_at` = pendiente de aprobación; `mark_purchase_ordered` exige aprobación.
+  `ordered_by_name` = "enviada por" (quien la marca ordenada; fecha = issued_at — S26-03).
 - `purchase_items` — purchase_id, product_id, qty, unit_cost, tax_rate
 - RPC `receive_purchase(purchase_id, warehouse_id)` — atómica: status→'received' +
   un `stock_movements` de entrada por ítem + upsert en `supplier_products` (ADR-032).

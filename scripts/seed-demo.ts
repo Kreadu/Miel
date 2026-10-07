@@ -117,7 +117,7 @@ async function run() {
 
   const { error: memErr } = await admin
     .from('memberships')
-    .insert({ tenant_id: tenantId, user_id: userId, role: 'owner', created_by: userId });
+    .insert({ tenant_id: tenantId, user_id: userId, role: 'owner', created_by: userId, display_name: 'Dueño demo' });
   if (memErr) throw memErr;
 
   console.log('Iniciando sesión como usuario demo (las RPCs de negocio requieren auth.uid())...');

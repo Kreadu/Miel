@@ -63,6 +63,7 @@ export function PurchaseForm({
   suggestedBySupplier,
   purchase,
   initialItems,
+  canApprove = false,
   onSuccess,
 }: {
   suppliers: Supplier[];
@@ -71,6 +72,8 @@ export function PurchaseForm({
   purchase?: EditingPurchase;
   /** S19-27: alta con ítems ya cargados (desde Alertas stock mínimo). */
   initialItems?: Omit<ItemDraft, "key">[];
+  /** S26-02: "Crear y ordenar" solo para quien aprueba (la orden nace aprobada). */
+  canApprove?: boolean;
   onSuccess?: () => void;
 }) {
   const isEditing = purchase != null;
@@ -293,15 +296,25 @@ export function PurchaseForm({
             <Button type="submit" name="status" value="draft" disabled={pending}>
               {pending ? t("purchases.form.saving") : t("purchases.form.saveDraft")}
             </Button>
-            <Button type="submit" name="status" value="ordered" variant="secondary" disabled={pending}>
-              {pending ? t("purchases.form.saving") : t("purchases.form.createAndOrder")}
-            </Button>
+            {canApprove ? (
+              <Button type="submit" name="status" value="ordered" variant="secondary" disabled={pending}>
+                {pending ? t("purchases.form.saving") : t("purchases.form.createAndOrder")}
+              </Button>
+            ) : null}
           </>
         )}
       </div>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
           {t(state.error)}
+          {state.error === "purchases.errors.displayNameRequired" ? (
+            <>
+              {" "}
+              <Link href="/perfil" className="underline">
+                {t("purchases.goToProfile")}
+              </Link>
+            </>
+          ) : null}
         </p>
       ) : null}
     </form>

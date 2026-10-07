@@ -340,9 +340,10 @@ PDF con `@react-pdf/renderer` (ADR al implementar S26-03).
 | ID | Historia | Estado |
 |---|---|---|
 | S26-01 | Página "Mi empresa" (logo, dirección, teléfono, correo) y "Tu nombre" de cada usuario | implemented (código; migración sin aplicar, pgTAP sin correr — specs/done/S26-01-mi-empresa-y-tu-nombre.md) |
-| S26-02 | Aprobadores marcados por el dueño; número OC-0001; "Pendiente de aprobación" → "Aprobar" (quién y cuándo); solo aprobadas se envían/ordenan | todo |
-| S26-03 | PDF de la orden (logo, empresa, proveedor, detalle, pedida/aprobada/enviada por + fecha); descargar y enviar por WhatsApp (celular adjunta; computador abre chat) | todo |
+| S26-02 | Aprobadores marcados por el dueño; número OC-0001; "Pendiente de aprobación" → "Aprobar" (quién y cuándo); solo aprobadas se envían/ordenan | implemented (código; migración sin aplicar, pgTAP sin correr en Supabase — specs/done/S26-02-aprobacion-ordenes-de-compra.md) |
+| S26-03 | PDF de la orden (logo, empresa, proveedor, detalle, pedida/aprobada/enviada por + fecha); descargar y enviar por WhatsApp (celular adjunta; computador abre chat) | implemented (código; migración sin aplicar, pgTAP sin correr en Supabase — specs/done/S26-03-pdf-orden-de-compra.md) |
 | S26-04 | Enviar la orden por correo con el PDF adjunto (cuando esté en el servidor central) | todo |
+| S26-06 | Un operativo o trabajador en modo tienda pide órdenes de compra (sin ver costos); requiere ADR y cambio de matriz | todo |
 
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración

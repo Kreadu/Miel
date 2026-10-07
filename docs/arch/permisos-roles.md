@@ -26,6 +26,8 @@ solo en administración del tenant.
 | Asociar producto↔proveedor manualmente (`supplier_products`) | ✔ | ✔ | ✖ (se puebla automático al recibir compra, ADR-032) |
 | Registrar movimientos de stock, recibir compras, registrar producción | ✔ | ✔ | ✔ |
 | Crear/editar órdenes de compra; cancelarlas | ✔ | ✔ | ✖ |
+| Aprobar órdenes de compra (ADR-042) | ✔ | ✔ si el dueño lo marca | ✖ |
+| Marcar qué admins aprueban órdenes de compra (ADR-042) | ✔ | ✖ | ✖ |
 | Pagos a proveedores y CxP | ✔ | ✔ | ✖ |
 | Crear ventas, POS (vender, cobrar), despachar | ✔ | ✔ | ✔ |
 | Cancelar ventas | ✔ | ✔ | ✖ |

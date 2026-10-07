@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 import { revokeInvitation } from "@/actions/invitations";
 
+import { ApproverToggle } from "./approver-toggle";
 import { InviteForm } from "./invite-form";
 
 export async function generateMetadata() {
@@ -21,6 +22,8 @@ export default async function UsuariosPage() {
 
   const supabase = await createClient();
   const t = await getTranslations("rrhh.users");
+  const tp = await getTranslations("purchases.approval");
+  const isOwner = active.role === "owner";
   // S21-03: el acceso se muestra como rol o, si tiene, su categoría.
   const accessLabel = (role: string, categoryName: string | null | undefined) =>
     role === "member" && categoryName
@@ -37,7 +40,9 @@ export default async function UsuariosPage() {
   const [{ data: members }, { data: pending }, { data: categories }] = await Promise.all([
     supabase
       .from("memberships")
-      .select("user_id, role, worker_categories(name)")
+      .select("id, user_id, role, display_name, can_approve_purchases, worker_categories(name)")
+      // Quien está en varias empresas ve por RLS todas sus membresías: solo las de la activa.
+      .eq("tenant_id", active.tenantId)
       .order("created_at", { ascending: true }),
     supabase
       .from("invitations")
@@ -65,9 +70,17 @@ export default async function UsuariosPage() {
         <h2 className="text-sm font-medium text-muted-foreground">{t("members")}</h2>
         <ul className="flex flex-col divide-y divide-border rounded-lg border border-border bg-card">
           {(members ?? []).map((m) => (
-            <li key={m.user_id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-              <span>{m.user_id === user?.id ? t("you") : t("member")}</span>
-              <span className="text-muted-foreground">{accessLabel(m.role, m.worker_categories?.name)}</span>
+            <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
+              <div className="flex flex-col">
+                <span>{m.display_name ?? (m.user_id === user?.id ? t("you") : t("member"))}</span>
+                <span className="text-xs text-muted-foreground">{accessLabel(m.role, m.worker_categories?.name)}</span>
+              </div>
+              {/* S26-02: el dueño aprueba siempre; marca qué admins aprueban órdenes de compra. */}
+              {m.role === "owner" ? (
+                <span className="text-xs text-muted-foreground">{tp("approverHint")}</span>
+              ) : isOwner && m.role === "admin" ? (
+                <ApproverToggle membershipId={m.id} checked={m.can_approve_purchases} />
+              ) : null}
             </li>
           ))}
         </ul>

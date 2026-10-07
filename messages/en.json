@@ -977,7 +977,9 @@
       "draft": "Draft",
       "ordered": "Ordered",
       "received": "Received",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "pending": "Pending approval",
+      "approved": "Approved"
     },
     "cancelConfirm": "Cancel this purchase order?",
     "cancel": "Cancel",
@@ -1046,8 +1048,48 @@
       "notUpdatable": "This order can no longer be edited.",
       "statusInvalid": "Invalid order status.",
       "saveFailed": "Could not save the purchase order. Try again.",
-      "purchaseInvalid": "Invalid order."
-    }
+      "purchaseInvalid": "Invalid order.",
+      "approvalRequired": "The order needs approval before it can be placed.",
+      "displayNameRequired": "Add your name in My profile to request or approve orders.",
+      "notPending": "The order is no longer pending approval.",
+      "approverInvalid": "Only an admin can approve orders, and the owner cannot be removed.",
+      "hasPayments": "The order already has supplier payments and cannot be edited."
+    },
+    "number": "No.",
+    "approve": "Approve",
+    "requestedBy": "Requested by {name} · {date}",
+    "approvedBy": "Approved by {name} · {date}",
+    "goToProfile": "Go to My profile",
+    "approval": {
+      "approver": "Approves purchase orders",
+      "approverHint": "The owner always approves."
+    },
+    "pdf": {
+      "title": "Purchase order",
+      "date": "Date",
+      "supplier": "Supplier",
+      "sku": "SKU",
+      "product": "Product",
+      "qty": "Qty",
+      "unitCost": "Unit cost",
+      "taxPercent": "VAT %",
+      "lineTotal": "Total",
+      "subtotal": "Subtotal",
+      "tax": "VAT",
+      "total": "Total",
+      "note": "Note",
+      "draft": "DRAFT — not approved",
+      "requestedBy": "Requested by",
+      "approvedBy": "Approved by",
+      "orderedBy": "Sent by"
+    },
+    "pdfButton": "PDF",
+    "pdfLabel": "Download the PDF of {number}",
+    "whatsapp": "WhatsApp",
+    "whatsappLabel": "Send {number} via WhatsApp",
+    "whatsappText": "Hi, here is purchase order {number} for {total}. The PDF is attached.",
+    "whatsappFailed": "Could not prepare the PDF. Try again.",
+    "shareNow": "Share"
   },
   "suppliers": {
     "title": "Suppliers",

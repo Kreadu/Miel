@@ -11,6 +11,56 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-07 (cont.) · S26-03 — PDF de la orden y WhatsApp
+
+**Hecho:** S26-03 aprobada (B1–B5) e implementada: ruta `/compras/ordenes/[id]/pdf` (solo
+dueño/admin; 404 para el resto, para órdenes canceladas y para las de otra empresa), PDF con logo
+(JPG/PNG, solo del bucket propio), empresa, proveedor, detalle, totales y firmas
+pedida/aprobada/enviada por; botones "PDF" y "WhatsApp" en la fila. Migración
+`20261007130000_orden-enviada-por.sql` (`ordered_by_name`). Dependencia `@react-pdf/renderer`
+(ADR-043). Verificado: lint ✓, tsc ✓, `npm test` 520/520 ✓, `next build` ✓. pgTAP S26-03 8/8
+**solo en PGlite con stubs**. Sin probar en navegador ni celular.
+
+**Migraciones:** se revisó el esquema del cloud con la llave anon (solo lectura). S18-06, S18-08,
+S18-10 y S26-01 **ya estaban aplicadas**. Faltan S19-40, S26-02 y S26-03; S19-39 no se pudo
+confirmar (anon no ve la función) y va igual porque es idempotente. Las cuatro, juntas en
+`~/miel-migraciones-pendientes.sql` (fuera del repo, en una transacción).
+
+**A probar en iPhone:** WhatsApp comparte el PDF; si Safari vence el permiso del toque mientras
+baja, el botón pasa a "Compartir" y un segundo toque lo envía. Fila de la orden a 375px (hasta 7
+botones; la tabla tiene scroll propio).
+
+**Siguiente paso:** el humano aplica ese archivo, pone "Tu nombre", prueba aprobar, PDF y WhatsApp.
+Después: S26-04 (correo, cuando haya servidor) o lo que priorice el humano.
+
+---
+
+## Sesión 2026-10-07 · S26-02 — aprobación de órdenes de compra
+
+**Hecho:** entorno nuevo del humano (`~/Miel`, Node 22 en `~/.local/node22`; Node 18 no corre
+vitest). Spec S26-02 aprobada con supuestos A1–A5 (sin "Rechazar"; quien aprueba, al pedir, deja la
+orden aprobada; órdenes viejas numeradas por fecha; solo dueño/admin piden → S26-06; editar quita la
+aprobación). Implementada: migración `20261007120000_aprobacion-ordenes-compra.sql`, ADR-042,
+matriz de permisos, número OC en lista/historial/cuenta del proveedor, "Aprobar" y firmas en la
+fila, casilla "Aprueba órdenes de compra" en RRHH → Usuarios (solo dueño, solo admins).
+Editar una orden con pagos ligados se bloquea (`purchase_has_payments`; si no, volvería a borrador
+y saldría de las cuentas por pagar). Verificado: lint ✓, tsc ✓, `npm test` 499/499 ✓. pgTAP S26-02 31/31, S3-02 18/18 y S3-04 13/13
+**solo contra PGlite con stubs** (sin Docker ni CLI de Supabase aquí). Sin probar en navegador.
+
+**Pendiente del humano:** aplicar `20261007120000_aprobacion-ordenes-compra` (va en
+`~/miel-migraciones-pendientes.sql`, ver la sesión siguiente). Hasta aplicarla fallan las consultas con columnas nuevas: Compras
+sale vacía, RRHH → Usuarios sin miembros y **la cuenta del proveedor muestra solo pagos (saldo
+falso, sin error)**. Correr `supabase test db` (en PGlite `receive_purchase` era un stub). Revisar
+`/compras` y RRHH → Usuarios a 375px. Poner "Tu nombre" en Mi perfil antes de pedir o aprobar.
+
+**Notas:** en BACKLOG, S16-01 y S18-12 siguen como `todo` aunque S19-39 y S18-12 ya se hicieron;
+revisar. Una cuenta admin puede escribir cualquier columna de `memberships` por RLS (preexistente;
+la marca de aprobador está protegida por trigger).
+
+**Siguiente paso:** S26-03 (PDF de la orden con logo y firmas).
+
+---
+
 ## Sesión 2026-09-30 (cont. 13) · S19-38 bodegas (hecha); S26-01 y S19-39 pendientes
 
 **Hecho:** S18-10 rehecho (asignar por bodega + Aceptar; "Permitir que preste"). E26 anotada.

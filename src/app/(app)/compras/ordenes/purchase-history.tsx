@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { formatDate, formatMoney } from "@/lib/format";
 import { historyFilters, todayInBogota } from "@/lib/inventory-history";
+import { purchaseNumber, purchaseStatusKey } from "@/lib/purchases/approval";
 import { createClient } from "@/lib/supabase/server";
 
 export type PurchaseHistoryParams = {
@@ -57,7 +58,7 @@ export async function PurchaseHistory({
   const supabase = await createClient();
   let query = supabase
     .from("purchases")
-    .select("id, status, total, created_at, suppliers(name), purchase_items(id)")
+    .select("id, number, status, approved_at, total, created_at, suppliers(name), purchase_items(id)")
     .gte("created_at", `${from}T00:00:00-05:00`)
     .lte("created_at", `${to}T23:59:59.999-05:00`)
     .order("created_at", { ascending: false });
@@ -111,6 +112,7 @@ export async function PurchaseHistory({
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs text-muted-foreground">
+                <th className="px-3 py-2 font-medium">{t("number")}</th>
                 <th className="px-3 py-2 font-medium">{t("date")}</th>
                 <th className="px-3 py-2 font-medium">{t("supplier")}</th>
                 <th className="px-3 py-2 font-medium">{t("status")}</th>
@@ -119,19 +121,23 @@ export async function PurchaseHistory({
               </tr>
             </thead>
             <tbody>
-              {list.map((r) => (
+              {list.map((r) => {
+                const statusKey = purchaseStatusKey(r.status, r.approved_at);
+                return (
                 <tr key={r.id} className="border-b border-border last:border-0">
+                  <td className="px-3 py-2.5 tabular-nums">{purchaseNumber(r.number)}</td>
                   <td className="px-3 py-2.5">{formatDate(r.created_at)}</td>
                   <td className="px-3 py-2.5">{r.suppliers?.name ?? "—"}</td>
-                  <td className="px-3 py-2.5 text-muted-foreground">{t.has(`statuses.${r.status}`) ? t(`statuses.${r.status}`) : r.status}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{t.has(`statuses.${statusKey}`) ? t(`statuses.${statusKey}`) : statusKey}</td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{r.purchase_items.length}</td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(r.total))}</td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
             <tfoot>
               <tr className="border-t border-border font-semibold">
-                <td className="px-3 py-2.5" colSpan={4}>
+                <td className="px-3 py-2.5" colSpan={5}>
                   {t("history.totalBought")}
                 </td>
                 <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(total)}</td>

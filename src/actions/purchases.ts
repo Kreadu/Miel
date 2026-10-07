@@ -26,6 +26,11 @@ function mapPurchaseError(message: string | undefined): string {
   if (message?.includes("purchase_not_updatable")) return "purchases.errors.notUpdatable";
   if (message?.includes("status_invalid")) return "purchases.errors.statusInvalid";
   if (message?.includes("not_authenticated")) return "common.errors.signInAgain";
+  if (message?.includes("approval_required")) return "purchases.errors.approvalRequired";
+  if (message?.includes("display_name_required")) return "purchases.errors.displayNameRequired";
+  if (message?.includes("purchase_not_pending")) return "purchases.errors.notPending";
+  if (message?.includes("approver_invalid")) return "purchases.errors.approverInvalid";
+  if (message?.includes("purchase_has_payments")) return "purchases.errors.hasPayments";
   return "purchases.errors.saveFailed";
 }
 
@@ -151,5 +156,44 @@ export async function updatePurchase(_prev: PurchaseState, formData: FormData): 
   }
 
   revalidatePath(PURCHASES_PATH);
+  return { ok: true };
+}
+
+/** S26-02: solo aprobadores (dueño o admin marcado) aprueban (approve_purchase lo valida). */
+export async function approvePurchase(purchaseId: string): Promise<PurchaseState> {
+  const parsed = z.uuid().safeParse(purchaseId);
+  if (!parsed.success) return { ok: false, error: "purchases.errors.purchaseInvalid" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("approve_purchase", { p_purchase_id: parsed.data });
+
+  if (error) {
+    console.error("approvePurchase:", error.code, error.message);
+    return { ok: false, error: mapPurchaseError(error.message) };
+  }
+
+  revalidatePath(PURCHASES_PATH);
+  return { ok: true };
+}
+
+const approverSchema = z.object({ membershipId: z.uuid(), value: z.boolean() });
+
+/** S26-02: solo el dueño marca qué admins aprueban órdenes (set_purchase_approver lo valida). */
+export async function setPurchaseApprover(membershipId: string, value: boolean): Promise<PurchaseState> {
+  const parsed = approverSchema.safeParse({ membershipId, value });
+  if (!parsed.success) return { ok: false, error: "purchases.errors.approverInvalid" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_purchase_approver", {
+    p_membership_id: parsed.data.membershipId,
+    p_value: parsed.data.value,
+  });
+
+  if (error) {
+    console.error("setPurchaseApprover:", error.code, error.message);
+    return { ok: false, error: mapPurchaseError(error.message) };
+  }
+
+  revalidatePath("/equipo/usuarios");
   return { ok: true };
 }

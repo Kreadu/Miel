@@ -661,3 +661,30 @@ cuando Miel quede instalado en ese servidor, no antes.
 **Consecuencias:** `docs/deploy.md` queda obsoleto en lo que toca a Vercel (la parte de Supabase
 cloud sigue valiendo). Mientras tanto se trabaja en local (`npm run dev`) contra Supabase cloud.
 Falta una historia para el deploy en el servidor central cuando se elija.
+
+## ADR-042 · 2026-10-07 · Aprobación de órdenes de compra (S26-02)
+**Contexto:** el plan E26 pide que el dueño elija quién aprueba las órdenes de compra, que cada
+orden tenga número y que quede quién la pidió y quién la aprobó.
+**Decisión:** (1) el dueño aprueba siempre; los admins aprueban si el dueño los marca
+(`memberships.can_approve_purchases`, solo vía `set_purchase_approver`; un trigger rechaza
+cambiarla con un update directo). Los operativos no aprueban. (2) No hay valores nuevos en
+`purchases.status`: el gate es `approved_at` (borrador sin aprobar = "Pendiente de aprobación").
+(3) Número consecutivo por empresa (`purchase_counters`, asignado por trigger al insertar), visible
+como OC-0001. (4) Las firmas guardan el `display_name` de S26-01 como texto en la orden, y sin
+nombre no se pide ni se aprueba. (5) Si quien pide puede aprobar, la orden nace aprobada; editar
+una orden la devuelve a pendiente (o la reaprueba si edita un aprobador). (6) Que un operativo o un
+trabajador en modo tienda pida órdenes queda para S26-06 (exige ocultarle los costos).
+**Consecuencias:** las órdenes anteriores se numeran por fecha de creación y las ya ordenadas o
+recibidas no piden aprobación. Una fila nueva en la matriz de `permisos-roles.md`.
+
+## ADR-043 · 2026-10-07 · PDF de documentos con @react-pdf/renderer (S26-03)
+**Contexto:** la orden de compra tiene que salir como PDF con logo, detalle y firmas para
+mandársela al proveedor (E26). El plan E26 ya había elegido la librería.
+**Decisión:** `@react-pdf/renderer` (MIT, compatible con React 19), que se renderiza en el
+servidor desde un route handler (`renderToBuffer`). Next la deja fuera del bundle por defecto
+(`server-external-packages`). Fuente Helvetica (incluida en el estándar PDF): cubre tildes y ñ sin
+embeber fuentes. Logos solo JPG/PNG, y solo desde el bucket `company-logos` del proyecto
+(anti-SSRF). Sin chromium ni servicios externos.
+**Consecuencias:** cerca de 50 paquetes transitivos (fontkit, pdfkit, yoga). El PDF usa colores
+fijos y no los tokens de la UI, porque react-pdf no lee variables CSS. Sirve para S26-04 (correo con
+el PDF adjunto) y otros documentos futuros.

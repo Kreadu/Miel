@@ -1,15 +1,17 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
-import { markPurchaseOrdered } from "@/actions/purchases";
+import { approvePurchase, markPurchaseOrdered } from "@/actions/purchases";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/format";
+import { purchaseNumber, purchaseStatusKey } from "@/lib/purchases/approval";
 import Link from "next/link";
 
 import { CancelPurchaseAction } from "./cancel-purchase-action";
+import { PurchaseShare } from "./purchase-share";
 import { ReceivePurchaseForm } from "./receive-purchase-form";
 
 type PurchaseItem = {
@@ -24,23 +26,35 @@ type PurchaseItem = {
 export function PurchaseRow({
   purchase,
   canManage,
+  canApprove,
   warehouses,
 }: {
   purchase: {
     id: string;
+    number: number;
     supplierName: string;
+    supplierPhone: string | null;
     status: string;
     total: number;
     issuedAt: string | null;
     createdAt: string;
+    requestedByName: string | null;
+    requestedAt: string | null;
+    approvedByName: string | null;
+    approvedAt: string | null;
     items: PurchaseItem[];
   };
   canManage: boolean;
+  canApprove: boolean;
   warehouses: { id: string; name: string }[];
 }) {
   const [expanded, setExpanded] = useState(false);
   const [markState, markAction] = useActionState(markPurchaseOrdered, null);
+  const [approveError, setApproveError] = useState<string | null>(null);
+  const [approving, startApprove] = useTransition();
   const t = useTranslations();
+  const statusKey = purchaseStatusKey(purchase.status, purchase.approvedAt);
+  const error = approveError ?? (markState && !markState.ok ? markState.error : null);
 
   return (
     <>
@@ -54,23 +68,63 @@ export function PurchaseRow({
             className="flex items-center gap-1.5 text-left hover:text-foreground"
           >
             {expanded ? <ChevronDown className="size-4 shrink-0" /> : <ChevronRight className="size-4 shrink-0" />}
-            {purchase.supplierName}
+            <span>
+              <span className="block text-xs text-muted-foreground tabular-nums">{purchaseNumber(purchase.number)}</span>
+              {purchase.supplierName}
+            </span>
           </button>
         </td>
-        <td className="px-3 py-2.5 text-muted-foreground">{t.has(`purchases.statuses.${purchase.status}`) ? t(`purchases.statuses.${purchase.status}`) : purchase.status}</td>
+        <td className="px-3 py-2.5 text-muted-foreground">
+          {t.has(`purchases.statuses.${statusKey}`) ? t(`purchases.statuses.${statusKey}`) : statusKey}
+          {purchase.requestedByName && purchase.requestedAt ? (
+            <span className="block text-xs">
+              {t("purchases.requestedBy", { name: purchase.requestedByName, date: formatDate(purchase.requestedAt) })}
+            </span>
+          ) : null}
+          {purchase.approvedByName && purchase.approvedAt ? (
+            <span className="block text-xs">
+              {t("purchases.approvedBy", { name: purchase.approvedByName, date: formatDate(purchase.approvedAt) })}
+            </span>
+          ) : null}
+        </td>
         <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(purchase.total)}</td>
         <td className="px-3 py-2.5 text-muted-foreground">
           {formatDate(purchase.issuedAt ?? purchase.createdAt)}
         </td>
         <td className="px-3 py-2.5">
           <div className="flex flex-wrap items-end justify-end gap-1">
-            {purchase.status === "draft" && canManage ? (
+            {statusKey === "pending" && canApprove ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs"
+                disabled={approving}
+                onClick={() =>
+                  startApprove(async () => {
+                    const res = await approvePurchase(purchase.id);
+                    setApproveError(res && !res.ok ? res.error : null);
+                  })
+                }
+              >
+                {approving ? "..." : t("purchases.approve")}
+              </Button>
+            ) : null}
+            {statusKey === "approved" && canManage ? (
               <form action={markAction}>
                 <input type="hidden" name="id" value={purchase.id} />
                 <Button type="submit" variant="ghost" size="sm" className="h-7 text-xs">
                   {t("purchases.markOrdered")}
                 </Button>
               </form>
+            ) : null}
+            {canManage ? (
+              <PurchaseShare
+                purchaseId={purchase.id}
+                number={purchaseNumber(purchase.number)}
+                total={`$${formatMoney(purchase.total)}`}
+                supplierPhone={purchase.supplierPhone}
+              />
             ) : null}
             {purchase.status === "ordered" ? (
               <ReceivePurchaseForm purchaseId={purchase.id} warehouses={warehouses} />
@@ -84,9 +138,17 @@ export function PurchaseRow({
               <CancelPurchaseAction purchaseId={purchase.id} />
             ) : null}
           </div>
-          {markState && !markState.ok ? (
+          {error ? (
             <p role="alert" className="mt-1 text-right text-[10px] text-destructive">
-              {t(markState.error)}
+              {t(error)}
+              {error === "purchases.errors.displayNameRequired" ? (
+                <>
+                  {" "}
+                  <Link href="/perfil" className="underline">
+                    {t("purchases.goToProfile")}
+                  </Link>
+                </>
+              ) : null}
             </p>
           ) : null}
         </td>
