@@ -75,7 +75,12 @@ export default async function VentasPage({
           )}
         </div>
       </div>
-      <p className="text-sm text-muted-foreground">{t("hint")}</p>
+      {/* Texto guía centrado entre dos líneas finas: separa los accesos del catálogo. */}
+      <div className="flex items-center gap-4 py-2">
+        <span aria-hidden="true" className="h-px flex-1 bg-border" />
+        <p className="max-w-md text-center text-sm text-muted-foreground">{t("hint")}</p>
+        <span aria-hidden="true" className="h-px flex-1 bg-border" />
+      </div>
       {/* S19-41: el Catálogo vive aquí (antes era una página aparte con su propio botón). */}
       <CatalogSection active={active} categoria={categoria} />
     </div>

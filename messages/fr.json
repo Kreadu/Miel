@@ -469,7 +469,7 @@
   "sales": {
     "title": "Vendre",
     "subtitle": "Vendez ici vos produits et services.",
-    "hint": "Gérez vos clients et votre point de vente depuis les raccourcis ci-dessus.",
+    "hint": "Gérez vos clients et vos commandes depuis les raccourcis ci-dessus.",
     "links": {
       "customers": "Clients",
       "orders": "Commandes",

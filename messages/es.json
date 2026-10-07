@@ -469,7 +469,7 @@
   "sales": {
     "title": "Vender",
     "subtitle": "Aquí vendes tus productos y servicios.",
-    "hint": "Gestiona tus clientes y tu sucursal desde los accesos de arriba.",
+    "hint": "Gestiona tus clientes y tus pedidos desde los accesos de arriba.",
     "links": {
       "customers": "Clientes",
       "orders": "Pedidos",

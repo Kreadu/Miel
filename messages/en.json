@@ -469,7 +469,7 @@
   "sales": {
     "title": "Sell",
     "subtitle": "Sell your products and services here.",
-    "hint": "Manage your customers and your branch from the shortcuts above.",
+    "hint": "Manage your customers and your orders from the shortcuts above.",
     "links": {
       "customers": "Customers",
       "orders": "Orders",
