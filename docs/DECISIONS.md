@@ -688,3 +688,21 @@ embeber fuentes. Logos solo JPG/PNG, y solo desde el bucket `company-logos` del 
 **Consecuencias:** cerca de 50 paquetes transitivos (fontkit, pdfkit, yoga). El PDF usa colores
 fijos y no los tokens de la UI, porque react-pdf no lee variables CSS. Sirve para S26-04 (correo con
 el PDF adjunto) y otros documentos futuros.
+
+## ADR-044 · 2026-10-07 · Tienda pública de cada empresa: superficie anónima y marca blanca (S27-01)
+**Contexto:** E27 abre la primera parte de Miel que cualquiera puede ver sin cuenta (los clientes
+de cada empresa). La tienda es de la empresa que contrata Miel: Miel no puede aparecer.
+**Decisión:** (1) `anon` no recibe ninguna política RLS nueva: lee **solo** por dos funciones
+security definer (`store_info`, `store_catalog`) que filtran por `store_enabled`, validan el
+formato de la dirección y devuelven columnas enumeradas (nunca costo, SKU ni cantidades). No se
+puede listar todas las tiendas. (2) Los ajustes van en `tenants` (la RLS existente limita a admin)
+con las reglas como CHECK: formato, palabras reservadas para futuros subdominios, color hex y
+"activar exige dirección". (3) Marca blanca: `/tienda` tiene su layout, que anula la metadata
+raíz; el ícono de Miel pasa de `app/icon.svg` (convención de archivo, imposible de anular) a
+`public/` declarado en metadata. Cada tienda genera su ícono (logo PNG/JPG del bucket propio, o la
+inicial sobre su color) y su manifest de instalación (PWA). (4) Ruta `/tienda/<direccion>`; el
+subdominio llega con el servidor (S27-07) y reescribe a la misma ruta.
+**Consecuencias:** toda historia futura de la tienda (pedido, pagos, seguimiento) entra por RPC
+security definer con validación explícita, nunca abriendo tablas a `anon`. El color de cada
+empresa entra al CSS solo como variable validada (`--store`). Los mensajes de la app viajan en el
+payload de la página (no se ven); separarlos queda como mejora.

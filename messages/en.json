@@ -213,6 +213,44 @@
       "wrongPassword": "Incorrect password."
     }
   },
+  "onlineStore": {
+    "search": "Search products",
+    "categories": "Categories",
+    "all": "All",
+    "available": "Available",
+    "soldOut": "Sold out",
+    "empty": "This store has no products yet.",
+    "noResults": "No products match your search.",
+    "phone": "Phone",
+    "email": "Email",
+    "unavailableTitle": "Store unavailable",
+    "unavailableText": "This store does not exist or is closed for now.",
+    "metaDescription": "Products from {name}. Browse the catalog and buy online.",
+    "settings": {
+      "title": "Online store",
+      "subtitle": "Your customers see your products from their phone or computer, with your logo and color.",
+      "enabled": "Enable store",
+      "slug": "Address",
+      "slugHelp": "Lowercase letters, numbers and hyphens (e.g. sweet-honey). If you change it, the old link stops working.",
+      "color": "Store color",
+      "link": "Your store link",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "open": "Open store",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved.",
+      "off": "The store is off: nobody can see it."
+    },
+    "errors": {
+      "slugRequired": "Give the store an address to enable it.",
+      "slugInvalid": "The address must be 3 to 40 characters: lowercase letters, numbers and hyphens.",
+      "slugReserved": "That address is reserved. Choose another.",
+      "slugTaken": "Another company already uses that address. Choose another.",
+      "colorInvalid": "The color is not valid.",
+      "saveFailed": "Could not save the store. Try again."
+    }
+  },
   "invitations": {
     "metaTitle": "Invitation",
     "title": "Team invitation",

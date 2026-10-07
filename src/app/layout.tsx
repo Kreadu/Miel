@@ -18,6 +18,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Miel",
   description: "ERP SaaS multitenant: compras, inventario y pagos.",
+  // S27-01: ícono por metadata (no app/icon.svg) para que la tienda de cada empresa lo reemplace.
+  icons: { icon: "/icon.svg" },
 };
 
 export default async function RootLayout({

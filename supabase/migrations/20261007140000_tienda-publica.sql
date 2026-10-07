@@ -1,9 +1,3 @@
--- Miel · migraciones pendientes en Supabase cloud (armado 2026-10-07, 2.ª tanda).
--- Pegar completo en el SQL Editor y ejecutar una sola vez (va en una transacción).
--- Contiene: S27-01 tienda pública. (La 1.ª tanda — S19-39, S19-40, S26-02, S26-03 — ya se aplicó.)
-
-begin;
-
 -- S27-01 — Tienda pública de cada empresa (ADR-044): ajustes en tenants (solo admin vía la RLS
 -- que ya existe; las reglas viven aquí como CHECK) y las dos únicas puertas para el público
 -- (anon): store_info y store_catalog, security definer con columnas enumeradas.
@@ -103,5 +97,3 @@ revoke all on function public.store_info(text) from public;
 revoke all on function public.store_catalog(text) from public;
 grant execute on function public.store_info(text) to anon, authenticated;
 grant execute on function public.store_catalog(text) to anon, authenticated;
-
-commit;

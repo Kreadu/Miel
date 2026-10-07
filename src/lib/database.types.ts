@@ -1884,6 +1884,9 @@ export type Database = {
       }
       tenants: {
         Row: {
+          store_color: string | null
+          store_enabled: boolean
+          store_slug: string | null
           address: string | null
           city: string | null
           created_at: string
@@ -1900,6 +1903,9 @@ export type Database = {
           sells_virtual: boolean
         }
         Insert: {
+          store_color?: string | null
+          store_enabled?: boolean
+          store_slug?: string | null
           address?: string | null
           city?: string | null
           created_at?: string
@@ -1916,6 +1922,9 @@ export type Database = {
           sells_virtual?: boolean
         }
         Update: {
+          store_color?: string | null
+          store_enabled?: boolean
+          store_slug?: string | null
           address?: string | null
           city?: string | null
           created_at?: string
@@ -2908,6 +2917,33 @@ export type Database = {
       user_can_approve_purchases: {
         Args: { p_tenant_id: string }
         Returns: boolean
+      }
+      store_catalog: {
+        Args: { p_slug: string }
+        Returns: {
+          available: boolean
+          category: string | null
+          description: string | null
+          discount_percent: number
+          name: string
+          photo_url: string | null
+          price: number
+          product_id: string
+          tax_rate: number
+        }[]
+      }
+      store_info: {
+        Args: { p_slug: string }
+        Returns: {
+          address: string | null
+          city: string | null
+          currency: string
+          email: string | null
+          logo_url: string | null
+          name: string
+          phone: string | null
+          store_color: string | null
+        }[]
       }
       set_purchase_approver: {
         Args: { p_membership_id: string; p_value: boolean }

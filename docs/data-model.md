@@ -157,3 +157,7 @@ de venta, activos fijos/depreciación (en MVP los equipos duraderos —marcos, a
 registran como `expenses` categoría equipos, o como insumo si se consumen), gastos
 recurrentes y presupuestos (plantilla de fijos esperados con detección de anomalías:
 fijo no registrado o con desviación del monto).
+
+## Tienda en línea (E27)
+- `tenants` + `store_enabled`, `store_slug` (único; formato y reservadas por CHECK), `store_color`
+  (hex). Público solo por `store_info(slug)` y `store_catalog(slug)` (ADR-044, S27-01).

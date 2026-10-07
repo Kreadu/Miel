@@ -213,6 +213,44 @@
       "wrongPassword": "Contraseña incorrecta."
     }
   },
+  "onlineStore": {
+    "search": "Buscar productos",
+    "categories": "Categorías",
+    "all": "Todos",
+    "available": "Disponible",
+    "soldOut": "Agotado",
+    "empty": "Esta tienda aún no tiene productos.",
+    "noResults": "No hay productos que coincidan con tu búsqueda.",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "unavailableTitle": "Tienda no disponible",
+    "unavailableText": "Esta tienda no existe o está cerrada por ahora.",
+    "metaDescription": "Productos de {name}. Mira el catálogo y compra en línea.",
+    "settings": {
+      "title": "Tienda en línea",
+      "subtitle": "Tus clientes ven tus productos desde el celular o el computador, con tu logo y tu color.",
+      "enabled": "Activar tienda",
+      "slug": "Dirección",
+      "slugHelp": "Minúsculas, números y guiones (por ejemplo dulce-miel). Si la cambias, el enlace anterior deja de funcionar.",
+      "color": "Color de la tienda",
+      "link": "Enlace de tu tienda",
+      "copy": "Copiar enlace",
+      "copied": "Copiado",
+      "open": "Abrir tienda",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "saved": "Guardado.",
+      "off": "La tienda está apagada: nadie la puede ver."
+    },
+    "errors": {
+      "slugRequired": "Para activar la tienda ponle una dirección.",
+      "slugInvalid": "La dirección debe tener de 3 a 40 caracteres: minúsculas, números y guiones.",
+      "slugReserved": "Esa dirección está reservada. Elige otra.",
+      "slugTaken": "Esa dirección ya la usa otra empresa. Elige otra.",
+      "colorInvalid": "El color no es válido.",
+      "saveFailed": "No se pudo guardar la tienda. Intenta de nuevo."
+    }
+  },
   "invitations": {
     "metaTitle": "Invitación",
     "title": "Invitación a un equipo",

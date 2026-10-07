@@ -10,7 +10,8 @@ const AUTH_ONLY_ANON_PATHS = ["/login", "/signup", "/forgot-password"];
 // sesión — cubre (app), /onboarding y /reset-password sin enumerar cada módulo (S1-04).
 // /invite/<token> también es público: un invitado sin cuenta debe poder abrirlo y la propia
 // página decide el destino (signup, no login — S1-05); con sesión, la página llama la RPC.
-const PUBLIC_PATHS = ["/", "/auth", "/invite", ...AUTH_ONLY_ANON_PATHS];
+// /tienda/<direccion> (S27-01): la tienda en línea de cada empresa, para sus clientes sin cuenta.
+const PUBLIC_PATHS = ["/", "/auth", "/invite", "/tienda/", ...AUTH_ONLY_ANON_PATHS];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });

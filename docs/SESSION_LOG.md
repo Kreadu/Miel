@@ -11,6 +11,29 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-07 (cont. 2) · S8-03 (spec) y S27-01 — tienda pública
+
+**Hecho:** primera tanda de migraciones (S19-39, S19-40, S26-02, S26-03) aplicada por el humano y
+verificada contra el esquema; commit `96307e9` subido (llave de despliegue `~/.ssh/miel_deploy`).
+"Ventas del mes" en 0 no era un error: las 2 ventas son de septiembre. Spec S8-03 (resumen
+gerencial claro) **escrita, sin aprobar**. Épica E27 (tienda en línea marca blanca) acordada y
+anotada. S27-01 aprobada (con es/en/fr a pedido del humano) e implementada: Mi empresa → Tienda en
+línea; `/tienda/<direccion>` pública con catálogo, buscador, categorías, precio final, disponible o
+agotado, selector de idioma, manifest e ícono propios. ADR-044. pgTAP 25/25 en PGlite; lint, tsc,
+`npm test` 538/538, `next build` ✓.
+
+**Incidente (corregido en la sesión):** se sobrescribieron `src/actions/store.ts`, su test y el
+namespace `store` de los mensajes (son el modo tienda de S21-03). Se restauraron desde git; lo
+nuevo vive en `online-store.ts` y `onlineStore.*`. Antes de crear archivos, revisar si existen.
+
+**Pendiente del humano:** pegar `supabase/migrations/_pendientes-cloud.sql` (ahora solo S27-01) en
+el SQL Editor; activar la tienda en Mi empresa y abrirla; probar en el celular e instalarla.
+Commit sugerido: `feat(S27-01): tienda pública de cada empresa con catálogo marca blanca`.
+
+**Siguiente paso:** S27-02 (carrito y pedido como invitado) o S8-03, según el humano.
+
+---
+
 ## Sesión 2026-10-07 (cont.) · S26-03 — PDF de la orden y WhatsApp
 
 **Hecho:** S26-03 aprobada (B1–B5) e implementada: ruta `/compras/ordenes/[id]/pdf` (solo

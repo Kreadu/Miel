@@ -213,6 +213,44 @@
       "wrongPassword": "Mot de passe incorrect."
     }
   },
+  "onlineStore": {
+    "search": "Rechercher des produits",
+    "categories": "Catégories",
+    "all": "Tous",
+    "available": "Disponible",
+    "soldOut": "Épuisé",
+    "empty": "Cette boutique n'a pas encore de produits.",
+    "noResults": "Aucun produit ne correspond à votre recherche.",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "unavailableTitle": "Boutique indisponible",
+    "unavailableText": "Cette boutique n'existe pas ou est fermée pour le moment.",
+    "metaDescription": "Produits de {name}. Parcourez le catalogue et achetez en ligne.",
+    "settings": {
+      "title": "Boutique en ligne",
+      "subtitle": "Vos clients voient vos produits depuis leur téléphone ou leur ordinateur, avec votre logo et votre couleur.",
+      "enabled": "Activer la boutique",
+      "slug": "Adresse",
+      "slugHelp": "Minuscules, chiffres et tirets (par ex. doux-miel). Si vous la changez, l'ancien lien ne fonctionne plus.",
+      "color": "Couleur de la boutique",
+      "link": "Lien de votre boutique",
+      "copy": "Copier le lien",
+      "copied": "Copié",
+      "open": "Ouvrir la boutique",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "Enregistré.",
+      "off": "La boutique est désactivée : personne ne peut la voir."
+    },
+    "errors": {
+      "slugRequired": "Donnez une adresse à la boutique pour l'activer.",
+      "slugInvalid": "L'adresse doit contenir de 3 à 40 caractères : minuscules, chiffres et tirets.",
+      "slugReserved": "Cette adresse est réservée. Choisissez-en une autre.",
+      "slugTaken": "Une autre entreprise utilise déjà cette adresse. Choisissez-en une autre.",
+      "colorInvalid": "La couleur n'est pas valide.",
+      "saveFailed": "Impossible d'enregistrer la boutique. Réessayez."
+    }
+  },
   "invitations": {
     "metaTitle": "Invitation",
     "title": "Invitation à une équipe",
