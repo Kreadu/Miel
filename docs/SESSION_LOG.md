@@ -55,6 +55,8 @@ todo `supabase/migrations/` hasta `20261007170000` está en Supabase. El SQL de 
 
 **Después del cierre:** S26-07 a pedido del humano — Mi empresa en modo lectura con "Editar" →
 "Guardar"/"Cancelar" (pieza `src/components/edit-mode.tsx`). lint, tsc, `npm test` ✓; sin revisión visual.
+Fix del aviso de React "Encountered a script tag": `ThemeScript` usa `next/script` con
+`beforeInteractive` (preexistente; se veía al re-renderizar, p. ej. al cambiar de idioma).
 
 **Siguiente paso:** con E27 lista salvo Wompi (S27-05), dominio propio (S27-06) y servidor (S27-07,
 pospuesta), queda probar todo de punta a punta; lo que priorice el humano.
