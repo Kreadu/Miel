@@ -2954,6 +2954,10 @@ export type Database = {
         Args: { p_tenant_id: string }
         Returns: boolean
       }
+      store_order_status: {
+        Args: { p_slug: string; p_token: string }
+        Returns: Json
+      }
       store_catalog: {
         Args: { p_slug: string }
         Returns: {

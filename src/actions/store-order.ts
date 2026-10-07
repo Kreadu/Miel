@@ -1,7 +1,10 @@
 "use server";
 
+import { headers } from "next/headers";
 import { z } from "zod";
 
+import { formatMoney } from "@/lib/currency";
+import { sendStoreOrderEmail } from "@/lib/email/store-order-email";
 import { MAX_QTY } from "@/lib/store/cart";
 import { createClient } from "@/lib/supabase/server";
 
@@ -90,5 +93,22 @@ export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData
     console.error("placeStoreOrder:", message);
     return { ok: false, error: `${E}.failed` };
   }
-  return { ok: true, code: data[0].order_code, total: Number(data[0].total), token: data[0].token };
+  const order = { code: data[0].order_code, total: Number(data[0].total), token: data[0].token };
+
+  // S27-04 (H5): correo a la empresa solo si Miel tiene correo configurado (hoy no: sin servidor).
+  if (process.env.RESEND_API_KEY) {
+    const { data: info } = await supabase.rpc("store_info", { p_slug: o.slug });
+    const store = info?.[0];
+    if (store?.email) {
+      await sendStoreOrderEmail({
+        to: store.email,
+        storeName: store.name,
+        code: order.code,
+        total: formatMoney(order.total, store.currency),
+        ordersUrl: `${(await headers()).get("origin") ?? ""}/ventas/pedidos`,
+      });
+    }
+  }
+
+  return { ok: true, ...order };
 }

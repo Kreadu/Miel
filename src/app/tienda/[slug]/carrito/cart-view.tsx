@@ -15,6 +15,7 @@ import { offeredPayments, type StorePaymentMethod, type StorePayments } from "@/
 import { storePrice } from "@/lib/store/price";
 import { whatsappUrl } from "@/lib/purchases/whatsapp";
 
+import { saveMyOrder } from "../my-orders-store";
 import { useCart } from "../use-cart";
 import { PaymentInstructions } from "./payment-instructions";
 
@@ -48,11 +49,17 @@ export function CartView({
 
   // Pedido hecho: el carrito queda vacío (el resumen lo muestra la respuesta).
   useEffect(() => {
-    if (state?.ok) update(() => ({}));
-  }, [state, update]);
+    if (!state?.ok) return;
+    update(() => ({}));
+    // S27-04: el navegador recuerda el pedido para "Mis pedidos".
+    if (state.token) saveMyOrder(slug, { code: state.code, token: state.token, at: new Date().toISOString() });
+  }, [state, update, slug]);
+  const [copied, setCopied] = useState(false);
 
   if (state?.ok) {
-    const message = t("order.whatsappText", { code: state.code, name: storeName });
+    const trackPath = state.token ? `/tienda/${slug}/pedido/${state.token}` : null;
+    const trackUrl = trackPath && typeof window !== "undefined" ? `${window.location.origin}${trackPath}` : null;
+    const message = [t("order.whatsappText", { code: state.code, name: storeName }), trackUrl].filter(Boolean).join(" ");
     return (
       <section className="mx-auto flex max-w-md flex-col items-center gap-3 py-8 text-center">
         <h1 className="text-xl font-semibold tracking-tight">{t("order.successTitle")}</h1>
@@ -62,6 +69,23 @@ export function CartView({
           <span className="text-lg font-semibold tabular-nums">#{state.code}</span>
           <span className="block text-sm tabular-nums">{t("order.total", { total: formatMoney(state.total, currency) })}</span>
         </p>
+        {trackPath ? (
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
+            <Link href={trackPath} className="font-medium underline">{t("track.follow")}</Link>
+            {trackUrl ? (
+              <button
+                type="button"
+                className="underline"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(trackUrl);
+                  setCopied(true);
+                }}
+              >
+                {copied ? t("track.copied") : t("track.copyLink")}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         {payment ? (
           <PaymentInstructions
             method={payment}

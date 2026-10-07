@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AlertTriangle, Menu } from "lucide-react";
+import { AlertTriangle, Menu, ShoppingBag } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { logout } from "@/actions/auth";
@@ -39,6 +39,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         .from("low_stock_alerts")
         .select("product_id", { count: "exact", head: true })
         .eq("tenant_id", active.tenantId)
+    : { count: 0 };
+
+  // S27-04: pedidos nuevos de la tienda en línea (en borrador), para quien ve Vender.
+  const seesSales = active.modules === null || active.modules.includes("ventas");
+  const { count: newStoreOrders } = seesSales
+    ? await supabase
+        .from("sales")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", active.tenantId)
+        .eq("source", "store")
+        .eq("status", "draft")
     : { count: 0 };
 
   // S26-05: logo de la empresa en lugar del de Miel (si lo subió en "Mi empresa").
@@ -131,6 +142,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               /inicio, y con un solo hijo real justify-between no lo empuja a la derecha. */}
           <LanguageSwitcher currentLocale={locale} />
         </div>
+        {newStoreOrders ? (
+          <Link
+            href="/ventas/pedidos"
+            className="mb-4 flex items-center gap-2 rounded-lg border border-primary/50 bg-primary/10 px-4 py-3 text-sm font-medium text-foreground hover:bg-primary/15"
+          >
+            <ShoppingBag className="size-5 shrink-0" aria-hidden />
+            <span className="flex-1">{t("storeOrders", { count: newStoreOrders })}</span>
+            <span className="underline underline-offset-4">{t("storeOrdersAction")}</span>
+          </Link>
+        ) : null}
         {stockAlerts ? (
           <Link
             href="/inventario/alertas"

@@ -345,6 +345,33 @@
         "fileType": "Seules les photos (JPG, PNG, WEBP) ou les PDF sont acceptés.",
         "fileSize": "Le fichier dépasse 5 Mo."
       }
+    },
+    "track": {
+      "title": "Votre commande",
+      "heading": "Commande #{code}",
+      "placedOn": "Passée le {date}",
+      "statusLabel": "État de la commande",
+      "steps": {
+        "received": "Reçue",
+        "confirmed": "Confirmée",
+        "shipped": "Expédiée",
+        "delivered": "Livrée",
+        "cancelled": "Annulée"
+      },
+      "shipping": "Livraison",
+      "payment": {
+        "pending": "Paiement en attente",
+        "proof_sent": "Justificatif envoyé : la boutique le vérifie",
+        "paid": "Payée"
+      },
+      "notFound": "Commande introuvable",
+      "notFoundText": "Vérifiez le lien ou écrivez à la boutique.",
+      "follow": "Suivre ma commande",
+      "copyLink": "Copier le lien",
+      "copied": "Lien copié",
+      "myOrders": "Mes commandes",
+      "noOrders": "Vous n'avez pas encore de commande dans cette boutique depuis cet appareil.",
+      "onlyThisDevice": "Cette liste est enregistrée uniquement sur cet appareil. Gardez le lien de chaque commande pour la voir ailleurs."
     }
   },
   "invitations": {
@@ -372,7 +399,9 @@
     "myProfile": "Mon profil",
     "myCompany": "Mon entreprise",
     "stockAlert": "{count, plural, one {# produit en rupture ou sous le minimum} other {# produits en rupture ou sous le minimum}}",
-    "stockAlertAction": "Voir et commander"
+    "stockAlertAction": "Voir et commander",
+    "storeOrders": "{count, plural, one {Vous avez # nouvelle commande de la boutique en ligne} other {Vous avez # nouvelles commandes de la boutique en ligne}}",
+    "storeOrdersAction": "Voir les commandes"
   },
   "home": {
     "greeting": "Bon retour",

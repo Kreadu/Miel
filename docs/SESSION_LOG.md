@@ -11,6 +11,53 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Cómo retomar (otra computadora u otra cuenta) — 2026-10-07
+
+1. `git clone git@github.com:Kreadu/Miel.git` (o por HTTPS). Para **subir** cambios, esa máquina
+   necesita su propia llave: `ssh-keygen -t ed25519 -f ~/.ssh/miel_deploy`, pegar la `.pub` en
+   GitHub → Kreadu/Miel → Settings → Deploy keys (con *Allow write access*) y en el repo
+   `git config core.sshCommand "ssh -i ~/.ssh/miel_deploy -o IdentitiesOnly=yes"`. También
+   `git config --global user.name/user.email`.
+2. Node **20 o superior** (con 18 no corre vitest ni Next 16). `npm ci`.
+3. `.env.local` (no está en git): `NEXT_PUBLIC_SUPABASE_URL=https://seqdrtjdnfnqvztgpdys.supabase.co`,
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY=` (Supabase → Settings → API Keys → Legacy → `anon public`) y
+   `MIEL_SESSION_SECRET=` (`openssl rand -base64 48`; uno nuevo solo cierra los modos tienda abiertos).
+4. `npm run dev` → http://localhost:3000. Verificar: `npm run lint && npx tsc --noEmit && npm test`.
+5. Leer `AGENTS.md`, luego esta bitácora. Estado: E26 y E27 (tienda en línea) completas para
+   pruebas; S8-03 descartada; S27-05 (Wompi), S27-06 (dominio propio) y S27-07 (servidor, pospuesta)
+   en `todo`. Sin migraciones pendientes al cierre del 2026-10-07.
+
+---
+
+## Sesión 2026-10-07 (cont. 5) · S27-04 — seguimiento y aviso de pedidos nuevos
+
+**Hecho:** S27-07 (servidor) pospuesta por el humano: todo sigue en modo prueba. Texto guía de
+Vender centrado ("clientes y pedidos"). S27-04 aprobada (H1–H5) e implementada: seguimiento del
+pedido por llave secreta (estado en pasos, productos, total, estado del pago, subir comprobante),
+"Mis pedidos" en el navegador del cliente, enlace en la pantalla de éxito y en el WhatsApp; en
+Miel, aviso "Tienes N pedidos nuevos de la tienda" para quien ve Vender; correo a la empresa listo
+pero inactivo sin `RESEND_API_KEY`. lint, tsc, `npm test` 581/581, `next build` ✓; pgTAP 16/16
+solo en PGlite.
+
+**Migraciones:** S27-04 aplicada en el cloud (verificado). **No queda ninguna migración pendiente**:
+todo `supabase/migrations/` hasta `20261007170000` está en Supabase. El SQL de apoyo
+`_pendientes-cloud.sql` ya se aplicó y se borró del repo.
+
+**Pendiente del humano (nada de E27 ni S19-41 se probó en navegador; probar en este orden):**
+1. Vender: catálogo dentro de la página y texto guía centrado (S19-41).
+2. Pedidos: confirmar o cobrar un pedido sin el error de React en consola (fix de catalog-pedido-cart).
+3. Mi empresa: activar la tienda (dirección y color) y llenar las formas de pago (S27-01/03).
+4. Celular: abrir `/tienda/<direccion>`, agregar al carrito, pedir con Nequi, subir un comprobante
+   (prueba las políticas de Storage), "Seguir mi pedido" e instalar como app.
+5. Miel: aviso de pedido nuevo, "Ver comprobante", confirmar y cobrar → el seguimiento muestra
+   "Confirmado" y "Pagado".
+6. `supabase test db` cuando haya Supabase local (los pgTAP de hoy solo corrieron en PGlite).
+
+**Siguiente paso:** con E27 lista salvo Wompi (S27-05), dominio propio (S27-06) y servidor (S27-07,
+pospuesta), queda probar todo de punta a punta; lo que priorice el humano.
+
+---
+
 ## Sesión 2026-10-07 (cont. 4) · fix carrito de Pedidos + S27-03 pago manual
 
 **Hecho:** migración S27-02 aplicada por el humano (verificado) y commit `904fe41`. Corregido el

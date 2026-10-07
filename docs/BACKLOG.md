@@ -364,7 +364,7 @@ prueba en `/tienda/<empresa>`.
 | S27-01 | Tienda pública: el dueño la activa (dirección `<empresa>`, colores); catálogo público marca blanca con fotos, precio, descuento, categorías y disponible/agotado; instalable (PWA con el logo de la empresa) | implemented (código; migración sin aplicar — specs/done/S27-01-tienda-publica-catalogo.md) |
 | S27-02 | Carrito y pedido como invitado: datos de entrega (envío o recoger), forma de pago manual; el pedido entra a Miel como pedido pendiente; protección anti-abuso | implemented (código; migración sin aplicar — specs/done/S27-02-carrito-y-pedido.md) |
 | S27-03 | Pago manual: instrucciones (número/QR Nequi o Daviplata, cuenta bancaria) configurables; el cliente sube el comprobante; el negocio confirma el pago en Miel (entra a la caja/cobros) | implemented (código; migración sin aplicar — specs/done/S27-03-pago-manual.md) |
-| S27-04 | Seguimiento del pedido por enlace secreto (estado, pago, envío) y aviso al negocio de pedido nuevo | spec-ready (specs/S27-04-seguimiento-y-aviso.md) |
+| S27-04 | Seguimiento del pedido por enlace secreto (estado, pago, envío) y aviso al negocio de pedido nuevo | implemented (código; migración sin aplicar — specs/done/S27-04-seguimiento-y-aviso.md) |
 | S27-05 | Wompi: Nequi automático, PSE y tarjeta con confirmación por webhook (ADR) | todo |
 | S27-06 | Dominio propio de la empresa (tienda.miempresa.com) | todo |
 | S27-07 | Servidor central + dominio de la plataforma + subdominios por empresa (prerrequisito para salir a internet) | pospuesta por el humano 2026-10-07 (todo es prueba; sin servidor central por ahora) |

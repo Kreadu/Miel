@@ -1,7 +1,7 @@
 ---
 id: S27-04
 titulo: Tienda en línea — seguimiento del pedido y aviso al negocio
-estado: draft
+estado: implemented
 depende_de: [S27-03]
 ---
 
@@ -68,7 +68,7 @@ empresa dentro de Miel (y por correo cuando haya servidor de correo).
 5. En 375px la línea de tiempo y el detalle caben sin scroll horizontal.
 
 ## Modelo de datos y migraciones
-Migración `…_seguimiento-pedido.sql`: solo la función `store_order_status`. Sin tablas ni columnas.
+Migración `20261007170000_seguimiento-pedido.sql`: solo la función `store_order_status`. Sin tablas ni columnas.
 
 ## Políticas RLS requeridas
 Sin cambios. El aviso de Miel cuenta `sales` con la RLS existente.
@@ -106,3 +106,10 @@ El humano aplica la migración y prueba el seguimiento y el aviso en el celular 
 
 ## Historial
 - 2026-10-07 · creada (draft) con supuestos H1–H5 pendientes de confirmar.
+- 2026-10-07 · aprobada por el humano con H1–H5 tal cual.
+- 2026-10-07 · implementada. Página `/tienda/[slug]/pedido/[token]` (reutiliza las instrucciones y la
+  subida de S27-03), `/tienda/[slug]/mis-pedidos` y enlace en el encabezado, enlace de seguimiento y
+  "Copiar" en la pantalla de éxito (también dentro del WhatsApp), aviso "pedidos nuevos" en el layout
+  de Miel (módulo ventas) y correo opcional (`src/lib/email/store-order-email.ts`, inactivo sin
+  `RESEND_API_KEY`). pgTAP 16/16 (+ S27-01..03 en verde) en PGlite; lint, tsc, `npm test` 581/581,
+  `next build` ✓. **Falta:** aplicar la migración y probar en el celular.

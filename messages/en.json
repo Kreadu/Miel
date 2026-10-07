@@ -345,6 +345,33 @@
         "fileType": "Only photos (JPG, PNG, WEBP) or PDF are accepted.",
         "fileSize": "The file is larger than 5 MB."
       }
+    },
+    "track": {
+      "title": "Your order",
+      "heading": "Order #{code}",
+      "placedOn": "Placed on {date}",
+      "statusLabel": "Order status",
+      "steps": {
+        "received": "Received",
+        "confirmed": "Confirmed",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "shipping": "Shipping",
+      "payment": {
+        "pending": "Payment pending",
+        "proof_sent": "Proof sent: the store is reviewing it",
+        "paid": "Paid"
+      },
+      "notFound": "Order not found",
+      "notFoundText": "Check the link or message the store.",
+      "follow": "Track my order",
+      "copyLink": "Copy link",
+      "copied": "Link copied",
+      "myOrders": "My orders",
+      "noOrders": "You have no orders in this store from this device yet.",
+      "onlyThisDevice": "This list is saved only on this device. Keep each order link to see it elsewhere."
     }
   },
   "invitations": {
@@ -372,7 +399,9 @@
     "myProfile": "My profile",
     "myCompany": "My company",
     "stockAlert": "{count, plural, one {# product out of stock or below minimum} other {# products out of stock or below minimum}}",
-    "stockAlertAction": "View and order"
+    "stockAlertAction": "View and order",
+    "storeOrders": "{count, plural, one {You have # new online store order} other {You have # new online store orders}}",
+    "storeOrdersAction": "View orders"
   },
   "home": {
     "greeting": "Welcome back",

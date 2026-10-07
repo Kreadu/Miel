@@ -345,6 +345,33 @@
         "fileType": "Solo se aceptan fotos (JPG, PNG, WEBP) o PDF.",
         "fileSize": "El archivo pesa más de 5 MB."
       }
+    },
+    "track": {
+      "title": "Tu pedido",
+      "heading": "Pedido #{code}",
+      "placedOn": "Hecho el {date}",
+      "statusLabel": "Estado del pedido",
+      "steps": {
+        "received": "Recibido",
+        "confirmed": "Confirmado",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado"
+      },
+      "shipping": "Envío",
+      "payment": {
+        "pending": "Pago pendiente",
+        "proof_sent": "Comprobante enviado: la tienda lo está revisando",
+        "paid": "Pagado"
+      },
+      "notFound": "Pedido no encontrado",
+      "notFoundText": "Revisa el enlace o escríbele a la tienda.",
+      "follow": "Seguir mi pedido",
+      "copyLink": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "myOrders": "Mis pedidos",
+      "noOrders": "Aún no tienes pedidos en esta tienda desde este dispositivo.",
+      "onlyThisDevice": "Esta lista se guarda solo en este dispositivo. Guarda el enlace de cada pedido si quieres verlo en otro."
     }
   },
   "invitations": {
@@ -372,7 +399,9 @@
     "myProfile": "Mi perfil",
     "myCompany": "Mi empresa",
     "stockAlert": "{count, plural, one {# producto agotado o bajo el mínimo} other {# productos agotados o bajo el mínimo}}",
-    "stockAlertAction": "Ver y pedir"
+    "stockAlertAction": "Ver y pedir",
+    "storeOrders": "{count, plural, one {Tienes # pedido nuevo de la tienda en línea} other {Tienes # pedidos nuevos de la tienda en línea}}",
+    "storeOrdersAction": "Ver pedidos"
   },
   "home": {
     "greeting": "Hola de nuevo",

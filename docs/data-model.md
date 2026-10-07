@@ -167,3 +167,4 @@ fijo no registrado o con desviación del monto).
 - `tenants.store_nequi/store_daviplata/store_bank_info/store_payment_qr_url/store_cash_on_delivery/
   store_pay_in_store` (formas de pago de la tienda); `sales.public_token` (llave secreta del pedido de la
   tienda) y `payment_proof_path/at/count`; bucket privado `payment-proofs` (S27-03).
+- Seguimiento público del pedido: `store_order_status(slug, token) → jsonb` (sin datos personales, S27-04).

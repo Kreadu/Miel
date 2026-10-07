@@ -6,6 +6,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { isLocale } from "@/i18n/locales";
 
 import { CartButton } from "./cart-button";
+import { MyOrdersLink } from "./my-orders-link";
 
 /** S27-01/02: encabezado marca blanca de la tienda (logo o inicial, nombre, idioma, carrito). */
 export async function StoreHeader({ slug, name, logoUrl }: { slug: string; name: string; logoUrl: string | null }) {
@@ -29,6 +30,7 @@ export async function StoreHeader({ slug, name, logoUrl }: { slug: string; name:
           <span className="truncate text-base font-semibold tracking-tight">{name}</span>
         </Link>
         <LanguageSwitcher currentLocale={isLocale(locale) ? locale : "es"} />
+        <MyOrdersLink slug={slug} />
         <CartButton slug={slug} />
       </div>
       <div className="h-1 bg-(--store)" />
