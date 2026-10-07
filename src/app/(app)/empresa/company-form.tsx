@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { saveCompany } from "@/actions/company";
-import { Button } from "@/components/ui/button";
+import { EditActions, useEditMode } from "@/components/edit-mode";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -32,9 +32,11 @@ const FIELDS = [
 export function CompanyForm({ values }: { values: Company }) {
   const t = useTranslations();
   const [state, action, pending] = useActionState(saveCompany, null);
+  const mode = useEditMode(state);
 
   return (
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs">
+      <fieldset key={mode.formKey} disabled={!mode.editing} className="contents">
       <div className="flex flex-col gap-2">
         <Label htmlFor="logo">{t("company.logo")}</Label>
         {values.logo_url ? (
@@ -66,12 +68,8 @@ export function CompanyForm({ values }: { values: Company }) {
           </div>
         ))}
       </div>
-      <div className="flex items-center gap-3">
-        <Button type="submit" disabled={pending}>
-          {pending ? t("company.saving") : t("company.save")}
-        </Button>
-        {state?.ok ? <span className="text-sm text-muted-foreground">{t("company.saved")}</span> : null}
-      </div>
+      </fieldset>
+      <EditActions editing={mode.editing} pending={pending} saved={!!state?.ok} onEdit={mode.edit} onCancel={mode.cancel} />
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-destructive">
           {t(state.error)}

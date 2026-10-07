@@ -119,7 +119,12 @@
       "textTooLong": "Text is too long",
       "nameRequired": "Name is required"
     },
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "cancel": "Cancel"
   },
   "auth": {
     "resetSent": "If the email exists, we sent a recovery link.",

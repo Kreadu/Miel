@@ -119,7 +119,12 @@
       "textTooLong": "Texte trop long",
       "nameRequired": "Le nom est obligatoire"
     },
-    "toggleTheme": "Changer de thème"
+    "toggleTheme": "Changer de thème",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré.",
+    "cancel": "Annuler"
   },
   "auth": {
     "resetSent": "Si l'adresse existe, nous avons envoyé un lien de récupération.",

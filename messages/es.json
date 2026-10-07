@@ -119,7 +119,12 @@
       "textTooLong": "Texto muy largo",
       "nameRequired": "El nombre es obligatorio"
     },
-    "toggleTheme": "Cambiar tema"
+    "toggleTheme": "Cambiar tema",
+    "edit": "Editar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saved": "Guardado.",
+    "cancel": "Cancelar"
   },
   "auth": {
     "resetSent": "Si el correo existe, enviamos un enlace de recuperación.",

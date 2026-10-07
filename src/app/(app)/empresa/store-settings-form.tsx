@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { saveStoreSettings } from "@/actions/online-store";
+import { EditActions, useEditMode } from "@/components/edit-mode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ type Values = { store_enabled: boolean; store_slug: string | null; store_color: 
 export function StoreSettingsForm({ values }: { values: Values }) {
   const t = useTranslations();
   const [state, action, pending] = useActionState(saveStoreSettings, null);
+  const mode = useEditMode(state);
   const [copied, setCopied] = useState(false);
   const path = values.store_slug ? `/tienda/${values.store_slug}` : null;
 
@@ -26,6 +28,7 @@ export function StoreSettingsForm({ values }: { values: Values }) {
         <p className="text-sm text-muted-foreground">{t("onlineStore.settings.subtitle")}</p>
       </div>
 
+      <fieldset key={mode.formKey} disabled={!mode.editing} className="contents">
       <label className="flex min-h-10 items-center gap-2 text-sm">
         <input type="checkbox" name="enabled" defaultChecked={values.store_enabled} className="h-4 w-4 accent-primary" />
         {t("onlineStore.settings.enabled")}
@@ -48,6 +51,8 @@ export function StoreSettingsForm({ values }: { values: Values }) {
           />
         </div>
       </div>
+
+      </fieldset>
 
       {path ? (
         <div className="flex flex-col gap-2 rounded-md bg-muted/50 p-3 text-sm">
@@ -78,17 +83,12 @@ export function StoreSettingsForm({ values }: { values: Values }) {
         </div>
       ) : null}
 
-      <div className="flex items-center gap-3">
-        <Button type="submit" disabled={pending}>
-          {pending ? t("onlineStore.settings.saving") : t("onlineStore.settings.save")}
-        </Button>
-        {state?.ok ? <p className="text-sm text-muted-foreground">{t("onlineStore.settings.saved")}</p> : null}
-        {state && !state.ok ? (
-          <p role="alert" className="text-sm text-destructive">
-            {t(state.error)}
-          </p>
-        ) : null}
-      </div>
+      <EditActions editing={mode.editing} pending={pending} saved={!!state?.ok} onEdit={mode.edit} onCancel={mode.cancel} />
+      {state && !state.ok ? (
+        <p role="alert" className="text-sm text-destructive">
+          {t(state.error)}
+        </p>
+      ) : null}
     </form>
   );
 }

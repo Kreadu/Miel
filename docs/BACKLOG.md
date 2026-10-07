@@ -346,6 +346,7 @@ PDF con `@react-pdf/renderer` (ADR al implementar S26-03).
 | S26-03 | PDF de la orden (logo, empresa, proveedor, detalle, pedida/aprobada/enviada por + fecha); descargar y enviar por WhatsApp (celular adjunta; computador abre chat) | implemented (código; migración sin aplicar, pgTAP sin correr en Supabase — specs/done/S26-03-pdf-orden-de-compra.md) |
 | S26-04 | Enviar la orden por correo con el PDF adjunto (cuando esté en el servidor central) | todo |
 | S26-06 | Un operativo o trabajador en modo tienda pide órdenes de compra (sin ver costos); requiere ADR y cambio de matriz | todo |
+| S26-07 | Mi empresa en modo lectura: "Editar" → "Guardar"/"Cancelar" en datos, tienda y formas de pago (pedido del humano) | implemented (specs/done/S26-07-mi-empresa-modo-lectura.md) |
 
 ## Épica E27 — Tienda en línea de cada empresa (plan acordado con el humano 2026-10-07)
 
