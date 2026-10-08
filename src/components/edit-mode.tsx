@@ -47,7 +47,9 @@ export function EditActions({
   const t = useTranslations("common");
   return editing ? (
     <div className="flex items-center gap-2">
-      <Button type="submit" disabled={pending}>
+      {/* key distinto: si React reusara el mismo <button>, el clic en "Editar" lo vería ya como
+          submit y guardaría al instante. */}
+      <Button key="save" type="submit" disabled={pending}>
         {pending ? t("saving") : t("save")}
       </Button>
       <Button type="button" variant="ghost" disabled={pending} onClick={onCancel}>
@@ -56,7 +58,7 @@ export function EditActions({
     </div>
   ) : (
     <div className="flex items-center gap-3">
-      <Button type="button" variant="outline" onClick={onEdit}>
+      <Button key="edit" type="button" variant="outline" onClick={onEdit}>
         {t("edit")}
       </Button>
       {saved ? <span className="text-sm text-muted-foreground">{t("saved")}</span> : null}
