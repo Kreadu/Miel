@@ -3212,6 +3212,7 @@ export type Database = {
           photo_url: string | null
           price: number
           product_id: string
+          sales_channel: string
           tax_rate: number
         }[]
       }

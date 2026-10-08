@@ -80,6 +80,14 @@ Migración `20261008200000_recibir-factura-en-un-formulario.sql` aplicada en el 
 `/compras/facturas` con filtros por período, proveedor y número, enlace a la orden, totales y
 descarga CSV.
 
+**S27-08 (después):**
+- los productos "solo tienda física" se ven en la tienda web, con la etiqueta y la dirección y sin
+  "Agregar";
+- pie fijo de Kreadu en todas las tiendas (ADR-045);
+- faltan las URL de los enlaces de Company y de las redes.
+
+Migración `20261008210000_tienda-fisica-en-la-web.sql`, pendiente de pegar.
+
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
 y `link_worker_to_me` existen). El SQL se borró. Sin migraciones pendientes.
 

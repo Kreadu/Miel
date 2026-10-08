@@ -22,7 +22,12 @@ export default async function StorePage({ params }: Props) {
 
   return (
     <StoreShell slug={slug} info={store.info}>
-      <StoreCatalog slug={slug} products={store.products} currency={store.info.currency} />
+      <StoreCatalog
+        slug={slug}
+        products={store.products}
+        currency={store.info.currency}
+        place={[store.info.address, store.info.city].filter(Boolean).join(", ")}
+      />
     </StoreShell>
   );
 }

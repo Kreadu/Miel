@@ -13,7 +13,18 @@ import { storePrice } from "@/lib/store/price";
 import { useCart } from "./use-cart";
 
 // ponytail: filtra en el cliente; paginar en la BD cuando una tienda pase de ~500 productos.
-export function StoreCatalog({ slug, products, currency }: { slug: string; products: StoreProduct[]; currency: string }) {
+export function StoreCatalog({
+  slug,
+  products,
+  currency,
+  place,
+}: {
+  slug: string;
+  products: StoreProduct[];
+  currency: string;
+  /** Dirección de la tienda física (para los productos que solo se venden ahí, S27-08). */
+  place: string;
+}) {
   const t = useTranslations("onlineStore");
   const { cart, update } = useCart(slug);
   const [query, setQuery] = useState("");
@@ -70,6 +81,8 @@ export function StoreCatalog({ slug, products, currency }: { slug: string; produ
         <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {visible.map((p) => {
             const price = storePrice(Number(p.price), Number(p.discount_percent), Number(p.tax_rate));
+            // S27-08: solo en la tienda física — se muestra como publicidad, no se pide por la web.
+            const inStore = p.sales_channel === "in_store";
             return (
               <li key={p.product_id} className="flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs">
                 <div className="relative aspect-square bg-muted">
@@ -80,7 +93,7 @@ export function StoreCatalog({ slug, products, currency }: { slug: string; produ
                       {p.name.charAt(0).toUpperCase()}
                     </span>
                   )}
-                  {!p.available ? (
+                  {!p.available && !inStore ? (
                     <span className="absolute left-2 top-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-medium">
                       {t("soldOut")}
                     </span>
@@ -95,10 +108,17 @@ export function StoreCatalog({ slug, products, currency }: { slug: string; produ
                       <span className="text-xs text-muted-foreground tabular-nums line-through">{formatMoney(price.before, currency)}</span>
                     ) : null}
                   </div>
-                  <span className={`text-xs ${p.available ? "text-success" : "text-muted-foreground"}`}>
-                    {p.available ? t("available") : t("soldOut")}
-                  </span>
-                  {p.available ? (
+                  {inStore ? (
+                    <p className="mt-1 rounded-md bg-muted px-2 py-1.5 text-xs">
+                      <span className="font-medium">{t("inStoreOnly")}</span>
+                      {place ? <span className="block text-muted-foreground">{place}</span> : null}
+                    </p>
+                  ) : (
+                    <span className={`text-xs ${p.available ? "text-success" : "text-muted-foreground"}`}>
+                      {p.available ? t("available") : t("soldOut")}
+                    </span>
+                  )}
+                  {p.available && !inStore ? (
                     <button
                       type="button"
                       disabled={(cart[p.product_id] ?? 0) >= MAX_QTY}

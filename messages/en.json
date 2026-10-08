@@ -377,7 +377,8 @@
       "myOrders": "My orders",
       "noOrders": "You have no orders in this store from this device yet.",
       "onlyThisDevice": "This list is saved only on this device. Keep each order link to see it elsewhere."
-    }
+    },
+    "inStoreOnly": "Available at our physical store"
   },
   "invitations": {
     "metaTitle": "Invitation",

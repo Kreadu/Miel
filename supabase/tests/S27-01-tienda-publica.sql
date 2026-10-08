@@ -109,8 +109,8 @@ reset role;
 set local role anon;
 set local "request.jwt.claims" to '{"role": "anon"}';
 
-select is((select count(*)::int from public.store_catalog('dulce-miel')), 2,
-  'C2: solo P1 y P2 (vendibles, activos, con precio, canal internet)');
+select is((select count(*)::int from public.store_catalog('dulce-miel')), 3,
+  'C2: P1, P2 y P3 (S27-08: también los de tienda física, como publicidad)');
 select is((select available from public.store_catalog('dulce-miel') where name = 'Miel 500g'), true,
   'C2: con stock en dos bodegas = disponible');
 select is((select available from public.store_catalog('dulce-miel') where name = 'Polen'), false,

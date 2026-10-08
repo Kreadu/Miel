@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { readableOn, storeColor } from "@/lib/store/color";
 import type { StoreInfo } from "@/lib/store/load";
 
+import { DeveloperFooter } from "./developer-footer";
 import { StoreHeader } from "./store-header";
 
 /** S27-01/02: marco de la tienda — color de la empresa, encabezado y pie con su contacto. */
@@ -32,6 +33,7 @@ export async function StoreShell({ slug, info, children }: { slug: string; info:
             </p>
           ) : null}
         </div>
+        <DeveloperFooter />
       </footer>
     </div>
   );

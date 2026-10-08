@@ -377,7 +377,8 @@
       "myOrders": "Mis pedidos",
       "noOrders": "Aún no tienes pedidos en esta tienda desde este dispositivo.",
       "onlyThisDevice": "Esta lista se guarda solo en este dispositivo. Guarda el enlace de cada pedido si quieres verlo en otro."
-    }
+    },
+    "inStoreOnly": "Disponible en nuestra tienda física"
   },
   "invitations": {
     "metaTitle": "Invitación",

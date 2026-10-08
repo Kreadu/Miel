@@ -377,7 +377,8 @@
       "myOrders": "Mes commandes",
       "noOrders": "Vous n'avez pas encore de commande dans cette boutique depuis cet appareil.",
       "onlyThisDevice": "Cette liste est enregistrée uniquement sur cet appareil. Gardez le lien de chaque commande pour la voir ailleurs."
-    }
+    },
+    "inStoreOnly": "Disponible dans notre magasin"
   },
   "invitations": {
     "metaTitle": "Invitation",

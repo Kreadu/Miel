@@ -706,3 +706,15 @@ subdominio llega con el servidor (S27-07) y reescribe a la misma ruta.
 security definer con validación explícita, nunca abriendo tablas a `anon`. El color de cada
 empresa entra al CSS solo como variable validada (`--store`). Los mensajes de la app viajan en el
 payload de la página (no se ven); separarlos queda como mejora.
+
+## ADR-045 · 2026-10-08 · Pie fijo de Kreadu en las tiendas (S27-08)
+**Contexto:** ADR-044 hizo la tienda pública de cada empresa en marca blanca, sin nada de Miel.
+El humano (Kreadu, la empresa que desarrolla Miel) pidió que todas las tiendas muestren abajo sus
+datos de contacto, para que cualquiera que vea una tienda pueda comunicarse con ellos.
+**Decisión:** debajo del pie de cada empresa va un pie fijo de Kreadu: marca, razón social y NIT,
+enlaces de la empresa, contacto (correo y WhatsApp) y redes. Los datos viven en
+`src/lib/platform/developer.ts` (constante del código, igual para todas las empresas; no se edita
+desde Miel). El resto de la tienda sigue en marca blanca: título, ícono, colores y el pie propio
+de la empresa.
+**Consecuencias:** modifica ADR-044 solo en el pie. Cambiar los datos de Kreadu es un cambio de
+código.
