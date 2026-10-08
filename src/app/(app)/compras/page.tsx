@@ -63,6 +63,11 @@ export default async function ComprasPage({
       supabase.rpc("user_can_approve_purchases", { p_tenant_id: active.tenantId }),
     ]);
   const canApprove = approverRes.data === true;
+  // S26-08: si falta conectar la cuenta con RRHH, el aviso muestra el correo que hay que poner.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const myEmail = user?.email ?? "";
 
   const purchases = purchasesRes.data ?? [];
   const suppliers = suppliersRes.data ?? [];
@@ -134,6 +139,7 @@ export default async function ComprasPage({
             suppliers={suppliers}
             products={products}
             warehouses={warehouses}
+            myEmail={myEmail}
             suggestedBySupplier={suggestedBySupplier}
             purchase={{
               id: editingPurchase.id,
@@ -149,6 +155,7 @@ export default async function ComprasPage({
             suppliers={suppliers}
             products={products}
             warehouses={warehouses}
+            myEmail={myEmail}
             suggestedBySupplier={suggestedBySupplier}
             initialItems={initialItems}
             canApprove={canApprove}
@@ -175,6 +182,7 @@ export default async function ComprasPage({
                   key={p.id}
                   canManage={canManage}
                   canApprove={canApprove}
+                  myEmail={myEmail}
                   purchase={{
                     id: p.id,
                     number: p.number,

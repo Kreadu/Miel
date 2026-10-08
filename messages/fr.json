@@ -1233,7 +1233,8 @@
       "displayNameRequired": "Pour signer la commande, ajoutez-vous dans RH → Employés avec le même e-mail.",
       "notPending": "La commande n'est plus en attente d'approbation.",
       "approverInvalid": "Seul un administrateur peut approuver les commandes, et le propriétaire ne peut pas être retiré.",
-      "hasPayments": "La commande a déjà des paiements au fournisseur et ne peut pas être modifiée."
+      "hasPayments": "La commande a déjà des paiements au fournisseur et ne peut pas être modifiée.",
+      "useThisEmail": "Votre e-mail de connexion est {email} : saisissez-le tel quel dans le champ E-mail de votre fiche et enregistrez."
     },
     "number": "N°",
     "approve": "Approuver et envoyer",

@@ -1233,7 +1233,8 @@
       "displayNameRequired": "To sign the order, add yourself in HR → Workers with your same email.",
       "notPending": "The order is no longer pending approval.",
       "approverInvalid": "Only an admin can approve orders, and the owner cannot be removed.",
-      "hasPayments": "The order already has supplier payments and cannot be edited."
+      "hasPayments": "The order already has supplier payments and cannot be edited.",
+      "useThisEmail": "Your sign-in email is {email}: enter it exactly in the Email field of your record and save."
     },
     "number": "No.",
     "approve": "Approve and send",

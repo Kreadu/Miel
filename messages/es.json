@@ -1233,7 +1233,8 @@
       "displayNameRequired": "Para firmar la orden créate en RRHH → Trabajadores con tu mismo correo.",
       "notPending": "La orden ya no está pendiente de aprobación.",
       "approverInvalid": "Solo un administrador puede aprobar órdenes, y al dueño no se le quita.",
-      "hasPayments": "La orden ya tiene pagos al proveedor y no se puede editar."
+      "hasPayments": "La orden ya tiene pagos al proveedor y no se puede editar.",
+      "useThisEmail": "Tu correo de inicio de sesión es {email}: escríbelo igual en el campo Correo de tu ficha y guarda."
     },
     "number": "N.°",
     "approve": "Aprobar y enviar",

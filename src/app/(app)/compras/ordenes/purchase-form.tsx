@@ -66,6 +66,7 @@ export function PurchaseForm({
   initialItems,
   canApprove = false,
   onSuccess,
+  myEmail = "",
 }: {
   suppliers: Supplier[];
   products: Product[];
@@ -77,6 +78,8 @@ export function PurchaseForm({
   /** S26-02: "Crear y ordenar" solo para quien aprueba (la orden nace aprobada). */
   canApprove?: boolean;
   onSuccess?: () => void;
+  /** Correo de inicio de sesión (para el aviso de conectar la cuenta con RRHH). */
+  myEmail?: string;
 }) {
   const isEditing = purchase != null;
   const router = useRouter();
@@ -358,6 +361,7 @@ export function PurchaseForm({
               <Link href="/equipo/trabajadores" className="underline">
                 {t("purchases.goToProfile")}
               </Link>
+              {myEmail ? <span className="block">{t("purchases.errors.useThisEmail", { email: myEmail })}</span> : null}
             </>
           ) : null}
         </p>

@@ -28,6 +28,7 @@ export function PurchaseRow({
   purchase,
   canManage,
   canApprove,
+  myEmail = "",
 }: {
   purchase: {
     id: string;
@@ -46,6 +47,7 @@ export function PurchaseRow({
   };
   canManage: boolean;
   canApprove: boolean;
+  myEmail?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [approveError, setApproveError] = useState<string | null>(null);
@@ -139,6 +141,7 @@ export function PurchaseRow({
                   <Link href="/equipo/trabajadores" className="underline">
                     {t("purchases.goToProfile")}
                   </Link>
+                  {myEmail ? <span className="block">{t("purchases.errors.useThisEmail", { email: myEmail })}</span> : null}
                 </>
               ) : null}
             </p>
