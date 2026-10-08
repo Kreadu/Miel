@@ -74,7 +74,7 @@ la orden (subtotal sin IVA, IVA y total), solo a dueño/admin, y avisa la difere
 - abajo, los totales calculados y la comparación con la orden;
 - "Guardar factura y recibir" hace todo atómico (`receive_purchase_invoice`).
 
-Migración `20261008200000_recibir-factura-en-un-formulario.sql`, pendiente de pegar.
+Migración `20261008200000_recibir-factura-en-un-formulario.sql` aplicada en el cloud y verificada (la RPC existe). Sin migraciones pendientes.
 
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
 y `link_worker_to_me` existen). El SQL se borró. Sin migraciones pendientes.
