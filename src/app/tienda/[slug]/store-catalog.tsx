@@ -10,6 +10,7 @@ import type { StoreProduct } from "@/lib/store/load";
 import { addToCart, MAX_QTY } from "@/lib/store/cart";
 import { storePrice } from "@/lib/store/price";
 
+import { CartButton } from "./cart-button";
 import { useCart } from "./use-cart";
 
 const QTY = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 3 });
@@ -49,14 +50,17 @@ export function StoreCatalog({
 
   return (
     <div className="flex flex-col gap-4">
-      <Input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={t("search")}
-        aria-label={t("search")}
-        className="max-w-md"
-      />
+      <div className="flex items-center gap-2">
+        <Input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("search")}
+          aria-label={t("search")}
+          className="h-10 max-w-md flex-1"
+        />
+        <CartButton slug={slug} />
+      </div>
       {categories.length > 0 ? (
         <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t("categories")}>
           {[null, ...categories].map((c) => (
