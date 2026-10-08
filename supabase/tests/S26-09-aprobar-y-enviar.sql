@@ -3,7 +3,7 @@
 -- Ver specs/S26-09-aprobar-y-enviar.md.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(8);
+select plan(9);
 
 insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-000000026901', 'duena-s2609@test.local'),
@@ -49,22 +49,28 @@ select is((select status from public.purchases where id = (select id from t_p wh
 select throws_ok(format($$select public.approve_purchase('%s')$$, (select id from t_p where k = 'borrador')),
   'P0001', 'purchase_not_pending', 'C2: una enviada no se vuelve a aprobar');
 
--- C4: el aprobador edita una enviada → sigue enviada.
-select public.update_purchase((select id from t_p where k = 'borrador'), '20000000-0000-0000-0000-000000026901',
-  '[{"product_id": "30000000-0000-0000-0000-000000026901", "qty": 3, "unit_cost": 100}]'::jsonb, null);
-select results_eq(
-  format($$select status, issued_at is not null, total from public.purchases where id = '%s'$$, (select id from t_p where k = 'borrador')),
-  $$values ('ordered'::text, true, 300.00::numeric)$$,
-  'C4: editada por un aprobador sigue enviada, con los cambios');
+-- S26-10: una orden enviada no se edita (ni el aprobador); los cambios van al recibir.
+select throws_ok(
+  format($$select public.update_purchase('%s', '20000000-0000-0000-0000-000000026901',
+      '[{"product_id": "30000000-0000-0000-0000-000000026901", "qty": 3, "unit_cost": 100}]'::jsonb, null)$$,
+    (select id from t_p where k = 'borrador')),
+  'P0001', 'purchase_not_updatable', 'S26-10: enviada no se edita');
 
--- C4: si la edita quien no aprueba, vuelve a pendiente.
+-- S26-10: un borrador pendiente lo edita el aprobador (queda aprobado por él); quien no aprueba no.
+insert into t_p select 'pend', public.create_purchase('20000000-0000-0000-0000-000000026901', 'draft',
+  '[{"product_id": "30000000-0000-0000-0000-000000026901", "qty": 1, "unit_cost": 100}]'::jsonb, null);
+select lives_ok(
+  format($$select public.update_purchase('%s', '20000000-0000-0000-0000-000000026901',
+      '[{"product_id": "30000000-0000-0000-0000-000000026901", "qty": 2, "unit_cost": 100}]'::jsonb, null)$$,
+    (select id from t_p where k = 'pend')),
+  'S26-10: el aprobador edita un borrador');
 set local "request.jwt.claims" to '{"sub": "00000000-0000-0000-0000-000000026902", "role": "authenticated"}';
-select public.update_purchase((select id from t_p where k = 'borrador'), '20000000-0000-0000-0000-000000026901',
-  '[{"product_id": "30000000-0000-0000-0000-000000026901", "qty": 4, "unit_cost": 100}]'::jsonb, null);
-select ok((select status = 'draft' and approved_at is null and issued_at is null
-           from public.purchases where id = (select id from t_p where k = 'borrador')),
-  'C4: editada por quien no aprueba vuelve a pendiente');
-select throws_ok(format($$select public.approve_purchase('%s')$$, (select id from t_p where k = 'borrador')),
+select throws_ok(
+  format($$select public.update_purchase('%s', '20000000-0000-0000-0000-000000026901',
+      '[{"product_id": "30000000-0000-0000-0000-000000026901", "qty": 4, "unit_cost": 100}]'::jsonb, null)$$,
+    (select id from t_p where k = 'pend')),
+  'P0001', 'permission_denied', 'S26-10: quien no aprueba no edita');
+select throws_ok(format($$select public.approve_purchase('%s')$$, (select id from t_p where k = 'pend')),
   'P0001', 'permission_denied', 'C3: quien no aprueba no puede aprobar y enviar');
 
 select * from finish();

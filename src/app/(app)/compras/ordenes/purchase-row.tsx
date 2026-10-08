@@ -119,7 +119,8 @@ export function PurchaseRow({
                 <Link href={`/compras/ordenes/${purchase.id}/recibir`}>{t("purchases.receive")}</Link>
               </Button>
             ) : null}
-            {(purchase.status === "draft" || purchase.status === "ordered") && canManage ? (
+            {/* S26-10: aprobada y enviada ya no se edita; antes, solo el dueño o un aprobador. */}
+            {purchase.status === "draft" && canApprove ? (
               <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
                 <Link href={`/compras?editar=${purchase.id}`}>{t("purchases.edit")}</Link>
               </Button>

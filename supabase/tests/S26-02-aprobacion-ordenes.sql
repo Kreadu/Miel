@@ -149,17 +149,16 @@ select throws_ok(
 select is((select status from public.purchases where requested_by_name = 'Pide'), 'ordered',
   'C3 (S26-09): aprobar la deja enviada en el mismo paso');
 
--- === C3 (A5): editar una aprobada la devuelve a pendiente ===
+-- === S26-10: una orden aprobada y enviada no se edita; quien no aprueba no edita ===
 set local "request.jwt.claims" to
   '{"sub": "00000000-0000-0000-0000-000000026203", "role": "authenticated"}';
-select lives_ok(
+select throws_ok(
   format($$select public.update_purchase('%s'::uuid, '20000000-0000-0000-0000-000000026201'::uuid,
       '[{"product_id": "30000000-0000-0000-0000-000000026201", "qty": 5, "unit_cost": 100}]'::jsonb)$$,
     (select id from public.purchases where requested_by_name = 'Pide')),
-  'C3: quien pidió la edita');
-select ok((select status = 'draft' and approved_at is null and approved_by_name is null and issued_at is null
-  from public.purchases where requested_by_name = 'Pide'),
-  'C3: editada por quien no aprueba vuelve a borrador pendiente de aprobación');
+  'P0001', 'permission_denied', 'S26-10: quien no aprueba no edita');
+select is((select total from public.purchases where requested_by_name = 'Pide'), 100.00::numeric,
+  'S26-10: la orden no cambió');
 
 -- === C3 (A2): si la crea un aprobador nace aprobada y puede crear y ordenar ===
 set local "request.jwt.claims" to
@@ -171,13 +170,13 @@ select lives_ok(
 select ok((select status = 'ordered' and approved_by_name = 'Dueña' and requested_by_name = 'Dueña'
   from public.purchases where number = 3 and tenant_id = '10000000-0000-0000-0000-000000026201'),
   'C3: nace aprobada con su nombre en las dos firmas');
-select lives_ok(
+select throws_ok(
   format($$select public.update_purchase('%s'::uuid, '20000000-0000-0000-0000-000000026201'::uuid,
       '[{"product_id": "30000000-0000-0000-0000-000000026201", "qty": 2, "unit_cost": 100}]'::jsonb)$$,
     (select id from public.purchases where requested_by_name = 'Pide')),
-  'C3: la dueña edita la pendiente');
-select is((select approved_by_name from public.purchases where requested_by_name = 'Pide'), 'Dueña',
-  'C3: editada por un aprobador queda aprobada otra vez');
+  'P0001', 'purchase_not_updatable', 'S26-10: ni la dueña edita una orden ya enviada');
+select is((select approved_by_name from public.purchases where requested_by_name = 'Pide'), 'Aprobador',
+  'S26-10: conserva la firma de quien la aprobó');
 
 -- === Borde: una orden con un pago ligado no se edita (saldría de las cuentas por pagar) ===
 reset role;
@@ -191,7 +190,7 @@ select throws_ok(
   $$select public.update_purchase('50000000-0000-0000-0000-000000026201'::uuid,
       '20000000-0000-0000-0000-000000026201'::uuid,
       '[{"product_id": "30000000-0000-0000-0000-000000026201", "qty": 9, "unit_cost": 100}]'::jsonb)$$,
-  'P0001', 'purchase_has_payments', 'Borde: con pagos ligados no se edita');
+  'P0001', 'purchase_not_updatable', 'Borde: enviada (y con pagos) no se edita');
 
 -- === C5: la orden vieja ordenada se recibe sin aprobación; tenant ajeno no se aprueba ===
 select lives_ok(

@@ -47,6 +47,10 @@ corrió: con el servidor de desarrollo encendido se pisan los archivos de `.next
 "nueva orden" porque faltaba la `key`, y la vista no bajaba al formulario. Ahora tiene la `key`, el
 título "Editando OC-xxxx" y hace scroll al formulario. Sin revisión visual.
 
+**S26-10 (después):** una orden aprobada y enviada ya no se edita; antes de enviarla, solo la
+edita el dueño o un aprobador. Migración `20261008170000_orden-enviada-no-se-edita.sql`, pendiente
+de pegar con `_pendientes-cloud.sql`.
+
 **Pendiente del humano:**
 1. ~~Pegar S26-09 en el cloud~~: el humano confirmó que lo aplicó. No se pudo verificar por REST porque la firma de la función no cambia. El SQL se borró.
 2. Si "Aprobar y enviar" dice que falta el nombre, revisar que el correo del trabajador dueño en

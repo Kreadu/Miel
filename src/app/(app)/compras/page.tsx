@@ -80,7 +80,8 @@ export default async function ComprasPage({
     (suggestedBySupplier[sp.supplier_id] ??= []).push(sp.product_id);
   }
 
-  const editingPurchase = canManage ? purchases.find((p) => p.id === editar) : undefined;
+  // S26-10: solo un borrador, y solo el dueño o un aprobador.
+  const editingPurchase = canApprove ? purchases.find((p) => p.id === editar && p.status === "draft") : undefined;
 
   const alertById = new Map((alertsRes.data ?? []).map((a) => [a.product_id, a]));
   const initialItems = fromAlerts
