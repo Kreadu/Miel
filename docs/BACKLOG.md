@@ -388,6 +388,7 @@ contadora (2026-10-08). Si ella usa PEPS, se crea una historia aparte.
 |---|---|---|
 | S28-01 | Recepción con factura del proveedor, línea por línea, parcial ("Queda pendiente" / "Cerrar con faltantes"), anular línea, deuda según facturas | implemented (código; **migración sin aplicar al cloud**, pgTAP solo en PGlite — specs/done/S28-01-recepcion-con-factura.md) |
 | S28-03 | Corregir o anular una factura de proveedor (dueño/admin; anular sin líneas activas; deuda nunca menor a lo pagado) y anular líneas sin dejar valor sobrante en el kardex | implemented (código; **migración sin aplicar al cloud**, pgTAP solo en PGlite — specs/done/S28-03-corregir-factura-y-anulacion-coherente.md) |
+| S28-05 | "Facturas de proveedores" en Compras: listado por período, proveedor y número, enlace a la orden, totales del período (IVA descontable) y CSV | implemented (sin migración — specs/done/S28-05-facturas-de-proveedores.md) |
 | S28-04 | Recibir la factura en un solo formulario: datos arriba, lo que llegó por producto y bodega (reparto), totales calculados abajo, comparación con la orden y un solo botón | implemented (aplicada en el cloud — specs/done/S28-04-recibir-factura-en-un-formulario.md) |
 | S28-02 | Al recibir con otro costo, el precio de venta se ajusta con el mismo %; historial de precios por proveedor y producto | implemented (código; **migración sin aplicar al cloud**, pgTAP solo en PGlite — specs/done/S28-02-precio-de-venta-e-historial-proveedor.md) |
 

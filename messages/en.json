@@ -1358,6 +1358,33 @@
       "invoice": "Invoice",
       "cost": "Cost before VAT",
       "change": "Change"
+    },
+    "invoices": {
+      "title": "Supplier invoices",
+      "subtitle": "All received invoices with their purchase order. The period's VAT is the deductible VAT.",
+      "back": "Back to Purchases",
+      "downloadCsv": "Download CSV",
+      "from": "From",
+      "to": "To",
+      "supplier": "Supplier",
+      "allSuppliers": "All",
+      "search": "Invoice number",
+      "showVoided": "Show voided",
+      "filter": "View",
+      "viewFile": "View file",
+      "periodTotal": "Period total ({count} invoices)",
+      "empty": "No supplier invoices in this period.",
+      "columns": {
+        "date": "Date",
+        "number": "Invoice",
+        "supplier": "Supplier",
+        "order": "Order",
+        "subtotal": "Subtotal before VAT",
+        "tax": "VAT",
+        "total": "Total",
+        "due": "Due",
+        "voided": "Voided"
+      }
     }
   },
   "suppliers": {

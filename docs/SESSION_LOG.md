@@ -76,6 +76,10 @@ la orden (subtotal sin IVA, IVA y total), solo a dueño/admin, y avisa la difere
 
 Migración `20261008200000_recibir-factura-en-un-formulario.sql` aplicada en el cloud y verificada (la RPC existe). Sin migraciones pendientes.
 
+**S28-05 (después, sin migración):** botón "Facturas de proveedores" en Compras, que abre
+`/compras/facturas` con filtros por período, proveedor y número, enlace a la orden, totales y
+descarga CSV.
+
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
 y `link_worker_to_me` existen). El SQL se borró. Sin migraciones pendientes.
 

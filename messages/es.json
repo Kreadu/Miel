@@ -1358,6 +1358,33 @@
       "invoice": "Factura",
       "cost": "Costo sin IVA",
       "change": "Variación"
+    },
+    "invoices": {
+      "title": "Facturas de proveedores",
+      "subtitle": "Todas las facturas recibidas, con su orden de compra. El IVA del período es el descontable.",
+      "back": "Volver a Compras",
+      "downloadCsv": "Descargar CSV",
+      "from": "Desde",
+      "to": "Hasta",
+      "supplier": "Proveedor",
+      "allSuppliers": "Todos",
+      "search": "Número de factura",
+      "showVoided": "Ver anuladas",
+      "filter": "Ver",
+      "viewFile": "Ver archivo",
+      "periodTotal": "Total del período ({count} facturas)",
+      "empty": "No hay facturas de proveedores en este período.",
+      "columns": {
+        "date": "Fecha",
+        "number": "Factura",
+        "supplier": "Proveedor",
+        "order": "Orden",
+        "subtotal": "Subtotal sin IVA",
+        "tax": "IVA",
+        "total": "Total",
+        "due": "Vence",
+        "voided": "Anulada"
+      }
     }
   },
   "suppliers": {

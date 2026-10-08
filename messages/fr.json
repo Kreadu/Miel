@@ -1358,6 +1358,33 @@
       "invoice": "Facture",
       "cost": "Coût HT",
       "change": "Variation"
+    },
+    "invoices": {
+      "title": "Factures fournisseurs",
+      "subtitle": "Toutes les factures reçues, avec leur bon de commande. La TVA de la période est la TVA déductible.",
+      "back": "Retour aux achats",
+      "downloadCsv": "Télécharger CSV",
+      "from": "Du",
+      "to": "Au",
+      "supplier": "Fournisseur",
+      "allSuppliers": "Tous",
+      "search": "Numéro de facture",
+      "showVoided": "Voir les annulées",
+      "filter": "Voir",
+      "viewFile": "Voir le fichier",
+      "periodTotal": "Total de la période ({count} factures)",
+      "empty": "Aucune facture fournisseur sur cette période.",
+      "columns": {
+        "date": "Date",
+        "number": "Facture",
+        "supplier": "Fournisseur",
+        "order": "Commande",
+        "subtotal": "Sous-total HT",
+        "tax": "TVA",
+        "total": "Total",
+        "due": "Échéance",
+        "voided": "Annulée"
+      }
     }
   },
   "suppliers": {

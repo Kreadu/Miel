@@ -1,4 +1,4 @@
-import { Truck, Wallet } from "lucide-react";
+import { FileText, Truck, Wallet } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -124,6 +124,12 @@ export default async function ComprasPage({
             <Truck className="mr-2 h-4 w-4" />
             {t("suppliers")}
           </Link>
+          {canManage ? (
+            <Link href="/compras/facturas" className={LINK_CLASS}>
+              <FileText className="mr-2 h-4 w-4" />
+              {t("invoices.title")}
+            </Link>
+          ) : null}
           <Link href="/compras/cuentas-por-pagar" className={LINK_CLASS}>
             <Wallet className="mr-2 h-4 w-4" />
             {t("payables")}
