@@ -29,6 +29,27 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-08 (cont. 2) · fix de Editar + S26-09 (orden de compra más rápida)
+
+**Hecho:**
+- **Fix:** en Mi empresa, "Editar" guardaba al instante, porque el botón pasaba a "Guardar" en
+  el mismo clic. Se corrigió en `src/components/edit-mode.tsx` dándole una `key` propia a cada
+  botón. Lo confirmó el log: había guardados sin pedirlos. jsdom no reproduce este clic, así que
+  no hay test.
+- **S26-09:** "Crear y enviar" y "Aprobar y enviar" en un paso; "Pedir aprobación" para quien no
+  aprueba; si edita un aprobador, la orden sigue enviada. Migración
+  `20261008160000_aprobar-y-enviar.sql`.
+
+lint, tsc y `npm test` 603/603 ✓; pgTAP de compras en verde, solo en PGlite. `next build` no se
+corrió: con el servidor de desarrollo encendido se pisan los archivos de `.next`.
+
+**Pendiente del humano:**
+1. Pegar `_pendientes-cloud.sql` (S26-09).
+2. Si "Aprobar y enviar" dice que falta el nombre, revisar que el correo del trabajador dueño en
+   RRHH sea el mismo del inicio de sesión.
+
+---
+
 ## Sesión 2026-10-08 (cont.) · S26-08 — el nombre que firma sale de RRHH
 
 **Hecho:** el humano no encontraba "Mi perfil" y pidió no repetir información. Aprobó S26-08 y se

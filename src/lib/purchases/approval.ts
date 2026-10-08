@@ -4,10 +4,10 @@ export function purchaseNumber(n: number): string {
 }
 
 /**
- * S26-02: estado que ve el usuario. No hay status nuevos en la BD: un borrador sin aprobar es
- * "Pendiente de aprobación" y uno aprobado es "Aprobada"; el resto queda igual.
+ * S26-02/S26-09: estado que ve el usuario. Un borrador sin aprobar es "Pendiente de aprobación";
+ * uno ya aprobado (lo creó un aprobador) es un borrador más: "Aprobar y enviar" lo ordena.
  */
 export function purchaseStatusKey(status: string, approvedAt: string | null): string {
   if (status !== "draft") return status;
-  return approvedAt ? "approved" : "pending";
+  return approvedAt ? "draft" : "pending";
 }

@@ -146,10 +146,8 @@ select throws_ok(
   format($$select public.approve_purchase('%s'::uuid)$$,
     (select id from public.purchases where requested_by_name = 'Pide')),
   'P0001', 'purchase_not_pending', 'C3: no se aprueba dos veces');
-select lives_ok(
-  format($$select public.mark_purchase_ordered('%s'::uuid)$$,
-    (select id from public.purchases where requested_by_name = 'Pide')),
-  'C3: aprobada, ya se marca ordenada');
+select is((select status from public.purchases where requested_by_name = 'Pide'), 'ordered',
+  'C3 (S26-09): aprobar la deja enviada en el mismo paso');
 
 -- === C3 (A5): editar una aprobada la devuelve a pendiente ===
 set local "request.jwt.claims" to
@@ -161,7 +159,7 @@ select lives_ok(
   'C3: quien pidió la edita');
 select ok((select status = 'draft' and approved_at is null and approved_by_name is null and issued_at is null
   from public.purchases where requested_by_name = 'Pide'),
-  'C3: editada vuelve a borrador pendiente de aprobación');
+  'C3: editada por quien no aprueba vuelve a borrador pendiente de aprobación');
 
 -- === C3 (A2): si la crea un aprobador nace aprobada y puede crear y ordenar ===
 set local "request.jwt.claims" to

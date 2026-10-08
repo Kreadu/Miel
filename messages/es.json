@@ -1157,7 +1157,6 @@
       "received": "Recibida",
       "cancelled": "Cancelada",
       "pending": "Pendiente de aprobación",
-      "approved": "Aprobada",
       "partially_received": "Recibida parcial"
     },
     "cancelConfirm": "¿Cancelar esta orden de compra?",
@@ -1165,7 +1164,6 @@
     "confirm": "Confirmar",
     "receive": "Recibir",
     "warehousePlaceholder": "Bodega o sucursal destino...",
-    "markOrdered": "Marcar como ordenada",
     "edit": "Editar",
     "showItems": "Ver ítems",
     "hideItems": "Ocultar ítems",
@@ -1192,7 +1190,8 @@
       "saving": "Guardando…",
       "saveChanges": "Guardar cambios",
       "saveDraft": "Guardar como borrador",
-      "createAndOrder": "Crear y ordenar"
+      "createAndOrder": "Crear y enviar",
+      "requestApproval": "Pedir aprobación"
     },
     "picker": {
       "placeholder": "Selecciona un proveedor",
@@ -1235,7 +1234,7 @@
       "hasPayments": "La orden ya tiene pagos al proveedor y no se puede editar."
     },
     "number": "N.°",
-    "approve": "Aprobar",
+    "approve": "Aprobar y enviar",
     "requestedBy": "Pedida por {name} · {date}",
     "approvedBy": "Aprobada por {name} · {date}",
     "goToProfile": "Ir a RRHH → Trabajadores",

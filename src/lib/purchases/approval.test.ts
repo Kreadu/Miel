@@ -16,8 +16,8 @@ describe("purchaseStatusKey (S26-02)", () => {
   it("borrador sin aprobar = pendiente de aprobación", () => {
     expect(purchaseStatusKey("draft", null)).toBe("pending");
   });
-  it("borrador aprobado = aprobada", () => {
-    expect(purchaseStatusKey("draft", "2026-10-07T12:00:00Z")).toBe("approved");
+  it("borrador ya aprobado (de un aprobador) = borrador (S26-09: sin estado \"Aprobada\")", () => {
+    expect(purchaseStatusKey("draft", "2026-10-07T12:00:00Z")).toBe("draft");
   });
   it("los demás estados quedan igual", () => {
     expect(purchaseStatusKey("ordered", null)).toBe("ordered");

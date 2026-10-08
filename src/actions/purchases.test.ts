@@ -119,15 +119,6 @@ describe("S26-02 — aprobación", () => {
     expect(await approvePurchase(purchaseId)).toEqual({ ok: false, error: key });
   });
 
-  it("markPurchaseOrdered sin aprobación devuelve approvalRequired", async () => {
-    clientState.current = mockSupabase({ error: { message: "approval_required" } });
-    const { markPurchaseOrdered } = await import("./purchases");
-    const fd = new FormData();
-    fd.set("id", purchaseId);
-
-    expect(await markPurchaseOrdered(null, fd)).toEqual({ ok: false, error: "purchases.errors.approvalRequired" });
-  });
-
   it("setPurchaseApprover invoca set_purchase_approver con el booleano", async () => {
     clientState.current = mockSupabase({ error: null });
     const { setPurchaseApprover } = await import("./purchases");

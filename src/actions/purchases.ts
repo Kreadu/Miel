@@ -67,28 +67,6 @@ export async function createPurchase(
   return { ok: true };
 }
 
-const markOrderedSchema = z.object({ id: z.uuid() });
-
-/** Solo owner/admin marcan una orden en borrador como ordenada (mark_purchase_ordered lo valida igual). */
-export async function markPurchaseOrdered(
-  _prev: PurchaseState,
-  formData: FormData,
-): Promise<PurchaseState> {
-  const parsed = markOrderedSchema.safeParse({ id: formData.get("id") });
-  if (!parsed.success) return { ok: false, error: "purchases.errors.purchaseInvalid" };
-
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("mark_purchase_ordered", { p_purchase_id: parsed.data.id });
-
-  if (error) {
-    console.error("markPurchaseOrdered:", error.code, error.message);
-    return { ok: false, error: mapPurchaseError(error.message) };
-  }
-
-  revalidatePath(PURCHASES_PATH);
-  return { ok: true };
-}
-
 /** Solo owner/admin cancelan (cancel_purchase lo valida igual). */
 export async function cancelPurchase(purchaseId: string): Promise<PurchaseState> {
   const parsed = z.uuid().safeParse(purchaseId);

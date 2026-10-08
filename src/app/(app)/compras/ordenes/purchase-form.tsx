@@ -293,14 +293,21 @@ export function PurchaseForm({
           </>
         ) : (
           <>
-            <Button type="submit" name="status" value="draft" disabled={pending}>
-              {pending ? t("purchases.form.saving") : t("purchases.form.saveDraft")}
-            </Button>
+            {/* S26-09: el aprobador crea y envía en un paso; quien no aprueba pide aprobación. */}
             {canApprove ? (
-              <Button type="submit" name="status" value="ordered" variant="secondary" disabled={pending}>
-                {pending ? t("purchases.form.saving") : t("purchases.form.createAndOrder")}
+              <>
+                <Button type="submit" name="status" value="ordered" disabled={pending}>
+                  {pending ? t("purchases.form.saving") : t("purchases.form.createAndOrder")}
+                </Button>
+                <Button type="submit" name="status" value="draft" variant="outline" disabled={pending}>
+                  {t("purchases.form.saveDraft")}
+                </Button>
+              </>
+            ) : (
+              <Button type="submit" name="status" value="draft" disabled={pending}>
+                {pending ? t("purchases.form.saving") : t("purchases.form.requestApproval")}
               </Button>
-            ) : null}
+            )}
           </>
         )}
       </div>

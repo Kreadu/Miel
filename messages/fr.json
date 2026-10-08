@@ -1157,7 +1157,6 @@
       "received": "Reçue",
       "cancelled": "Annulée",
       "pending": "En attente d'approbation",
-      "approved": "Approuvée",
       "partially_received": "Reçue en partie"
     },
     "cancelConfirm": "Annuler ce bon de commande ?",
@@ -1165,7 +1164,6 @@
     "confirm": "Confirmer",
     "receive": "Réceptionner",
     "warehousePlaceholder": "Entrepôt ou point de vente de destination...",
-    "markOrdered": "Marquer comme commandée",
     "edit": "Modifier",
     "showItems": "Voir les articles",
     "hideItems": "Masquer les articles",
@@ -1192,7 +1190,8 @@
       "saving": "Enregistrement…",
       "saveChanges": "Enregistrer les modifications",
       "saveDraft": "Enregistrer comme brouillon",
-      "createAndOrder": "Créer et commander"
+      "createAndOrder": "Créer et envoyer",
+      "requestApproval": "Demander l'approbation"
     },
     "picker": {
       "placeholder": "Sélectionnez un fournisseur",
@@ -1235,7 +1234,7 @@
       "hasPayments": "La commande a déjà des paiements au fournisseur et ne peut pas être modifiée."
     },
     "number": "N°",
-    "approve": "Approuver",
+    "approve": "Approuver et envoyer",
     "requestedBy": "Demandée par {name} · {date}",
     "approvedBy": "Approuvée par {name} · {date}",
     "goToProfile": "Aller à RH → Employés",

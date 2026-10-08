@@ -1157,7 +1157,6 @@
       "received": "Received",
       "cancelled": "Cancelled",
       "pending": "Pending approval",
-      "approved": "Approved",
       "partially_received": "Partially received"
     },
     "cancelConfirm": "Cancel this purchase order?",
@@ -1165,7 +1164,6 @@
     "confirm": "Confirm",
     "receive": "Receive",
     "warehousePlaceholder": "Destination warehouse or branch...",
-    "markOrdered": "Mark as ordered",
     "edit": "Edit",
     "showItems": "Show items",
     "hideItems": "Hide items",
@@ -1192,7 +1190,8 @@
       "saving": "Saving…",
       "saveChanges": "Save changes",
       "saveDraft": "Save as draft",
-      "createAndOrder": "Create and order"
+      "createAndOrder": "Create and send",
+      "requestApproval": "Request approval"
     },
     "picker": {
       "placeholder": "Select a supplier",
@@ -1235,7 +1234,7 @@
       "hasPayments": "The order already has supplier payments and cannot be edited."
     },
     "number": "No.",
-    "approve": "Approve",
+    "approve": "Approve and send",
     "requestedBy": "Requested by {name} · {date}",
     "approvedBy": "Approved by {name} · {date}",
     "goToProfile": "Go to HR → Workers",

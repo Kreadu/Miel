@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useActionState, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
-import { approvePurchase, markPurchaseOrdered } from "@/actions/purchases";
+import { approvePurchase } from "@/actions/purchases";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/format";
 import { purchaseNumber, purchaseStatusKey } from "@/lib/purchases/approval";
@@ -47,12 +47,11 @@ export function PurchaseRow({
   canApprove: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [markState, markAction] = useActionState(markPurchaseOrdered, null);
   const [approveError, setApproveError] = useState<string | null>(null);
   const [approving, startApprove] = useTransition();
   const t = useTranslations();
   const statusKey = purchaseStatusKey(purchase.status, purchase.approvedAt);
-  const error = approveError ?? (markState && !markState.ok ? markState.error : null);
+  const error = approveError;
 
   return (
     <>
@@ -91,10 +90,9 @@ export function PurchaseRow({
         </td>
         <td className="px-3 py-2.5">
           <div className="flex flex-wrap items-end justify-end gap-1">
-            {statusKey === "pending" && canApprove ? (
+            {purchase.status === "draft" && canApprove ? (
               <Button
                 type="button"
-                variant="outline"
                 size="sm"
                 className="h-7 text-xs"
                 disabled={approving}
@@ -107,14 +105,6 @@ export function PurchaseRow({
               >
                 {approving ? "..." : t("purchases.approve")}
               </Button>
-            ) : null}
-            {statusKey === "approved" && canManage ? (
-              <form action={markAction}>
-                <input type="hidden" name="id" value={purchase.id} />
-                <Button type="submit" variant="ghost" size="sm" className="h-7 text-xs">
-                  {t("purchases.markOrdered")}
-                </Button>
-              </form>
             ) : null}
             {canManage ? (
               <PurchaseShare
