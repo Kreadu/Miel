@@ -22,12 +22,5 @@ export const companySchema = z.object({
     .transform((v) => v || null),
 });
 
-/** S26-01: "Tu nombre" (quien pide, aprueba o envía se hace responsable). */
-export const displayNameSchema = z
-  .string()
-  .trim()
-  .min(1, "profile.errors.nameRequired")
-  .max(80, "common.errors.nameTooLong");
-
 export const LOGO_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 export const MAX_LOGO_BYTES = 2 * 1024 * 1024;

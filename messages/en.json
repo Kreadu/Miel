@@ -401,7 +401,6 @@
       "admin": "Administrator",
       "member": "Staff"
     },
-    "myProfile": "My profile",
     "myCompany": "My company",
     "stockAlert": "{count, plural, one {# product out of stock or below minimum} other {# products out of stock or below minimum}}",
     "stockAlertAction": "View and order",
@@ -1230,7 +1229,7 @@
       "saveFailed": "Could not save the purchase order. Try again.",
       "purchaseInvalid": "Invalid order.",
       "approvalRequired": "The order needs approval before it can be placed.",
-      "displayNameRequired": "Add your name in My profile to request or approve orders.",
+      "displayNameRequired": "To sign the order, add yourself in HR → Workers with your same email.",
       "notPending": "The order is no longer pending approval.",
       "approverInvalid": "Only an admin can approve orders, and the owner cannot be removed.",
       "hasPayments": "The order already has supplier payments and cannot be edited."
@@ -1239,7 +1238,7 @@
     "approve": "Approve",
     "requestedBy": "Requested by {name} · {date}",
     "approvedBy": "Approved by {name} · {date}",
-    "goToProfile": "Go to My profile",
+    "goToProfile": "Go to HR → Workers",
     "approval": {
       "approver": "Approves purchase orders",
       "approverHint": "The owner always approves."
@@ -2084,18 +2083,6 @@
       "logoSize": "The logo cannot be larger than 2 MB.",
       "logoUpload": "Could not upload the logo. Try again.",
       "saveFailed": "Could not save the data. Try again."
-    }
-  },
-  "profile": {
-    "title": "My profile",
-    "name": "Your name",
-    "nameHelp": "This is how you'll appear on purchase orders you request, approve or send: whoever signs is responsible.",
-    "save": "Save",
-    "saving": "Saving…",
-    "saved": "Saved.",
-    "errors": {
-      "nameRequired": "Enter your name.",
-      "saveFailed": "Could not save your name. Try again."
     }
   }
 }

@@ -3218,10 +3218,6 @@ export type Database = {
         Args: { p_membership_id: string; p_value: boolean }
         Returns: undefined
       }
-      set_my_display_name: {
-        Args: { p_name: string; p_tenant_id: string }
-        Returns: undefined
-      }
       set_worker_pin: {
         Args: { p_pin: string; p_username: string; p_worker_id: string }
         Returns: undefined

@@ -55,7 +55,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // S26-05: logo de la empresa en lugar del de Miel (si lo subió en "Mi empresa").
   const { data: company } = await supabase.from("tenants").select("logo_url").eq("id", active.tenantId).maybeSingle();
 
-  // S26-01: nombre de la cuenta en esta empresa (o el correo si aún no lo puso).
+  // S26-08: nombre de RRHH copiado en la membresía (o el correo si no está en Trabajadores).
   const { data: me } = active.storeMode
     ? { data: null }
     : await supabase
@@ -86,28 +86,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {active.storeMode ? (
             <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
           ) : (
-            <Link
-              href="/perfil"
-              className="truncate text-xs text-muted-foreground underline-offset-4 hover:underline"
-              title={t("myProfile")}
-            >
-              {me?.display_name || user?.email}
-            </Link>
+            <span className="truncate text-xs text-muted-foreground">{me?.display_name || user?.email}</span>
           )}
           <ThemeToggle />
         </div>
-        {active.storeMode ? null : (
-          <div className="flex flex-wrap gap-x-4 gap-y-1">
-            <Link href="/perfil" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
-              {t("myProfile")}
-            </Link>
-            {active.role !== "member" ? (
-              <Link href="/empresa" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
-                {t("myCompany")}
-              </Link>
-            ) : null}
-          </div>
-        )}
+        {!active.storeMode && active.role !== "member" ? (
+          <Link href="/empresa" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+            {t("myCompany")}
+          </Link>
+        ) : null}
         {/* En modo tienda no se cierra la sesión de la cuenta de tienda desde aquí. */}
         {active.storeMode ? null : (
           <form action={logout}>

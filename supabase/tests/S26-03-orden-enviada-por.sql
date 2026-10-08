@@ -16,6 +16,11 @@ insert into public.memberships (user_id, tenant_id, role, display_name, created_
   ('00000000-0000-0000-0000-000000026302', '10000000-0000-0000-0000-000000026301', 'admin', null,
    '00000000-0000-0000-0000-000000026301');
 
+-- S26-08: el nombre que firma sale de RRHH (trabajador conectado a la cuenta).
+insert into public.workers (tenant_id, full_name, doc_number, user_id, created_by)
+select tenant_id, display_name, user_id::text, user_id, user_id from public.memberships
+where display_name is not null and user_id in (select id from auth.users where email like '%s2603%');
+
 insert into public.suppliers (id, tenant_id, name, created_by) values
   ('20000000-0000-0000-0000-000000026301', '10000000-0000-0000-0000-000000026301', 'Proveedor',
    '00000000-0000-0000-0000-000000026301');

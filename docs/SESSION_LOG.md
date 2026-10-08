@@ -29,6 +29,26 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-08 (cont.) · S26-08 — el nombre que firma sale de RRHH
+
+**Hecho:** el humano no encontraba "Mi perfil" y pidió no repetir información. Aprobó S26-08 y se
+implementó con la migración `20261008150000_nombre-desde-rrhh.sql`:
+- quien firma usa su nombre de RRHH → Trabajadores, conectado por invitación o por el mismo correo
+  (trigger);
+- `memberships.display_name` pasa a ser copia automática del nombre de RRHH;
+- se eliminaron "Mi perfil" y `set_my_display_name`;
+- el error de firma lleva a RRHH → Trabajadores.
+
+lint, tsc, `npm test` 604/604, `next build` ✓; pgTAP S26 y S3 en verde, solo en PGlite.
+
+**Pendiente del humano:**
+1. Pegar `supabase/migrations/_pendientes-cloud.sql` (S26-08) y avisar para borrarlo.
+2. Revisar que el trabajador dueño en RRHH tenga **el mismo correo** con el que inicia sesión;
+   eso lo conecta.
+3. Probar crear o editar y aprobar una orden.
+
+---
+
 ## Sesión 2026-10-08 · E28 — recepción con factura (S28-01), precio al recibir (S28-02) y corrección (S28-03)
 
 **Hecho:** el humano describió el proceso y aprobó las specs S28-01 y S28-02 con todos los

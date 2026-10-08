@@ -310,7 +310,7 @@ export function PurchaseForm({
           {state.error === "purchases.errors.displayNameRequired" ? (
             <>
               {" "}
-              <Link href="/perfil" className="underline">
+              <Link href="/equipo/trabajadores" className="underline">
                 {t("purchases.goToProfile")}
               </Link>
             </>

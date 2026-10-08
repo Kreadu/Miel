@@ -84,7 +84,7 @@ export default async function CajaPage({ searchParams }: { searchParams: Promise
     return acc;
   }, {});
   const refundSaleRow = refundSaleRes.data;
-  // Quién cobró (dueño/admin): el nombre de "Mi perfil" (S26-01).
+  // Quién cobró (dueño/admin): su nombre de RRHH (S26-08).
   const { data: members } = canManage
     ? await supabase.from("memberships").select("user_id, display_name").eq("tenant_id", active.tenantId)
     : { data: [] };

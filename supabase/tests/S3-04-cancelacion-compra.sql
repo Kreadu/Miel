@@ -37,7 +37,9 @@ insert into public.suppliers (id, tenant_id, name, created_by) values
    'Proveedor B', '00000000-0000-0000-0000-00000000b001');
 
 -- S26-02: crear/editar órdenes firma con "Tu nombre".
-update public.memberships set display_name = 'Dueño' where user_id = '00000000-0000-0000-0000-00000000a001';
+-- S26-08: el nombre que firma sale de RRHH.
+insert into public.workers (tenant_id, full_name, doc_number, user_id, created_by)
+select tenant_id, 'Dueño', '1', user_id, user_id from public.memberships where user_id = '00000000-0000-0000-0000-00000000a001';
 
 -- Órdenes insertadas directamente en distintos estados
 insert into public.purchases (id, tenant_id, supplier_id, status, subtotal, tax, total, created_by) values

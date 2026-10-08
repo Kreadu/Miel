@@ -45,6 +45,11 @@ rentabilidad, CxC/CxP).
   documento, entrada/salida (qty y valor), saldo acumulado (qty y valor) y costo promedio
   resultante. Solo lectura, sin tablas nuevas.
 
+## Firma de órdenes (S26-08)
+- El nombre que firma sale de `workers.full_name` del trabajador activo conectado a la cuenta
+  (`workers.user_id`: por invitación, o por el mismo correo vía trigger `workers_sync_account`).
+  `memberships.display_name` es copia automática de ese nombre (no se escribe a mano).
+
 ## Compras (E3)
 - `suppliers` — name, nit, email, phone, address
 - `purchases` — supplier_id, status ('draft'|'ordered'|'partially_received'|'received'|'cancelled'),

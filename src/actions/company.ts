@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
-import { companySchema, displayNameSchema, LOGO_TYPES, MAX_LOGO_BYTES } from "@/lib/validation/company";
+import { companySchema, LOGO_TYPES, MAX_LOGO_BYTES } from "@/lib/validation/company";
 
 export type CompanyState = { ok: false; error: string } | { ok: true } | null;
 
@@ -65,24 +65,6 @@ export async function saveCompany(_prev: CompanyState, formData: FormData): Prom
   }
   if (!data?.length) return { ok: false, error: "common.errors.permissionDenied" };
 
-  revalidatePath("/", "layout");
-  return { ok: true };
-}
-
-/** S26-01: cada usuario pone SU nombre en la empresa activa (RPC: solo su propia membresía). */
-export async function setMyDisplayName(_prev: CompanyState, formData: FormData): Promise<CompanyState> {
-  const parsed = displayNameSchema.safeParse(formData.get("display_name")?.toString() ?? "");
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
-
-  const { active } = await getActiveTenant();
-  if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
-
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("set_my_display_name", { p_tenant_id: active.tenantId, p_name: parsed.data });
-  if (error) {
-    console.error("setMyDisplayName:", error.message);
-    return { ok: false, error: "profile.errors.saveFailed" };
-  }
   revalidatePath("/", "layout");
   return { ok: true };
 }

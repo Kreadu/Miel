@@ -43,7 +43,9 @@ insert into public.products (id, tenant_id, sku, name, cost, price, created_by) 
    'SKU-B1', 'Producto B1', 100, 200, '00000000-0000-0000-0000-00000000fff1');
 
 -- S26-02: crear/editar órdenes firma con "Tu nombre".
-update public.memberships set display_name = 'Dueño' where user_id = '00000000-0000-0000-0000-00000000eee1';
+-- S26-08: el nombre que firma sale de RRHH.
+insert into public.workers (tenant_id, full_name, doc_number, user_id, created_by)
+select tenant_id, 'Dueño', '1', user_id, user_id from public.memberships where user_id = '00000000-0000-0000-0000-00000000eee1';
 
 -- === Simular al owner del tenant A ===
 set local role authenticated;

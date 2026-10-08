@@ -86,22 +86,3 @@ describe("saveCompany (S26-01)", () => {
     });
   });
 });
-
-describe("setMyDisplayName (S26-01)", () => {
-  it("guarda el nombre propio", async () => {
-    rpc.mockClear();
-    const { setMyDisplayName } = await import("./company");
-    expect(await setMyDisplayName(null, formData({ display_name: " Ana " }))).toEqual({ ok: true });
-    expect(rpc).toHaveBeenCalledWith("set_my_display_name", { p_tenant_id: "t-1", p_name: "Ana" });
-  });
-
-  it("vacío: error sin llamar a la BD", async () => {
-    rpc.mockClear();
-    const { setMyDisplayName } = await import("./company");
-    expect(await setMyDisplayName(null, formData({ display_name: "  " }))).toEqual({
-      ok: false,
-      error: "profile.errors.nameRequired",
-    });
-    expect(rpc).not.toHaveBeenCalled();
-  });
-});

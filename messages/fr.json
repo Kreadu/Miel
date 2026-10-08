@@ -401,7 +401,6 @@
       "admin": "Administrateur",
       "member": "Opérationnel"
     },
-    "myProfile": "Mon profil",
     "myCompany": "Mon entreprise",
     "stockAlert": "{count, plural, one {# produit en rupture ou sous le minimum} other {# produits en rupture ou sous le minimum}}",
     "stockAlertAction": "Voir et commander",
@@ -1230,7 +1229,7 @@
       "saveFailed": "Impossible d’enregistrer le bon de commande. Réessayez.",
       "purchaseInvalid": "Commande non valide.",
       "approvalRequired": "La commande doit être approuvée avant d'être passée.",
-      "displayNameRequired": "Indiquez votre nom dans Mon profil pour demander ou approuver des commandes.",
+      "displayNameRequired": "Pour signer la commande, ajoutez-vous dans RH → Employés avec le même e-mail.",
       "notPending": "La commande n'est plus en attente d'approbation.",
       "approverInvalid": "Seul un administrateur peut approuver les commandes, et le propriétaire ne peut pas être retiré.",
       "hasPayments": "La commande a déjà des paiements au fournisseur et ne peut pas être modifiée."
@@ -1239,7 +1238,7 @@
     "approve": "Approuver",
     "requestedBy": "Demandée par {name} · {date}",
     "approvedBy": "Approuvée par {name} · {date}",
-    "goToProfile": "Aller à Mon profil",
+    "goToProfile": "Aller à RH → Employés",
     "approval": {
       "approver": "Approuve les bons de commande",
       "approverHint": "Le propriétaire approuve toujours."
@@ -2084,18 +2083,6 @@
       "logoSize": "Le logo ne peut pas dépasser 2 Mo.",
       "logoUpload": "Impossible de téléverser le logo. Réessayez.",
       "saveFailed": "Impossible d’enregistrer les données. Réessayez."
-    }
-  },
-  "profile": {
-    "title": "Mon profil",
-    "name": "Votre nom",
-    "nameHelp": "C’est ainsi que vous apparaîtrez sur les bons de commande que vous demandez, approuvez ou envoyez : qui signe en est responsable.",
-    "save": "Enregistrer",
-    "saving": "Enregistrement…",
-    "saved": "Enregistré.",
-    "errors": {
-      "nameRequired": "Saisissez votre nom.",
-      "saveFailed": "Impossible d’enregistrer votre nom. Réessayez."
     }
   }
 }
