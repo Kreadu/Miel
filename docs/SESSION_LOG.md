@@ -44,7 +44,7 @@ lint, tsc y `npm test` 603/603 ✓; pgTAP de compras en verde, solo en PGlite. `
 corrió: con el servidor de desarrollo encendido se pisan los archivos de `.next`.
 
 **Pendiente del humano:**
-1. Pegar `_pendientes-cloud.sql` (S26-09).
+1. ~~Pegar S26-09 en el cloud~~: el humano confirmó que lo aplicó. No se pudo verificar por REST porque la firma de la función no cambia. El SQL se borró.
 2. Si "Aprobar y enviar" dice que falta el nombre, revisar que el correo del trabajador dueño en
    RRHH sea el mismo del inicio de sesión.
 
