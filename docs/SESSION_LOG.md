@@ -42,7 +42,7 @@ implementó con la migración `20261008150000_nombre-desde-rrhh.sql`:
 lint, tsc, `npm test` 604/604, `next build` ✓; pgTAP S26 y S3 en verde, solo en PGlite.
 
 **Pendiente del humano:**
-1. Pegar `supabase/migrations/_pendientes-cloud.sql` (S26-08) y avisar para borrarlo.
+1. ~~Aplicar S26-08 en el cloud~~: aplicado y verificado (`set_my_display_name` ya no existe); el SQL se borró. Sin migraciones pendientes.
 2. Revisar que el trabajador dueño en RRHH tenga **el mismo correo** con el que inicia sesión;
    eso lo conecta.
 3. Probar crear o editar y aprobar una orden.
