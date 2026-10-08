@@ -27,11 +27,6 @@ export async function StoreShell({ slug, info, children }: { slug: string; info:
               {t("phone")}: <a className="underline" href={`tel:${info.phone}`}>{info.phone}</a>
             </p>
           ) : null}
-          {info.email ? (
-            <p>
-              {t("email")}: <a className="underline" href={`mailto:${info.email}`}>{info.email}</a>
-            </p>
-          ) : null}
         </div>
         <DeveloperFooter />
       </footer>

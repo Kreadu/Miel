@@ -86,7 +86,9 @@ descarga CSV.
 - pie fijo de Kreadu en todas las tiendas (ADR-045);
 - las URL de los enlaces de Company y de las redes quedan sin cargar, por decisión del humano ("déjalo así por ahora").
 
-Migración `20261008210000_tienda-fisica-en-la-web.sql`, pendiente de pegar.
+Migración `20261008210000_tienda-fisica-en-la-web.sql` aplicada y verificada. Después, a pedido del
+humano: el pie de la empresa en la tienda ya no muestra el correo, y el de Kreadu quedó en una
+franja pequeña de una línea. Sin migraciones pendientes.
 
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
 y `link_worker_to_me` existen). El SQL se borró. Sin migraciones pendientes.

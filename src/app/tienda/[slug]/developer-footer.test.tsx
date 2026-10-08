@@ -17,8 +17,9 @@ describe("DeveloperFooter (S27-08)", () => {
     expect(screen.getByRole("link", { name: "(+57) 3225832662" }).getAttribute("href")).toBe("https://wa.me/573225832662");
   });
 
-  it("sin redes cargadas no muestra la sección Social", () => {
+  it("es una franja de una línea: sin títulos de sección", () => {
     render(<DeveloperFooter />);
+    expect(screen.queryByText("Company")).toBeNull();
     expect(screen.queryByText("Social")).toBeNull();
   });
 });
