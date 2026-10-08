@@ -34,15 +34,15 @@ export default async function ComprasPage({
   const fromAlerts = parseProductIds(reponer);
 
   const supabase = await createClient();
-  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes, alertsRes, approverRes] =
+  const [purchasesRes, suppliersRes, productsRes, supplierProductsRes, alertsRes, approverRes] =
     await Promise.all([
       supabase
         .from("purchases")
         .select(
-          "id, number, status, total, issued_at, created_at, note, supplier_id, requested_by_name, requested_at, approved_by_name, approved_at, suppliers(name, phone), purchase_items(id, qty, unit_cost, tax_rate, product_id, products(sku, name))",
+          "id, number, status, total, issued_at, created_at, note, supplier_id, requested_by_name, requested_at, approved_by_name, approved_at, suppliers(name, phone), purchase_items(id, qty, received_qty, unit_cost, tax_rate, product_id, products(sku, name))",
         )
         // S19-37: a la vista solo las órdenes por recibir; el resto está en el Historial.
-        .in("status", ["draft", "ordered"])
+        .in("status", ["draft", "ordered", "partially_received"])
         .order("created_at", { ascending: false }),
       supabase.from("suppliers").select("id, name").eq("active", true).order("name"),
       supabase
@@ -50,7 +50,6 @@ export default async function ComprasPage({
         .select("id, sku, name, cost, tax_rate, photo_url")
         .eq("active", true)
         .order("name"),
-      supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
       supabase.from("supplier_products").select("supplier_id, product_id"),
       fromAlerts.length
         ? supabase
@@ -73,7 +72,6 @@ export default async function ComprasPage({
     tax_rate: number | null;
     photo_url: string | null;
   }[];
-  const warehouses = warehousesRes.data ?? [];
 
   // Sugeridos por proveedor para el selector de producto (S15-01): agrupa en servidor,
   // sin refetch al cambiar de proveedor en el cliente.
@@ -168,7 +166,6 @@ export default async function ComprasPage({
                   key={p.id}
                   canManage={canManage}
                   canApprove={canApprove}
-                  warehouses={warehouses}
                   purchase={{
                     id: p.id,
                     number: p.number,
@@ -187,6 +184,7 @@ export default async function ComprasPage({
                       productName: it.products?.name ?? "—",
                       productSku: it.products?.sku ?? "—",
                       qty: it.qty,
+                      receivedQty: it.received_qty,
                       unitCost: it.unit_cost,
                       taxRate: it.tax_rate,
                     })),

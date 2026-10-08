@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
+import { SupplierPriceHistory } from "@/components/purchases/supplier-price-history";
 
 import { LinkSupplierProductForm } from "./link-supplier-product-form";
 import { UnlinkSupplierProductAction } from "./unlink-supplier-product-action";
@@ -101,6 +102,8 @@ export default async function SupplierProductsPage({ params }: PageProps) {
           {canManage ? t("emptyManage") : t("emptyPublic")}
         </p>
       )}
+
+      {canManage ? <SupplierPriceHistory supplierId={id} /> : null}
     </div>
   );
 }

@@ -10,7 +10,13 @@ export type ActivityAction =
   | "cash_closed"
   | "purchase_received"
   | "stock_adjusted"
-  | "sale_refunded";
+  | "sale_refunded"
+  | "purchase_invoice_created"
+  | "purchase_line_received"
+  | "purchase_line_voided"
+  | "purchase_closed_short"
+  | "purchase_invoice_updated"
+  | "purchase_invoice_voided";
 
 /**
  * S21-04: deja constancia de una acción importante y de quién la hizo (en el modo tienda, el

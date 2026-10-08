@@ -958,8 +958,91 @@ export type Database = {
           },
         ]
       }
+      purchase_invoices: {
+        Row: {
+          voided_at: string | null
+          voided_by: string | null
+          created_at: string
+          created_by: string
+          cufe: string | null
+          due_on: string | null
+          file_path: string | null
+          id: string
+          issued_on: string
+          number: string
+          purchase_id: string
+          subtotal: number
+          supplier_id: string
+          tax: number
+          tenant_id: string
+          total: number
+          warehouse_id: string
+        }
+        Insert: {
+          voided_at?: string | null
+          voided_by?: string | null
+          created_at?: string
+          created_by?: string
+          cufe?: string | null
+          due_on?: string | null
+          file_path?: string | null
+          id?: string
+          issued_on: string
+          number: string
+          purchase_id: string
+          subtotal: number
+          supplier_id: string
+          tax: number
+          tenant_id: string
+          total: number
+          warehouse_id: string
+        }
+        Update: {
+          voided_at?: string | null
+          voided_by?: string | null
+          created_at?: string
+          created_by?: string
+          cufe?: string | null
+          due_on?: string | null
+          file_path?: string | null
+          id?: string
+          issued_on?: string
+          number?: string
+          purchase_id?: string
+          subtotal?: number
+          supplier_id?: string
+          tax?: number
+          tenant_id?: string
+          total?: number
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_invoices_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_invoices_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchase_items: {
         Row: {
+          received_qty: number
           created_at: string
           id: string
           product_id: string
@@ -970,6 +1053,7 @@ export type Database = {
           unit_cost: number
         }
         Insert: {
+          received_qty?: number
           created_at?: string
           id?: string
           product_id: string
@@ -980,6 +1064,7 @@ export type Database = {
           unit_cost: number
         }
         Update: {
+          received_qty?: number
           created_at?: string
           id?: string
           product_id?: string
@@ -1071,8 +1156,81 @@ export type Database = {
           },
         ]
       }
+      purchase_receipt_lines: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          invoice_id: string
+          movement_id: string
+          product_id: string
+          purchase_item_id: string
+          qty: number
+          tax_rate: number
+          tenant_id: string
+          unit_cost: number
+          voided_at: string | null
+          voided_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          invoice_id: string
+          movement_id: string
+          product_id: string
+          purchase_item_id: string
+          qty: number
+          tax_rate: number
+          tenant_id: string
+          unit_cost: number
+          voided_at?: string | null
+          voided_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          invoice_id?: string
+          movement_id?: string
+          product_id?: string
+          purchase_item_id?: string
+          qty?: number
+          tax_rate?: number
+          tenant_id?: string
+          unit_cost?: number
+          voided_at?: string | null
+          voided_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_receipt_lines_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_receipt_lines_purchase_item_id_fkey"
+            columns: ["purchase_item_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_receipt_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchases: {
         Row: {
+          closed_short: boolean
+          invoiced_total: number | null
+          shortage_note: string | null
           approved_at: string | null
           approved_by: string | null
           approved_by_name: string | null
@@ -1095,6 +1253,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          closed_short?: boolean
+          invoiced_total?: number | null
+          shortage_note?: string | null
           approved_at?: string | null
           approved_by?: string | null
           approved_by_name?: string | null
@@ -1117,6 +1278,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          closed_short?: boolean
+          invoiced_total?: number | null
+          shortage_note?: string | null
           approved_at?: string | null
           approved_by?: string | null
           approved_by_name?: string | null
@@ -2752,6 +2916,24 @@ export type Database = {
           },
         ]
       }
+      supplier_price_history: {
+        Row: {
+          change_percent: number | null
+          created_at: string | null
+          invoice_number: string | null
+          issued_on: string | null
+          line_id: string | null
+          prev_cost: number | null
+          product_id: string | null
+          product_name: string | null
+          qty: number | null
+          supplier_id: string | null
+          supplier_name: string | null
+          tenant_id: string | null
+          unit_cost: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string }
@@ -2785,6 +2967,10 @@ export type Database = {
           p_session_id?: string
         }
         Returns: string
+      }
+      close_purchase_short: {
+        Args: { p_note: string | null; p_purchase_id: string }
+        Returns: undefined
       }
       confirm_sale: {
         Args: { p_sale_id: string; p_warehouse_id: string }
@@ -2821,6 +3007,21 @@ export type Database = {
           p_note?: string
           p_status: string
           p_supplier_id: string
+        }
+        Returns: string
+      }
+      create_purchase_invoice: {
+        Args: {
+          p_cufe: string | null
+          p_due_on: string | null
+          p_file_path: string | null
+          p_issued_on: string
+          p_number: string
+          p_purchase_id: string
+          p_subtotal: number
+          p_tax: number
+          p_total: number
+          p_warehouse_id: string
         }
         Returns: string
       }
@@ -2892,6 +3093,17 @@ export type Database = {
       receive_purchase: {
         Args: { p_purchase_id: string; p_warehouse_id: string }
         Returns: undefined
+      }
+      receive_purchase_line: {
+        Args: {
+          p_invoice_id: string
+          p_purchase_item_id: string
+          p_qty: number
+          p_sale_price?: number
+          p_tax_rate?: number
+          p_unit_cost?: number
+        }
+        Returns: string
       }
       refund_sale: {
         Args: { p_reason: string; p_receipt_number: number; p_tenant_id: string }
@@ -3033,7 +3245,30 @@ export type Database = {
         Args: { p_pin: string; p_tenant_id: string; p_username: string }
         Returns: { full_name: string; modules: string[]; worker_id: string }[]
       }
+      update_purchase_invoice: {
+        Args: {
+          p_cufe: string | null
+          p_due_on: string | null
+          p_file_path: string | null
+          p_invoice_id: string
+          p_issued_on: string
+          p_number: string
+          p_subtotal: number
+          p_tax: number
+          p_total: number
+        }
+        Returns: undefined
+      }
+      void_purchase_invoice: {
+        Args: { p_invoice_id: string }
+        Returns: undefined
+      }
+      void_purchase_receipt_line: {
+        Args: { p_line_id: string }
+        Returns: undefined
+      }
     }
+
     Enums: {
       [_ in never]: never
     }

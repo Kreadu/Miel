@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { logActivity } from "@/lib/activity/log";
 import { createClient } from "@/lib/supabase/server";
 import { purchaseSchema, updatePurchaseSchema } from "@/lib/validation/purchases";
 
@@ -86,27 +85,6 @@ export async function markPurchaseOrdered(
     return { ok: false, error: mapPurchaseError(error.message) };
   }
 
-  revalidatePath(PURCHASES_PATH);
-  return { ok: true };
-}
-
-/** Cualquier miembro del tenant recibe una orden ordenada (receive_purchase valida pertenencia, no rol admin). */
-export async function receivePurchase(purchaseId: string, warehouseId: string): Promise<PurchaseState> {
-  const parsed = z.object({ purchaseId: z.uuid(), warehouseId: z.uuid() }).safeParse({ purchaseId, warehouseId });
-  if (!parsed.success) return { ok: false, error: "purchases.errors.warehouseInvalid" };
-
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("receive_purchase", {
-    p_purchase_id: parsed.data.purchaseId,
-    p_warehouse_id: parsed.data.warehouseId,
-  });
-
-  if (error) {
-    console.error("receivePurchase:", error.code, error.message);
-    return { ok: false, error: mapPurchaseError(error.message) };
-  }
-
-  await logActivity("purchase_received", { entityId: parsed.data.purchaseId });
   revalidatePath(PURCHASES_PATH);
   return { ok: true };
 }

@@ -12,13 +12,13 @@ import Link from "next/link";
 
 import { CancelPurchaseAction } from "./cancel-purchase-action";
 import { PurchaseShare } from "./purchase-share";
-import { ReceivePurchaseForm } from "./receive-purchase-form";
 
 type PurchaseItem = {
   id: string;
   productName: string;
   productSku: string;
   qty: number;
+  receivedQty: number;
   unitCost: number;
   taxRate: number;
 };
@@ -27,7 +27,6 @@ export function PurchaseRow({
   purchase,
   canManage,
   canApprove,
-  warehouses,
 }: {
   purchase: {
     id: string;
@@ -46,7 +45,6 @@ export function PurchaseRow({
   };
   canManage: boolean;
   canApprove: boolean;
-  warehouses: { id: string; name: string }[];
 }) {
   const [expanded, setExpanded] = useState(false);
   const [markState, markAction] = useActionState(markPurchaseOrdered, null);
@@ -126,8 +124,10 @@ export function PurchaseRow({
                 supplierPhone={purchase.supplierPhone}
               />
             ) : null}
-            {purchase.status === "ordered" ? (
-              <ReceivePurchaseForm purchaseId={purchase.id} warehouses={warehouses} />
+            {purchase.status === "ordered" || purchase.status === "partially_received" ? (
+              <Button asChild variant="outline" size="sm" className="h-7 text-xs">
+                <Link href={`/compras/ordenes/${purchase.id}/recibir`}>{t("purchases.receive")}</Link>
+              </Button>
             ) : null}
             {(purchase.status === "draft" || purchase.status === "ordered") && canManage ? (
               <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
@@ -162,6 +162,7 @@ export function PurchaseRow({
                   <tr className="text-muted-foreground">
                     <th className="py-1 font-medium">{t("purchases.product")}</th>
                     <th className="py-1 text-right font-medium">{t("purchases.qty")}</th>
+                    <th className="py-1 text-right font-medium">{t("purchases.receipt.received")}</th>
                     <th className="py-1 text-right font-medium">{t("purchases.unitCost")}</th>
                     <th className="py-1 text-right font-medium">{t("purchases.taxPercent")}</th>
                     <th className="py-1 text-right font-medium">{t("purchases.subtotal")}</th>
@@ -174,6 +175,7 @@ export function PurchaseRow({
                         {item.productSku} — {item.productName}
                       </td>
                       <td className="py-1 text-right tabular-nums">{item.qty}</td>
+                      <td className="py-1 text-right tabular-nums">{item.receivedQty}</td>
                       <td className="py-1 text-right tabular-nums">{formatMoney(item.unitCost)}</td>
                       <td className="py-1 text-right tabular-nums">{item.taxRate}</td>
                       <td className="py-1 text-right tabular-nums">

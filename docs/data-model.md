@@ -47,13 +47,26 @@ rentabilidad, CxC/CxP).
 
 ## Compras (E3)
 - `suppliers` — name, nit, email, phone, address
-- `purchases` — supplier_id, status ('draft'|'ordered'|'received'|'cancelled'),
+- `purchases` — supplier_id, status ('draft'|'ordered'|'partially_received'|'received'|'cancelled'),
   issued_at, received_at, subtotal, tax, total (calculados en RPC)
   + `number` (consecutivo por empresa, OC-0001, vía `purchase_counters`), firmas
   `requested_by_name/requested_at` y `approved_by/approved_by_name/approved_at` (S26-02, ADR-042).
   Borrador sin `approved_at` = pendiente de aprobación; `mark_purchase_ordered` exige aprobación.
   `ordered_by_name` = "enviada por" (quien la marca ordenada; fecha = issued_at — S26-03).
-- `purchase_items` — purchase_id, product_id, qty, unit_cost, tax_rate
+  S28-01: `closed_short` + `shortage_note` (cerrada con faltantes) e `invoiced_total` (suma de sus
+  facturas = deuda con el proveedor; null sin facturas → se usa `total`).
+- `purchase_items` — purchase_id, product_id, qty, unit_cost, tax_rate, `received_qty` (S28-01)
+- `purchase_invoices` (S28-01) — factura del proveedor: purchase_id, supplier_id, number (único por
+  proveedor, sin mayúsculas), issued_on, due_on, cufe, subtotal/tax/total, warehouse_id, file_path
+  (bucket privado `purchase-invoices`, carpeta = tenant). Solo lectura dueño/admin; RPC
+  `create_purchase_invoice`. S28-03: `voided_at/voided_by` (anulada; su número se puede reutilizar),
+  RPC `update_purchase_invoice` y `void_purchase_invoice` (dueño/admin; deuda ≥ lo pagado).
+- `purchase_receipt_lines` (S28-01) — cada línea recibida: invoice_id, purchase_item_id, qty,
+  unit_cost (sin IVA), tax_rate, movement_id, voided_at. Solo lectura dueño/admin. RPC
+  `receive_purchase_line` (entra al kardex; S28-02: ajusta el precio con el mismo % o el que fija el
+  dueño), `void_purchase_receipt_line` (salida al costo de entrada; si deja 0 unidades sale todo el
+  valor restante, y si dejaría valor negativo sale al promedio — S28-03), `close_purchase_short`.
+- Vista `supplier_price_history` (S28-02) — líneas no anuladas con costo anterior y variación %.
 - RPC `receive_purchase(purchase_id, warehouse_id)` — atómica: status→'received' +
   un `stock_movements` de entrada por ítem + upsert en `supplier_products` (ADR-032).
 - `supplier_products` — supplier_id, product_id (unique compuesto), last_purchased_at

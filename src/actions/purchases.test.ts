@@ -22,49 +22,6 @@ function itemsFormData(fields: Record<string, string>, items: unknown) {
   return fd;
 }
 
-describe("receivePurchase", () => {
-  it("invoca receive_purchase con los params correctos y revalida", async () => {
-    clientState.current = mockSupabase({ error: null });
-    const { receivePurchase } = await import("./purchases");
-
-    const purchaseId = "9b8b443a-a9c4-47c9-980f-cd90d14bda41";
-    const warehouseId = "c5dc9a28-e7fd-4777-b12d-fddbe4e7efe3";
-    const result = await receivePurchase(purchaseId, warehouseId);
-
-    expect(clientState.current.rpc).toHaveBeenCalledWith("receive_purchase", {
-      p_purchase_id: purchaseId,
-      p_warehouse_id: warehouseId,
-    });
-    expect(result).toMatchObject({ ok: true });
-    expect(revalidatePath).toHaveBeenCalledWith("/compras");
-  });
-
-  it("warehouse_invalid mapea a su clave", async () => {
-    clientState.current = mockSupabase({ error: { message: "warehouse_invalid" } });
-    const { receivePurchase } = await import("./purchases");
-
-    const result = await receivePurchase(
-      "9b8b443a-a9c4-47c9-980f-cd90d14bda41",
-      "c5dc9a28-e7fd-4777-b12d-fddbe4e7efe3",
-    );
-
-    expect(result).toMatchObject({ ok: false });
-    expect(result).toEqual({ ok: false, error: "purchases.errors.warehouseInvalid" });
-  });
-
-  it("purchase_not_ordered mapea a mensaje propio", async () => {
-    clientState.current = mockSupabase({ error: { message: "purchase_not_ordered" } });
-    const { receivePurchase } = await import("./purchases");
-
-    const result = await receivePurchase(
-      "9b8b443a-a9c4-47c9-980f-cd90d14bda41",
-      "c5dc9a28-e7fd-4777-b12d-fddbe4e7efe3",
-    );
-
-    expect(result).toEqual({ ok: false, error: "purchases.errors.notOrdered" });
-  });
-});
-
 describe("cancelPurchase", () => {
   it("invoca cancel_purchase y revalida", async () => {
     clientState.current = mockSupabase({ error: null });

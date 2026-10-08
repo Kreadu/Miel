@@ -104,9 +104,9 @@ en SESSION_LOG — no se hace en caliente.
 
 ## Git
 
-- **El agente JAMÁS ejecuta `git commit` ni `git push` — eso es siempre del humano.**
-  El agente deja el árbol de trabajo verificado (lint, tsc, tests) y sugiere el mensaje de
-  commit convencional en el cierre de sesión; nada más.
+- **El agente hace `git commit` y `git push` a GitHub al cerrar cada historia** (pedido del humano
+  2026-10-08), solo con el árbol verificado (lint, tsc, tests) y con el mensaje convencional
+  sugerido. Si algo no pasa, no sube: lo reporta.
 - Trunk-based: ramas cortas `feat/S<sprint>-<id>-<slug>` desde `main`, merge rápido.
 - Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`) en español.
 - Nunca commitear secretos, `.env.local`, ni artefactos de build.

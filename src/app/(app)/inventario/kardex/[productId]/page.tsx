@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney as baseFormatMoney } from "@/lib/format";
 import { getActiveTenant } from "@/lib/tenant/server";
+import { SupplierPriceHistory } from "@/components/purchases/supplier-price-history";
 
 import { StockMovementForm } from "../../stock-movement-form";
 
@@ -165,6 +166,8 @@ export default async function KardexPage({ params, searchParams }: KardexPagePro
           </tbody>
         </table>
       </div>
+
+      {!isMember ? <SupplierPriceHistory productId={productId} /> : null}
     </div>
   );
 }

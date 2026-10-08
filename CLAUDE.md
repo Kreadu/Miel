@@ -23,4 +23,5 @@ en su propio navegador (este entorno corre en su misma compu).
 
 Respuestas al humano: concretas, sin verbosidad — regla completa en `AGENTS.md` → Comunicación.
 
-**Nunca ejecutes `git commit` ni `git push`: el humano se encarga siempre.** Sugiere el mensaje de commit y detente ahí.
+**Al cerrar cada historia, haz `git commit` y `git push` a GitHub** (pedido del humano 2026-10-08), con el árbol
+verificado y el mensaje convencional sugerido. Detalle en `AGENTS.md` → Git.

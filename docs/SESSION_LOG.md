@@ -29,6 +29,61 @@ Formato por entrada: fecha · alcance · hecho · pendiente · bloqueos · sigui
 
 ---
 
+## Sesión 2026-10-08 · E28 — recepción con factura (S28-01), precio al recibir (S28-02) y corrección (S28-03)
+
+**Hecho:** el humano describió el proceso y aprobó las specs S28-01 y S28-02 con todos los
+supuestos. Implementado:
+- **BD:**
+  - migraciones `20261008120000_recepcion-con-factura.sql` (facturas `purchase_invoices` y líneas
+    `purchase_receipt_lines`, solo lectura para dueño/admin; estado `partially_received`;
+    `received_qty`; `invoiced_total` como deuda; RPC de factura, línea, anulación y cierre con
+    faltantes; bucket privado `purchase-invoices`);
+  - migración `20261008130000_precio-al-recibir.sql` (mismo % del precio al cambiar el costo, o el
+    precio que escribe el dueño; vista `supplier_price_history`).
+- **App:**
+  - página `/compras/ordenes/[id]/recibir`: factura con archivo, tarjetas por línea con "Guardar
+    línea", precio propuesto, "Anular", "Queda pendiente" y "Cerrar con faltantes";
+  - en Compras, "Recibir" lleva a esa página (se quitaron el formulario y la acción viejos de
+    recibir todo);
+  - historial de precios en Kardex y en Productos del proveedor;
+  - la cuenta del proveedor usa la deuda según facturas;
+  - textos es/en/fr.
+- **Verificación:** lint, tsc, `npm test` 603/603 y `next build` ✓. pgTAP S28 58/58, **solo en
+  PGlite** (harness en el scratchpad; no hay Supabase CLI ni Docker en esta máquina).
+- **Fallas pgTAP en PGlite que ya estaban antes de esta sesión** (por limitaciones del harness y
+  por tests viejos superados por ADR-038): S1-01, S1-05, S2-02, S5-02, S5-05, S5-06, S5-07, S5-08,
+  S6-01, S6-02, S12-05, S18-08, S19-37 y S21-05. No cambiaron con esta sesión.
+
+**Después, a pedido del humano:** asumir que la contadora confirma el promedio ponderado y hacer
+lo que había quedado fuera. **S28-03** (migración `20261008140000_corregir-factura.sql`):
+- "Corregir" y "Anular" una factura (anular solo sin líneas activas). La deuda es la suma de las
+  facturas activas y nunca queda por debajo de lo pagado.
+- Anular una línea ya no deja valor sobrante en el kardex.
+
+lint, tsc, `npm test` 606/606, `next build` ✓; pgTAP S28 80/80, solo en PGlite. El e2e
+`core-flow` no cubría recibir compras, así que no se tocó.
+
+**Pendiente del humano:**
+1. Pegar `supabase/migrations/_pendientes-cloud.sql` en el SQL Editor del cloud y borrarlo. Hasta
+   entonces Compras falla, porque la app ya lee `received_qty` e `invoiced_total`.
+2. Probar en el navegador, sin revisión visual hecha:
+   - recibir una orden con factura (PDF);
+   - guardar una línea con otro costo y ver el precio propuesto;
+   - dejarla pendiente, recibir el resto con otra factura y cerrar otra orden con faltantes;
+   - anular una línea;
+   - como miembro: sin costos;
+   - a 375px;
+   - el archivo prueba las políticas de Storage.
+3. Probar también corregir una factura, anular una sin líneas y que no deje bajar la deuda por
+   debajo de un pago.
+4. `supabase test db` cuando haya Supabase local.
+
+**Siguiente paso:** con la migración aplicada y lo de arriba probado, lo que priorice el humano
+(S27-05 Wompi, S27-06 dominio). Commit sugerido:
+`feat(S28-01, S28-02, S28-03): recepción de compras con factura, parcial, precio al recibir y corrección de facturas`.
+
+---
+
 ## Sesión 2026-10-07 (cont. 5) · S27-04 — seguimiento y aviso de pedidos nuevos
 
 **Hecho:** S27-07 (servidor) pospuesta por el humano: todo sigue en modo prueba. Texto guía de

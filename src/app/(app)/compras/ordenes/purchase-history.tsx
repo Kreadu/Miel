@@ -58,7 +58,7 @@ export async function PurchaseHistory({
   const supabase = await createClient();
   let query = supabase
     .from("purchases")
-    .select("id, number, status, approved_at, total, created_at, suppliers(name), purchase_items(id)")
+    .select("id, number, status, approved_at, closed_short, total, created_at, suppliers(name), purchase_items(id)")
     .gte("created_at", `${from}T00:00:00-05:00`)
     .lte("created_at", `${to}T23:59:59.999-05:00`)
     .order("created_at", { ascending: false });
@@ -125,10 +125,21 @@ export async function PurchaseHistory({
                 const statusKey = purchaseStatusKey(r.status, r.approved_at);
                 return (
                 <tr key={r.id} className="border-b border-border last:border-0">
-                  <td className="px-3 py-2.5 tabular-nums">{purchaseNumber(r.number)}</td>
+                  <td className="px-3 py-2.5 tabular-nums">
+                    {/* S28-01: facturas, archivo, faltantes y anulaciones de lo recibido. */}
+                    {r.status === "received" || r.status === "partially_received" ? (
+                      <Link href={`/compras/ordenes/${r.id}/recibir`} className="underline">
+                        {purchaseNumber(r.number)}
+                      </Link>
+                    ) : (
+                      purchaseNumber(r.number)
+                    )}
+                  </td>
                   <td className="px-3 py-2.5">{formatDate(r.created_at)}</td>
                   <td className="px-3 py-2.5">{r.suppliers?.name ?? "—"}</td>
-                  <td className="px-3 py-2.5 text-muted-foreground">{t.has(`statuses.${statusKey}`) ? t(`statuses.${statusKey}`) : statusKey}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{t.has(`statuses.${statusKey}`) ? t(`statuses.${statusKey}`) : statusKey}
+                    {r.closed_short ? ` · ${t("receipt.closedShort")}` : ""}
+                  </td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{r.purchase_items.length}</td>
                   <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(Number(r.total))}</td>
                 </tr>

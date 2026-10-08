@@ -40,7 +40,7 @@ export default async function SupplierAccountPage({ params }: PageProps) {
 
   const [supplierRes, purchasesRes, paymentsRes] = await Promise.all([
     supabase.from("suppliers").select("name, nit").eq("id", id).single(),
-    supabase.from("purchases").select("id, number, status, total, created_at").eq("supplier_id", id).in("status", ["ordered", "received"]),
+    supabase.from("purchases").select("id, number, status, total, invoiced_total, created_at").eq("supplier_id", id).in("status", ["ordered", "partially_received", "received"]),
     supabase.from("supplier_payments").select("id, amount, method, note, paid_at, purchase_id").eq("supplier_id", id)
   ]);
 
@@ -61,7 +61,8 @@ export default async function SupplierAccountPage({ params }: PageProps) {
       date: new Date(p.created_at),
       type: "purchase",
       description: `${ta("purchase")} ${purchaseNumber(p.number)}`,
-      debit: Number(p.total),
+      // S28-01: con facturas, la deuda es el total de sus facturas.
+      debit: Number(p.invoiced_total ?? p.total),
       credit: 0,
       status: p.status
     });

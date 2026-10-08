@@ -370,6 +370,21 @@ prueba en `/tienda/<empresa>`.
 | S27-06 | Dominio propio de la empresa (tienda.miempresa.com) | todo |
 | S27-07 | Servidor central + dominio de la plataforma + subdominios por empresa (prerrequisito para salir a internet) | pospuesta por el humano 2026-10-07 (todo es prueba; sin servidor central por ahora) |
 
+## Épica E28 — Recepción de compras con factura (pedido del humano 2026-10-08)
+
+Proceso: la mercancía llega a la bodega, se revisa físicamente, se ingresa la factura del
+proveedor (con su archivo si es digital) y se confirma línea por línea. Cada línea entra de una vez
+al inventario a su costo real sin IVA. Lo que no llega queda pendiente o la orden se cierra con
+faltantes. Si el costo cambia, el precio de venta mantiene el mismo % y queda el historial de
+precios del proveedor. Costo: promedio ponderado (ADR-038); el humano pidió asumirlo como la respuesta de la
+contadora (2026-10-08). Si ella usa PEPS, se crea una historia aparte.
+
+| ID | Historia | Estado |
+|---|---|---|
+| S28-01 | Recepción con factura del proveedor, línea por línea, parcial ("Queda pendiente" / "Cerrar con faltantes"), anular línea, deuda según facturas | implemented (código; **migración sin aplicar al cloud**, pgTAP solo en PGlite — specs/done/S28-01-recepcion-con-factura.md) |
+| S28-03 | Corregir o anular una factura de proveedor (dueño/admin; anular sin líneas activas; deuda nunca menor a lo pagado) y anular líneas sin dejar valor sobrante en el kardex | implemented (código; **migración sin aplicar al cloud**, pgTAP solo en PGlite — specs/done/S28-03-corregir-factura-y-anulacion-coherente.md) |
+| S28-02 | Al recibir con otro costo, el precio de venta se ajusta con el mismo %; historial de precios por proveedor y producto | implemented (código; **migración sin aplicar al cloud**, pgTAP solo en PGlite — specs/done/S28-02-precio-de-venta-e-historial-proveedor.md) |
+
 ## Deuda técnica (no bloqueante, sin historia propia — limpiar en sesión de mantenimiento)
 - **S19-26, bloqueante hasta que se resuelva**: migración
   `20260929165506_tipos-de-inventario.sql` sin aplicar al cloud — sin ella fallan los
