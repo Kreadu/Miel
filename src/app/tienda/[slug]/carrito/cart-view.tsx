@@ -146,7 +146,12 @@ export function CartView({
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_24rem]">
       <section className="flex flex-col gap-3">
-        <h1 className="text-xl font-semibold tracking-tight">{t("cart.title")}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-xl font-semibold tracking-tight">{t("cart.title")}</h1>
+          <Link href={`/tienda/${slug}`} className="text-sm font-medium underline">
+            ← {t("cart.keepShopping")}
+          </Link>
+        </div>
         {missing.length > 0 ? (
           <p className="text-sm text-muted-foreground">{t("cart.someGone")}</p>
         ) : null}

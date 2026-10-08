@@ -6,7 +6,7 @@ export function DeveloperFooter() {
   const sep = <span aria-hidden="true">·</span>;
   return (
     <div className="border-t border-border bg-muted/40">
-      <p className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-2 gap-y-0.5 px-4 py-2 text-center text-[11px] leading-tight text-muted-foreground">
+      <p className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-2 gap-y-0.5 px-4 py-3 text-center text-xs leading-snug text-muted-foreground">
         <span className="font-semibold text-foreground">{DEVELOPER.brand}</span>
         <span>{DEVELOPER.legal}</span>
         {company.links.map((l) => (

@@ -95,8 +95,15 @@ Migración `20261008220000_stock-en-la-tienda.sql` aplicada y verificada. Despu�
 junto al buscador.
 
 **S27-10 (después):** en el carrito, nombres y apellidos, documento, celular con código de país y
-quién recibe o recoge. Migración `20261008230000_datos-comprador-y-quien-recibe.sql`, pendiente de
-pegar. Los pgTAP se escribieron
+quién recibe o recoge. Migración `20261008230000_datos-comprador-y-quien-recibe.sql` aplicada y verificada. Después:
+- sol y luna en la tienda;
+- la cuenta arriba del menú lateral;
+- el carrito con subtotal, IVA y total y con "Seguir comprando" arriba;
+- la franja de Kreadu, un poco más grande.
+
+**Pendiente:** el humano dice que no ve el pie de Kreadu en el carrito, aunque el HTML del
+servidor lo trae. Hay que revisarlo con una captura (Playwright no corrió desde el scratchpad;
+correrlo desde el repo). Los pgTAP se escribieron
 junto con la migración, sin ver el rojo antes.
 
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
