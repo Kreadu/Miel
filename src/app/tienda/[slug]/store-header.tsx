@@ -3,11 +3,12 @@ import Link from "next/link";
 import { getLocale } from "next-intl/server";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { isLocale } from "@/i18n/locales";
 
 import { MyOrdersLink } from "./my-orders-link";
 
-/** S27-01/02: encabezado marca blanca de la tienda (logo o inicial, nombre, idioma). El carrito va junto al buscador. */
+/** S27-01/02: encabezado marca blanca de la tienda (logo o inicial, nombre, idioma, tema claro/oscuro). El carrito va junto al buscador. */
 export async function StoreHeader({ slug, name, logoUrl }: { slug: string; name: string; logoUrl: string | null }) {
   const locale = await getLocale();
   return (
@@ -29,6 +30,7 @@ export async function StoreHeader({ slug, name, logoUrl }: { slug: string; name:
           <span className="truncate text-base font-semibold tracking-tight">{name}</span>
         </Link>
         <LanguageSwitcher currentLocale={isLocale(locale) ? locale : "es"} />
+        <ThemeToggle />
         <MyOrdersLink slug={slug} />
       </div>
       <div className="h-1 bg-(--store)" />
