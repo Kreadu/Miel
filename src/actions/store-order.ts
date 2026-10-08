@@ -6,29 +6,54 @@ import { z } from "zod";
 import { formatMoney } from "@/lib/currency";
 import { sendStoreOrderEmail } from "@/lib/email/store-order-email";
 import { MAX_QTY } from "@/lib/store/cart";
+import { DIAL_CODES, internationalPhone } from "@/lib/store/phone";
 import { createClient } from "@/lib/supabase/server";
 
 export type StoreOrderState =
-  | { ok: true; code: string; total: number; token: string | null }
+  | { ok: true; code: string; total: number; token: string | null; receiver?: string }
   | { ok: false; error: string; product?: string }
   | null;
 
 const E = "onlineStore.order.errors";
 const PAYMENTS = ["nequi", "daviplata", "transfer", "cash_on_delivery", "in_store"] as const;
 
+// S27-10: tipos de documento (los mismos de la ficha del cliente; pasaporte = "other").
+const DOC_TYPES = ["cc", "ce", "nit", "other"] as const;
+const docNumber = z.string().trim().regex(/^[0-9A-Za-z.-]{4,20}$/, `${E}.docInvalid`);
+const localPhone = z
+  .string()
+  .trim()
+  .refine((p) => p.replace(/\D/g, "").length >= 6 && p.replace(/\D/g, "").length <= 14, `${E}.phoneInvalid`);
+const dial = z.string().refine((d) => DIAL_CODES.has(d), `${E}.phoneInvalid`);
+
 const orderSchema = z
   .object({
     slug: z.string().max(40),
-    name: z.string().trim().min(2, `${E}.nameRequired`).max(80, `${E}.nameRequired`),
-    phone: z
-      .string()
-      .trim()
-      .refine((p) => p.replace(/\D/g, "").length >= 7 && p.replace(/\D/g, "").length <= 15, `${E}.phoneInvalid`),
+    first_name: z.string().trim().min(1, `${E}.nameRequired`).max(40, `${E}.nameRequired`),
+    last_name: z.string().trim().min(1, `${E}.lastNameRequired`).max(40, `${E}.lastNameRequired`),
+    doc_type: z.enum(DOC_TYPES, { error: `${E}.docInvalid` }),
+    doc_number: docNumber,
+    phone_country: dial,
+    phone: localPhone,
     email: z.union([z.literal(""), z.email(`${E}.emailInvalid`).max(160)]),
     delivery: z.enum(["pickup", "delivery"], { error: `${E}.deliveryInvalid` }),
     payment: z.enum(PAYMENTS, { error: `${E}.paymentInvalid` }),
     address: z.string().trim().max(200),
     note: z.string().trim().max(500),
+    // S27-10: casilla "Lo recibe/recoge quien compra"; si no, datos de quien recibe o recoge.
+    buyer_receives: z.boolean(),
+    receiver: z
+      .object({
+        name: z.string().trim().min(2, `${E}.receiverInvalid`).max(80, `${E}.receiverInvalid`),
+        doc_type: z.enum(DOC_TYPES, { error: `${E}.receiverInvalid` }),
+        doc_number: z.string().trim().regex(/^[0-9A-Za-z.-]{4,20}$/, `${E}.receiverInvalid`),
+        phone_country: z.string().refine((d) => DIAL_CODES.has(d), `${E}.receiverInvalid`),
+        phone: z
+          .string()
+          .trim()
+          .refine((p) => p.replace(/\D/g, "").length >= 6 && p.replace(/\D/g, "").length <= 14, `${E}.receiverInvalid`),
+      })
+      .nullable(),
     items: z
       .array(
         z.object({
@@ -58,10 +83,25 @@ export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData
     return { ok: false, error: `${E}.cartEmpty` };
   }
 
+  const buyerReceives = get("buyer_receives") === "1";
   const parsed = orderSchema.safeParse({
     slug: get("slug"),
-    name: get("name"),
+    first_name: get("first_name"),
+    last_name: get("last_name"),
+    doc_type: get("doc_type"),
+    doc_number: get("doc_number"),
+    phone_country: get("phone_country"),
     phone: get("phone"),
+    buyer_receives: buyerReceives,
+    receiver: buyerReceives
+      ? null
+      : {
+          name: get("receiver_name"),
+          doc_type: get("receiver_doc_type"),
+          doc_number: get("receiver_doc_number"),
+          phone_country: get("receiver_phone_country"),
+          phone: get("receiver_phone"),
+        },
     email: get("email").trim(),
     delivery: get("delivery"),
     payment: get("payment"),
@@ -71,11 +111,26 @@ export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
   const o = parsed.data;
+  const receiver = o.receiver
+    ? {
+        name: o.receiver.name,
+        doc_type: o.receiver.doc_type,
+        doc_number: o.receiver.doc_number,
+        phone: internationalPhone(o.receiver.phone_country, o.receiver.phone),
+      }
+    : null;
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("place_store_order", {
     p_slug: o.slug,
-    p_customer: { name: o.name, phone: o.phone, email: o.email || null },
+    p_customer: {
+      name: `${o.first_name} ${o.last_name}`,
+      phone: internationalPhone(o.phone_country, o.phone),
+      email: o.email || null,
+      doc_type: o.doc_type,
+      doc_number: o.doc_number,
+      ...(receiver ? { receiver } : {}),
+    },
     p_items: o.items,
     p_delivery: o.delivery,
     p_payment: o.payment,
@@ -90,6 +145,8 @@ export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData
     }
     if (message.includes("too_many_orders")) return { ok: false, error: `${E}.tooMany` };
     if (message.includes("store_unavailable")) return { ok: false, error: `${E}.storeUnavailable` };
+    if (message.includes("receiver_invalid")) return { ok: false, error: `${E}.receiverInvalid` };
+    if (message.includes("customer_invalid")) return { ok: false, error: `${E}.docInvalid` };
     console.error("placeStoreOrder:", message);
     return { ok: false, error: `${E}.failed` };
   }
@@ -110,5 +167,6 @@ export async function placeStoreOrder(_prev: StoreOrderState, formData: FormData
     }
   }
 
-  return { ok: true, ...order };
+  // Para el WhatsApp a la tienda: quién recibe o recoge (si no es el comprador).
+  return { ok: true, ...order, ...(receiver ? { receiver: `${receiver.name} · ${receiver.phone}` } : {}) };
 }

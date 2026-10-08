@@ -271,7 +271,6 @@
     },
     "order": {
       "title": "Tus datos",
-      "name": "Nombre",
       "phone": "Celular",
       "email": "Correo (opcional)",
       "delivery": "Entrega",
@@ -311,9 +310,29 @@
         "productUnavailable": "\"{product}\" ya no está disponible. Quítalo del carrito para seguir.",
         "tooMany": "Ya recibimos tus pedidos; espera unos minutos antes de hacer otro.",
         "storeUnavailable": "La tienda no está disponible en este momento.",
-        "failed": "No pudimos enviar tu pedido. Intenta de nuevo."
+        "failed": "No pudimos enviar tu pedido. Intenta de nuevo.",
+        "lastNameRequired": "Escribe tus apellidos.",
+        "docInvalid": "Revisa el tipo y el número de documento.",
+        "receiverInvalid": "Revisa los datos de quien recibe o recoge (nombre, documento y celular)."
       },
-      "noPayments": "Esta tienda todavía no tiene formas de pago para esta entrega."
+      "noPayments": "Esta tienda todavía no tiene formas de pago para esta entrega.",
+      "firstName": "Nombres",
+      "lastName": "Apellidos",
+      "document": "Documento de identidad",
+      "docType": "Tipo de documento",
+      "docTypes": {
+        "cc": "Cédula de ciudadanía",
+        "ce": "Cédula de extranjería",
+        "other": "Pasaporte",
+        "nit": "NIT"
+      },
+      "phoneCountry": "Código de país",
+      "buyerPicksUp": "Lo recoge quien compra",
+      "buyerReceives": "Lo recibe quien compra",
+      "whoPicksUp": "¿Quién lo recoge?",
+      "whoReceives": "¿Quién lo recibe?",
+      "fullName": "Nombre completo",
+      "whatsappReceiver": "Lo recibe o recoge: {receiver}."
     },
     "payments": {
       "title": "Formas de pago",
@@ -579,7 +598,8 @@
         "cash_on_delivery": "contra entrega",
         "in_store": "pago al recoger"
       },
-      "viewProof": "Comprobante recibido · Ver"
+      "viewProof": "Comprobante recibido · Ver",
+      "receiver": "Recibe o recoge: {name} · {doc}"
     },
     "cart": {
       "title": "Pedido armado desde el catálogo",

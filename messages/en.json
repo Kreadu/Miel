@@ -271,7 +271,6 @@
     },
     "order": {
       "title": "Your details",
-      "name": "Name",
       "phone": "Mobile phone",
       "email": "Email (optional)",
       "delivery": "Delivery",
@@ -311,9 +310,29 @@
         "productUnavailable": "\"{product}\" is no longer available. Remove it from your cart to continue.",
         "tooMany": "We already received your orders; please wait a few minutes before placing another.",
         "storeUnavailable": "The store is not available right now.",
-        "failed": "We could not send your order. Try again."
+        "failed": "We could not send your order. Try again.",
+        "lastNameRequired": "Enter your last names.",
+        "docInvalid": "Check the document type and number.",
+        "receiverInvalid": "Check the details of who receives or picks up (name, document and mobile)."
       },
-      "noPayments": "This store has no payment methods for this delivery option yet."
+      "noPayments": "This store has no payment methods for this delivery option yet.",
+      "firstName": "First names",
+      "lastName": "Last names",
+      "document": "ID document",
+      "docType": "Document type",
+      "docTypes": {
+        "cc": "Colombian ID (CC)",
+        "ce": "Foreigner ID (CE)",
+        "other": "Passport",
+        "nit": "Tax ID (NIT)"
+      },
+      "phoneCountry": "Country code",
+      "buyerPicksUp": "The buyer picks it up",
+      "buyerReceives": "The buyer receives it",
+      "whoPicksUp": "Who picks it up?",
+      "whoReceives": "Who receives it?",
+      "fullName": "Full name",
+      "whatsappReceiver": "Received or picked up by: {receiver}."
     },
     "payments": {
       "title": "Payment methods",
@@ -579,7 +598,8 @@
         "cash_on_delivery": "cash on delivery",
         "in_store": "payment at pickup"
       },
-      "viewProof": "Payment proof received · View"
+      "viewProof": "Payment proof received · View",
+      "receiver": "Received or picked up by: {name} · {doc}"
     },
     "cart": {
       "title": "Order built from the catalog",

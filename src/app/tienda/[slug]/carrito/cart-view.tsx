@@ -12,12 +12,18 @@ import { formatMoney } from "@/lib/currency";
 import { cartTotal, MAX_QTY, setCartQty } from "@/lib/store/cart";
 import type { StoreProduct } from "@/lib/store/load";
 import { offeredPayments, type StorePaymentMethod, type StorePayments } from "@/lib/store/payments";
+import { COUNTRY_CODES } from "@/lib/store/phone";
 import { storePrice } from "@/lib/store/price";
 import { whatsappUrl } from "@/lib/purchases/whatsapp";
 
 import { saveMyOrder } from "../my-orders-store";
 import { useCart } from "../use-cart";
 import { PaymentInstructions } from "./payment-instructions";
+
+// Mismo aspecto que <Input> (formulario nativo, sin estado extra).
+const SELECT =
+  "h-10 rounded-md border border-input bg-transparent px-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const DOC_TYPES = ["cc", "ce", "other", "nit"] as const;
 
 const BUTTON =
   "flex h-11 w-full items-center justify-center rounded-md bg-(--store) px-4 text-sm font-semibold text-(--store-fg) transition-opacity hover:opacity-90 disabled:opacity-50";
@@ -42,6 +48,8 @@ export function CartView({
   const { cart, update } = useCart(slug);
   const [state, action, pending] = useActionState(placeStoreOrder, null);
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
+  // S27-10: por defecto recibe o recoge quien compra.
+  const [buyerReceives, setBuyerReceives] = useState(true);
   const offered = offeredPayments(payments, delivery);
   const [chosen, setChosen] = useState<StorePaymentMethod | null>(null);
   // Lo elegido, si sigue ofrecido para esta entrega; si no, el primero disponible.
@@ -59,7 +67,13 @@ export function CartView({
   if (state?.ok) {
     const trackPath = state.token ? `/tienda/${slug}/pedido/${state.token}` : null;
     const trackUrl = trackPath && typeof window !== "undefined" ? `${window.location.origin}${trackPath}` : null;
-    const message = [t("order.whatsappText", { code: state.code, name: storeName }), trackUrl].filter(Boolean).join(" ");
+    const message = [
+      t("order.whatsappText", { code: state.code, name: storeName }),
+      state.receiver ? t("order.whatsappReceiver", { receiver: state.receiver }) : null,
+      trackUrl,
+    ]
+      .filter(Boolean)
+      .join(" ");
     return (
       <section className="mx-auto flex max-w-md flex-col items-center gap-3 py-8 text-center">
         <h1 className="text-xl font-semibold tracking-tight">{t("order.successTitle")}</h1>
@@ -197,13 +211,41 @@ export function CartView({
           </label>
         </div>
 
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="order-first-name">{t("order.firstName")}</Label>
+            <Input id="order-first-name" name="first_name" required maxLength={40} autoComplete="given-name" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="order-last-name">{t("order.lastName")}</Label>
+            <Input id="order-last-name" name="last_name" required maxLength={40} autoComplete="family-name" />
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="order-name">{t("order.name")}</Label>
-          <Input id="order-name" name="name" required maxLength={80} autoComplete="name" />
+          <Label htmlFor="order-doc-number">{t("order.document")}</Label>
+          <div className="flex gap-2">
+            <select name="doc_type" aria-label={t("order.docType")} defaultValue="cc" className={`${SELECT} w-40 shrink-0`}>
+              {DOC_TYPES.map((d) => (
+                <option key={d} value={d}>
+                  {t(`order.docTypes.${d}`)}
+                </option>
+              ))}
+            </select>
+            <Input id="order-doc-number" name="doc_number" required maxLength={20} inputMode="numeric" className="min-w-0 flex-1" />
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="order-phone">{t("order.phone")}</Label>
-          <Input id="order-phone" name="phone" type="tel" required maxLength={20} autoComplete="tel" inputMode="tel" />
+          <div className="flex gap-2">
+            <select name="phone_country" aria-label={t("order.phoneCountry")} defaultValue="+57" className={`${SELECT} w-28 shrink-0`}>
+              {COUNTRY_CODES.map((c) => (
+                <option key={c.iso} value={c.dial}>
+                  {c.flag} {c.dial}
+                </option>
+              ))}
+            </select>
+            <Input id="order-phone" name="phone" type="tel" required maxLength={20} autoComplete="tel-national" inputMode="tel" className="min-w-0 flex-1" />
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="order-email">{t("order.email")}</Label>
@@ -233,6 +275,56 @@ export function CartView({
             <p className="text-xs text-muted-foreground">{t("order.shippingNote")}</p>
           </div>
         ) : null}
+
+        {/* S27-10: quién recibe (domicilio) o recoge (retiro); por defecto, quien compra. */}
+        <div className="flex flex-col gap-3">
+          <label className="flex min-h-10 items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              name="buyer_receives"
+              value="1"
+              checked={buyerReceives}
+              onChange={(e) => setBuyerReceives(e.target.checked)}
+              className="h-4 w-4 accent-(--store)"
+            />
+            {delivery === "pickup" ? t("order.buyerPicksUp") : t("order.buyerReceives")}
+          </label>
+          {buyerReceives ? null : (
+            <div className="flex flex-col gap-4 rounded-md border border-border p-3">
+              <p className="text-sm font-medium">{delivery === "pickup" ? t("order.whoPicksUp") : t("order.whoReceives")}</p>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="order-receiver-name">{t("order.fullName")}</Label>
+                <Input id="order-receiver-name" name="receiver_name" required maxLength={80} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="order-receiver-doc">{t("order.document")}</Label>
+                <div className="flex gap-2">
+                  <select name="receiver_doc_type" aria-label={t("order.docType")} defaultValue="cc" className={`${SELECT} w-40 shrink-0`}>
+                    {DOC_TYPES.map((d) => (
+                      <option key={d} value={d}>
+                        {t(`order.docTypes.${d}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <Input id="order-receiver-doc" name="receiver_doc_number" required maxLength={20} className="min-w-0 flex-1" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="order-receiver-phone">{t("order.phone")}</Label>
+                <div className="flex gap-2">
+                  <select name="receiver_phone_country" aria-label={t("order.phoneCountry")} defaultValue="+57" className={`${SELECT} w-28 shrink-0`}>
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.iso} value={c.dial}>
+                        {c.flag} {c.dial}
+                      </option>
+                    ))}
+                  </select>
+                  <Input id="order-receiver-phone" name="receiver_phone" type="tel" required maxLength={20} inputMode="tel" className="min-w-0 flex-1" />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-sm font-medium">{t("order.payment")}</legend>

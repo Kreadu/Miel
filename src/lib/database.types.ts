@@ -1575,6 +1575,9 @@ export type Database = {
       }
       sales: {
         Row: {
+          receiver_doc: string | null
+          receiver_name: string | null
+          receiver_phone: string | null
           payment_proof_at: string | null
           payment_proof_count: number
           payment_proof_path: string | null
@@ -1610,6 +1613,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          receiver_doc?: string | null
+          receiver_name?: string | null
+          receiver_phone?: string | null
           payment_proof_at?: string | null
           payment_proof_count?: number
           payment_proof_path?: string | null
@@ -1645,6 +1651,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          receiver_doc?: string | null
+          receiver_name?: string | null
+          receiver_phone?: string | null
           payment_proof_at?: string | null
           payment_proof_count?: number
           payment_proof_path?: string | null

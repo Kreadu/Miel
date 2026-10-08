@@ -32,7 +32,7 @@ export default async function PedidosPage({ searchParams }: { searchParams: Prom
   const [salesRes, customersRes, warehousesRes, mySessionRes, ratesRes, defaultWarehouseRes, invoicesRes] = await Promise.all([
     supabase
       .from("sales")
-      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, source, store_payment, delivery_method, payment_proof_at, customers(name, phone), customer_payments(amount), sale_items(product_id, qty, products(name))")
+      .select("id, status, total, receipt_number, issued_at, created_at, shipping_address, customer_id, payment_method, source, store_payment, delivery_method, payment_proof_at, receiver_name, receiver_doc, receiver_phone, customers(name, phone), customer_payments(amount), sale_items(product_id, qty, products(name))")
       .eq("tenant_id", active.tenantId)
       .order("created_at", { ascending: false }),
     supabase.from("customers").select("id, name").eq("tenant_id", active.tenantId).eq("active", true).order("name"),
@@ -197,6 +197,9 @@ export default async function PedidosPage({ searchParams }: { searchParams: Prom
                             payment: s.store_payment,
                             shippingToConfirm: s.delivery_method === "agreed",
                             proofAt: s.payment_proof_at,
+                            receiver: s.receiver_name
+                              ? { name: s.receiver_name, doc: s.receiver_doc, phone: s.receiver_phone }
+                              : null,
                           }
                         : null,
                     items: s.sale_items.map((it) => ({

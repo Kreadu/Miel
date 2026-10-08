@@ -31,7 +31,14 @@ export async function SaleRow({
     shippingAddress: string | null;
     paymentMethod: string | null;
     /** S27-02: pedido que llegó de la tienda en línea. */
-    store: { phone: string | null; payment: string | null; shippingToConfirm: boolean; proofAt: string | null } | null;
+    store: {
+      phone: string | null;
+      payment: string | null;
+      shippingToConfirm: boolean;
+      proofAt: string | null;
+      /** S27-10: quién recibe o recoge, si no es el comprador. */
+      receiver: { name: string; doc: string | null; phone: string | null } | null;
+    } | null;
     items: AllocationItem[];
   };
   warehouses: AllocationWarehouse[];
@@ -51,9 +58,22 @@ export async function SaleRow({
         {sale.store ? (
           <div className="mt-0.5 flex flex-col text-xs text-muted-foreground">
             <span className="w-fit rounded-sm bg-primary/10 px-1.5 py-0.5 font-medium text-foreground">{t("orders.fromStore")}</span>
-            {sale.store.phone ? <a className="underline" href={`tel:${sale.store.phone}`}>{sale.store.phone}</a> : null}
+            {sale.store.phone ? <a className="underline" href={`tel:${sale.store.phone.replace(/\s/g, "")}`}>{sale.store.phone}</a> : null}
             {sale.store.payment ? <span>{t("orders.prefersPayment", { method: t(`orders.storePayments.${sale.store.payment}`) })}</span> : null}
             {sale.store.shippingToConfirm ? <span>{t("orders.shippingToConfirm")}</span> : null}
+            {sale.store.receiver ? (
+              <span>
+                {t("orders.receiver", {
+                  name: sale.store.receiver.name,
+                  doc: sale.store.receiver.doc ?? "",
+                })}{" "}
+                {sale.store.receiver.phone ? (
+                  <a className="underline" href={`tel:${sale.store.receiver.phone.replace(/\s/g, "")}`}>
+                    {sale.store.receiver.phone}
+                  </a>
+                ) : null}
+              </span>
+            ) : null}
             {sale.store.proofAt ? (
               <a className="font-medium text-foreground underline" href={`/ventas/pedidos/comprobante/${sale.id}`} target="_blank" rel="noopener">
                 {t("orders.viewProof")}

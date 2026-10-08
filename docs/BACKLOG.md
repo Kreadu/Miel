@@ -373,6 +373,7 @@ prueba en `/tienda/<empresa>`.
 | S27-04 | Seguimiento del pedido por enlace secreto (estado, pago, envío) y aviso al negocio de pedido nuevo | implemented (código; migración sin aplicar — specs/done/S27-04-seguimiento-y-aviso.md) |
 | S27-08 | Productos "solo tienda física" visibles en la web (publicidad, sin pedir) y pie fijo de Kreadu en todas las tiendas (ADR-045) | implemented (aplicada en el cloud — specs/done/S27-08-tienda-fisica-y-pie-kreadu.md) |
 | S27-09 | La tienda web muestra el stock ("Quedan N" / "Agotado") de todos los productos, suma de bodegas | implemented (aplicada en el cloud — specs/done/S27-09-stock-en-la-tienda.md) |
+| S27-10 | Carrito: nombres y apellidos, documento, celular con código de país y datos de quien recibe o recoge (casilla "lo recibe quien compra") | implemented (código; **migración sin aplicar al cloud** — specs/done/S27-10-datos-comprador-y-quien-recibe.md) |
 | S27-05 | Wompi: Nequi automático, PSE y tarjeta con confirmación por webhook (ADR) | todo |
 | S27-06 | Dominio propio de la empresa (tienda.miempresa.com) | todo |
 | S27-07 | Servidor central + dominio de la plataforma + subdominios por empresa (prerrequisito para salir a internet) | pospuesta por el humano 2026-10-07 (todo es prueba; sin servidor central por ahora) |

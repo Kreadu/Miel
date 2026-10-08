@@ -271,7 +271,6 @@
     },
     "order": {
       "title": "Vos coordonnées",
-      "name": "Nom",
       "phone": "Téléphone mobile",
       "email": "E-mail (facultatif)",
       "delivery": "Livraison",
@@ -311,9 +310,29 @@
         "productUnavailable": "« {product} » n’est plus disponible. Retirez-le du panier pour continuer.",
         "tooMany": "Nous avons déjà reçu vos commandes ; attendez quelques minutes avant d’en passer une autre.",
         "storeUnavailable": "La boutique n'est pas disponible pour le moment.",
-        "failed": "Nous n'avons pas pu envoyer votre commande. Réessayez."
+        "failed": "Nous n'avons pas pu envoyer votre commande. Réessayez.",
+        "lastNameRequired": "Indiquez vos noms.",
+        "docInvalid": "Vérifiez le type et le numéro de document.",
+        "receiverInvalid": "Vérifiez les données de la personne qui reçoit ou récupère (nom, document et mobile)."
       },
-      "noPayments": "Cette boutique n'a pas encore de moyen de paiement pour ce mode de livraison."
+      "noPayments": "Cette boutique n'a pas encore de moyen de paiement pour ce mode de livraison.",
+      "firstName": "Prénoms",
+      "lastName": "Noms",
+      "document": "Pièce d'identité",
+      "docType": "Type de document",
+      "docTypes": {
+        "cc": "Carte d'identité (CC)",
+        "ce": "Carte d'étranger (CE)",
+        "other": "Passeport",
+        "nit": "NIT"
+      },
+      "phoneCountry": "Indicatif pays",
+      "buyerPicksUp": "L'acheteur le récupère",
+      "buyerReceives": "L'acheteur le reçoit",
+      "whoPicksUp": "Qui le récupère ?",
+      "whoReceives": "Qui le reçoit ?",
+      "fullName": "Nom complet",
+      "whatsappReceiver": "Reçu ou récupéré par : {receiver}."
     },
     "payments": {
       "title": "Moyens de paiement",
@@ -579,7 +598,8 @@
         "cash_on_delivery": "paiement à la livraison",
         "in_store": "paiement au retrait"
       },
-      "viewProof": "Justificatif reçu · Voir"
+      "viewProof": "Justificatif reçu · Voir",
+      "receiver": "Reçu ou récupéré par : {name} · {doc}"
     },
     "cart": {
       "title": "Commande créée depuis le catalogue",

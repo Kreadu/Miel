@@ -62,9 +62,9 @@ select is((select unit_price from public.sale_items si join public.sales s on s.
 select is((select discount from public.sale_items si join public.sales s on s.id = si.sale_id
            where s.source = 'store' and si.product_id = '30000000-0000-0000-0000-000000027201'),
   2000.00::numeric, 'C1: descuento = qty·precio·%');
-select ok((select c.name = 'Luis Nuevo' and c.phone = '3105550001' and c.created_by is null
+select ok((select c.name = 'Luis Nuevo' and c.phone = '310 555 0001' and c.created_by is null
            from public.customers c join public.sales s on s.customer_id = c.id where s.source = 'store'),
-  'C1: cliente nuevo con teléfono normalizado');
+  'C1: cliente nuevo con el teléfono tal como lo escribió (S27-10; se reconoce con normalize_phone)');
 
 -- === C1: cliente existente por teléfono (no se cambian sus datos) ===
 set local role anon;
