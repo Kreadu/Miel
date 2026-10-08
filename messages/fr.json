@@ -1191,7 +1191,8 @@
       "saveChanges": "Enregistrer les modifications",
       "saveDraft": "Enregistrer comme brouillon",
       "createAndOrder": "Créer et envoyer",
-      "requestApproval": "Demander l'approbation"
+      "requestApproval": "Demander l'approbation",
+      "editing": "Modification de {number}"
     },
     "picker": {
       "placeholder": "Sélectionnez un fournisseur",

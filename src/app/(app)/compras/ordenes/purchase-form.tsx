@@ -4,13 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 
 import { createPurchase, updatePurchase } from "@/actions/purchases";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/format";
+import { purchaseNumber } from "@/lib/purchases/approval";
 import { purchaseLine } from "@/lib/purchases/line";
 import {
   Select,
@@ -52,6 +53,7 @@ function emptyItem(): ItemDraft {
 
 type EditingPurchase = {
   id: string;
+  number: number;
   supplier_id: string;
   note: string;
   items: Omit<ItemDraft, "key">[];
@@ -78,6 +80,11 @@ export function PurchaseForm({
 }) {
   const isEditing = purchase != null;
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  // Al abrir "Editar" desde la lista (más abajo), llevar la vista al formulario.
+  useEffect(() => {
+    if (isEditing) formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [isEditing]);
   const t = useTranslations();
   const [state, formAction, pending] = useActionState(isEditing ? updatePurchase : createPurchase, null);
   const [seenState, setSeenState] = useState(state);
@@ -138,9 +145,15 @@ export function PurchaseForm({
 
   return (
     <form
+      ref={formRef}
       action={formAction}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
+      className="flex scroll-mt-4 flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-xs"
     >
+      {isEditing ? (
+        <h2 className="text-base font-semibold tracking-tight">
+          {t("purchases.form.editing", { number: purchaseNumber(purchase.number) })}
+        </h2>
+      ) : null}
       <input type="hidden" name="items" value={itemsPayload} />
       {isEditing ? <input type="hidden" name="id" value={purchase.id} /> : null}
 

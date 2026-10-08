@@ -1191,7 +1191,8 @@
       "saveChanges": "Save changes",
       "saveDraft": "Save as draft",
       "createAndOrder": "Create and send",
-      "requestApproval": "Request approval"
+      "requestApproval": "Request approval",
+      "editing": "Editing {number}"
     },
     "picker": {
       "placeholder": "Select a supplier",

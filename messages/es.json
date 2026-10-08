@@ -1191,7 +1191,8 @@
       "saveChanges": "Guardar cambios",
       "saveDraft": "Guardar como borrador",
       "createAndOrder": "Crear y enviar",
-      "requestApproval": "Pedir aprobación"
+      "requestApproval": "Pedir aprobación",
+      "editing": "Editando {number}"
     },
     "picker": {
       "placeholder": "Selecciona un proveedor",

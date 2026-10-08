@@ -120,12 +120,15 @@ export default async function ComprasPage({
 
       {canManage ? (
         editingPurchase ? (
+          // key: sin ella React reusa el formulario de "nueva orden" y no carga la que se edita.
           <PurchaseForm
+            key={editingPurchase.id}
             suppliers={suppliers}
             products={products}
             suggestedBySupplier={suggestedBySupplier}
             purchase={{
               id: editingPurchase.id,
+              number: editingPurchase.number,
               supplier_id: editingPurchase.supplier_id,
               note: editingPurchase.note ?? "",
               items: editingPurchase.purchase_items.map((it) => ({
@@ -138,6 +141,7 @@ export default async function ComprasPage({
           />
         ) : (
           <PurchaseForm
+            key="new"
             suppliers={suppliers}
             products={products}
             suggestedBySupplier={suggestedBySupplier}
