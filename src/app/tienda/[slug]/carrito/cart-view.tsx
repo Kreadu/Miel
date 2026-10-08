@@ -9,7 +9,7 @@ import { placeStoreOrder } from "@/actions/store-order";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/currency";
-import { cartTotal, MAX_QTY, setCartQty } from "@/lib/store/cart";
+import { cartTotals, MAX_QTY, setCartQty } from "@/lib/store/cart";
 import type { StoreProduct } from "@/lib/store/load";
 import { offeredPayments, type StorePaymentMethod, type StorePayments } from "@/lib/store/payments";
 import { COUNTRY_CODES } from "@/lib/store/phone";
@@ -54,6 +54,7 @@ export function CartView({
   const [chosen, setChosen] = useState<StorePaymentMethod | null>(null);
   // Lo elegido, si sigue ofrecido para esta entrega; si no, el primero disponible.
   const payment = chosen && offered.includes(chosen) ? chosen : (offered[0] ?? null);
+  const totals = cartTotals(cart, products);
 
   // Pedido hecho: el carrito queda vacío (el resumen lo muestra la respuesta).
   useEffect(() => {
@@ -193,10 +194,20 @@ export function CartView({
             );
           })}
         </ul>
-        <p className="flex justify-between text-base font-semibold">
-          <span>{t("cart.estimatedTotal")}</span>
-          <span className="tabular-nums">{formatMoney(cartTotal(cart, products), currency)}</span>
-        </p>
+        <dl className="flex flex-col gap-1 text-sm">
+          <div className="flex justify-between">
+            <dt>{t("cart.subtotal")}</dt>
+            <dd className="tabular-nums">{formatMoney(totals.subtotal, currency)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>{t("cart.tax")}</dt>
+            <dd className="tabular-nums">{formatMoney(totals.tax, currency)}</dd>
+          </div>
+          <div className="flex justify-between border-t border-border pt-1 text-base font-semibold">
+            <dt>{t("cart.total")}</dt>
+            <dd className="tabular-nums">{formatMoney(totals.total, currency)}</dd>
+          </div>
+        </dl>
         <p className="text-xs text-muted-foreground">{t("cart.totalNote")}</p>
       </section>
 

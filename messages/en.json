@@ -266,8 +266,10 @@
       "less": "Remove one {name}",
       "more": "Add one {name}",
       "remove": "Remove {name} from cart",
-      "estimatedTotal": "Estimated total",
-      "totalNote": "VAT included. The store confirms the final total (and shipping, if any)."
+      "totalNote": "Shipping, if any, is confirmed by the store.",
+      "subtotal": "Subtotal",
+      "tax": "VAT",
+      "total": "Total"
     },
     "order": {
       "title": "Your details",

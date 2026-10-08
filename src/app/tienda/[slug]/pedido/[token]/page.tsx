@@ -93,7 +93,7 @@ export default async function OrderTrackingPage({ params }: Props) {
             ) : null}
           </ul>
           <p className="flex justify-between border-t border-border pt-2 font-semibold">
-            <span>{t("cart.estimatedTotal")}</span>
+            <span>{t("cart.total")}</span>
             <span className="tabular-nums">{formatMoney(order.total, currency)}</span>
           </p>
           <p className="text-sm text-muted-foreground">

@@ -266,8 +266,10 @@
       "less": "Quitar una unidad de {name}",
       "more": "Agregar una unidad de {name}",
       "remove": "Quitar {name} del carrito",
-      "estimatedTotal": "Total estimado",
-      "totalNote": "Incluye IVA. El total final lo confirma la tienda (y el envío, si aplica)."
+      "totalNote": "El envío, si aplica, lo confirma la tienda.",
+      "subtotal": "Subtotal",
+      "tax": "IVA",
+      "total": "Total"
     },
     "order": {
       "title": "Tus datos",

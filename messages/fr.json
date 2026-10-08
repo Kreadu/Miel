@@ -266,8 +266,10 @@
       "less": "Retirer un {name}",
       "more": "Ajouter un {name}",
       "remove": "Retirer {name} du panier",
-      "estimatedTotal": "Total estimé",
-      "totalNote": "TVA incluse. La boutique confirme le total final (et la livraison, le cas échéant)."
+      "totalNote": "La livraison, le cas échéant, est confirmée par la boutique.",
+      "subtotal": "Sous-total",
+      "tax": "TVA",
+      "total": "Total"
     },
     "order": {
       "title": "Vos coordonnées",

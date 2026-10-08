@@ -1,4 +1,5 @@
-import { storePrice } from "./price";
+import { round2 } from "@/lib/money";
+import { saleLine } from "@/lib/sales/line";
 
 /** S27-02: carrito de la tienda — id de producto → unidades (1 a 99). */
 export type Cart = Record<string, number>;
@@ -26,11 +27,21 @@ export function cartCount(cart: Cart): number {
 }
 
 /** Total estimado (el real lo calcula la BD al hacer el pedido). */
-export function cartTotal(cart: Cart, products: Priced[]): number {
-  return products.reduce((sum, p) => {
+/**
+ * S27-02/S27-10: subtotal (sin IVA, con descuento), IVA y total del carrito — la misma cuenta por
+ * línea que place_store_order (saleLine), así el total coincide con el del pedido.
+ */
+export function cartTotals(cart: Cart, products: Priced[]): { subtotal: number; tax: number; total: number } {
+  let subtotal = 0;
+  let tax = 0;
+  for (const p of products) {
     const qty = cart[p.product_id] ?? 0;
-    return sum + qty * storePrice(Number(p.price), Number(p.discount_percent), Number(p.tax_rate)).final;
-  }, 0);
+    if (!qty) continue;
+    const line = saleLine(qty, Number(p.price), Number(p.discount_percent), Number(p.tax_rate));
+    subtotal += line.net;
+    tax += line.tax;
+  }
+  return { subtotal: round2(subtotal), tax: round2(tax), total: round2(subtotal + tax) };
 }
 
 /** Lee el carrito guardado; ante cualquier problema (bloqueado, corrupto) empieza vacío. */

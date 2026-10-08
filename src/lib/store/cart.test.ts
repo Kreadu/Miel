@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { addToCart, cartCount, cartTotal, loadCart, MAX_QTY, saveCart, setCartQty } from "./cart";
+import { addToCart, cartCount, cartTotals, loadCart, MAX_QTY, saveCart, setCartQty } from "./cart";
 
 describe("carrito (S27-02)", () => {
   it("agrega, suma y respeta el tope de 99", () => {
@@ -16,15 +16,15 @@ describe("carrito (S27-02)", () => {
     expect(setCartQty({ p1: 2 }, "p1", Number.NaN)).toEqual({});
   });
 
-  it("cuenta unidades y estima el total con descuento e IVA", () => {
+  it("cuenta unidades y da subtotal, IVA y total como el pedido en la BD", () => {
     const cart = { p1: 2, p2: 1, gone: 3 };
     const products = [
       { product_id: "p1", price: 10000, discount_percent: 10, tax_rate: 19 },
       { product_id: "p2", price: 5000, discount_percent: 0, tax_rate: 0 },
     ];
     expect(cartCount(cart)).toBe(6);
-    // 2 × 10710 + 5000 (el producto que ya no está en el catálogo no suma)
-    expect(cartTotal(cart, products)).toBe(26420);
+    // p1: 2 × 10000 − 10 % = 18000 + IVA 3420; p2: 5000 sin IVA (el que ya no está no suma)
+    expect(cartTotals(cart, products)).toEqual({ subtotal: 23000, tax: 3420, total: 26420 });
   });
 
   it("guarda y lee por tienda; con almacenamiento roto devuelve vacío sin fallar", () => {
