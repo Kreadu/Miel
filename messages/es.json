@@ -1348,7 +1348,11 @@
       "correct": "Corregir",
       "voidInvoice": "Anular factura",
       "voidInvoiceConfirm": "¿Anular esta factura? Sale de la deuda con el proveedor.",
-      "voidedInvoice": "Anulada"
+      "voidedInvoice": "Anulada",
+      "cufeHelp": "Código de la factura electrónica que da la DIAN: viene al pie de la factura, junto al código QR. Si la factura es en papel o no lo trae, déjalo vacío.",
+      "expectedTitle": "Según la orden (lo que falta recibir)",
+      "expectedLine": "Subtotal sin IVA {subtotal} · IVA {tax} · Total {total}",
+      "expectedMismatch": "No coincide con la orden: diferencia de {diff}. Revisa la factura (precio, cantidades o IVA)."
     },
     "priceHistory": {
       "title": "Precios de proveedores",

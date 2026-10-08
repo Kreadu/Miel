@@ -64,6 +64,10 @@ una consulta en el cloud. Ahora su propio correo ahí conecta la ficha (`link_wo
 borra esas invitaciones. Además, el aviso de firma muestra el correo de inicio de sesión, y
 Guardar/Cancelar de la ficha del trabajador quedaron al final.
 
+**Mejora de la factura (después, sin migración):** el formulario muestra lo que falta recibir según
+la orden (subtotal sin IVA, IVA y total), solo a dueño/admin, y avisa la diferencia si no coincide
+(`pendingTotals` en `src/lib/purchases/line.ts`). El campo CUFE tiene ayuda.
+
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
 y `link_worker_to_me` existen). El SQL se borró. Sin migraciones pendientes.
 

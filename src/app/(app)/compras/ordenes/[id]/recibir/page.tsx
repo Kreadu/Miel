@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 
 import { formatDate, formatMoney } from "@/lib/format";
 import { purchaseNumber } from "@/lib/purchases/approval";
+import { pendingTotals } from "@/lib/purchases/line";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -179,6 +180,7 @@ export default async function ReceivePurchasePage({
           warehouses={warehouses}
           // S26-11: solo las órdenes viejas (ítems sin bodega) piden bodega en la factura.
           askWarehouse={items.some((i) => !i.warehouse_id)}
+          expected={isAdmin ? pendingTotals(items) : undefined}
         />
       ) : null}
 

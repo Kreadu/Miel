@@ -1348,7 +1348,11 @@
       "correct": "Corriger",
       "voidInvoice": "Annuler la facture",
       "voidInvoiceConfirm": "Annuler cette facture ? Elle sort de la dette fournisseur.",
-      "voidedInvoice": "Annulée"
+      "voidedInvoice": "Annulée",
+      "cufeHelp": "Code de la facture électronique attribué par la DIAN : en bas de la facture, à côté du QR. Laissez vide si la facture est papier ou ne l'indique pas.",
+      "expectedTitle": "Selon la commande (reste à recevoir)",
+      "expectedLine": "Sous-total HT {subtotal} · TVA {tax} · Total {total}",
+      "expectedMismatch": "Ne correspond pas à la commande : écart de {diff}. Vérifiez la facture (prix, quantités ou TVA)."
     },
     "priceHistory": {
       "title": "Prix des fournisseurs",

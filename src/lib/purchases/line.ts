@@ -15,3 +15,21 @@ export function purchaseLine(
     total: round2(qty * unitCost * (1 + taxRate / 100)),
   };
 }
+
+/**
+ * S28-01: lo que falta recibir de la orden, para comparar con la factura del proveedor
+ * (subtotal sin IVA, IVA y total; IVA redondeado por línea como create_purchase).
+ */
+export function pendingTotals(
+  items: { qty: number; received_qty: number; unit_cost: number; tax_rate: number }[],
+): { subtotal: number; tax: number; total: number } {
+  let subtotal = 0;
+  let tax = 0;
+  for (const it of items) {
+    const pending = Math.max(Number(it.qty) - Number(it.received_qty), 0);
+    const base = round2(pending * Number(it.unit_cost));
+    subtotal += base;
+    tax += round2((base * Number(it.tax_rate)) / 100);
+  }
+  return { subtotal: round2(subtotal), tax: round2(tax), total: round2(subtotal + tax) };
+}
