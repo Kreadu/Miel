@@ -3086,6 +3086,7 @@ export type Database = {
         Args: { p_purchase_id: string }
         Returns: undefined
       }
+      link_worker_to_me: { Args: { p_worker_id: string }; Returns: undefined }
       mark_invoice_issued: { Args: { p_sale_id: string }; Returns: undefined }
       mark_sale_delivered: { Args: { p_sale_id: string }; Returns: undefined }
       mark_sale_shipped: {

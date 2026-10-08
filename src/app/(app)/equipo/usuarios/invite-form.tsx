@@ -83,7 +83,12 @@ export function InviteForm({
           {tr(state.error)}
         </p>
       ) : null}
-      {state && state.ok ? (
+      {state && state.ok && "linked" in state ? (
+        <p role="status" className="text-sm">
+          {tr("invitations.linkedToMe")}
+        </p>
+      ) : null}
+      {state && state.ok && "link" in state ? (
         <div className="flex items-center gap-2 rounded-md border border-border bg-muted/50 p-2.5">
           <code className="flex-1 truncate text-xs text-muted-foreground">{state.link}</code>
           <Button type="button" variant="outline" size="sm" onClick={() => copyLink(state.link)}>

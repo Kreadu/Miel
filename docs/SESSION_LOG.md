@@ -58,6 +58,12 @@ de pegar con `_pendientes-cloud.sql`.
 
 Migración `20261008180000_cantidades-por-bodega.sql`. `npm test` 609/609 ✓. Sin revisión visual.
 
+**S26-12 (después):** el humano no podía firmar porque escribía su correo en "Acceso con correo",
+lo que creaba invitaciones a sí mismo, y dejaba vacío Contacto → Correo. Lo confirmaron el log y
+una consulta en el cloud. Ahora su propio correo ahí conecta la ficha (`link_worker_to_me`) y
+borra esas invitaciones. Además, el aviso de firma muestra el correo de inicio de sesión, y
+Guardar/Cancelar de la ficha del trabajador quedaron al final.
+
 **Pendiente del humano:**
 1. ~~Pegar S26-09 en el cloud~~: el humano confirmó que lo aplicó. No se pudo verificar por REST porque la firma de la función no cambia. El SQL se borró.
 2. Si "Aprobar y enviar" dice que falta el nombre, revisar que el correo del trabajador dueño en

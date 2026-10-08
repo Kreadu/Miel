@@ -18,8 +18,12 @@ vi.mock("@/lib/tenant/server", () => ({
   getActiveTenant: vi.fn(async () => ({ active: activeTenant, memberships: [] })),
 }));
 
+const rpcMock = vi.fn(async (..._args: unknown[]) => ({ error: null as { message: string } | null }));
+
 function mockSupabase(overrides: { insertResult?: unknown }) {
   return {
+    auth: { getUser: vi.fn(async () => ({ data: { user: { email: "Duena@Miel.co" } } })) },
+    rpc: rpcMock,
     from: vi.fn(() => ({
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
@@ -88,5 +92,33 @@ describe("createInvitation — envío de correo (S12-03)", () => {
 
     expect(result).toMatchObject({ ok: true, link: "http://localhost:3000/invite/tok-123" });
     expect(JSON.stringify(result)).not.toContain("resend: rate limited");
+  });
+});
+
+describe("createInvitation con mi propio correo (S26-12)", () => {
+  it("no invita: conecta la ficha a mi cuenta", async () => {
+    clientState.current = mockSupabase({});
+    sendEmailMock.mockClear();
+    const { createInvitation } = await import("./invitations");
+    const result = await createInvitation(
+      null,
+      formData({ email: "duena@miel.co", access: "admin", worker_id: "11111111-1111-4111-8111-111111111111" }),
+    );
+    expect(result).toEqual({ ok: true, linked: true });
+    expect(rpcMock).toHaveBeenCalledWith("link_worker_to_me", { p_worker_id: "11111111-1111-4111-8111-111111111111" });
+    expect(clientState.current.from).not.toHaveBeenCalled();
+    expect(sendEmailMock).not.toHaveBeenCalled();
+  });
+
+  it("ficha ya conectada a otra cuenta: error claro", async () => {
+    clientState.current = mockSupabase({});
+    rpcMock.mockImplementationOnce(async () => ({ error: { message: "worker_linked" } }));
+    const { createInvitation } = await import("./invitations");
+    expect(
+      await createInvitation(
+        null,
+        formData({ email: "duena@miel.co", access: "admin", worker_id: "11111111-1111-4111-8111-111111111111" }),
+      ),
+    ).toEqual({ ok: false, error: "invitations.errors.workerLinked" });
   });
 });

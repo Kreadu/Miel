@@ -389,8 +389,11 @@
       "accessRequired": "Choisissez l'accès.",
       "createFailed": "L'invitation n'a pas pu être créée. Réessayez.",
       "invalidLink": "Lien d'invitation invalide.",
-      "invalid": "Cette invitation n'est pas valide ou a déjà été utilisée."
-    }
+      "invalid": "Cette invitation n'est pas valide ou a déjà été utilisée.",
+      "workerLinked": "Cette fiche est déjà liée à un autre compte.",
+      "accountLinked": "Votre compte est déjà lié à une autre fiche."
+    },
+    "linkedToMe": "C'est fait : cette fiche est liée à votre compte."
   },
   "layout": {
     "logout": "Se déconnecter",

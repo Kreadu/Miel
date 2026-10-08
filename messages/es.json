@@ -389,8 +389,11 @@
       "accessRequired": "Elige el acceso.",
       "createFailed": "No se pudo crear la invitación. Intenta de nuevo.",
       "invalidLink": "Enlace de invitación inválido.",
-      "invalid": "Esta invitación no es válida o ya fue usada."
-    }
+      "invalid": "Esta invitación no es válida o ya fue usada.",
+      "workerLinked": "Esa ficha ya está conectada a otra cuenta.",
+      "accountLinked": "Tu cuenta ya está conectada a otra ficha de trabajador."
+    },
+    "linkedToMe": "Listo: esta ficha quedó conectada a tu cuenta."
   },
   "layout": {
     "logout": "Cerrar sesión",

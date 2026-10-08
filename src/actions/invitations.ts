@@ -14,6 +14,7 @@ import { sendInvitationEmail } from "@/lib/email/invitation-email";
 export type InvitationState =
   | { ok: false; error: string }
   | { ok: true; link: string }
+  | { ok: true; linked: true }
   | null;
 
 /** Solo owner/admin del tenant activo pueden invitar (RLS de invitations lo garantiza igual). */
@@ -32,6 +33,25 @@ export async function createInvitation(
   if (!active) return { ok: false, error: "common.errors.noActiveTenant" };
 
   const supabase = await createClient();
+
+  // S26-12: mi propio correo en la ficha de un trabajador = esa ficha soy yo; no me invito.
+  if (parsed.data.worker_id) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user?.email && user.email.toLowerCase() === parsed.data.email.toLowerCase()) {
+      const { error } = await supabase.rpc("link_worker_to_me", { p_worker_id: parsed.data.worker_id });
+      if (error) {
+        console.error("createInvitation link_worker_to_me:", error.message);
+        if (error.message.includes("worker_linked")) return { ok: false, error: "invitations.errors.workerLinked" };
+        if (error.message.includes("account_already_linked")) return { ok: false, error: "invitations.errors.accountLinked" };
+        return { ok: false, error: "invitations.errors.createFailed" };
+      }
+      revalidatePath("/", "layout");
+      return { ok: true, linked: true };
+    }
+  }
+
   const { data, error } = await supabase
     .from("invitations")
     .insert({

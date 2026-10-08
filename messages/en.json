@@ -389,8 +389,11 @@
       "accessRequired": "Choose the access.",
       "createFailed": "We couldn't create the invitation. Please try again.",
       "invalidLink": "Invalid invitation link.",
-      "invalid": "This invitation is not valid or has already been used."
-    }
+      "invalid": "This invitation is not valid or has already been used.",
+      "workerLinked": "That record is already linked to another account.",
+      "accountLinked": "Your account is already linked to another worker record."
+    },
+    "linkedToMe": "Done: this record is now linked to your account."
   },
   "layout": {
     "logout": "Sign out",
