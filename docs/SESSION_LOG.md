@@ -64,8 +64,9 @@ lint, tsc, `npm test` 606/606, `next build` ✓; pgTAP S28 80/80, solo en PGlite
 `core-flow` no cubría recibir compras, así que no se tocó.
 
 **Pendiente del humano:**
-1. Pegar `supabase/migrations/_pendientes-cloud.sql` en el SQL Editor del cloud y borrarlo. Hasta
-   entonces Compras falla, porque la app ya lee `received_qty` e `invoiced_total`.
+1. ~~Aplicar las migraciones S28 al cloud~~: el humano las pegó y se verificó por REST
+   (columnas, tablas, vista y RPC de S28-01/02/03). `_pendientes-cloud.sql` se borró. **No
+   queda ninguna migración pendiente.**
 2. Probar en el navegador, sin revisión visual hecha:
    - recibir una orden con factura (PDF);
    - guardar una línea con otro costo y ver el precio propuesto;
