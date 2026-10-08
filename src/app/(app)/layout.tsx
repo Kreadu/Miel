@@ -96,11 +96,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           )}
           <ThemeToggle />
         </div>
-        {!active.storeMode && active.role !== "member" ? (
-          <Link href="/empresa" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
-            {t("myCompany")}
-          </Link>
-        ) : null}
+        {active.storeMode ? null : (
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/perfil" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+              {t("myProfile")}
+            </Link>
+            {active.role !== "member" ? (
+              <Link href="/empresa" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+                {t("myCompany")}
+              </Link>
+            ) : null}
+          </div>
+        )}
         {/* En modo tienda no se cierra la sesión de la cuenta de tienda desde aquí. */}
         {active.storeMode ? null : (
           <form action={logout}>
