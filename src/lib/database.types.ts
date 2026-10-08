@@ -976,7 +976,7 @@ export type Database = {
           tax: number
           tenant_id: string
           total: number
-          warehouse_id: string
+          warehouse_id: string | null
         }
         Insert: {
           voided_at?: string | null
@@ -995,7 +995,7 @@ export type Database = {
           tax: number
           tenant_id: string
           total: number
-          warehouse_id: string
+          warehouse_id?: string | null
         }
         Update: {
           voided_at?: string | null
@@ -1014,7 +1014,7 @@ export type Database = {
           tax?: number
           tenant_id?: string
           total?: number
-          warehouse_id?: string
+          warehouse_id?: string | null
         }
         Relationships: [
           {
@@ -1042,6 +1042,7 @@ export type Database = {
       }
       purchase_items: {
         Row: {
+          warehouse_id: string | null
           received_qty: number
           created_at: string
           id: string
@@ -1053,6 +1054,7 @@ export type Database = {
           unit_cost: number
         }
         Insert: {
+          warehouse_id?: string | null
           received_qty?: number
           created_at?: string
           id?: string
@@ -1064,6 +1066,7 @@ export type Database = {
           unit_cost: number
         }
         Update: {
+          warehouse_id?: string | null
           received_qty?: number
           created_at?: string
           id?: string
@@ -1075,6 +1078,13 @@ export type Database = {
           unit_cost?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "purchase_items_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchase_items_product_id_fkey"
             columns: ["product_id"]
@@ -3021,7 +3031,7 @@ export type Database = {
           p_subtotal: number
           p_tax: number
           p_total: number
-          p_warehouse_id: string
+          p_warehouse_id: string | null
         }
         Returns: string
       }

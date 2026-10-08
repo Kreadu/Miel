@@ -30,9 +30,12 @@ export function InvoiceForm({
   warehouses = [],
   invoice,
   onCancel,
+  askWarehouse = true,
 }: {
   purchaseId: string;
   warehouses?: { id: string; name: string }[];
+  /** S26-11: false cuando cada ítem ya tiene su bodega. */
+  askWarehouse?: boolean;
   invoice?: InvoiceValues;
   onCancel?: () => void;
 }) {
@@ -63,7 +66,7 @@ export function InvoiceForm({
           <Label htmlFor={p("inv-number")}>{t("purchases.receipt.number")}</Label>
           <Input id={p("inv-number")} name="number" required maxLength={60} placeholder="FE-123" defaultValue={invoice?.number} />
         </div>
-        {invoice ? null : (
+        {invoice || !askWarehouse ? null : (
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="inv-warehouse">{t("purchases.receipt.warehouse")}</Label>
             <Select name="warehouse_id" required defaultValue={warehouses.length === 1 ? warehouses[0].id : undefined}>

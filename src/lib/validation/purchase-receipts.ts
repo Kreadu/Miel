@@ -29,7 +29,8 @@ function withTotals<T extends z.ZodType<{ issued_on: string; due_on: string | nu
 
 /** S28-01: factura del proveedor. */
 export const invoiceSchema = withTotals(
-  z.object({ ...invoiceFields, warehouse_id: z.uuid(`purchases.errors.warehouseInvalid`) }),
+  // S26-11: con bodega por ítem la factura no la pide ("" = sin bodega).
+  z.object({ ...invoiceFields, warehouse_id: z.preprocess((v) => v || null, z.uuid(`purchases.errors.warehouseInvalid`).nullable()) }),
 );
 
 /** S28-03: corregir una factura (la bodega no cambia). */

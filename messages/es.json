@@ -1192,7 +1192,8 @@
       "saveDraft": "Guardar como borrador",
       "createAndOrder": "Crear y enviar",
       "requestApproval": "Pedir aprobación",
-      "editing": "Editando {number}"
+      "editing": "Editando {number}",
+      "qtyByWarehouse": "Cantidad por bodega"
     },
     "picker": {
       "placeholder": "Selecciona un proveedor",
@@ -1260,7 +1261,8 @@
       "draft": "BORRADOR — sin aprobar",
       "requestedBy": "Pedida por",
       "approvedBy": "Aprobada por",
-      "orderedBy": "Enviada por"
+      "orderedBy": "Enviada por",
+      "deliverTo": "Entregar en"
     },
     "pdfButton": "PDF",
     "pdfLabel": "Descargar el PDF de {number}",

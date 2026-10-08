@@ -39,7 +39,7 @@ export default async function ReceivePurchasePage({
   const { data: purchase } = await supabase
     .from("purchases")
     .select(
-      "id, number, status, closed_short, shortage_note, suppliers(name), purchase_items(id, qty, received_qty, unit_cost, tax_rate, product_id, products(sku, name, photo_url))",
+      "id, number, status, closed_short, shortage_note, suppliers(name), purchase_items(id, qty, received_qty, unit_cost, tax_rate, product_id, warehouse_id, products(sku, name, photo_url), warehouses(name))",
     )
     .eq("id", id)
     .maybeSingle();
@@ -174,7 +174,12 @@ export default async function ReceivePurchasePage({
       ) : null}
 
       {receivable && !activeInvoice ? (
-        <InvoiceForm purchaseId={purchase.id} warehouses={warehouses} />
+        <InvoiceForm
+          purchaseId={purchase.id}
+          warehouses={warehouses}
+          // S26-11: solo las órdenes viejas (ítems sin bodega) piden bodega en la factura.
+          askWarehouse={items.some((i) => !i.warehouse_id)}
+        />
       ) : null}
 
       {receivable && activeInvoice && isAdmin ? (
@@ -206,7 +211,12 @@ export default async function ReceivePurchasePage({
                     <div className="size-12 shrink-0 rounded-md bg-muted" />
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{item.products?.name ?? "—"}</p>
+                    <p className="truncate text-sm font-medium">
+                      {item.products?.name ?? "—"}
+                      {item.warehouses?.name ? (
+                        <span className="font-normal text-muted-foreground"> → {item.warehouses.name}</span>
+                      ) : null}
+                    </p>
                     <p className="text-xs text-muted-foreground tabular-nums">
                       {t("progress", { ordered: Number(item.qty), received: Number(item.received_qty), pending })}
                     </p>

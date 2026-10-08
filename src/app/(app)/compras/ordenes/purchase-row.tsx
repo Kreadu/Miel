@@ -18,6 +18,7 @@ type PurchaseItem = {
   productName: string;
   productSku: string;
   qty: number;
+  warehouseName: string | null;
   receivedQty: number;
   unitCost: number;
   taxRate: number;
@@ -164,6 +165,7 @@ export function PurchaseRow({
                     <tr key={item.id}>
                       <td className="py-1">
                         {item.productSku} — {item.productName}
+                        {item.warehouseName ? <span className="text-muted-foreground"> · {item.warehouseName}</span> : null}
                       </td>
                       <td className="py-1 text-right tabular-nums">{item.qty}</td>
                       <td className="py-1 text-right tabular-nums">{item.receivedQty}</td>

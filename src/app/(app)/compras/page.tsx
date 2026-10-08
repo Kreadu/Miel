@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { parseProductIds, suggestedReorderQty } from "@/lib/purchases/reorder";
+import { groupByProduct } from "@/lib/purchases/warehouse-split";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant/server";
 
@@ -34,12 +35,12 @@ export default async function ComprasPage({
   const fromAlerts = parseProductIds(reponer);
 
   const supabase = await createClient();
-  const [purchasesRes, suppliersRes, productsRes, supplierProductsRes, alertsRes, approverRes] =
+  const [purchasesRes, suppliersRes, productsRes, warehousesRes, supplierProductsRes, alertsRes, approverRes] =
     await Promise.all([
       supabase
         .from("purchases")
         .select(
-          "id, number, status, total, issued_at, created_at, note, supplier_id, requested_by_name, requested_at, approved_by_name, approved_at, suppliers(name, phone), purchase_items(id, qty, received_qty, unit_cost, tax_rate, product_id, products(sku, name))",
+          "id, number, status, total, issued_at, created_at, note, supplier_id, requested_by_name, requested_at, approved_by_name, approved_at, suppliers(name, phone), purchase_items(id, qty, received_qty, unit_cost, tax_rate, product_id, warehouse_id, products(sku, name), warehouses(name))",
         )
         // S19-37: a la vista solo las órdenes por recibir; el resto está en el Historial.
         .in("status", ["draft", "ordered", "partially_received"])
@@ -50,6 +51,7 @@ export default async function ComprasPage({
         .select("id, sku, name, cost, tax_rate, photo_url")
         .eq("active", true)
         .order("name"),
+      supabase.from("warehouses").select("id, name, is_default").eq("active", true).order("is_default", { ascending: false }).order("name"),
       supabase.from("supplier_products").select("supplier_id, product_id"),
       fromAlerts.length
         ? supabase
@@ -64,6 +66,8 @@ export default async function ComprasPage({
 
   const purchases = purchasesRes.data ?? [];
   const suppliers = suppliersRes.data ?? [];
+  const warehouses = warehousesRes.data ?? [];
+  const defaultWarehouse = warehouses[0]?.id;
   const products = (productsRes.data ?? []).filter((p) => p.id) as {
     id: string;
     sku: string;
@@ -89,9 +93,12 @@ export default async function ComprasPage({
     .filter((p): p is (typeof products)[number] => p != null)
     .map((p) => {
       const alert = alertById.get(p.id);
+      const qty = String(suggestedReorderQty(Number(alert?.min_stock ?? 0), Number(alert?.total_qty ?? 0)));
       return {
         product_id: p.id,
-        qty: String(suggestedReorderQty(Number(alert?.min_stock ?? 0), Number(alert?.total_qty ?? 0))),
+        qty,
+        // S26-11: con varias bodegas, lo sugerido va a la principal (se reparte a mano).
+        byWarehouse: (defaultWarehouse ? { [defaultWarehouse]: qty } : {}) as Record<string, string>,
         // S23-01: el costo del producto no lleva IVA (se recupera).
         unit_cost: String(p.cost ?? 0),
         tax_rate: String(p.tax_rate ?? 0),
@@ -126,18 +133,14 @@ export default async function ComprasPage({
             key={editingPurchase.id}
             suppliers={suppliers}
             products={products}
+            warehouses={warehouses}
             suggestedBySupplier={suggestedBySupplier}
             purchase={{
               id: editingPurchase.id,
               number: editingPurchase.number,
               supplier_id: editingPurchase.supplier_id,
               note: editingPurchase.note ?? "",
-              items: editingPurchase.purchase_items.map((it) => ({
-                product_id: it.product_id,
-                qty: String(it.qty),
-                unit_cost: String(it.unit_cost),
-                tax_rate: String(it.tax_rate),
-              })),
+              items: groupByProduct(editingPurchase.purchase_items, warehouses),
             }}
           />
         ) : (
@@ -145,6 +148,7 @@ export default async function ComprasPage({
             key="new"
             suppliers={suppliers}
             products={products}
+            warehouses={warehouses}
             suggestedBySupplier={suggestedBySupplier}
             initialItems={initialItems}
             canApprove={canApprove}
@@ -189,6 +193,7 @@ export default async function ComprasPage({
                       productName: it.products?.name ?? "—",
                       productSku: it.products?.sku ?? "—",
                       qty: it.qty,
+                      warehouseName: it.warehouses?.name ?? null,
                       receivedQty: it.received_qty,
                       unitCost: it.unit_cost,
                       taxRate: it.tax_rate,

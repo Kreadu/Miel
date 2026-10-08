@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/format";
 import { purchaseNumber } from "@/lib/purchases/approval";
 import { purchaseLine } from "@/lib/purchases/line";
+import { type SplitLine, splitTotal, toPurchaseItems } from "@/lib/purchases/warehouse-split";
 import {
   Select,
   SelectContent,
@@ -39,16 +40,13 @@ type Product = {
 
 const PURCHASES_PATH = "/compras";
 
-type ItemDraft = {
-  key: string;
-  product_id: string;
-  qty: string;
-  unit_cost: string;
-  tax_rate: string;
-};
+type Warehouse = { id: string; name: string; is_default: boolean };
+
+/** S26-11: producto + costo + cantidad por bodega (una sola si la empresa tiene una bodega). */
+type ItemDraft = SplitLine & { key: string };
 
 function emptyItem(): ItemDraft {
-  return { key: crypto.randomUUID(), product_id: "", qty: "1", unit_cost: "0", tax_rate: "0" };
+  return { key: crypto.randomUUID(), product_id: "", qty: "1", unit_cost: "0", tax_rate: "0", byWarehouse: {} };
 }
 
 type EditingPurchase = {
@@ -56,12 +54,13 @@ type EditingPurchase = {
   number: number;
   supplier_id: string;
   note: string;
-  items: Omit<ItemDraft, "key">[];
+  items: SplitLine[];
 };
 
 export function PurchaseForm({
   suppliers,
   products,
+  warehouses,
   suggestedBySupplier,
   purchase,
   initialItems,
@@ -70,10 +69,11 @@ export function PurchaseForm({
 }: {
   suppliers: Supplier[];
   products: Product[];
+  warehouses: Warehouse[];
   suggestedBySupplier: Record<string, string[]>;
   purchase?: EditingPurchase;
   /** S19-27: alta con ítems ya cargados (desde Alertas stock mínimo). */
-  initialItems?: Omit<ItemDraft, "key">[];
+  initialItems?: SplitLine[];
   /** S26-02: "Crear y ordenar" solo para quien aprueba (la orden nace aprobada). */
   canApprove?: boolean;
   onSuccess?: () => void;
@@ -127,21 +127,14 @@ export function PurchaseForm({
     // Ayuda visual solo: la BD recalcula y es la fuente de verdad (create_purchase, S3-02).
     return items.reduce(
       (acc, it) =>
-        acc + purchaseLine(Number(it.qty) || 0, Number(it.unit_cost) || 0, Number(it.tax_rate) || 0).total,
+        acc +
+        purchaseLine(splitTotal(it, warehouses), Number(it.unit_cost) || 0, Number(it.tax_rate) || 0).total,
       0,
     );
-  }, [items]);
+  }, [items, warehouses]);
 
-  const itemsPayload = JSON.stringify(
-    items
-      .filter((it) => it.product_id)
-      .map((it) => ({
-        product_id: it.product_id,
-        qty: it.qty,
-        unit_cost: it.unit_cost,
-        tax_rate: it.tax_rate,
-      })),
-  );
+  const multiWarehouse = warehouses.length > 1;
+  const itemsPayload = JSON.stringify(toPurchaseItems(items, warehouses));
 
   return (
     <form
@@ -194,8 +187,9 @@ export function PurchaseForm({
           </div>
           {items.map((item) => {
             const product = products.find((p) => p.id === item.product_id);
+            const qtyTotal = splitTotal(item, warehouses);
             const line = purchaseLine(
-              Number(item.qty) || 0,
+              qtyTotal,
               Number(item.unit_cost) || 0,
               Number(item.tax_rate) || 0,
             );
@@ -239,15 +233,21 @@ export function PurchaseForm({
                     ) : null}
                   </SelectContent>
                 </Select>
-                <Input
-                  type="number"
-                  min={0}
-                  step="0.001"
-                  aria-label={t("purchases.qty")}
-                  className="text-right"
-                  value={item.qty}
-                  onChange={(e) => updateItem(item.key, { qty: e.target.value })}
-                />
+                {multiWarehouse ? (
+                  <p className="text-right text-sm font-medium tabular-nums" aria-label={t("purchases.qty")}>
+                    {qtyTotal}
+                  </p>
+                ) : (
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.001"
+                    aria-label={t("purchases.qty")}
+                    className="text-right"
+                    value={item.qty}
+                    onChange={(e) => updateItem(item.key, { qty: e.target.value })}
+                  />
+                )}
                 <Input
                   type="number"
                   min={0}
@@ -285,6 +285,31 @@ export function PurchaseForm({
                     </Button>
                   ) : null}
                 </div>
+                {multiWarehouse ? (
+                  <div className="col-span-full flex flex-wrap items-end gap-3 sm:pl-12">
+                    <span className="w-full text-xs text-muted-foreground sm:w-auto sm:self-center">
+                      {t("purchases.form.qtyByWarehouse")}
+                    </span>
+                    {warehouses.map((w) => (
+                      <label key={w.id} className="flex w-28 flex-col gap-1 text-xs text-muted-foreground">
+                        <span className="truncate" title={w.name}>
+                          {w.name}
+                        </span>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="0.001"
+                          className="text-right"
+                          value={item.byWarehouse[w.id] ?? ""}
+                          placeholder="0"
+                          onChange={(e) =>
+                            updateItem(item.key, { byWarehouse: { ...item.byWarehouse, [w.id]: e.target.value } })
+                          }
+                        />
+                      </label>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             );
           })}

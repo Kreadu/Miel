@@ -19,6 +19,7 @@ export type PurchasePdfLabels = {
   total: string;
   note: string;
   draft: string;
+  deliverTo: string;
   signatures: { requested: string; approved: string; ordered: string };
 };
 
@@ -37,6 +38,7 @@ const s = StyleSheet.create({
   label: { fontFamily: "Helvetica-Bold", marginBottom: 2 },
   row: { flexDirection: "row", borderBottomWidth: 0.5, borderBottomColor: "#ccc", paddingVertical: 4 },
   head: { fontFamily: "Helvetica-Bold", borderBottomColor: "#222" },
+  group: { fontFamily: "Helvetica-Bold", paddingTop: 8, paddingBottom: 2 },
   cSku: { width: "14%" },
   cName: { width: "34%" },
   cNum: { width: "13%", textAlign: "right" },
@@ -95,14 +97,25 @@ export function PurchasePdf({ doc, labels, logo }: { doc: PurchaseDoc; labels: P
           <Text style={s.cNum}>{labels.taxPercent}</Text>
           <Text style={s.cNum}>{labels.lineTotal}</Text>
         </View>
-        {doc.items.map((i, n) => (
-          <View key={n} style={s.row} wrap={false}>
-            <Text style={s.cSku}>{i.sku}</Text>
-            <Text style={s.cName}>{i.name}</Text>
-            <Text style={s.cNum}>{i.qty}</Text>
-            <Text style={s.cNum}>{formatMoney(i.unitCost)}</Text>
-            <Text style={s.cNum}>{i.taxRate}</Text>
-            <Text style={s.cNum}>{formatMoney(i.total)}</Text>
+        {doc.groups.map((g, gi) => (
+          <View key={gi}>
+            {/* S26-11: qué entregar en cada bodega. */}
+            {g.warehouse ? (
+              <Text style={s.group} wrap={false}>
+                {labels.deliverTo}: {g.warehouse}
+                {g.address ? ` · ${g.address}` : ""}
+              </Text>
+            ) : null}
+            {g.items.map((i, n) => (
+              <View key={n} style={s.row} wrap={false}>
+                <Text style={s.cSku}>{i.sku}</Text>
+                <Text style={s.cName}>{i.name}</Text>
+                <Text style={s.cNum}>{i.qty}</Text>
+                <Text style={s.cNum}>{formatMoney(i.unitCost)}</Text>
+                <Text style={s.cNum}>{i.taxRate}</Text>
+                <Text style={s.cNum}>{formatMoney(i.total)}</Text>
+              </View>
+            ))}
           </View>
         ))}
 

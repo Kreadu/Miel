@@ -1192,7 +1192,8 @@
       "saveDraft": "Save as draft",
       "createAndOrder": "Create and send",
       "requestApproval": "Request approval",
-      "editing": "Editing {number}"
+      "editing": "Editing {number}",
+      "qtyByWarehouse": "Quantity per warehouse"
     },
     "picker": {
       "placeholder": "Select a supplier",
@@ -1260,7 +1261,8 @@
       "draft": "DRAFT — not approved",
       "requestedBy": "Requested by",
       "approvedBy": "Approved by",
-      "orderedBy": "Sent by"
+      "orderedBy": "Sent by",
+      "deliverTo": "Deliver to"
     },
     "pdfButton": "PDF",
     "pdfLabel": "Download the PDF of {number}",

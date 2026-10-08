@@ -25,7 +25,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     supabase
       .from("purchases")
       .select(
-        "number, status, created_at, issued_at, note, subtotal, tax, total, requested_by_name, requested_at, approved_by_name, approved_at, ordered_by_name, suppliers(name, nit, address, phone, email), purchase_items(qty, unit_cost, tax_rate, products(sku, name))",
+        "number, status, created_at, issued_at, note, subtotal, tax, total, requested_by_name, requested_at, approved_by_name, approved_at, ordered_by_name, suppliers(name, nit, address, phone, email), purchase_items(qty, unit_cost, tax_rate, products(sku, name), warehouses(name, address, city))",
       )
       .eq("id", id)
       .eq("tenant_id", active.tenantId)
@@ -60,6 +60,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       qty: Number(i.qty),
       unitCost: Number(i.unit_cost),
       taxRate: Number(i.tax_rate),
+      warehouse: i.warehouses,
     })),
   });
 
@@ -81,6 +82,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       total: t("total"),
       note: t("note"),
       draft: t("draft"),
+      deliverTo: t("deliverTo"),
       signatures: { requested: t("requestedBy"), approved: t("approvedBy"), ordered: t("orderedBy") },
     },
     await loadPdfLogo(company.logo_url, process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""),

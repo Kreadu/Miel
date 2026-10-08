@@ -19,6 +19,7 @@ const labels: PurchasePdfLabels = {
   total: "Total",
   note: "Nota",
   draft: "BORRADOR — sin aprobar",
+  deliverTo: "Entregar en",
   signatures: { requested: "Pedida por", approved: "Aprobada por", ordered: "Enviada por" },
 };
 

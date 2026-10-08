@@ -1192,7 +1192,8 @@
       "saveDraft": "Enregistrer comme brouillon",
       "createAndOrder": "Créer et envoyer",
       "requestApproval": "Demander l'approbation",
-      "editing": "Modification de {number}"
+      "editing": "Modification de {number}",
+      "qtyByWarehouse": "Quantité par entrepôt"
     },
     "picker": {
       "placeholder": "Sélectionnez un fournisseur",
@@ -1260,7 +1261,8 @@
       "draft": "BROUILLON — non approuvé",
       "requestedBy": "Demandée par",
       "approvedBy": "Approuvée par",
-      "orderedBy": "Envoyée par"
+      "orderedBy": "Envoyée par",
+      "deliverTo": "Livrer à"
     },
     "pdfButton": "PDF",
     "pdfLabel": "Télécharger le PDF de {number}",

@@ -60,7 +60,8 @@ rentabilidad, CxC/CxP).
   `ordered_by_name` = "enviada por" (quien la marca ordenada; fecha = issued_at — S26-03).
   S28-01: `closed_short` + `shortage_note` (cerrada con faltantes) e `invoiced_total` (suma de sus
   facturas = deuda con el proveedor; null sin facturas → se usa `total`).
-- `purchase_items` — purchase_id, product_id, qty, unit_cost, tax_rate, `received_qty` (S28-01)
+- `purchase_items` — purchase_id, product_id, qty, unit_cost, tax_rate, `received_qty` (S28-01),
+  `warehouse_id` (S26-11: bodega de destino; null en órdenes viejas → se recibe en la bodega de la factura)
 - `purchase_invoices` (S28-01) — factura del proveedor: purchase_id, supplier_id, number (único por
   proveedor, sin mayúsculas), issued_on, due_on, cufe, subtotal/tax/total, warehouse_id, file_path
   (bucket privado `purchase-invoices`, carpeta = tenant). Solo lectura dueño/admin; RPC

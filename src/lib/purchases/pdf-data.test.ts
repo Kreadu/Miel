@@ -58,3 +58,28 @@ describe("buildPurchaseDoc (S26-03)", () => {
     expect(buildPurchaseDoc({ ...base, issuedAt: null }).date).toBe(base.createdAt);
   });
 });
+
+describe("buildPurchaseDoc por bodega (S26-11)", () => {
+  it("agrupa los productos por bodega con su dirección, en orden de aparición", () => {
+    const norte = { name: "Norte", address: "Calle 80", city: "Medellín" };
+    const doc = buildPurchaseDoc({
+      ...base,
+      items: [
+        { sku: "A1", name: "Frasco", qty: 2, unitCost: 100, taxRate: 19, warehouse: { name: "Principal", address: null, city: null } },
+        { sku: "A1", name: "Frasco", qty: 1, unitCost: 100, taxRate: 19, warehouse: norte },
+        { sku: "A2", name: "Etiqueta", qty: 3, unitCost: 50, taxRate: 0, warehouse: norte },
+      ],
+    });
+    expect(doc.groups.map((g) => [g.warehouse, g.address, g.items.length])).toEqual([
+      ["Principal", "", 1],
+      ["Norte", "Calle 80, Medellín", 2],
+    ]);
+  });
+
+  it("orden vieja sin bodegas: un solo grupo sin encabezado", () => {
+    const doc = buildPurchaseDoc(base);
+    expect(doc.groups).toHaveLength(1);
+    expect(doc.groups[0].warehouse).toBeNull();
+    expect(doc.groups[0].items).toHaveLength(2);
+  });
+});

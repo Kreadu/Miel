@@ -51,6 +51,13 @@ título "Editando OC-xxxx" y hace scroll al formulario. Sin revisión visual.
 edita el dueño o un aprobador. Migración `20261008170000_orden-enviada-no-se-edita.sql`, pendiente
 de pegar con `_pendientes-cloud.sql`.
 
+**S26-11 (después):** una orden con cantidades por bodega:
+- en el formulario, una casilla de cantidad por bodega en cada producto;
+- el PDF agrupa por bodega con "Entregar en" y la dirección;
+- al recibir, cada línea entra a su bodega y la factura ya no pide bodega (salvo órdenes viejas).
+
+Migración `20261008180000_cantidades-por-bodega.sql`. `npm test` 609/609 ✓. Sin revisión visual.
+
 **Pendiente del humano:**
 1. ~~Pegar S26-09 en el cloud~~: el humano confirmó que lo aplicó. No se pudo verificar por REST porque la firma de la función no cambia. El SQL se borró.
 2. Si "Aprobar y enviar" dice que falta el nombre, revisar que el correo del trabajador dueño en
