@@ -84,7 +84,7 @@ descarga CSV.
 - los productos "solo tienda física" se ven en la tienda web, con la etiqueta y la dirección y sin
   "Agregar";
 - pie fijo de Kreadu en todas las tiendas (ADR-045);
-- faltan las URL de los enlaces de Company y de las redes.
+- las URL de los enlaces de Company y de las redes quedan sin cargar, por decisión del humano ("déjalo así por ahora").
 
 Migración `20261008210000_tienda-fisica-en-la-web.sql`, pendiente de pegar.
 
