@@ -12,6 +12,8 @@ import { storePrice } from "@/lib/store/price";
 
 import { useCart } from "./use-cart";
 
+const QTY = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 3 });
+
 // ponytail: filtra en el cliente; paginar en la BD cuando una tienda pase de ~500 productos.
 export function StoreCatalog({
   slug,
@@ -108,16 +110,16 @@ export function StoreCatalog({
                       <span className="text-xs text-muted-foreground tabular-nums line-through">{formatMoney(price.before, currency)}</span>
                     ) : null}
                   </div>
+                  {/* S27-09: cuántas hay (suma de todas las bodegas), en todos los productos. */}
+                  <span className={`text-xs tabular-nums ${p.available ? "text-success" : "text-muted-foreground"}`}>
+                    {p.available ? t("stockLeft", { qty: QTY.format(Number(p.stock)) }) : t("soldOut")}
+                  </span>
                   {inStore ? (
                     <p className="mt-1 rounded-md bg-muted px-2 py-1.5 text-xs">
                       <span className="font-medium">{t("inStoreOnly")}</span>
                       {place ? <span className="block text-muted-foreground">{place}</span> : null}
                     </p>
-                  ) : (
-                    <span className={`text-xs ${p.available ? "text-success" : "text-muted-foreground"}`}>
-                      {p.available ? t("available") : t("soldOut")}
-                    </span>
-                  )}
+                  ) : null}
                   {p.available && !inStore ? (
                     <button
                       type="button"

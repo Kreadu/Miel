@@ -222,7 +222,6 @@
     "search": "Rechercher des produits",
     "categories": "Catégories",
     "all": "Tous",
-    "available": "Disponible",
     "soldOut": "Épuisé",
     "empty": "Cette boutique n'a pas encore de produits.",
     "noResults": "Aucun produit ne correspond à votre recherche.",
@@ -378,7 +377,8 @@
       "noOrders": "Vous n'avez pas encore de commande dans cette boutique depuis cet appareil.",
       "onlyThisDevice": "Cette liste est enregistrée uniquement sur cet appareil. Gardez le lien de chaque commande pour la voir ailleurs."
     },
-    "inStoreOnly": "Disponible dans notre magasin"
+    "inStoreOnly": "Disponible dans notre magasin",
+    "stockLeft": "Il en reste {qty}"
   },
   "invitations": {
     "metaTitle": "Invitation",

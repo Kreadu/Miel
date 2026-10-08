@@ -222,7 +222,6 @@
     "search": "Buscar productos",
     "categories": "Categorías",
     "all": "Todos",
-    "available": "Disponible",
     "soldOut": "Agotado",
     "empty": "Esta tienda aún no tiene productos.",
     "noResults": "No hay productos que coincidan con tu búsqueda.",
@@ -378,7 +377,8 @@
       "noOrders": "Aún no tienes pedidos en esta tienda desde este dispositivo.",
       "onlyThisDevice": "Esta lista se guarda solo en este dispositivo. Guarda el enlace de cada pedido si quieres verlo en otro."
     },
-    "inStoreOnly": "Disponible en nuestra tienda física"
+    "inStoreOnly": "Disponible en nuestra tienda física",
+    "stockLeft": "Quedan {qty}"
   },
   "invitations": {
     "metaTitle": "Invitación",

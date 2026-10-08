@@ -222,7 +222,6 @@
     "search": "Search products",
     "categories": "Categories",
     "all": "All",
-    "available": "Available",
     "soldOut": "Sold out",
     "empty": "This store has no products yet.",
     "noResults": "No products match your search.",
@@ -378,7 +377,8 @@
       "noOrders": "You have no orders in this store from this device yet.",
       "onlyThisDevice": "This list is saved only on this device. Keep each order link to see it elsewhere."
     },
-    "inStoreOnly": "Available at our physical store"
+    "inStoreOnly": "Available at our physical store",
+    "stockLeft": "{qty} left"
   },
   "invitations": {
     "metaTitle": "Invitation",

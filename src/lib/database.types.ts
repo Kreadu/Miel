@@ -3213,6 +3213,7 @@ export type Database = {
           price: number
           product_id: string
           sales_channel: string
+          stock: number
           tax_rate: number
         }[]
       }
