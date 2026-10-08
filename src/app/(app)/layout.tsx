@@ -72,6 +72,33 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <p className="truncate text-sm font-medium">{active.tenantName}</p>
         <p className="text-xs text-muted-foreground">{t(`roles.${active.role}`)}</p>
       </div>
+      {/* Cuenta arriba (antes al fondo del menú, fuera de la vista en páginas largas). */}
+      <div className="flex flex-col gap-2 rounded-lg border border-sidebar-border p-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            {active.storeMode ? null : me?.display_name ? (
+              <p className="truncate text-sm font-medium">{me.display_name}</p>
+            ) : null}
+            <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
+          </div>
+          <ThemeToggle />
+        </div>
+        {active.storeMode ? null : (
+          <div className="flex gap-2">
+            {active.role !== "member" ? (
+              <Button asChild variant="outline" size="sm" className="flex-1">
+                <Link href="/empresa">{t("myCompany")}</Link>
+              </Button>
+            ) : null}
+            {/* En modo tienda no se cierra la sesión de la cuenta de tienda desde aquí. */}
+            <form action={logout} className="flex-1">
+              <Button variant="outline" size="sm" type="submit" className="w-full">
+                {t("logout")}
+              </Button>
+            </form>
+          </div>
+        )}
+      </div>
       {active.storeMode ? null : (
         <TenantSwitcher memberships={memberships} activeTenantId={active.tenantId} />
       )}
@@ -81,29 +108,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         workerName={active.worker?.name ?? null}
         canActivate={active.accountRole === "member"}
       />
-      <div className="mt-auto flex flex-col gap-2 border-t border-sidebar-border pt-4">
-        <div className="flex items-center justify-between gap-2">
-          {active.storeMode ? (
-            <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
-          ) : (
-            <span className="truncate text-xs text-muted-foreground">{me?.display_name || user?.email}</span>
-          )}
-          <ThemeToggle />
-        </div>
-        {!active.storeMode && active.role !== "member" ? (
-          <Link href="/empresa" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
-            {t("myCompany")}
-          </Link>
-        ) : null}
-        {/* En modo tienda no se cierra la sesión de la cuenta de tienda desde aquí. */}
-        {active.storeMode ? null : (
-          <form action={logout}>
-            <Button variant="outline" size="sm" type="submit" className="w-full">
-              {t("logout")}
-            </Button>
-          </form>
-        )}
-      </div>
     </>
   );
 
