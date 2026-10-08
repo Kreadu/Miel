@@ -52,7 +52,7 @@ export function WorkerRow({
   if (editing) {
     return (
       <li className="px-4 py-4">
-        <form action={action} className="flex flex-col gap-4">
+        <form id={`worker-form-${id}`} action={action} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={id} />
           <WorkerFields
             idPrefix={id}
@@ -62,34 +62,6 @@ export function WorkerRow({
             positions={positions}
             warehouses={warehouses}
           />
-          <div className="flex items-center gap-2">
-            <Button type="submit" size="sm" disabled={pending}>
-              {pending ? t("rrhh.common.saving") : t("rrhh.common.save")}
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
-              {t("rrhh.common.cancel")}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              className="ml-auto"
-              disabled={deleting}
-              onClick={handleDelete}
-            >
-              {deleting ? t("rrhh.workers.deleting") : t("rrhh.workers.deleteWorker")}
-            </Button>
-          </div>
-          {state && !state.ok ? (
-            <p role="alert" className="text-xs text-destructive">
-              {t(state.error)}
-            </p>
-          ) : null}
-          {deleteError ? (
-            <p role="alert" className="text-xs text-destructive">
-              {t(deleteError)}
-            </p>
-          ) : null}
         </form>
         {/* Fuera del form del trabajador: sus propios formularios no pueden ir anidados. */}
         <WorkerAccess
@@ -100,6 +72,35 @@ export function WorkerRow({
           categoryId={values.category_id}
           categories={categories}
         />
+        {/* Guardar/Cancelar al final de la ficha; `form` los conecta con el formulario de arriba. */}
+        <div className="mt-4 flex items-center gap-2 border-t border-border pt-4">
+          <Button type="submit" form={`worker-form-${id}`} size="sm" disabled={pending}>
+            {pending ? t("rrhh.common.saving") : t("rrhh.common.save")}
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
+            {t("rrhh.common.cancel")}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            className="ml-auto"
+            disabled={deleting}
+            onClick={handleDelete}
+          >
+            {deleting ? t("rrhh.workers.deleting") : t("rrhh.workers.deleteWorker")}
+          </Button>
+        </div>
+        {state && !state.ok ? (
+          <p role="alert" className="text-xs text-destructive">
+            {t(state.error)}
+          </p>
+        ) : null}
+        {deleteError ? (
+          <p role="alert" className="text-xs text-destructive">
+            {t(deleteError)}
+          </p>
+        ) : null}
       </li>
     );
   }
