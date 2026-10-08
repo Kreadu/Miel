@@ -91,7 +91,7 @@ humano: el pie de la empresa en la tienda ya no muestra el correo, y el de Kread
 franja pequeña de una línea.
 
 **S27-09 (después):** la tienda muestra "Quedan N" en todos los productos (`store_catalog.stock`).
-Migración `20261008220000_stock-en-la-tienda.sql`, pendiente de pegar. Los pgTAP se escribieron
+Migración `20261008220000_stock-en-la-tienda.sql` aplicada y verificada. Sin migraciones pendientes. Los pgTAP se escribieron
 junto con la migración, sin ver el rojo antes.
 
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
