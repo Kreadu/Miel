@@ -11,8 +11,7 @@ import { getActiveTenant } from "@/lib/tenant/server";
 
 import { CloseShortForm } from "./close-short-form";
 import { InvoiceActions } from "./invoice-actions";
-import { InvoiceForm } from "./invoice-form";
-import { ReceiveLineForm } from "./receive-line-form";
+import { ReceiveInvoiceForm } from "./receive-invoice-form";
 import { VoidLineButton } from "./void-line-button";
 
 export async function generateMetadata() {
@@ -20,16 +19,12 @@ export async function generateMetadata() {
   return { title: `${t("title")} · Miel` };
 }
 
-/** S28-01/S28-02: recibir una orden con la factura del proveedor, línea por línea. */
-export default async function ReceivePurchasePage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ factura?: string; nueva?: string }>;
-}) {
+/**
+ * S28-01..04: recibir una orden con la factura del proveedor. Arriba lo ya recibido (facturas y
+ * sus líneas), después el formulario de la factura nueva y al final lo que queda pendiente.
+ */
+export default async function ReceivePurchasePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { factura, nueva } = await searchParams;
   const { active } = await getActiveTenant();
   if (!active) notFound();
   const isAdmin = active.role !== "member";
@@ -49,12 +44,12 @@ export default async function ReceivePurchasePage({
   const items = purchase.purchase_items;
   const productIds = items.map((i) => i.product_id);
   const [warehousesRes, invoicesRes, productsRes, stockRes] = await Promise.all([
-    supabase.from("warehouses").select("id, name").eq("active", true).order("name"),
+    supabase.from("warehouses").select("id, name").eq("active", true).order("is_default", { ascending: false }).order("name"),
     // RLS: solo dueño/admin leen facturas y líneas (tienen costos).
     supabase
       .from("purchase_invoices")
       .select(
-        "id, number, issued_on, due_on, cufe, subtotal, tax, total, file_path, voided_at, warehouses(name), purchase_receipt_lines(id, purchase_item_id, qty, unit_cost, tax_rate, voided_at, created_at)",
+        "id, number, issued_on, due_on, cufe, subtotal, tax, total, file_path, voided_at, purchase_receipt_lines(id, purchase_item_id, qty, unit_cost, voided_at, stock_movements(warehouses(name)))",
       )
       .eq("purchase_id", id)
       .order("created_at"),
@@ -73,6 +68,7 @@ export default async function ReceivePurchasePage({
   for (const s of stockRes.data ?? []) {
     if (s.product_id) stockByProduct.set(s.product_id, (stockByProduct.get(s.product_id) ?? 0) + Number(s.total_qty ?? 0));
   }
+  const itemName = new Map(items.map((i) => [i.id, i.products?.name ?? "—"]));
 
   // Enlaces firmados de corta duración para "Ver archivo" (bucket privado).
   const filePaths = invoices.map((i) => i.file_path).filter((p): p is string => !!p);
@@ -82,13 +78,9 @@ export default async function ReceivePurchasePage({
   const fileUrl = new Map(signed.map((s) => [s.path, s.signedUrl]));
 
   const receivable = purchase.status === "ordered" || purchase.status === "partially_received";
-  // La factura activa es la de la URL (recién creada); el dueño también puede elegir otra.
-  const liveInvoices = invoices.filter((i) => !i.voided_at);
-  const urlInvoice = factura && !invoices.some((i) => i.id === factura && i.voided_at) ? factura : undefined;
-  const activeInvoice =
-    receivable && !nueva ? (urlInvoice ?? (isAdmin ? liveInvoices.at(-1)?.id : undefined)) : undefined;
-  const activeInvoiceNumber = invoices.find((i) => i.id === activeInvoice)?.number;
-  const pendingTotal = items.reduce((sum, i) => sum + Math.max(Number(i.qty) - Number(i.received_qty), 0), 0);
+  const pendingItems = items.filter((i) => Number(i.qty) > Number(i.received_qty));
+  const pendingQty = pendingItems.reduce((sum, i) => sum + Number(i.qty) - Number(i.received_qty), 0);
+  const receivedKey = items.map((i) => i.received_qty).join("-");
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
@@ -115,38 +107,44 @@ export default async function ReceivePurchasePage({
           <ul className="flex flex-col divide-y divide-border rounded-lg border border-border bg-card">
             {invoices.map((inv) => {
               const url = inv.file_path ? fileUrl.get(inv.file_path) : undefined;
-              const linesTotal = inv.purchase_receipt_lines
-                .filter((l) => !l.voided_at)
-                .reduce((s, l) => s + Number(l.qty) * Number(l.unit_cost) * (1 + Number(l.tax_rate) / 100), 0);
-              const mismatch = Math.abs(linesTotal - Number(inv.total)) >= 1;
               return (
-                <li key={inv.id} className="flex flex-col gap-1 p-3 text-sm">
+                <li key={inv.id} className="flex flex-col gap-2 p-3 text-sm">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className={inv.voided_at ? "font-medium text-muted-foreground line-through" : "font-medium"}>
                       {inv.number}
-                      {inv.id === activeInvoice ? (
-                        <span className="ml-2 text-xs font-normal text-muted-foreground">{t("activeInvoice")}</span>
-                      ) : null}
                     </span>
                     <span className="tabular-nums">${formatMoney(inv.total)}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     <span>{t("issuedOn", { date: formatDate(inv.issued_on) })}</span>
                     {inv.due_on ? <span>{t("dueOn", { date: formatDate(inv.due_on) })}</span> : null}
-                    <span>{inv.warehouses?.name}</span>
+                    {inv.voided_at ? <span>{t("voidedInvoice")}</span> : null}
                     {url ? (
                       <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline">
                         <FileText className="size-3.5" />
                         {t("viewFile")}
                       </a>
                     ) : null}
-                    {inv.voided_at ? <span>{t("voidedInvoice")}</span> : null}
-                    {receivable && !inv.voided_at && inv.id !== activeInvoice ? (
-                      <Link href={`?factura=${inv.id}`} className="underline">
-                        {t("useInvoice")}
-                      </Link>
-                    ) : null}
                   </div>
+                  {inv.purchase_receipt_lines.length > 0 ? (
+                    <ul className="flex flex-col gap-1 text-xs">
+                      {inv.purchase_receipt_lines.map((l) => (
+                        <li key={l.id} className="flex flex-wrap items-center justify-between gap-2">
+                          <span className={l.voided_at ? "text-muted-foreground line-through" : "text-muted-foreground"}>
+                            {t("savedLine", {
+                              product: itemName.get(l.purchase_item_id) ?? "—",
+                              qty: Number(l.qty),
+                              cost: `$${formatMoney(l.unit_cost)}`,
+                              warehouse: l.stock_movements?.warehouses?.name ?? "—",
+                            })}
+                          </span>
+                          {!l.voided_at && purchase.status !== "cancelled" ? (
+                            <VoidLineButton purchaseId={purchase.id} lineId={l.id} />
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                   {!inv.voided_at && purchase.status !== "cancelled" ? (
                     <InvoiceActions
                       purchaseId={purchase.id}
@@ -162,11 +160,6 @@ export default async function ReceivePurchasePage({
                       canVoid={inv.purchase_receipt_lines.every((l) => l.voided_at)}
                     />
                   ) : null}
-                  {!inv.voided_at && mismatch && linesTotal > 0 ? (
-                    <p className="text-xs text-muted-foreground">
-                      {t("mismatch", { lines: `$${formatMoney(linesTotal)}` })}
-                    </p>
-                  ) : null}
                 </li>
               );
             })}
@@ -174,106 +167,37 @@ export default async function ReceivePurchasePage({
         </section>
       ) : null}
 
-      {receivable && !activeInvoice ? (
-        <InvoiceForm
+      {receivable && pendingItems.length > 0 ? (
+        <ReceiveInvoiceForm
+          // Tras guardar, la página se revalida y el formulario arranca de nuevo con lo pendiente.
+          key={receivedKey}
           purchaseId={purchase.id}
+          isAdmin={isAdmin}
           warehouses={warehouses}
-          // S26-11: solo las órdenes viejas (ítems sin bodega) piden bodega en la factura.
-          askWarehouse={items.some((i) => !i.warehouse_id)}
-          expected={isAdmin ? pendingTotals(items) : undefined}
+          expected={isAdmin ? pendingTotals(pendingItems) : null}
+          items={pendingItems.map((i) => {
+            const product = productById.get(i.product_id);
+            return {
+              id: i.id,
+              name: i.products?.name ?? "—",
+              photoUrl: i.products?.photo_url ?? null,
+              warehouseId: i.warehouse_id,
+              ordered: Number(i.qty),
+              received: Number(i.received_qty),
+              unitCost: isAdmin ? Number(i.unit_cost) : 0,
+              taxRate: isAdmin ? Number(i.tax_rate) : 0,
+              product:
+                isAdmin && product
+                  ? { stock: stockByProduct.get(i.product_id) ?? 0, cost: Number(product.cost ?? 0), price: Number(product.price ?? 0) }
+                  : null,
+            };
+          })}
         />
       ) : null}
 
-      {receivable && activeInvoice && isAdmin ? (
-        <Link href="?nueva=1" className="self-start text-sm underline">
-          {t("newInvoice")}
-        </Link>
-      ) : null}
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold tracking-tight">
-          {activeInvoiceNumber ? t("linesFor", { number: activeInvoiceNumber }) : t("lines")}
-        </h2>
-        <ul className="flex flex-col gap-3">
-          {items.map((item) => {
-            const product = productById.get(item.product_id);
-            const lines = invoices.flatMap((inv) =>
-              inv.purchase_receipt_lines
-                .filter((l) => l.purchase_item_id === item.id)
-                .map((l) => ({ ...l, invoiceNumber: inv.number })),
-            );
-            const pending = Math.max(Number(item.qty) - Number(item.received_qty), 0);
-            return (
-              <li key={item.id} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-3">
-                <div className="flex items-center gap-3">
-                  {item.products?.photo_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.products.photo_url} alt="" className="size-12 shrink-0 rounded-md object-cover" />
-                  ) : (
-                    <div className="size-12 shrink-0 rounded-md bg-muted" />
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      {item.products?.name ?? "—"}
-                      {item.warehouses?.name ? (
-                        <span className="font-normal text-muted-foreground"> → {item.warehouses.name}</span>
-                      ) : null}
-                    </p>
-                    <p className="text-xs text-muted-foreground tabular-nums">
-                      {t("progress", { ordered: Number(item.qty), received: Number(item.received_qty), pending })}
-                    </p>
-                  </div>
-                </div>
-
-                {isAdmin && lines.length > 0 ? (
-                  <ul className="flex flex-col gap-1 text-xs">
-                    {lines.map((l) => (
-                      <li key={l.id} className="flex flex-wrap items-center justify-between gap-2">
-                        <span className={l.voided_at ? "text-muted-foreground line-through" : "text-muted-foreground"}>
-                          {t("savedLine", {
-                            qty: Number(l.qty),
-                            cost: `$${formatMoney(l.unit_cost)}`,
-                            invoice: l.invoiceNumber,
-                          })}
-                        </span>
-                        {!l.voided_at && purchase.status !== "cancelled" ? (
-                          <VoidLineButton purchaseId={purchase.id} lineId={l.id} />
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-
-                {activeInvoice && pending > 0 ? (
-                  <ReceiveLineForm
-                    key={`${item.id}-${item.received_qty}`}
-                    purchaseId={purchase.id}
-                    invoiceId={activeInvoice}
-                    itemId={item.id}
-                    pending={pending}
-                    isAdmin={isAdmin}
-                    orderCost={isAdmin ? Number(item.unit_cost) : 0}
-                    orderTax={isAdmin ? Number(item.tax_rate) : 0}
-                    product={
-                      isAdmin && product
-                        ? {
-                            stock: stockByProduct.get(item.product_id) ?? 0,
-                            cost: Number(product.cost ?? 0),
-                            price: Number(product.price ?? 0),
-                          }
-                        : null
-                    }
-                  />
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
       {purchase.status === "partially_received" ? (
         <section className="flex flex-col gap-3 rounded-lg border border-border p-3">
-          <h2 className="text-base font-semibold tracking-tight">{t("pendingTitle", { count: pendingTotal })}</h2>
+          <h2 className="text-base font-semibold tracking-tight">{t("pendingTitle", { count: pendingQty })}</h2>
           <p className="text-sm text-muted-foreground">{t("pendingHelp")}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
             <Link

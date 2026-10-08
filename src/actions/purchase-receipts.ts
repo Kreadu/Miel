@@ -11,9 +11,8 @@ import {
   closeShortSchema,
   INVOICE_FILE_TYPES,
   invoiceFileError,
-  invoiceSchema,
   invoiceUpdateSchema,
-  receiveLineSchema,
+  receiveInvoiceSchema,
 } from "@/lib/validation/purchase-receipts";
 
 export type ReceiptState = { ok: false; error: string } | { ok: true } | null;
@@ -26,6 +25,7 @@ function mapReceiptError(message: string | undefined): string {
   if (message?.includes("invoice_number_taken")) return `${E}.numberTaken`;
   if (message?.includes("invoice_below_payments")) return `${E}.belowPayments`;
   if (message?.includes("invoice_has_lines")) return `${E}.invoiceHasLines`;
+  if (message?.includes("lines_required")) return `${E}.linesRequired`;
   if (message?.includes("invoice_voided")) return `${E}.invoiceVoided`;
   if (message?.includes("invoice_not_found")) return "purchases.errors.notFound";
   if (message?.includes("invoice_totals_invalid")) return `${E}.amountInvalid`;
@@ -68,9 +68,18 @@ async function uploadInvoiceFile(
   return { ok: true, path };
 }
 
-/** S28-01: cualquiera de la empresa ingresa la factura (y su archivo) y sigue a guardar líneas. */
-export async function createPurchaseInvoice(_prev: ReceiptState, formData: FormData): Promise<ReceiptState> {
-  const parsed = invoiceSchema.safeParse(Object.fromEntries(formData));
+/**
+ * S28-04: la factura y lo que llegó en un solo paso. Los totales los calcula la BD de las líneas;
+ * cada línea entra en su bodega (reparto). Un miembro no manda costos: entran los de la orden.
+ */
+export async function receivePurchaseInvoice(_prev: ReceiptState, formData: FormData): Promise<ReceiptState> {
+  let lines: unknown;
+  try {
+    lines = JSON.parse(String(formData.get("lines") ?? "[]"));
+  } catch {
+    return { ok: false, error: `${E}.linesRequired` };
+  }
+  const parsed = receiveInvoiceSchema.safeParse({ ...Object.fromEntries(formData), lines });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
   const d = parsed.data;
 
@@ -79,27 +88,32 @@ export async function createPurchaseInvoice(_prev: ReceiptState, formData: FormD
   if (!upload.ok) return upload;
   const path = upload.path;
 
-  const { data: invoiceId, error } = await supabase.rpc("create_purchase_invoice", {
+  const { error } = await supabase.rpc("receive_purchase_invoice", {
     p_purchase_id: d.purchase_id,
     p_number: d.number,
     p_issued_on: d.issued_on,
     p_due_on: d.due_on,
     p_cufe: d.cufe,
-    p_subtotal: d.subtotal,
-    p_tax: d.tax,
-    p_total: d.total,
-    p_warehouse_id: d.warehouse_id,
     p_file_path: path,
+    p_lines: d.lines.map((l) => ({
+      purchase_item_id: l.purchase_item_id,
+      warehouse_id: l.warehouse_id,
+      qty: l.qty,
+      unit_cost: l.unit_cost,
+      tax_rate: l.tax_rate,
+      sale_price: l.sale_price,
+    })),
   });
-  if (error || !invoiceId) {
-    console.error("createPurchaseInvoice:", error?.message);
+  if (error) {
+    console.error("receivePurchaseInvoice:", error.message);
     if (path) await supabase.storage.from(BUCKET).remove([path]);
-    return { ok: false, error: mapReceiptError(error?.message) };
+    return { ok: false, error: mapReceiptError(error.message) };
   }
 
   await logActivity("purchase_invoice_created", { entityId: d.purchase_id, detail: d.number });
+  revalidatePath(receivePath(d.purchase_id));
   revalidatePath("/compras");
-  redirect(`${receivePath(d.purchase_id)}?factura=${invoiceId}`);
+  return { ok: true };
 }
 
 /** S28-03: dueño/admin corrigen una factura; sin archivo nuevo se conserva el que tenía. */
@@ -150,35 +164,6 @@ export async function voidPurchaseInvoice(purchaseId: string, invoiceId: string)
 
   await logActivity("purchase_invoice_voided", { entityId: parsed.data.purchaseId });
   revalidatePath(receivePath(parsed.data.purchaseId));
-  revalidatePath("/compras");
-  return { ok: true };
-}
-
-/** S28-01/S28-02: guarda una línea; entra al inventario de una vez (y ajusta el precio). */
-export async function receivePurchaseLine(_prev: ReceiptState, formData: FormData): Promise<ReceiptState> {
-  const purchaseId = z.uuid().safeParse(formData.get("purchase_id"));
-  const parsed = receiveLineSchema.safeParse(Object.fromEntries(formData));
-  if (!purchaseId.success) return { ok: false, error: "purchases.errors.purchaseInvalid" };
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
-  const d = parsed.data;
-
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("receive_purchase_line", {
-    p_invoice_id: d.invoice_id,
-    p_purchase_item_id: d.purchase_item_id,
-    p_qty: d.qty,
-    // Sin valor (miembro, o precio sin tocar): la RPC usa el de la orden / el mismo %.
-    p_unit_cost: d.unit_cost ?? undefined,
-    p_tax_rate: d.tax_rate ?? undefined,
-    p_sale_price: d.sale_price ?? undefined,
-  });
-  if (error) {
-    console.error("receivePurchaseLine:", error.message);
-    return { ok: false, error: mapReceiptError(error.message) };
-  }
-
-  await logActivity("purchase_line_received", { entityId: purchaseId.data });
-  revalidatePath(receivePath(purchaseId.data));
   revalidatePath("/compras");
   return { ok: true };
 }

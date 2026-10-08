@@ -27,24 +27,31 @@ function withTotals<T extends z.ZodType<{ issued_on: string; due_on: string | nu
     .transform((d) => ({ ...d, subtotal: round2(d.subtotal), tax: round2(d.tax), total: round2(d.subtotal + d.tax) }));
 }
 
-/** S28-01: factura del proveedor. */
-export const invoiceSchema = withTotals(
-  // S26-11: con bodega por ítem la factura no la pide ("" = sin bodega).
-  z.object({ ...invoiceFields, warehouse_id: z.preprocess((v) => v || null, z.uuid(`purchases.errors.warehouseInvalid`).nullable()) }),
-);
-
 /** S28-03: corregir una factura (la bodega no cambia). */
 export const invoiceUpdateSchema = withTotals(z.object({ ...invoiceFields, invoice_id: z.uuid("purchases.errors.notFound") }));
 
-/** S28-01/S28-02: una línea recibida. Sin costo (miembro) la RPC usa el de la orden. */
-export const receiveLineSchema = z.object({
-  invoice_id: z.uuid(`${E}.invoiceRequired`),
+/** S28-04: una línea de lo que llegó (producto de la orden → bodega). Sin costo (miembro) = el de la orden. */
+const receivedLineSchema = z.object({
   purchase_item_id: z.uuid(`purchases.errors.itemsInvalid`),
-  qty: z.coerce.number().positive("sales.errors.qtyPositive"),
+  warehouse_id: z.uuid(`purchases.errors.warehouseInvalid`),
+  qty: z.coerce.number().min(0, "sales.errors.qtyPositive"),
   unit_cost: optionalNumber(z.number().min(0, "products.errors.costNegative")).default(null),
   tax_rate: optionalNumber(z.number().min(0, "products.errors.taxRange").max(100, "products.errors.taxRange")).default(null),
   sale_price: optionalNumber(z.number().min(0, `${E}.priceInvalid`)).default(null),
 });
+
+/** S28-04: factura (sin montos: se calculan de lo que llegó) + líneas recibidas. */
+export const receiveInvoiceSchema = z
+  .object({
+    purchase_id: z.uuid(`purchases.errors.purchaseInvalid`),
+    number: invoiceFields.number,
+    issued_on: isoDate,
+    due_on: invoiceFields.due_on,
+    cufe: optionalText(200),
+    lines: z.array(receivedLineSchema).transform((lines) => lines.filter((l) => l.qty > 0)),
+  })
+  .refine((d) => d.lines.length > 0, { message: `${E}.linesRequired`, path: ["lines"] })
+  .refine((d) => !d.due_on || d.due_on >= d.issued_on, { message: `${E}.dueBeforeIssue`, path: ["due_on"] });
 
 export const closeShortSchema = z.object({
   purchase_id: z.uuid(`purchases.errors.purchaseInvalid`),

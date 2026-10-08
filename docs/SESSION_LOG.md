@@ -68,6 +68,14 @@ Guardar/Cancelar de la ficha del trabajador quedaron al final.
 la orden (subtotal sin IVA, IVA y total), solo a dueño/admin, y avisa la diferencia si no coincide
 (`pendingTotals` en `src/lib/purchases/line.ts`). El campo CUFE tiene ayuda.
 
+**S28-04 (después):** la recepción pasa a un solo formulario:
+- arriba, los datos de la factura, sin montos;
+- en el medio, lo que llegó de cada producto, con reparto por bodega;
+- abajo, los totales calculados y la comparación con la orden;
+- "Guardar factura y recibir" hace todo atómico (`receive_purchase_invoice`).
+
+Migración `20261008200000_recibir-factura-en-un-formulario.sql`, pendiente de pegar.
+
 **Cloud:** S26-10, S26-11 y S26-12 aplicadas y verificadas por REST (`purchase_items.warehouse_id`
 y `link_worker_to_me` existen). El SQL se borró. Sin migraciones pendientes.
 

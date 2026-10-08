@@ -17,19 +17,27 @@ export function purchaseLine(
 }
 
 /**
- * S28-01: lo que falta recibir de la orden, para comparar con la factura del proveedor
- * (subtotal sin IVA, IVA y total; IVA redondeado por línea como create_purchase).
+ * S28-04: subtotal sin IVA, IVA y total de unas líneas (IVA redondeado por línea, igual que
+ * create_purchase y receive_purchase_invoice).
  */
-export function pendingTotals(
-  items: { qty: number; received_qty: number; unit_cost: number; tax_rate: number }[],
+export function linesTotals(
+  lines: { qty: number; unit_cost: number; tax_rate: number }[],
 ): { subtotal: number; tax: number; total: number } {
   let subtotal = 0;
   let tax = 0;
-  for (const it of items) {
-    const pending = Math.max(Number(it.qty) - Number(it.received_qty), 0);
-    const base = round2(pending * Number(it.unit_cost));
+  for (const l of lines) {
+    const base = round2(Number(l.qty) * Number(l.unit_cost));
     subtotal += base;
-    tax += round2((base * Number(it.tax_rate)) / 100);
+    tax += round2((base * Number(l.tax_rate)) / 100);
   }
   return { subtotal: round2(subtotal), tax: round2(tax), total: round2(subtotal + tax) };
+}
+
+/** S28-01: lo que falta recibir de la orden, para comparar con la factura del proveedor. */
+export function pendingTotals(
+  items: { qty: number; received_qty: number; unit_cost: number; tax_rate: number }[],
+): { subtotal: number; tax: number; total: number } {
+  return linesTotals(
+    items.map((it) => ({ ...it, qty: Math.max(Number(it.qty) - Number(it.received_qty), 0) })),
+  );
 }

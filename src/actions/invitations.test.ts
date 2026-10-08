@@ -18,7 +18,7 @@ vi.mock("@/lib/tenant/server", () => ({
   getActiveTenant: vi.fn(async () => ({ active: activeTenant, memberships: [] })),
 }));
 
-const rpcMock = vi.fn(async (..._args: unknown[]) => ({ error: null as { message: string } | null }));
+const rpcMock = vi.fn<(name: string, args: unknown) => Promise<{ error: { message: string } | null }>>(async () => ({ error: null }));
 
 function mockSupabase(overrides: { insertResult?: unknown }) {
   return {

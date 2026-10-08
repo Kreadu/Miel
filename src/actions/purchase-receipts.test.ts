@@ -33,67 +33,62 @@ beforeEach(() => {
   rpc.mockImplementation(async () => ({ data: "inv-1", error: null }));
 });
 
-describe("createPurchaseInvoice", () => {
-  const base = { purchase_id: PID, warehouse_id: WID, number: "FE-123", issued_on: "2026-10-08", subtotal: "100", tax: "19" };
+describe("receivePurchaseInvoice (S28-04)", () => {
+  const lines = [
+    { purchase_item_id: WID, warehouse_id: IID, qty: "4", unit_cost: "1200", tax_rate: "19", sale_price: "" },
+    { purchase_item_id: WID, warehouse_id: PID, qty: "2", unit_cost: "1200", tax_rate: "19", sale_price: "" },
+    { purchase_item_id: IID, warehouse_id: PID, qty: "0", unit_cost: "", tax_rate: "", sale_price: "" },
+  ];
+  const base = { purchase_id: PID, number: "FE-1", issued_on: "2026-10-08", lines: JSON.stringify(lines) };
 
-  it("sube el archivo a la carpeta de la empresa, crea la factura y vuelve a la recepción con ella", async () => {
-    const { createPurchaseInvoice } = await import("./purchase-receipts");
+  it("sube el archivo, guarda la factura con las líneas que llegaron y revalida", async () => {
+    const { receivePurchaseInvoice } = await import("./purchase-receipts");
     const file = new File(["%PDF"], "factura.pdf", { type: "application/pdf" });
-    await expect(createPurchaseInvoice(null, fd({ ...base, file }))).rejects.toThrow(
-      `REDIRECT /compras/ordenes/${PID}/recibir?factura=inv-1`,
-    );
+    expect(await receivePurchaseInvoice(null, fd({ ...base, file }))).toEqual({ ok: true });
     const path = (upload.mock.calls[0] as unknown[])[0] as string;
     expect(path).toMatch(/^t-1\/[0-9a-f-]{36}\.pdf$/);
-    expect(rpc).toHaveBeenCalledWith("create_purchase_invoice", expect.objectContaining({
-      p_purchase_id: PID, p_number: "FE-123", p_subtotal: 100, p_tax: 19, p_total: 119, p_file_path: path,
-    }));
-  });
-
-  it("sin archivo no sube nada", async () => {
-    const { createPurchaseInvoice } = await import("./purchase-receipts");
-    await expect(createPurchaseInvoice(null, fd(base))).rejects.toThrow("REDIRECT");
-    expect(upload).not.toHaveBeenCalled();
-    expect(rpc).toHaveBeenCalledWith("create_purchase_invoice", expect.objectContaining({ p_file_path: null }));
-  });
-
-  it("número repetido: error claro y borra el archivo subido", async () => {
-    rpc.mockImplementation(async () => ({ data: null, error: { message: "invoice_number_taken" } }));
-    const { createPurchaseInvoice } = await import("./purchase-receipts");
-    const file = new File(["x"], "f.png", { type: "image/png" });
-    expect(await createPurchaseInvoice(null, fd({ ...base, file }))).toEqual({
-      ok: false, error: "purchases.receipt.errors.numberTaken",
-    });
-    expect(remove).toHaveBeenCalled();
-  });
-
-  it("tipo de archivo no permitido", async () => {
-    const { createPurchaseInvoice } = await import("./purchase-receipts");
-    const file = new File(["<html>"], "f.html", { type: "text/html" });
-    expect(await createPurchaseInvoice(null, fd({ ...base, file }))).toEqual({
-      ok: false, error: "purchases.receipt.errors.fileType",
-    });
-    expect(rpc).not.toHaveBeenCalled();
-  });
-});
-
-describe("receivePurchaseLine", () => {
-  it("guarda la línea con costo, IVA y precio y revalida", async () => {
-    const { receivePurchaseLine } = await import("./purchase-receipts");
-    const res = await receivePurchaseLine(null, fd({
-      purchase_id: PID, invoice_id: IID, purchase_item_id: WID, qty: "6", unit_cost: "1200", tax_rate: "19", sale_price: "1700",
-    }));
-    expect(res).toEqual({ ok: true });
-    expect(rpc).toHaveBeenCalledWith("receive_purchase_line", {
-      p_invoice_id: IID, p_purchase_item_id: WID, p_qty: 6, p_unit_cost: 1200, p_tax_rate: 19, p_sale_price: 1700,
+    expect(rpc).toHaveBeenCalledWith("receive_purchase_invoice", {
+      p_purchase_id: PID,
+      p_number: "FE-1",
+      p_issued_on: "2026-10-08",
+      p_due_on: null,
+      p_cufe: null,
+      p_file_path: path,
+      p_lines: [
+        { purchase_item_id: WID, warehouse_id: IID, qty: 4, unit_cost: 1200, tax_rate: 19, sale_price: null },
+        { purchase_item_id: WID, warehouse_id: PID, qty: 2, unit_cost: 1200, tax_rate: 19, sale_price: null },
+      ],
     });
     expect(revalidatePath).toHaveBeenCalledWith(`/compras/ordenes/${PID}/recibir`);
   });
 
+  it("número repetido: error claro y borra el archivo subido", async () => {
+    rpc.mockImplementation(async () => ({ data: null, error: { message: "invoice_number_taken" } }));
+    const { receivePurchaseInvoice } = await import("./purchase-receipts");
+    const file = new File(["x"], "f.png", { type: "image/png" });
+    expect(await receivePurchaseInvoice(null, fd({ ...base, file }))).toEqual({
+      ok: false,
+      error: "purchases.receipt.errors.numberTaken",
+    });
+    expect(remove).toHaveBeenCalled();
+  });
+
+  it("nada llegó: no llama a la base", async () => {
+    const { receivePurchaseInvoice } = await import("./purchase-receipts");
+    const zero = JSON.stringify([{ ...lines[0], qty: "0" }]);
+    expect(await receivePurchaseInvoice(null, fd({ ...base, lines: zero }))).toEqual({
+      ok: false,
+      error: "purchases.receipt.errors.linesRequired",
+    });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
   it("más de lo pendiente se traduce", async () => {
     rpc.mockImplementation(async () => ({ data: null, error: { message: "qty_exceeds_pending" } }));
-    const { receivePurchaseLine } = await import("./purchase-receipts");
-    expect(await receivePurchaseLine(null, fd({ purchase_id: PID, invoice_id: IID, purchase_item_id: WID, qty: "99" }))).toEqual({
-      ok: false, error: "purchases.receipt.errors.qtyExceedsPending",
+    const { receivePurchaseInvoice } = await import("./purchase-receipts");
+    expect(await receivePurchaseInvoice(null, fd(base))).toEqual({
+      ok: false,
+      error: "purchases.receipt.errors.qtyExceedsPending",
     });
   });
 });

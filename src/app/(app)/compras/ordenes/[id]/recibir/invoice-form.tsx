@@ -3,11 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useState } from "react";
 
-import { createPurchaseInvoice, updatePurchaseInvoice } from "@/actions/purchase-receipts";
+import { updatePurchaseInvoice } from "@/actions/purchase-receipts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatMoney } from "@/lib/format";
 import { round2 } from "@/lib/money";
 
@@ -22,84 +21,54 @@ export type InvoiceValues = {
 };
 
 /**
- * S28-01: datos de la factura del proveedor (y su archivo si es digital).
- * S28-03: con `invoice`, corrige esa factura (la bodega no cambia; sin archivo nuevo conserva el suyo).
+ * S28-03: corregir una factura ya recibida (p. ej. la impresa trae un flete o un redondeo). La
+ * bodega no cambia; sin archivo nuevo conserva el suyo. Recibir es `ReceiveInvoiceForm` (S28-04).
  */
 export function InvoiceForm({
   purchaseId,
-  warehouses = [],
   invoice,
   onCancel,
-  askWarehouse = true,
-  expected,
 }: {
   purchaseId: string;
-  warehouses?: { id: string; name: string }[];
-  /** S26-11: false cuando cada ítem ya tiene su bodega. */
-  askWarehouse?: boolean;
-  /** Lo que falta recibir según la orden (solo dueño/admin: son costos). */
-  expected?: { subtotal: number; tax: number; total: number };
-  invoice?: InvoiceValues;
-  onCancel?: () => void;
+  invoice: InvoiceValues;
+  onCancel: () => void;
 }) {
   const t = useTranslations();
-  const [state, action, pending] = useActionState(invoice ? updatePurchaseInvoice : createPurchaseInvoice, null);
-  const [subtotal, setSubtotal] = useState(invoice ? String(invoice.subtotal) : "");
-  const [tax, setTax] = useState(invoice ? String(invoice.tax) : "");
-  const p = (id: string) => (invoice ? `${id}-${invoice.id}` : id);
+  const [state, action, pending] = useActionState(updatePurchaseInvoice, null);
+  const [subtotal, setSubtotal] = useState(String(invoice.subtotal));
+  const [tax, setTax] = useState(String(invoice.tax));
+  const total = round2((Number(subtotal) || 0) + (Number(tax) || 0));
+  const id = (name: string) => `${name}-${invoice.id}`;
   // Corrección guardada: se cierra el formulario (la página ya se revalidó).
   useEffect(() => {
-    if (state?.ok) onCancel?.();
+    if (state?.ok) onCancel();
   }, [state, onCancel]);
-  const total = round2((Number(subtotal) || 0) + (Number(tax) || 0));
-  // Aviso si lo escrito no coincide con la orden (diferencia de al menos un peso).
-  const diff = expected && subtotal !== "" ? round2(total - expected.total) : 0;
 
   return (
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4">
-      {invoice ? (
-        <input type="hidden" name="invoice_id" value={invoice.id} />
-      ) : (
-        <div>
-          <h2 className="text-base font-semibold tracking-tight">{t("purchases.receipt.invoiceTitle")}</h2>
-          <p className="text-sm text-muted-foreground">{t("purchases.receipt.invoiceHelp")}</p>
-        </div>
-      )}
+      <input type="hidden" name="invoice_id" value={invoice.id} />
       <input type="hidden" name="purchase_id" value={purchaseId} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-number")}>{t("purchases.receipt.number")}</Label>
-          <Input id={p("inv-number")} name="number" required maxLength={60} placeholder="FE-123" defaultValue={invoice?.number} />
-        </div>
-        {invoice || !askWarehouse ? null : (
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="inv-warehouse">{t("purchases.receipt.warehouse")}</Label>
-            <Select name="warehouse_id" required defaultValue={warehouses.length === 1 ? warehouses[0].id : undefined}>
-              <SelectTrigger id="inv-warehouse" className="w-full">
-                <SelectValue placeholder={t("purchases.warehousePlaceholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                {warehouses.map((w) => (
-                  <SelectItem key={w.id} value={w.id}>
-                    {w.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-issued")}>{t("purchases.receipt.issued")}</Label>
-          <Input id={p("inv-issued")} name="issued_on" type="date" required defaultValue={invoice?.issued_on} />
+          <Label htmlFor={id("number")}>{t("purchases.receipt.number")}</Label>
+          <Input id={id("number")} name="number" required maxLength={60} defaultValue={invoice.number} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-due")}>{t("purchases.receipt.due")}</Label>
-          <Input id={p("inv-due")} name="due_on" type="date" defaultValue={invoice?.due_on ?? undefined} />
+          <Label htmlFor={id("cufe")}>{t("purchases.receipt.cufe")}</Label>
+          <Input id={id("cufe")} name="cufe" maxLength={200} defaultValue={invoice.cufe ?? undefined} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-subtotal")}>{t("purchases.receipt.subtotal")}</Label>
+          <Label htmlFor={id("issued")}>{t("purchases.receipt.issued")}</Label>
+          <Input id={id("issued")} name="issued_on" type="date" required defaultValue={invoice.issued_on} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor={id("due")}>{t("purchases.receipt.due")}</Label>
+          <Input id={id("due")} name="due_on" type="date" defaultValue={invoice.due_on ?? undefined} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor={id("subtotal")}>{t("purchases.receipt.subtotal")}</Label>
           <Input
-            id={p("inv-subtotal")}
+            id={id("subtotal")}
             name="subtotal"
             type="number"
             inputMode="decimal"
@@ -111,9 +80,9 @@ export function InvoiceForm({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-tax")}>{t("purchases.receipt.tax")}</Label>
+          <Label htmlFor={id("tax")}>{t("purchases.receipt.tax")}</Label>
           <Input
-            id={p("inv-tax")}
+            id={id("tax")}
             name="tax"
             type="number"
             inputMode="decimal"
@@ -124,56 +93,26 @@ export function InvoiceForm({
             onChange={(e) => setTax(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-cufe")}>{t("purchases.receipt.cufe")}</Label>
-          <Input id={p("inv-cufe")} name="cufe" maxLength={200} defaultValue={invoice?.cufe ?? undefined} />
-          <p className="text-xs text-muted-foreground">{t("purchases.receipt.cufeHelp")}</p>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={p("inv-file")}>{invoice ? t("purchases.receipt.replaceFile") : t("purchases.receipt.file")}</Label>
+        <div className="flex flex-col gap-1.5 sm:col-span-2">
+          <Label htmlFor={id("file")}>{t("purchases.receipt.replaceFile")}</Label>
           <Input
-            id={p("inv-file")}
+            id={id("file")}
             name="file"
             type="file"
             accept="application/pdf,.pdf,.xml,text/xml,application/xml,.zip,application/zip,image/jpeg,image/png,image/webp"
           />
         </div>
       </div>
-      {expected ? (
-        <div className="flex flex-col gap-1 rounded-md bg-muted/50 p-3 text-sm">
-          <p className="font-medium">{t("purchases.receipt.expectedTitle")}</p>
-          <p className="tabular-nums text-muted-foreground">
-            {t("purchases.receipt.expectedLine", {
-              subtotal: `$${formatMoney(expected.subtotal)}`,
-              tax: `$${formatMoney(expected.tax)}`,
-              total: `$${formatMoney(expected.total)}`,
-            })}
-          </p>
-          {Math.abs(diff) >= 1 ? (
-            <p role="status" className="font-medium text-destructive">
-              {t("purchases.receipt.expectedMismatch", {
-                diff: `${diff > 0 ? "+" : "−"}$${formatMoney(Math.abs(diff))}`,
-              })}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm">
           {t("purchases.receipt.total")}: <span className="font-semibold tabular-nums">${formatMoney(total)}</span>
         </p>
         <div className="flex gap-2">
-          {onCancel ? (
-            <Button type="button" variant="ghost" disabled={pending} onClick={onCancel}>
-              {t("purchases.cancel")}
-            </Button>
-          ) : null}
+          <Button type="button" variant="ghost" disabled={pending} onClick={onCancel}>
+            {t("purchases.cancel")}
+          </Button>
           <Button type="submit" disabled={pending}>
-            {pending
-              ? t("purchases.receipt.saving")
-              : invoice
-                ? t("purchases.receipt.saveCorrection")
-                : t("purchases.receipt.saveInvoice")}
+            {pending ? t("purchases.receipt.saving") : t("purchases.receipt.saveCorrection")}
           </Button>
         </div>
       </div>

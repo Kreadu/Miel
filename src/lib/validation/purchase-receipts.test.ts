@@ -1,58 +1,36 @@
 import { describe, expect, it } from "vitest";
 
-import { closeShortSchema, invoiceFileError, invoiceSchema, receiveLineSchema } from "./purchase-receipts";
+import { closeShortSchema, invoiceFileError, receiveInvoiceSchema } from "./purchase-receipts";
 
 const PID = "11111111-1111-4111-8111-111111111111";
 const WID = "22222222-2222-4222-8222-222222222222";
 
-describe("invoiceSchema (S28-01)", () => {
-  const valid = { purchase_id: PID, warehouse_id: WID, number: " FE-123 ", issued_on: "2026-10-08", subtotal: "7200", tax: "1368" };
+describe("receiveInvoiceSchema (S28-04)", () => {
+  const line = { purchase_item_id: WID, warehouse_id: PID, qty: "6", unit_cost: "1200", tax_rate: "19", sale_price: "" };
+  const valid = { purchase_id: PID, number: " FE-1 ", issued_on: "2026-10-08", lines: [line] };
 
-  it("acepta la factura y calcula el total = subtotal + IVA", () => {
-    const r = invoiceSchema.safeParse(valid);
-    expect(r.success).toBe(true);
-    expect(r.data).toMatchObject({ number: "FE-123", subtotal: 7200, tax: 1368, total: 8568, due_on: null, cufe: null });
+  it("datos de la factura sin montos y líneas con cantidad", () => {
+    const r = receiveInvoiceSchema.safeParse(valid);
+    expect(r.data).toMatchObject({ number: "FE-1", due_on: null, cufe: null });
+    expect(r.data?.lines[0]).toMatchObject({ qty: 6, unit_cost: 1200, tax_rate: 19, sale_price: null });
   });
 
-  it("vencimiento y CUFE opcionales", () => {
-    const r = invoiceSchema.safeParse({ ...valid, due_on: "2026-11-08", cufe: "abc" });
-    expect(r.data).toMatchObject({ due_on: "2026-11-08", cufe: "abc" });
+  it("descarta las líneas en 0 y exige al menos una que llegó", () => {
+    const r = receiveInvoiceSchema.safeParse({ ...valid, lines: [line, { ...line, qty: "0" }] });
+    expect(r.data?.lines).toHaveLength(1);
+    expect(receiveInvoiceSchema.safeParse({ ...valid, lines: [{ ...line, qty: "0" }] }).success).toBe(false);
   });
 
-  it("rechaza número vacío, fecha inválida y valores negativos", () => {
-    expect(invoiceSchema.safeParse({ ...valid, number: "  " }).success).toBe(false);
-    expect(invoiceSchema.safeParse({ ...valid, issued_on: "08/10/2026" }).success).toBe(false);
-    expect(invoiceSchema.safeParse({ ...valid, subtotal: "-1" }).success).toBe(false);
-    expect(invoiceSchema.safeParse({ ...valid, tax: "-1" }).success).toBe(false);
+  it("miembro: sin costo ni IVA (la RPC usa los de la orden)", () => {
+    const r = receiveInvoiceSchema.safeParse({ ...valid, lines: [{ ...line, unit_cost: "", tax_rate: "" }] });
+    expect(r.data?.lines[0]).toMatchObject({ unit_cost: null, tax_rate: null });
   });
 
-  it("rechaza vencimiento antes de la emisión", () => {
-    expect(invoiceSchema.safeParse({ ...valid, due_on: "2026-10-01" }).success).toBe(false);
-  });
-});
-
-describe("receiveLineSchema (S28-01/S28-02)", () => {
-  const valid = { invoice_id: PID, purchase_item_id: WID, qty: "6", unit_cost: "1200", tax_rate: "19" };
-
-  it("acepta una línea con costo e IVA", () => {
-    expect(receiveLineSchema.safeParse(valid).data).toMatchObject({ qty: 6, unit_cost: 1200, tax_rate: 19, sale_price: null });
-  });
-
-  it("sin costo (miembro) queda null y el servidor usa el de la orden", () => {
-    expect(receiveLineSchema.safeParse({ ...valid, unit_cost: "", tax_rate: "" }).data).toMatchObject({
-      unit_cost: null,
-      tax_rate: null,
-    });
-  });
-
-  it("precio de venta opcional y no negativo", () => {
-    expect(receiveLineSchema.safeParse({ ...valid, sale_price: "1700" }).data?.sale_price).toBe(1700);
-    expect(receiveLineSchema.safeParse({ ...valid, sale_price: "-1" }).success).toBe(false);
-  });
-
-  it("rechaza cantidad 0 e IVA fuera de rango", () => {
-    expect(receiveLineSchema.safeParse({ ...valid, qty: "0" }).success).toBe(false);
-    expect(receiveLineSchema.safeParse({ ...valid, tax_rate: "101" }).success).toBe(false);
+  it("rechaza número vacío, vencimiento antes de la factura y valores negativos", () => {
+    expect(receiveInvoiceSchema.safeParse({ ...valid, number: " " }).success).toBe(false);
+    expect(receiveInvoiceSchema.safeParse({ ...valid, due_on: "2026-10-01" }).success).toBe(false);
+    expect(receiveInvoiceSchema.safeParse({ ...valid, lines: [{ ...line, unit_cost: "-1" }] }).success).toBe(false);
+    expect(receiveInvoiceSchema.safeParse({ ...valid, lines: [{ ...line, sale_price: "-1" }] }).success).toBe(false);
   });
 });
 

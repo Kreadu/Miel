@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { pendingTotals, purchaseLine } from "./line";
+import { linesTotals, pendingTotals, purchaseLine } from "./line";
 
 describe("purchaseLine (S19-37)", () => {
   it("costo unitario con IVA y costo total de la línea", () => {
@@ -31,5 +31,16 @@ describe("pendingTotals (factura vs. orden)", () => {
         { qty: 3, received_qty: 3, unit_cost: 999, tax_rate: 19 },
       ]),
     ).toEqual({ subtotal: 16000, tax: 1140, total: 17140 });
+  });
+});
+
+describe("linesTotals (S28-04: lo que llegó)", () => {
+  it("6 a 1.200 con IVA 19 % (repartidas en dos bodegas) = 7.200 + 1.368", () => {
+    expect(
+      linesTotals([
+        { qty: 4, unit_cost: 1200, tax_rate: 19 },
+        { qty: 2, unit_cost: 1200, tax_rate: 19 },
+      ]),
+    ).toEqual({ subtotal: 7200, tax: 1368, total: 8568 });
   });
 });

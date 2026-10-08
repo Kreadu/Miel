@@ -1214,6 +1214,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "purchase_receipt_lines_movement_id_fkey"
+            columns: ["movement_id"]
+            isOneToOne: false
+            referencedRelation: "stock_movements"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "purchase_receipt_lines_invoice_id_fkey"
             columns: ["invoice_id"]
             isOneToOne: false
@@ -3105,6 +3112,18 @@ export type Database = {
         Args: { p_purchase_id: string; p_warehouse_id: string }
         Returns: undefined
       }
+      receive_purchase_invoice: {
+        Args: {
+          p_cufe: string | null
+          p_due_on: string | null
+          p_file_path: string | null
+          p_issued_on: string
+          p_lines: Json
+          p_number: string
+          p_purchase_id: string
+        }
+        Returns: string
+      }
       receive_purchase_line: {
         Args: {
           p_invoice_id: string
@@ -3113,6 +3132,7 @@ export type Database = {
           p_sale_price?: number
           p_tax_rate?: number
           p_unit_cost?: number
+          p_warehouse_id?: string
         }
         Returns: string
       }
